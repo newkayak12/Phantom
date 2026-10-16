@@ -1475,6 +1475,11 @@ plugins/performanceTesting/remote-driver.compose
 plugins/performanceTesting/remote-driver.jcef
 plugins/performanceTesting/scripts-ui
 plugins/performanceTesting/vcs
+plugins/phantom-spring
+plugins/phantom-spring/core
+plugins/phantom-spring/kotlin
+plugins/phantom-spring/tests
+plugins/phantom-spring/tests-kotlin
 plugins/properties
 plugins/properties/copyright
 plugins/properties/properties-common

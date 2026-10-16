@@ -356,6 +356,11 @@
       <module fileurl="file://$PROJECT_DIR$/commandInterface/intellij.commandInterface.iml" filepath="$PROJECT_DIR$/commandInterface/intellij.commandInterface.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/core/intellij.phantom.spring.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/core/intellij.phantom.spring.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/intellij.phantom.spring.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/intellij.phantom.spring.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/kotlin/intellij.phantom.spring.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/kotlin/intellij.phantom.spring.kotlin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/tests/intellij.phantom.spring.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/tests/intellij.phantom.spring.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/tests-kotlin/intellij.phantom.spring.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/tests-kotlin/intellij.phantom.spring.tests.kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" filepath="$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" />

@@ -135,6 +135,9 @@
     <orderEntry type="module" module-name="intellij.searchEverywhereMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.marketplaceMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.phantom.spring" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.phantom.spring.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.phantom.spring.kotlin" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.tracing.ide" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.notebooks.visualization" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.keymap.eclipse" scope="RUNTIME" />

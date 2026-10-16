@@ -136,10 +136,9 @@ internal class ApplicationInfoPropertiesImpl(
 
 internal fun computeAppInfoXml(appInfo: ApplicationInfoProperties, context: BuildContext): String {
   val appInfoXmlPath = findApplicationInfoInSources(context.project, context.productProperties)
-  val snapshotBuildNumber = SnapshotBuildNumber.VALUE.takeWhile { it != '.' }
-  check("${appInfo.majorVersion}${appInfo.minorVersion}".removePrefix("20").take(snapshotBuildNumber.count()) == snapshotBuildNumber) {
-    "'major=${appInfo.majorVersion}' and 'minor=${appInfo.minorVersion}' attributes of '$appInfoXmlPath' don't match snapshot build number '$snapshotBuildNumber'"
-  }
+  // phantom-idea: the display version is the build date (YY.MM.DD) while the build number keeps the platform branch (262.YYMMDD),
+  // so the upstream check that major/minor spell the branch number does not apply.
+  check(appInfo.majorVersion.isNotEmpty()) { "'major' attribute of '$appInfoXmlPath' is empty" }
 
   val artifactServer = context.proprietaryBuildTools.artifactsServer
   var builtinPluginsRepoUrl = ""
