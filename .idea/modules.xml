@@ -361,6 +361,11 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/kotlin/intellij.phantom.spring.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/kotlin/intellij.phantom.spring.kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/tests/intellij.phantom.spring.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/tests/intellij.phantom.spring.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/tests-kotlin/intellij.phantom.spring.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/tests-kotlin/intellij.phantom.spring.tests.kotlin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/core/intellij.phantom.springBoot.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/core/intellij.phantom.springBoot.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/intellij.phantom.springBoot.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/intellij.phantom.springBoot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/properties/intellij.phantom.springBoot.properties.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/properties/intellij.phantom.springBoot.properties.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/tests/intellij.phantom.springBoot.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/tests/intellij.phantom.springBoot.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/intellij.phantom.springBoot.yaml.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/intellij.phantom.springBoot.yaml.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" filepath="$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" />

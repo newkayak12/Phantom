@@ -19,6 +19,7 @@ import java.nio.file.Path
 /** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "intellij.phantom.spring",
+  "intellij.phantom.springBoot",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
