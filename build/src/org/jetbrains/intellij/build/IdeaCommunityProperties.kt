@@ -63,11 +63,11 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     )
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
-    productLayout.buildAllCompatiblePlugins = true
+    productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
     productLayout.pluginLayouts = CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS + persistentListOf(
       JavaPluginLayout.javaPlugin(),
       CommunityRepositoryModules.groovyPlugin(),
-      CommunityRepositoryModules.androidPlugin(allPlatforms = true),
+      // phantom-idea: Android plugin removed from the default bundle
     )
 
     productLayout.skipUnresolvedContentModules = true
@@ -147,12 +147,12 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
   override fun createMacCustomizer(projectHome: Path): MacDistributionCustomizer = ideaCommunityMacCustomizer(communityHomeDir)
 
   override fun getSystemSelector(appInfo: ApplicationInfoProperties, buildNumber: String): String {
-    return "IdeaIC${appInfo.majorVersion}.${appInfo.minorVersionMainPart}"
+    return "PhantomIDEA${appInfo.majorVersion}.${appInfo.minorVersionMainPart}"
   }
 
-  override fun getBaseArtifactName(appInfo: ApplicationInfoProperties, buildNumber: String): String = "ideaIC-$buildNumber"
+  override fun getBaseArtifactName(appInfo: ApplicationInfoProperties, buildNumber: String): String = "phantom-idea-$buildNumber"
 
-  override fun getOutputDirectoryName(appInfo: ApplicationInfoProperties): String = "idea-ce"
+  override fun getOutputDirectoryName(appInfo: ApplicationInfoProperties): String = "phantom-idea"
 }
 
 @Suppress("unused")
@@ -232,8 +232,8 @@ inline fun ideaCommunityWindowsCustomizer(
 ): WindowsDistributionCustomizer = windowsCustomizer(projectHome) {
   fileAssociations = listOf("java", "gradle", "groovy", "kt", "kts", "pom")
 
-  fullName { "IntelliJ IDEA Open Source" }
-  installDirNameHandler { "IntelliJ IDEA OSS" }
+  fullName { "Phantom IDEA" }
+  installDirNameHandler { "Phantom IDEA" }
 
   uninstallFeedbackUrl { appInfo ->
     "https://www.jetbrains.com/idea/uninstall/?edition=IC-${appInfo.majorVersion}.${appInfo.minorVersion}"
@@ -246,12 +246,12 @@ inline fun ideaCommunityMacCustomizer(
   projectHome: Path,
   configure: MacCustomizerBuilder.() -> Unit = {}
 ): MacDistributionCustomizer = macCustomizer(projectHome) {
-  urlSchemes = listOf("idea")
+  urlSchemes = listOf("phantom")
   associateIpr = true
   fileAssociations = FileAssociation.from("java", "groovy", "kt", "kts")
-  bundleIdentifier = "com.jetbrains.intellij.ce"
+  bundleIdentifier = "dev.phantom.idea"
 
-  rootDirectoryName { _, _ -> "IntelliJ IDEA OSS.app" }
+  rootDirectoryName { _, _ -> "Phantom IDEA.app" }
 
   executableFilePatterns { base, _, _, _ ->
     val kotlinExecutables = KotlinBinaries.kotlinCompilerExecutables
@@ -266,7 +266,7 @@ inline fun ideaCommunityLinuxCustomizer(
   configure: LinuxCustomizerBuilder.() -> Unit = {}
 ): LinuxDistributionCustomizer = linuxCustomizer(projectHome) {
 
-  rootDirectoryName { _, _ -> "idea-oss" }
+  rootDirectoryName { _, _ -> "phantom-idea" }
 
   executableFilePatterns { base, _, _, _, _ ->
     base.plus(KotlinBinaries.kotlinCompilerExecutables).filterNot { it == "plugins/**/*.sh" }

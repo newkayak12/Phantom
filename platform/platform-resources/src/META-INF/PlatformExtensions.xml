@@ -709,7 +709,6 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <welcomeScreenCustomization id="defaultCustomization"
                                 implementation="com.intellij.openapi.wm.impl.welcomeScreen.WelcomeScreenDefaultCustomization"/>
 
-    <startPagePromoter implementation="com.intellij.openapi.wm.impl.welcomeScreen.TechInsightsLabPromoter"/>
     <statistics.counterUsagesCollector implementationClass="com.intellij.openapi.wm.impl.welcomeScreen.TechInsightsLabCollector"/>
 
     <statistics.counterUsagesCollector implementationClass="com.intellij.platform.ide.bootstrap.IdeStartupWizardCollector"/>

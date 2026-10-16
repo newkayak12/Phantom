@@ -26,7 +26,6 @@ val IDEA_BUNDLED_PLUGINS: PersistentList<String> = DEFAULT_BUNDLED_PLUGINS + per
   "intellij.repository.search",
   "intellij.maven.plugin",
   "intellij.gradle.plugin",
-  "intellij.android.gradle.declarative.lang.ide",
   "intellij.android.gradle.dsl",
   "intellij.gradle.java.plugin",
   "intellij.vcs.git",
@@ -56,7 +55,6 @@ val IDEA_BUNDLED_PLUGINS: PersistentList<String> = DEFAULT_BUNDLED_PLUGINS + per
   "intellij.keymap.visualStudio",
   "intellij.keymap.netbeans",
   "intellij.performanceTesting",
-  "intellij.compose.ide.plugin",
 )
 
 val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
