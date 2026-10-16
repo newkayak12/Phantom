@@ -16,6 +16,11 @@ import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
 import org.jetbrains.intellij.build.productLayout.productModules
 import java.nio.file.Path
 
+/** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
+val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
+  "intellij.phantom.spring",
+)
+
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
   "intellij.tools.jps.build.standalone",
   "intellij.devkit.jps",
@@ -60,7 +65,7 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
 
     productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(
       "intellij.javaFX.community"
-    )
+    ) + PHANTOM_BUNDLED_PLUGINS
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
