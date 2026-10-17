@@ -6,13 +6,14 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-DMG=out/phantom-idea/artifacts/phantom-idea-261017-aarch64.dmg
 APP="/Applications/Phantom IDEA.app"
 
 if [[ "${1:-}" != "--no-build" ]]; then
   ./phantom-build.sh
 fi
-[[ -f "$DMG" ]] || { echo "no DMG at $DMG"; exit 1; }
+# The build number in the name follows the build date, so take the newest one
+DMG=$(ls -t out/phantom-idea/artifacts/phantom-idea-*-aarch64.dmg 2>/dev/null | head -1)
+[[ -n "$DMG" ]] || { echo "no DMG in out/phantom-idea/artifacts"; exit 1; }
 
 was_running=false
 if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then

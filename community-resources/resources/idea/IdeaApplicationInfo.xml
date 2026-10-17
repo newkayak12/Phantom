@@ -1,5 +1,5 @@
 <component xmlns="http://jetbrains.org/intellij/schema/application-info">
-  <version eap="false" major="26" minor="10.17"/>
+  <version eap="false" major="26" minor="10.18"/>
   <company name="Phantom" url="https://github.com/newkayak12/phantom-idea"/>
   <build number="IC-__BUILD__" date="__BUILD_DATE__" majorReleaseDate="20260716"/>
   <logo url="/phantom_logo.png"/>

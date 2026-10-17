@@ -360,10 +360,6 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/core/phantom.icons.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/core/phantom.icons.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/phantom.icons.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/phantom.icons.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/tests/phantom.icons.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/tests/phantom.icons.tests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/core/phantom.jpa.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/core/phantom.jpa.core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/phantom.jpa.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/phantom.jpa.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/tests/phantom.jpa.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/tests/phantom.jpa.tests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/tests-kotlin/phantom.jpa.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/tests-kotlin/phantom.jpa.tests.kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-http/core/phantom.http.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-http/core/phantom.http.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-http/phantom.http.iml" filepath="$PROJECT_DIR$/plugins/phantom-http/phantom.http.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-http/tests/phantom.http.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-http/tests/phantom.http.tests.iml" />
