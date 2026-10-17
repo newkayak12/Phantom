@@ -1,0 +1,19 @@
+<idea-plugin>
+  <id>dev.phantom.theme</id>
+  <name>Phantom Theme</name>
+  <vendor>Phantom</vendor>
+  <category>User Interface</category>
+  <description><![CDATA[
+  Phantom Dark and Phantom Light: the Islands themes with quieter borders, muted selections and a frame that sits
+  close to the panels, so the window reads as one calm surface. Colors only; no translucency, nothing runs.
+  ]]></description>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.platform"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <themeProvider id="Phantom Dark" path="/themes/PhantomDark.theme.json" targetUi="islands"/>
+    <themeProvider id="Phantom Light" path="/themes/PhantomLight.theme.json" targetUi="islands"/>
+  </extensions>
+</idea-plugin>
