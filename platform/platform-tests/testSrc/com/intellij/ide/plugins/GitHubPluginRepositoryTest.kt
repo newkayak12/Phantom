@@ -64,6 +64,14 @@ class GitHubPluginRepositoryTest {
     assertEquals(listOf("org.postgresql:postgresql"), detect.detect)
   }
 
+  @Test
+  fun `file names detect plugins that are not libraries`() {
+    val json = """{"plugins": [{"id": "dev.phantom.kubernetes", "name": "Phantom Kubernetes", "detectFiles": ["Chart.yaml"]}, {"id": "none"}]}"""
+    val detect = GitHubPluginRepository.parseDetect(json).single()
+    assertEquals(emptyList<String>(), detect.detect)
+    assertEquals(listOf("Chart.yaml"), detect.files)
+  }
+
   @Test(expected = IOException::class)
   fun `rejects metadata without a plugins array`() {
     GitHubPluginRepository.parseMetadata("{}".byteInputStream(), GitHubPluginRepository.parse("a/b")!!, PluginDtoModelBuilderFactory)
