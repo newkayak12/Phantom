@@ -11,6 +11,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.serviceAsync
 import com.intellij.openapi.diagnostic.logger
@@ -20,6 +21,8 @@ import com.intellij.openapi.roots.ModuleRootEvent
 import com.intellij.openapi.roots.ModuleRootListener
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.openapi.updateSettings.impl.pluginsAdvertisement.installAndEnable
 import org.jetbrains.annotations.ApiStatus
 import kotlinx.coroutines.CoroutineScope
@@ -71,22 +74,27 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
 
   private suspend fun check() {
     val used = readAction { libraryCoordinates(project) }
-    if (used.isEmpty()) return
     val properties = PropertiesComponent.getInstance(project)
-    val matches = DetectCache.get().mapNotNull { plugin ->
-      if (plugin.id in suggested || properties.getBoolean(ignoreKey(plugin.id))) return@mapNotNull null
-      if (PluginManagerCore.getPlugin(PluginId.getId(plugin.id)) != null) return@mapNotNull null
-      plugin.detect.firstOrNull { it in used }?.let { plugin to it }
+    val candidates = DetectCache.get().filter { plugin ->
+      plugin.id !in suggested && !properties.getBoolean(ignoreKey(plugin.id)) && PluginManagerCore.getPlugin(PluginId.getId(plugin.id)) == null
+    }
+    val fileNames = candidates.flatMap { it.files }.toSet()
+    val present = if (fileNames.isEmpty()) emptySet() else smartReadAction(project) {
+      fileNames.filterTo(HashSet()) { FilenameIndex.getVirtualFilesByName(it, GlobalSearchScope.projectScope(project)).isNotEmpty() }
+    }
+    val matches = candidates.mapNotNull { plugin ->
+      plugin.detect.firstOrNull { it in used }?.let { return@mapNotNull plugin to "uses $it" }
+      plugin.files.firstOrNull { it in present }?.let { plugin to "has $it" }
     }.distinctBy { it.first.id }
     if (matches.isEmpty()) return
-    matches.forEach { (plugin, library) -> suggested += plugin.id; LOG.info("Suggesting ${plugin.id}: the project uses $library") }
+    matches.forEach { (plugin, reason) -> suggested += plugin.id; LOG.info("Suggesting ${plugin.id}: the project $reason") }
     notify(matches)
   }
 
   /** One balloon for everything this project could use, with one Install for all of it. */
   private fun notify(matches: List<Pair<GitHubPluginRepository.Detect, String>>) {
     val title = if (matches.size == 1) "${matches[0].first.name} is available" else "Plugins for this project are available"
-    val content = matches.joinToString("<br>") { (plugin, library) -> "<b>${plugin.name}</b> — uses $library" }
+    val content = matches.joinToString("<br>") { (plugin, reason) -> "<b>${plugin.name}</b> — $reason" }
     val ids = matches.map { PluginId.getId(it.first.id) }.toSet()
     NotificationGroupManager.getInstance().getNotificationGroup("Phantom Plugins")
       .createNotification(title, content, NotificationType.INFORMATION)

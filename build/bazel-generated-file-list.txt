@@ -1481,10 +1481,6 @@ plugins/phantom-http/tests
 plugins/phantom-icons
 plugins/phantom-icons/core
 plugins/phantom-icons/tests
-plugins/phantom-jpa
-plugins/phantom-jpa/core
-plugins/phantom-jpa/tests
-plugins/phantom-jpa/tests-kotlin
 plugins/phantom-theme
 plugins/properties
 plugins/properties/copyright
