@@ -837,6 +837,9 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <applicationService serviceImplementation="com.intellij.ide.plugins.ExpiredPluginsState" preload="true"/>
 
     <postStartupActivity implementation="com.intellij.externalDependencies.impl.CheckProjectRequiredPluginsActivity"/>
+    <!-- phantom-idea: suggest plugins from GitHub plugin repositories for the libraries a project uses -->
+    <postStartupActivity implementation="dev.phantom.ide.plugins.PhantomPluginAdvisor"/>
+    <notificationGroup id="Phantom Plugins" displayType="STICKY_BALLOON" isLogByDefault="true"/>
     <projectConfigurable groupId="appearance" provider="com.intellij.externalDependencies.impl.ExternalDependenciesConfigurableProvider"
                          id="preferences.externalDependencies"
                          bundle="messages.IdeBundle"

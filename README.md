@@ -44,7 +44,7 @@ Planned: see [docs/phantom/2026-10-16-feature-matrix.md](docs/phantom/2026-10-16
 | `phantom-spring-boot` | Initializr wizard, `application.yml`/`.properties` completion, run configs, Endpoints |
 | `phantom-spring-runtime` | Actuator, runtime beans and properties, DevTools |
 | `phantom-jpa` | Entities, JPQL/HQL in `@Query`, Spring Data derived queries |
-| `phantom-db` | Data sources, SQL console, a few dialects loaded on demand |
+| `phantom-db` | Moved to [phantom-plugins](https://github.com/newkayak12/phantom-plugins): installed on demand |
 | `phantom-http` | `.http` request files, environments, requests from endpoints |
 | `phantom-containers` | Docker, Compose, Kubernetes |
 
