@@ -58,7 +58,7 @@ class GitHubPluginRepositoryTest {
     assertEquals("https://example.com/x.zip", models[1].downloadUrl)
     assertEquals("newkayak12", models[1].vendor)
 
-    val detect = GitHubPluginRepository.parseDetect(json.byteInputStream()).single()
+    val detect = GitHubPluginRepository.parseDetect(json).single()
     assertEquals("dev.phantom.db", detect.id)
     assertEquals("Phantom DB", detect.name)
     assertEquals(listOf("org.postgresql:postgresql"), detect.detect)
@@ -84,5 +84,20 @@ class GitHubPluginRepositoryTest {
     assertEquals("com.h2database:h2", coordinatesOf("Maven: com.h2database:h2:2.2.224"))
     assertNull(coordinatesOf("KotlinJavaRuntime"))
     assertNull(coordinatesOf(null))
+  }
+
+  @Test
+  fun `private downloads go through the release asset API`() {
+    val releases = """[ { "tag_name": "db-0.1.0", "assets": [ { "name": "db-0.1.0.zip", "url": "https://api.github.com/repos/a/b/releases/assets/7" } ] } ]"""
+    val assets = GitHubPluginRepository.releaseAssets(releases)
+    assertEquals(mapOf("db-0.1.0/db-0.1.0.zip" to "https://api.github.com/repos/a/b/releases/assets/7"), assets)
+
+    val json = """{ "plugins": [ { "id": "dev.phantom.db", "download": "db-0.1.0/db-0.1.0.zip" }, { "id": "x", "download": "other/x.zip" } ] }"""
+    val ref = GitHubPluginRepository.parse("a/b")!!
+    val models = GitHubPluginRepository.parseMetadata(json.byteInputStream(), ref, PluginDtoModelBuilderFactory) { assets[it] }
+    assertEquals("https://api.github.com/repos/a/b/releases/assets/7", models[0].downloadUrl)
+    assertEquals("https://github.com/a/b/releases/download/other/x.zip", models[1].downloadUrl)
+    assertEquals("https://api.github.com/repos/a/b/contents/.phantom/marketplace.json", ref.apiMetadataUrl)
+    assertEquals("https://api.github.com/repos/a/b/contents/.phantom/marketplace.json?ref=dev", GitHubPluginRepository.parse("a/b@dev")!!.apiMetadataUrl)
   }
 }

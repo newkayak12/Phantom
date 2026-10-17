@@ -21,14 +21,13 @@ import com.intellij.openapi.roots.ModuleRootListener
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.updateSettings.impl.pluginsAdvertisement.installAndEnable
-import com.intellij.util.io.HttpRequests
 import org.jetbrains.annotations.ApiStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -58,15 +57,16 @@ internal class PhantomPluginAdvisor : ProjectActivity {
 @OptIn(FlowPreview::class)
 @Service(Service.Level.PROJECT)
 internal class PhantomPluginAdvisorService(private val project: Project, val scope: CoroutineScope) {
-  private val requests = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+  // Conflated, so a request made before the collector starts is kept, and a burst of root changes is one check
+  private val requests = Channel<Unit>(Channel.CONFLATED)
   private val suggested = ConcurrentHashMap.newKeySet<String>()
 
   init {
-    scope.launch { requests.debounce(5.seconds).collect { check() } }
+    scope.launch { requests.receiveAsFlow().debounce(5.seconds).collect { check() } }
   }
 
   fun schedule() {
-    requests.tryEmit(Unit)
+    requests.trySend(Unit)
   }
 
   private suspend fun check() {
@@ -78,6 +78,7 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
       if (PluginManagerCore.getPlugin(PluginId.getId(plugin.id)) != null) continue
       val match = plugin.detect.firstOrNull { it in used } ?: continue
       suggested += plugin.id
+      LOG.info("Suggesting ${plugin.id}: the project uses $match")
       notify(plugin, match)
     }
   }
@@ -95,6 +96,10 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
   }
 
   private fun ignoreKey(id: String) = "phantom.plugins.ignore.$id"
+
+  private companion object {
+    private val LOG = logger<PhantomPluginAdvisorService>()
+  }
 }
 
 /** `group:artifact` of every library in the project, read from the names Gradle and Maven give imported libraries. */
@@ -125,10 +130,10 @@ private object DetectCache {
     val plugins = withContext(Dispatchers.IO) {
       RepositoryHelper.getCustomPluginRepositoryHosts().mapNotNull(GitHubPluginRepository::parse).flatMap { ref ->
         try {
-          HttpRequests.request(ref.metadataUrl).connect { GitHubPluginRepository.parseDetect(it.inputStream) }
+          GitHubPluginRepository.parseDetect(GitHubPluginRepository.loadMetadata(ref))
         }
         catch (e: IOException) {
-          LOG.info("Cannot read ${ref.metadataUrl}: ${e.message}")
+          LOG.info("Cannot read ${ref.host}: ${e.message}")
           emptyList()
         }
       }
