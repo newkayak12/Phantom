@@ -53,13 +53,13 @@ Sources:
 | Kotlin plugin | 5,307 | 9,601 | +4,294 |
 | JDK + lambdas/hidden classes | 12,636 | 18,174 | +5,538 (follows the rest) |
 | Platform `lib/` | 15,205 | 18,208 | +3,003 |
-| JavaScript, CSS, polySymbols | 5 | ~1,510 | +1,505 |
+| JavaScript, CSS | 0 | 1,291 | +1,291 |
 | SonarLint (in the IDE; its server JVM is separate) | 0 | 1,164 | +1,164 |
 | Database Tools | 0 | 858 | +858 |
 | Full Line | 0 | 524 | +524 |
 | User plugins: JWT, Big Data Tools, Detekt, AsciiDoc, Translation, Atom Icons, StringManipulation | 0 | ~2,040 | +2,040 |
 | Remote Dev (cwm), Docker, Kubernetes, shared indexes, platform daemon, Station | 0 | ~1,130 | +1,130 |
-| Spring, JavaEE, JPA, microservices, Swagger, Micronaut, app servers | 0 | ~330 | +330 |
+| Spring, JavaEE, JPA, microservices, Swagger, Micronaut, app servers | 0 | ~400 | +400 |
 
 - **Kotlin**:
   - observed: Ultimate has resolved Kotlin code with the K2 compiler front end within 3 minutes, with no editor open. It loads
