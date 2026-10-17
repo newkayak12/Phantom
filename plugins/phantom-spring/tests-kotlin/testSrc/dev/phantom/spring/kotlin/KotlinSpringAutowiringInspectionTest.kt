@@ -15,6 +15,18 @@ class KotlinSpringAutowiringInspectionTest : LightJavaCodeInsightFixtureTestCase
     myFixture.enableInspections(SpringAutowiringInspection())
   }
 
+  fun testConfigurationPropertiesConstructorIsBinding() {
+    myFixture.addClass("package org.springframework.boot.context.properties; public @interface ConfigurationProperties { String value() default \"\"; }")
+    myFixture.configureByText("Props.kt", """
+      package app
+      @org.springframework.boot.context.properties.ConfigurationProperties("http-interface")
+      data class HttpInterfaceProperties(val retry: Retry) {
+        data class Retry(val maxAttempts: Int = 0)
+      }
+    """.trimIndent())
+    myFixture.checkHighlighting()
+  }
+
   fun testKotlinConstructor() {
     myFixture.addFileToProject("app/Port.kt", "package app\ninterface Port\nclass PlainAdapter : Port\ninterface Clock\n@org.springframework.stereotype.Component class A : Clock\n@org.springframework.stereotype.Component class B : Clock")
     val noBean = PhantomSpringBundle.message("inspection.autowiring.no.bean", "Port")
