@@ -1,0 +1,19 @@
+<idea-plugin>
+  <id>dev.phantom.icons</id>
+  <name>Phantom File Icons</name>
+  <vendor>Phantom</vendor>
+  <category>User Interface</category>
+  <description><![CDATA[
+  Colored file and folder icons by name and extension, drawn from the Material Icon Theme by Philipp Kief (MIT).
+  Java and Kotlin files keep their class, interface and object icons; source, test and resource roots get their own
+  folder colors. Only the icons of files on screen are loaded. Turn the plugin off to get the platform icons back.
+  ]]></description>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.lang"/>
+  </dependencies>
+
+  <content namespace="jetbrains">
+    <module name="intellij.phantom.icons.core"/>
+  </content>
+</idea-plugin>
