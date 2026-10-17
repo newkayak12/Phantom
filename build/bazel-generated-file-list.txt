@@ -1475,6 +1475,9 @@ plugins/performanceTesting/remote-driver.compose
 plugins/performanceTesting/remote-driver.jcef
 plugins/performanceTesting/scripts-ui
 plugins/performanceTesting/vcs
+plugins/phantom-http
+plugins/phantom-http/core
+plugins/phantom-http/tests
 plugins/phantom-jpa
 plugins/phantom-jpa/core
 plugins/phantom-jpa/tests
