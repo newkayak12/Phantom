@@ -4,13 +4,18 @@ package dev.phantom.spring.core
 import com.intellij.codeInsight.AnnotationUtil
 import com.intellij.codeInsight.MetaAnnotationUtil
 import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.util.Key
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.psi.search.searches.AnnotatedElementsSearch
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import com.intellij.psi.search.searches.ReferencesSearch
+import com.intellij.psi.util.CachedValue
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.InheritanceUtil
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiUtil
 import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.uast.*
@@ -164,11 +169,33 @@ object SpringBeans {
     return ProjectFileIndex.getInstance(psiClass.project).isInSourceContent(file)
   }
 
-  private fun scopeFor(context: PsiElement): GlobalSearchScope {
+  fun isInTestSources(context: PsiElement): Boolean {
+    val file = PsiUtilCore.getVirtualFile(context) ?: return false
+    return ProjectFileIndex.getInstance(context.project).isInTestSourceContent(file)
+  }
+
+  private fun scopeFor(context: PsiElement): GlobalSearchScope =
+    if (isInTestSources(context)) GlobalSearchScope.projectScope(context.project) else GlobalSearchScopesCore.projectProductionScope(context.project)
+
+  private val PRODUCTION_BEAN_METHODS = Key.create<CachedValue<List<PsiMethod>>>("phantom.spring.beanMethods.production")
+  private val ALL_BEAN_METHODS = Key.create<CachedValue<List<PsiMethod>>>("phantom.spring.beanMethods.all")
+
+  /**
+   * All `@Bean` methods visible from [context]. The autowiring inspection asks for them once per injection point, so the
+   * annotation search runs once per PSI change instead.
+   */
+  private fun beanMethods(context: PsiElement): List<PsiMethod> {
     val project = context.project
-    val file = PsiUtilCore.getVirtualFile(context)
-    val inTests = file != null && ProjectFileIndex.getInstance(project).isInTestSourceContent(file)
-    return if (inTests) GlobalSearchScope.projectScope(project) else GlobalSearchScopesCore.projectProductionScope(project)
+    val inTests = isInTestSources(context)
+    val manager = CachedValuesManager.getManager(project)
+    return manager.getCachedValue(project, if (inTests) ALL_BEAN_METHODS else PRODUCTION_BEAN_METHODS, beanMethodsProvider(project, inTests), false)
+  }
+
+  private fun beanMethodsProvider(project: com.intellij.openapi.project.Project, inTests: Boolean) = CachedValueProvider {
+    val scope = if (inTests) GlobalSearchScope.projectScope(project) else GlobalSearchScopesCore.projectProductionScope(project)
+    val beanAnnotation = JavaPsiFacade.getInstance(project).findClass(SpringNames.BEAN, GlobalSearchScope.allScope(project))
+    val methods = if (beanAnnotation == null) emptyList() else AnnotatedElementsSearch.searchPsiMethods(beanAnnotation, scope).findAll().toList()
+    CachedValueProvider.Result.create(methods, PsiModificationTracker.MODIFICATION_COUNT)
   }
 
   // ---- searches (run on click, in a read action with a progress indicator)
@@ -186,12 +213,9 @@ object SpringBeans {
     ClassInheritorsSearch.search(target, scope, true).forEach { inheritor ->
       if (isBeanClass(inheritor)) candidates.add(inheritor)
     }
-    val beanAnnotation = JavaPsiFacade.getInstance(project).findClass(SpringNames.BEAN, GlobalSearchScope.allScope(project))
-    if (beanAnnotation != null) {
-      AnnotatedElementsSearch.searchPsiMethods(beanAnnotation, scope).forEach { method ->
-        val returned = PsiUtil.resolveClassInClassTypeOnly(method.returnType)
-        if (returned != null && InheritanceUtil.isInheritorOrSelf(returned, target, true)) candidates.add(method)
-      }
+    for (method in beanMethods(point.element)) {
+      val returned = PsiUtil.resolveClassInClassTypeOnly(method.returnType)
+      if (returned != null && InheritanceUtil.isInheritorOrSelf(returned, target, true)) candidates.add(method)
     }
 
     val qualifier = point.qualifier

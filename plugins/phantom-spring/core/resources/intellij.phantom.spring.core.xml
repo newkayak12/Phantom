@@ -11,5 +11,9 @@
   <extensions defaultExtensionNs="com.intellij">
     <codeInsight.lineMarkerProvider language="JAVA" implementationClass="dev.phantom.spring.core.ide.SpringBeanLineMarkerProvider"/>
     <implicitUsageProvider implementation="dev.phantom.spring.core.ide.SpringImplicitUsageProvider"/>
+    <localInspection language="UAST" enabledByDefault="true" level="WARNING" shortName="PhantomSpringAutowiring"
+                     bundle="messages.PhantomSpringBundle" key="inspection.autowiring.display.name"
+                     groupBundle="messages.PhantomSpringBundle" groupKey="inspection.group.name"
+                     implementationClass="dev.phantom.spring.core.ide.SpringAutowiringInspection"/>
   </extensions>
 </idea-plugin>
