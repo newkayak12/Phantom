@@ -1485,17 +1485,6 @@ plugins/phantom-jpa
 plugins/phantom-jpa/core
 plugins/phantom-jpa/tests
 plugins/phantom-jpa/tests-kotlin
-plugins/phantom-spring
-plugins/phantom-spring-boot
-plugins/phantom-spring-boot/core
-plugins/phantom-spring-boot/properties
-plugins/phantom-spring-boot/tests
-plugins/phantom-spring-boot/tests-kotlin
-plugins/phantom-spring-boot/yaml
-plugins/phantom-spring/core
-plugins/phantom-spring/kotlin
-plugins/phantom-spring/tests
-plugins/phantom-spring/tests-kotlin
 plugins/phantom-theme
 plugins/properties
 plugins/properties/copyright
