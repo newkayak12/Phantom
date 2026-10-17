@@ -1,0 +1,27 @@
+<idea-plugin package="dev.phantom.http.core">
+  <resource-bundle>messages.PhantomHttpBundle</resource-bundle>
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="Phantom HTTP Request" language="PhantomHttpRequest" extensions="http;rest"
+              implementationClass="dev.phantom.http.core.HttpRequestFileType" fieldName="INSTANCE"/>
+    <lang.parserDefinition language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.HttpParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.HttpSyntaxHighlighterFactory"/>
+    <lang.commenter language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.HttpCommenter"/>
+    <lang.foldingBuilder language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.HttpFoldingBuilder"/>
+    <annotator language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.HttpAnnotator"/>
+    <runLineMarkerContributor language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.exec.HttpRunLineMarkerContributor"/>
+    <editorNotificationProvider implementation="dev.phantom.http.core.exec.HttpEnvironmentNotificationProvider"/>
+    <actionPromoter implementation="dev.phantom.http.core.exec.HttpActionPromoter"/>
+  </extensions>
+  <actions resource-bundle="messages.PhantomHttpBundle">
+    <action id="PhantomHttp.RunRequest" class="dev.phantom.http.core.exec.HttpRunRequestAction" icon="AllIcons.Actions.Execute">
+      <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+    </action>
+    <action id="PhantomHttp.RunAll" class="dev.phantom.http.core.exec.HttpRunAllRequestsAction" icon="AllIcons.Actions.RunAll">
+      <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="PhantomHttp.RunRequest"/>
+    </action>
+    <action id="PhantomHttp.SelectEnvironment" class="dev.phantom.http.core.exec.HttpSelectEnvironmentAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="PhantomHttp.RunAll"/>
+    </action>
+  </actions>
+</idea-plugin>

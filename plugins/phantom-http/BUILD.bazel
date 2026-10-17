@@ -1,0 +1,39 @@
+load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+### auto-generated section `build intellij.phantom.http` start
+
+jvm_library(
+    name = "phantom-http",
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.phantom.http",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+jvm_library(
+    name = "phantom-http_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.phantom.http",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":phantom-http"],
+)
+### auto-generated section `build intellij.phantom.http` end
+
+### auto-generated section `iml intellij.phantom.http` start
+exports_files(
+    [
+        "intellij.phantom.http.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
+### auto-generated section `iml intellij.phantom.http` end
