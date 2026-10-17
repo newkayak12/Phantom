@@ -1481,6 +1481,9 @@ plugins/phantom-db/tests
 plugins/phantom-http
 plugins/phantom-http/core
 plugins/phantom-http/tests
+plugins/phantom-icons
+plugins/phantom-icons/core
+plugins/phantom-icons/tests
 plugins/phantom-jpa
 plugins/phantom-jpa/core
 plugins/phantom-jpa/tests
