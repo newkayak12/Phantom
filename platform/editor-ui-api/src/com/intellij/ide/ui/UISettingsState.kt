@@ -144,7 +144,8 @@ class UISettingsState : BaseState() {
   var uiDensity: UIDensity by enum(UIDensity.DEFAULT)
 
   @get:OptionTag("DIFFERENTIATE_PROJECTS")
-  var differentiateProjects: Boolean by property(true)
+  // phantom-idea: no project-colored gradient behind the window buttons by default (Appearance | Use project colors)
+  var differentiateProjects: Boolean by property(false)
 
   @get:OptionTag("SORT_TABS_ALPHABETICALLY")
   var sortTabsAlphabetically: Boolean by property(false)
