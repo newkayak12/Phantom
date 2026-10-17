@@ -24,6 +24,8 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "intellij.phantom.http",
   "intellij.phantom.db",
   "intellij.phantom.icons",
+  "intellij.phantom.theme",
+  "intellij.lombok", // community plugin that only Ultimate bundled; Java projects need it
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -68,7 +70,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       "intellij.idea.community.customization",
     )
 
-    productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(
+    // phantom-idea: no feature trainer ("Learn IDE Features" courses, Learn tool window)
+    productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS.removing("intellij.featuresTrainer") + sequenceOf(
       "intellij.javaFX.community"
     ) + PHANTOM_BUNDLED_PLUGINS
 
