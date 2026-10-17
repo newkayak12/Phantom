@@ -1,6 +1,6 @@
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.jpa.core` start
+### auto-generated section `build phantom.jpa.core` start
 
 jvm_library(
     name = "core",
@@ -12,7 +12,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.jpa.core",
+    module_name = "phantom.jpa.core",
     resource_strip_prefix = "resources",
     resources = glob(
         ["resources/**/*"],
@@ -47,7 +47,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.jpa.core",
+    module_name = "phantom.jpa.core",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -70,13 +70,13 @@ jvm_library(
         "//java/openapi:java_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.jpa.core` end
+### auto-generated section `build phantom.jpa.core` end
 
-### auto-generated section `iml intellij.phantom.jpa.core` start
+### auto-generated section `iml phantom.jpa.core` start
 exports_files(
     [
-        "intellij.phantom.jpa.core.iml",
+        "phantom.jpa.core.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.jpa.core` end
+### auto-generated section `iml phantom.jpa.core` end

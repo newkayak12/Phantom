@@ -18,7 +18,7 @@
 | M2 | `.iml` → `BUILD.bazel` 생성 (`./build/jpsModelToBazelCommunityOnly.cmd`) | `./bazel.cmd build //plugins/phantom-hello/...`가 성공한다 |
 | M3 | 번들 등록 (`IdeaCommunityProperties.kt`의 `bundledPluginModules`) | 개발 실행과 DMG 양쪽에 플러그인이 포함된다 |
 | M4 | 빠른 개발 루프 두 가지: `bazel run //build:idea_community`(dev server)와 `bazel run //:main_run`(클래스패스 모드) | DMG를 만들지 않고 1–3분 안에 수정 사항을 IDE에서 본다 |
-| M5 | 단일 모듈 테스트 (`./tests.cmd --module intellij.phantom.hello.tests --test ...`) | light 테스트 하나가 초록으로 끝난다 |
+| M5 | 단일 모듈 테스트 (`./tests.cmd --module phantom.hello.tests --test ...`) | light 테스트 하나가 초록으로 끝난다 |
 | M6 | 같은 레시피를 첫 실기능 플러그인(`phantom-spring-boot`)에 적용 | 사용자 프로젝트에서 그 플러그인의 기능 하나가 동작한다 |
 
 MVP는 "기능"이 아니라 **배선**이다. Spring Boot, HTTP Client, DB, Docker 같은 기능 설계는 같은 디렉터리의 다른 문서(`2026-10-16-spring-boot.md`, `-http-client.md`, `-database.md`, `-docker-k8s.md`)가 맡는다. 이 문서는 그 플러그인들이 공통으로 따를 규칙을 정한다.
@@ -85,20 +85,20 @@ intellij.idea.community.main.iml (RUNTIME)    ─▶  //:main_run / "IDEA" 실�
 
 ```
 plugins/phantom-<name>/
-├── intellij.phantom.<name>.iml              # 메인 모듈: 설명자 전용 (소스 없음)
+├── phantom.<name>.iml              # 메인 모듈: 설명자 전용 (소스 없음)
 ├── BUILD.bazel                              # 생성물
 ├── resources/META-INF/plugin.xml
 ├── resources/META-INF/pluginIcon.svg        # 선택
-├── core/                                    # 콘텐츠 모듈 intellij.phantom.<name>.core
-│   ├── intellij.phantom.<name>.core.iml
+├── core/                                    # 콘텐츠 모듈 phantom.<name>.core
+│   ├── phantom.<name>.core.iml
 │   ├── BUILD.bazel
-│   ├── resources/intellij.phantom.<name>.core.xml
+│   ├── resources/phantom.<name>.core.xml
 │   ├── resources/messages/Phantom<Name>Bundle.properties
 │   └── src/dev/phantom/<name>/core/...
-├── kotlin/   → intellij.phantom.<name>.kotlin   (Kotlin PSI/K2 Analysis API가 필요한 부분)
-├── yaml/     → intellij.phantom.<name>.yaml     (필요할 때만)
-├── properties/ → intellij.phantom.<name>.properties
-└── tests/    → intellij.phantom.<name>.tests    (testSrc/, testData/)
+├── kotlin/   → phantom.<name>.kotlin   (Kotlin PSI/K2 Analysis API가 필요한 부분)
+├── yaml/     → phantom.<name>.yaml     (필요할 때만)
+├── properties/ → phantom.<name>.properties
+└── tests/    → phantom.<name>.tests    (testSrc/, testData/)
 ```
 
 이름 규칙:
@@ -106,17 +106,17 @@ plugins/phantom-<name>/
 | 대상 | 규칙 | 예 | 근거 |
 |---|---|---|---|
 | 디렉터리 | `plugins/phantom-<kebab>` | `plugins/phantom-spring-boot` | 작업 지시 |
-| JPS 모듈 | `intellij.phantom.<camel>[.<sub>]` | `intellij.phantom.springBoot.core` | 형제 문서들과 일치 |
+| JPS 모듈 | `phantom.<camel>[.<sub>]` | `phantom.springBoot.core` | 형제 문서들과 일치 |
 | 플러그인 ID | `dev.phantom.<kebab-or-dot>` | `dev.phantom.spring.boot` | 맥 번들 ID `dev.phantom.idea`와 맞춘다 [V: `IdeaCommunityProperties.kt` `bundleIdentifier`] |
 | 패키지 | `dev.phantom.<name>.<sub>` | `dev.phantom.springboot.core` | 콘텐츠 모듈 `package` 속성과 일치시킨다 |
-| 콘텐츠 모듈 설명자 | 모듈 리소스 루트의 `<모듈이름>.xml` | `core/resources/intellij.phantom.springBoot.core.xml` | [V: `plugins/toml/backend/resources/intellij.toml.backend.xml`] |
+| 콘텐츠 모듈 설명자 | 모듈 리소스 루트의 `<모듈이름>.xml` | `core/resources/phantom.springBoot.core.xml` | [V: `plugins/toml/backend/resources/intellij.toml.backend.xml`] |
 
 형제 문서들은 플러그인 ID를 `phantom.spring.boot`, `phantom.http`, `com.phantom.db`로 제각각 적었다. 구현 전에 `dev.phantom.*` 하나로 통일하자고 제안한다 (6장 R8).
 
 **Bazel 타깃 이름은 생성기가 정한다.** 규칙은 `build/jps_target_derivation.bzl`의 `module_name_to_target`에 있다 [V].
-- 모듈 이름이 `.<디렉터리 이름>`으로 끝나면 디렉터리 이름이 타깃 이름이 된다. 그래서 `plugins/phantom-hello/core`의 `intellij.phantom.hello.core`는 `//plugins/phantom-hello/core:core`이다.
-- 그렇지 않으면 `intellij.` 접두어를 떼고 `.`을 `-`로 바꾼다. 그래서 `plugins/phantom-hello`의 `intellij.phantom.hello`는 `//plugins/phantom-hello:phantom-hello`가 된다 [A: 생성 결과로 확인. camelCase 이름(`phantom-springBoot`)은 대소문자가 그대로 남는다].
-- 테스트 모듈 `intellij.phantom.hello.tests`는 `:tests`(라이브러리)와 `:tests_test`(`jps_test`)를 만든다 [V: `plugins/toml/tests/BUILD.bazel`].
+- 모듈 이름이 `.<디렉터리 이름>`으로 끝나면 디렉터리 이름이 타깃 이름이 된다. 그래서 `plugins/phantom-hello/core`의 `phantom.hello.core`는 `//plugins/phantom-hello/core:core`이다.
+- 그렇지 않으면 `intellij.` 접두어를 떼고 `.`을 `-`로 바꾼다. 그래서 `plugins/phantom-hello`의 `phantom.hello`는 `//plugins/phantom-hello:phantom-hello`가 된다 [A: 생성 결과로 확인. camelCase 이름(`phantom-springBoot`)은 대소문자가 그대로 남는다].
+- 테스트 모듈 `phantom.hello.tests`는 `:tests`(라이브러리)와 `:tests_test`(`jps_test`)를 만든다 [V: `plugins/toml/tests/BUILD.bazel`].
 
 ### 3.3 `.iml` 작성 규칙
 
@@ -131,7 +131,7 @@ plugins/phantom-<name>/
 | 파일 | 변경 | 효과 | 상태 |
 |---|---|---|---|
 | `.idea/modules.xml` | 새 `.iml`마다 `<module fileurl=… filepath=… />` 한 줄씩. **경로 알파벳 순서** 위치에 넣는다 | JPS와 Bazel 생성기가 모듈을 인식한다 | [V: 목록이 경로순 정렬, 예: 1930–1939행 textmate/toml] |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` | `productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij.javaFX.community", "intellij.phantom.hello")` | DMG와 dev server에 번들된다. `pluginLayouts`에 없으면 `PluginLayout.pluginAuto(listOf(moduleName))`가 자동으로 쓰인다 | [V: `DistributionJARsBuilder.kt:601`, `PluginsCollector.kt:181`, dev: `dev/PluginBuilder.kt:184-189`] |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` | `productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij.javaFX.community", "phantom.hello")` | DMG와 dev server에 번들된다. `pluginLayouts`에 없으면 `PluginLayout.pluginAuto(listOf(moduleName))`가 자동으로 쓰인다 | [V: `DistributionJARsBuilder.kt:601`, `PluginsCollector.kt:181`, dev: `dev/PluginBuilder.kt:184-189`] |
 | `intellij.idea.community.main.iml` | 메인 모듈과 **모든 콘텐츠 모듈**을 `scope="RUNTIME"`로 추가 | `//:main_run`과 "IDEA" 실행 구성(클래스패스 모드)에서 플러그인이 보인다 | [V: 기존 플러그인들이 이렇게 들어가 있다. 예: `intellij.toml`(137행), `intellij.yaml.backend`(99행)] |
 | `platform/build-scripts/src/.../BaseIdeaProperties.kt` | **건드리지 않는다** | `IDEA_BUNDLED_PLUGINS`는 Android Studio 프로퍼티 등과 공유하는 기본 목록이다. phantom 전용 추가는 `IdeaCommunityProperties`에 둔다 | [V] |
 | `productLayout.pluginLayouts` | MVP에서는 건드리지 않는다. jar 이름이나 디렉터리 이름을 바꾸거나 plugin-local 라이브러리를 넣을 때만 `PluginLayout.pluginAutoWithCustomDirName(...)`을 추가한다 | | [V: `PluginLayout.kt:225-258`] |
@@ -141,8 +141,8 @@ plugins/phantom-<name>/
 ```kotlin
 // IdeaCommunityProperties.kt (제안)
 private val PHANTOM_BUNDLED_PLUGINS = persistentListOf(
-  "intellij.phantom.hello",
-  // "intellij.phantom.springBoot",
+  "phantom.hello",
+  // "phantom.springBoot",
 )
 productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij.javaFX.community") + PHANTOM_BUNDLED_PLUGINS
 ```
@@ -165,8 +165,8 @@ productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij
   </dependencies>
 
   <content namespace="jetbrains">
-    <module name="intellij.phantom.hello.core"/>
-    <module name="intellij.phantom.hello.kotlin"/>
+    <module name="phantom.hello.core"/>
+    <module name="phantom.hello.kotlin"/>
   </content>
 </idea-plugin>
 ```
@@ -174,9 +174,9 @@ productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij
 - `<idea-version>`과 `<version>`은 번들 빌드가 채운다 [A: community 번들 플러그인들의 `plugin.xml`에 이 태그가 없다는 점에서 추론, 예: toml].
 - `vendor`가 JetBrains가 아니어도 번들이면 "외부 비번들 플러그인" 취급을 받지 않는다. 조건이 `!plugin.isBundled && !isVendorJetBrains(...)`이기 때문이다 [V: `platform/core-impl/src/com/intellij/ide/plugins/ProductPluginInitContext.kt:400-403`].
 - **`namespace="jetbrains"`를 쓰는 이유.** 콘텐츠 모듈의 기본 visibility는 `PRIVATE`이다 [V: `platform/pluginSystem/parser/impl/src/.../XmlReader.kt:1074`]. `INTERNAL` 모듈은 **같은 namespace의 모듈만** 의존할 수 있다 [V: `PluginSetBuilder.kt:277-312`, `ModuleVisibility.kt`]. 기본값은 위반하면 모듈을 로드하지 않는 `REPORT_ERROR`이다 [V: `PluginSetBuilder.kt:357-364`, 시스템 프로퍼티 `intellij.platform.plugin.modules.check.visibility`]. Kotlin과 Gradle 쪽에는 `visibility="internal"`인 모듈이 있다 (예: `intellij.kotlin.base.analysis.platform`, `intellij.gradle.settings`, `intellij.kotlin.base.externalSystem`) [V]. 포크 안의 번들 플러그인이므로 같은 namespace를 써서 이런 모듈에도 의존할 수 있게 둔다. namespace를 생략하면 `<플러그인ID>_$implicit`가 된다 [V: `PluginMainDescriptor.kt:84-89`].
-- 반대로 **phantom 플러그인끼리 콘텐츠 모듈을 공유하려면** 제공하는 쪽 모듈 설명자에 `visibility="public"`(또는 같은 namespace에서 `internal`)을 명시해야 한다. 기본값 `PRIVATE`이면 다른 플러그인이 의존할 때 로드되지 않는다. 예: HTTP 문서의 `intellij.phantom.http.spring`이 Spring Boot 플러그인의 `core`에 의존하는 경우.
+- 반대로 **phantom 플러그인끼리 콘텐츠 모듈을 공유하려면** 제공하는 쪽 모듈 설명자에 `visibility="public"`(또는 같은 namespace에서 `internal`)을 명시해야 한다. 기본값 `PRIVATE`이면 다른 플러그인이 의존할 때 로드되지 않는다. 예: HTTP 문서의 `phantom.http.spring`이 Spring Boot 플러그인의 `core`에 의존하는 경우.
 
-**콘텐츠 모듈 설명자** (`core/resources/intellij.phantom.hello.core.xml`):
+**콘텐츠 모듈 설명자** (`core/resources/phantom.hello.core.xml`):
 
 ```xml
 <idea-plugin package="dev.phantom.hello.core">
@@ -191,13 +191,13 @@ productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij
 </idea-plugin>
 ```
 
-**Kotlin 콘텐츠 모듈** (`kotlin/resources/intellij.phantom.hello.kotlin.xml`):
+**Kotlin 콘텐츠 모듈** (`kotlin/resources/phantom.hello.kotlin.xml`):
 
 ```xml
 <idea-plugin package="dev.phantom.hello.kotlin">
   <dependencies>
     <plugin id="org.jetbrains.kotlin"/>
-    <module name="intellij.phantom.hello.core"/>
+    <module name="phantom.hello.core"/>
   </dependencies>
   <extensions defaultExtensionNs="com.intellij">
     <!-- language="kotlin" 확장 -->
@@ -242,7 +242,7 @@ community 플러그인 중 일부에는 `plugin-content.yaml`이 있다 (예: `p
 | C. 배포본 | `./phantom-build.sh` (`installers.cmd` 래퍼) 또는 `./installers.cmd -Dintellij.build.target.os=current` | 정식 빌드 | 최종 확인용이다 | 가장 느리다 |
 
 근거:
-- A: `build/BUILD.bazel`의 `intellij_dev_binary_community(name = "idea_community", platform_prefix = "community")`이 `org.jetbrains.intellij.build.devServer.DevMainKt`를 실행한다 [V: `build/intellij_dev.bzl:100`]. 설정과 시스템 경로는 `out/dev-data/idea_community/{config,system}`이다 [V: `intellij_dev.bzl:77-78`]. 제품 클래스는 `build/dev-build.json`의 `"community"` → `IdeaCommunityProperties`로 정해진다 [V]. 번들 목록에 `additionalModules`를 더한다 [V: `dev/PluginBuilder.kt:184-189`]. 그래서 번들 등록 전에도 `-Dadditional.modules=intellij.phantom.hello`로 시험할 수 있다 [A: java_binary 런처에 `--jvm_flag=-Dadditional.modules=...`로 넘기는 방식이 동작하는지. 매크로에 `additional_modules` 속성이 있다 V]. `out/dev-run/jar-cache`가 이미 있어 이 모드를 한 번 돌린 것으로 보인다 [V: 디렉터리 존재].
+- A: `build/BUILD.bazel`의 `intellij_dev_binary_community(name = "idea_community", platform_prefix = "community")`이 `org.jetbrains.intellij.build.devServer.DevMainKt`를 실행한다 [V: `build/intellij_dev.bzl:100`]. 설정과 시스템 경로는 `out/dev-data/idea_community/{config,system}`이다 [V: `intellij_dev.bzl:77-78`]. 제품 클래스는 `build/dev-build.json`의 `"community"` → `IdeaCommunityProperties`로 정해진다 [V]. 번들 목록에 `additionalModules`를 더한다 [V: `dev/PluginBuilder.kt:184-189`]. 그래서 번들 등록 전에도 `-Dadditional.modules=phantom.hello`로 시험할 수 있다 [A: java_binary 런처에 `--jvm_flag=-Dadditional.modules=...`로 넘기는 방식이 동작하는지. 매크로에 `additional_modules` 속성이 있다 V]. `out/dev-run/jar-cache`가 이미 있어 이 모드를 한 번 돌린 것으로 보인다 [V: 디렉터리 존재].
 - B: 루트 `BUILD.bazel`의 `java_binary(name = "main_run", main_class = "com.intellij.idea.Main", runtime_deps = [":main"])`이고, 설정은 `config/idea`, `system/idea`다 [V]. "IDEA" 실행 구성은 같은 모듈을 JPS로 빌드해서 실행한다 [V: `.idea/runConfigurations/IDEA.xml`]. 소스 실행 여부는 `PathManager`가 홈에 `.idea`가 있는지로 판단한다 [V: `platform/util/src/com/intellij/openapi/application/PathManager.java:966`].
 - C: `installers.cmd`는 `//build:i_build_target`(`OpenSourceCommunityInstallersBuildTarget`)을 실행한다 [V]. 증분 대안으로 `build/updateFromSources.cmd`(`OpenSourceCommunityUpdateFromSourcesBuildTarget`, jps-bootstrap 기반, `buildUnpackedDistribution`)가 있다 [V] [A: Bazel 전환 이후에도 쓸 만한 속도인지].
 
@@ -259,8 +259,8 @@ community 플러그인 중 일부에는 `plugin-content.yaml`이 있다 (예: `p
 | T1 | **골격 생성.** 5장의 파일 목록대로 `plugins/phantom-hello/`를 만든다. `.iml`은 `plugins/toml/backend/intellij.toml.backend.iml`과 `plugins/env-files-support/kotlin/intellij.dotenv.kotlin.iml`을 복사해서 고친다. 액션 하나(`Tools > Phantom: Hello`)와 Java/Kotlin 공용 inspection 하나(UAST로 `@Deprecated` 없는 `TODO()` 호출 표시 같은 장난감)를 넣는다 | 0.5 | 파일이 생기고 `git status`에 `.iml` 4개와 설명자 3개가 보인다 |
 | T2 | **모듈 등록.** `.idea/modules.xml`에 4줄을 경로순으로 넣는다. 이어서 `./build/jpsModelToBazelCommunityOnly.cmd`를 실행한다 | 0.25 | 각 폴더에 `BUILD.bazel`이 생기고 `build/bazel-generated-file-list.txt`에 경로가 추가된다. `./bazel.cmd build //plugins/phantom-hello/...`가 성공한다 |
 | T3 | **클래스패스 모드 배선.** `intellij.idea.community.main.iml`에 메인 모듈과 콘텐츠 모듈을 `RUNTIME`으로 추가하고 T2의 생성기를 다시 실행한다 (루트 `BUILD.bazel`의 `:main` deps가 갱신된다) | 0.25 | `./bazel.cmd run //:main_run`으로 뜬 IDE의 Plugins 목록에 "Phantom Hello"가 있다. 메뉴에 액션이 보인다 |
-| T4 | **번들 등록.** `IdeaCommunityProperties.kt`에 `PHANTOM_BUNDLED_PLUGINS`를 추가한다 (3.4) | 0.25 | `./bazel.cmd run //build:idea_community`로 뜬 IDE에서 플러그인이 **Bundled**로 보인다. `out/dev-run/` 아래 플러그인 디렉터리에 `lib/modules/intellij.phantom.hello.core.jar`(또는 embedded면 메인 jar)가 있다 [A: 정확한 디렉터리 이름] |
-| T5 | **테스트 모듈.** `tests/`에 JUnit5 `@TestApplication` 기반 light 테스트 1개(Java)와 `KotlinLightCodeInsightFixtureTestCase` 기반 테스트 1개(Kotlin)를 쓴다 | 0.5 | `./tests.cmd --module intellij.phantom.hello.tests --test 'dev.phantom.hello.*Test'`가 초록이다 |
+| T4 | **번들 등록.** `IdeaCommunityProperties.kt`에 `PHANTOM_BUNDLED_PLUGINS`를 추가한다 (3.4) | 0.25 | `./bazel.cmd run //build:idea_community`로 뜬 IDE에서 플러그인이 **Bundled**로 보인다. `out/dev-run/` 아래 플러그인 디렉터리에 `lib/modules/phantom.hello.core.jar`(또는 embedded면 메인 jar)가 있다 [A: 정확한 디렉터리 이름] |
+| T5 | **테스트 모듈.** `tests/`에 JUnit5 `@TestApplication` 기반 light 테스트 1개(Java)와 `KotlinLightCodeInsightFixtureTestCase` 기반 테스트 1개(Kotlin)를 쓴다 | 0.5 | `./tests.cmd --module phantom.hello.tests --test 'dev.phantom.hello.*Test'`가 초록이다 |
 | T6 | **클래스로더 경계 검증.** 일부러 `kotlin` 모듈 설명자에서 `<plugin id="org.jetbrains.kotlin"/>`을 빼고 dev server로 실행해 본다. 오류가 로그에 남는지 확인하고 되돌린다 | 0.25 | `out/dev-data/idea_community/system/log/idea.log`에 해당 모듈의 로드 실패 메시지가 있다. 되돌리면 사라진다 |
 | T7 | **경량화 검사 스크립트.** `plugins/phantom-*/**/*.xml`에서 `postStartupActivity|backgroundPostStartupActivity|projectActivity|loading="required"`를 찾는 `tools/rg.cmd` 한 줄을 `docs/phantom/design`의 체크리스트로 남긴다 (P2, P3) | 0.1 | 명령 결과가 비어 있다 |
 | T8 | **배포본 확인.** `./phantom-build.sh` | 0.5 (대기 시간 위주) | DMG로 설치한 Phantom IDEA의 Plugins에 "Phantom Hello"가 Bundled로 보인다. `Phantom IDEA.app/Contents/plugins/` 아래에 플러그인 디렉터리가 있다 |
@@ -279,18 +279,18 @@ community 플러그인 중 일부에는 `plugin-content.yaml`이 있다 (예: `p
 
 ```
 plugins/phantom-<name>/
-  intellij.phantom.<name>.iml
+  phantom.<name>.iml
   resources/META-INF/plugin.xml
   resources/META-INF/pluginIcon.svg                       (선택)
-  core/intellij.phantom.<name>.core.iml
-  core/resources/intellij.phantom.<name>.core.xml
+  core/phantom.<name>.core.iml
+  core/resources/phantom.<name>.core.xml
   core/resources/messages/Phantom<Name>Bundle.properties
   core/src/dev/phantom/<name>/core/Phantom<Name>Bundle.kt
   core/src/dev/phantom/<name>/core/<Name>ProjectDetector.kt   (P5: 기술 사용 여부 캐시)
-  kotlin/intellij.phantom.<name>.kotlin.iml
-  kotlin/resources/intellij.phantom.<name>.kotlin.xml
+  kotlin/phantom.<name>.kotlin.iml
+  kotlin/resources/phantom.<name>.kotlin.xml
   kotlin/src/dev/phantom/<name>/kotlin/...
-  tests/intellij.phantom.<name>.tests.iml
+  tests/phantom.<name>.tests.iml
   tests/testSrc/dev/phantom/<name>/...Test.kt
   tests/testData/...
   BUILD.bazel, core/BUILD.bazel, kotlin/BUILD.bazel, tests/BUILD.bazel   ← 손으로 쓰지 않는다 (생성물)
@@ -298,7 +298,7 @@ plugins/phantom-<name>/
 
 ### 5.2 내용 개요
 
-**`intellij.phantom.<name>.iml`** (설명자 전용, `plugins/toml/intellij.toml.iml` 형태 [V])
+**`phantom.<name>.iml`** (설명자 전용, `plugins/toml/intellij.toml.iml` 형태 [V])
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -315,21 +315,21 @@ plugins/phantom-<name>/
 ```
 (실제 파일은 끝에 줄바꿈이 없어야 한다.)
 
-**`core/intellij.phantom.<name>.core.iml`** (orderEntry 개요)
+**`core/phantom.<name>.core.iml`** (orderEntry 개요)
 - `<sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />`, `<sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />`
 - `library kotlin-stdlib (project)`
 - 모듈: `intellij.platform.core`, `intellij.platform.core.impl`, `intellij.platform.util`, `intellij.platform.analysis`, `intellij.platform.lang`, `intellij.platform.lang.impl`, `intellij.platform.projectModel`, `intellij.platform.indexing`, `intellij.platform.ide.core`, `intellij.platform.uast`, `intellij.java.psi`, `intellij.java.uast`
 - 필요할 때만: `intellij.yaml`, `intellij.properties.psi`, `intellij.gradle`, `intellij.platform.externalSystem`
 
-**`kotlin/intellij.phantom.<name>.kotlin.iml`**
-- 위 `core`의 기본 항목 + `intellij.phantom.<name>.core`
+**`kotlin/phantom.<name>.kotlin.iml`**
+- 위 `core`의 기본 항목 + `phantom.<name>.core`
 - `library kotlinc.kotlin-compiler-common (project, PROVIDED)`, `library kotlinc.analysis-api (project, PROVIDED)`
 - 모듈: `intellij.kotlin.base.plugin`, 필요하면 `intellij.kotlin.base.psi`, `intellij.kotlin.base.analysis` [V: 모듈 존재. 어떤 API가 어느 모듈에 있는지는 구현 시 확인]
 - Analysis API를 쓰면 `FacetManager`의 `kotlin-language` facet에 opt-in 인자를 넣는다 (`intellij.kotlin.devkit.k2.iml` 1–17행 형태 [V])
 
-**`tests/intellij.phantom.<name>.tests.iml`**
+**`tests/phantom.<name>.tests.iml`**
 - `<sourceFolder url="file://$MODULE_DIR$/testSrc" isTestSource="true" />`, testData는 소스 폴더로 만들지 않는다
-- 모듈(`scope="TEST"`): `intellij.phantom.<name>`, `.core`, `.kotlin`, `intellij.platform.testFramework`, `intellij.platform.testFramework.junit5`, `intellij.java.testFramework`, `intellij.kotlin.testFramework`(Kotlin fixture), `intellij.libraries.junit5` [V: 모두 `.idea/modules.xml`에 존재]
+- 모듈(`scope="TEST"`): `phantom.<name>`, `.core`, `.kotlin`, `intellij.platform.testFramework`, `intellij.platform.testFramework.junit5`, `intellij.java.testFramework`, `intellij.kotlin.testFramework`(Kotlin fixture), `intellij.libraries.junit5` [V: 모두 `.idea/modules.xml`에 존재]
 - Kotlin K2 테스트가 필요하면 `kotlin.plugin.k2`를 `RUNTIME`으로 넣는다 [V: `jvm/jvm-analysis-kotlin-tests-k2/intellij.jvm.analysis.kotlin.tests.k2.iml:13`]
 
 **`core/src/.../Phantom<Name>Bundle.kt`**: `DynamicBundle("messages.Phantom<Name>Bundle")` 패턴. 사용자에게 보이는 문자열은 `.properties`에 둔다 [V: `AGENTS.md` "User-visible strings belong in `*.properties`"].
@@ -351,7 +351,7 @@ plugins/phantom-<name>/
 | 대상 | 명령 | 비고 |
 |---|---|---|
 | 컴파일만 | `./bazel.cmd build //plugins/phantom-<name>/...` | `AGENTS.md`의 "Bazel compilation without tests" [V] |
-| 한 테스트 클래스 | `./tests.cmd --module intellij.phantom.<name>.tests --test dev.phantom.<name>.FooTest` | FQN이 필요하다. 단순 클래스 이름은 매치되지 않는다 [V: `tests.cmd`, `.agents/skills/testing/SKILL.md`]. 내부적으로 `//build:run_tests_build_target`(`CommunityRunTestsBuildTarget`)을 실행한다 [V] |
+| 한 테스트 클래스 | `./tests.cmd --module phantom.<name>.tests --test dev.phantom.<name>.FooTest` | FQN이 필요하다. 단순 클래스 이름은 매치되지 않는다 [V: `tests.cmd`, `.agents/skills/testing/SKILL.md`]. 내부적으로 `//build:run_tests_build_target`(`CommunityRunTestsBuildTarget`)을 실행한다 [V] |
 | 와일드카드 | `--test 'dev.phantom.<name>.*Test'` | `*` → `.*` 정규식 전체 일치 [V] |
 | 메서드 하나 | `--test dev.phantom.<name>.FooTest#testBar` | `#`이 있으면 `intellij.build.test.simple.patterns`를 쓴다 [V] |
 | Bazel 직접 | `./bazel.cmd test //plugins/phantom-<name>/tests:tests_test --test_output=errors` | `jps_test` 매크로가 `JUnit5BazelRunner`를 쓴다 [V: `build/tests-options.bzl:107-160`] [A: `--test_filter`로 클래스를 거르는 방식이 `tests.cmd`와 같은지] |

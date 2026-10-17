@@ -100,11 +100,11 @@
 
 ```
 plugins/phantom-spring/
-├── intellij.phantom.spring.iml             # 메인 모듈 (plugin.xml 소유)
+├── phantom.spring.iml             # 메인 모듈 (plugin.xml 소유)
 ├── BUILD.bazel                             # iml에서 자동 생성 (lombok과 같은 방식)
 ├── plugin-content.yaml
 ├── resources/META-INF/plugin.xml           # id: dev.phantom.spring
-├── core/                                   # intellij.phantom.spring.core  (Java PSI 전용, Kotlin 의존 없음)
+├── core/                                   # phantom.spring.core  (Java PSI 전용, Kotlin 의존 없음)
 │   └── src/dev/phantom/spring/core/
 │       ├── model/        # BeanRecord, InjectionPointRecord, FileSummary, TypeRef ...
 │       ├── summary/      # SummaryExtractor EP + Java 구현
@@ -112,12 +112,12 @@ plugins/phantom-spring/
 │       ├── resolve/      # InjectionResolver, TypeMatcher, QualifierRules
 │       ├── gate/         # SpringProjectGate (라이브러리 존재 판정)
 │       └── ide/          # 얇은 EP 진입 클래스: LineMarker, Inspection, ImplicitUsage
-├── kotlin/                                 # intellij.phantom.spring.kotlin  (content module, loading="optional")
+├── kotlin/                                 # phantom.spring.kotlin  (content module, loading="optional")
 │   └── src/dev/phantom/spring/kotlin/
 │       ├── KotlinSummaryExtractor.kt       # KtFile → FileSummary (스텁/문법 기반)
 │       ├── KotlinTypeRefResolver.kt        # 임포트 해석, 실패 시에만 Analysis API
 │       └── AllOpenInspections.kt           # F8
-├── properties/                             # intellij.phantom.spring.properties (content module, optional)
+├── properties/                             # phantom.spring.properties (content module, optional)
 │   └── src/dev/phantom/spring/properties/  # F6, F7: yaml/properties 키 인덱스와 참조
 └── testSrc/ , testData/
 ```
@@ -125,7 +125,7 @@ plugins/phantom-spring/
 - 콘텐츠 모듈 로딩 규칙은 `ModuleLoadingRule`의 `REQUIRED / EMBEDDED / OPTIONAL / ON_DEMAND`다 [검증: `platform/core-impl/src/com/intellij/ide/plugins/ModuleLoadingRule.kt`]. 그런데 `ON_DEMAND`는 **아직 구현되지 않아 `OPTIONAL`과 같다**고 소스 주석에 적혀 있다 [검증: 36행, IJPL-242789]. 그래서 "프로젝트가 Spring을 쓸 때만 모듈 로드"는 플랫폼 기능으로는 불가능하다. 대신 위 원칙 1의 런타임 게이트로 클래스 적재와 계산을 막는다.
 - `kotlin` 모듈은 `org.jetbrains.kotlin` 플러그인이 있을 때만 켜진다. `properties` 모듈은 `org.jetbrains.plugins.yaml` [검증: `plugins/yaml/resources/META-INF/plugin.xml` id]과 `com.intellij.properties`가 있을 때만 켜진다.
 - K2 지원 선언: `<extensions defaultExtensionNs="org.jetbrains.kotlin"><supportsKotlinPluginMode supportsK2="true" supportsK1="false"/></extensions>`. EP `supportsKotlinPluginMode`와 빈 클래스의 `supportsK1`/`supportsK2` 속성은 [검증: `plugins/kotlin/plugin/resources/META-INF/plugin.xml` 30행, `plugins/kotlin/base/plugin/src/org/jetbrains/kotlin/idea/base/plugin/SupportsKotlinPluginMode.kt` 30–34행]. K1은 지원하지 않는다.
-- 번들링: `platform/build-scripts/src/org/jetbrains/intellij/build/CommunityRepositoryModules.kt`에 lombok처럼 `pluginAuto(listOf("intellij.phantom.spring", ...))`를 추가한다 [검증: 246행의 lombok 등록 방식]. 이 단계는 빌드 담당 설계와 맞춰야 한다.
+- 번들링: `platform/build-scripts/src/org/jetbrains/intellij/build/CommunityRepositoryModules.kt`에 lombok처럼 `pluginAuto(listOf("phantom.spring", ...))`를 추가한다 [검증: 246행의 lombok 등록 방식]. 이 단계는 빌드 담당 설계와 맞춰야 한다.
 - `BUILD.bazel`은 "auto-generated section" 마커가 있어 iml에서 생성된다 [검증: `plugins/lombok/BUILD.bazel`]. 손으로 쓰지 않는다.
 
 ### 3.2 확장점 등록 (전부 community에 있는 EP)

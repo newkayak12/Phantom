@@ -105,28 +105,28 @@ phantom-jpa와 같은 콘텐츠 모듈 방식(TOML 플러그인 구성)을 따�
 ```
 plugins/phantom-jpa-extras/
 ├── resources/META-INF/plugin.xml     # id = "phantom.jpa.extras"; <dependencies><plugin id="phantom.jpa"/>
-├── plugin-content.yaml, BUILD.bazel, intellij.phantom.jpa.extras.iml
-├── common/   → intellij.phantom.jpa.extras.common   (loading="embedded")
+├── plugin-content.yaml, BUILD.bazel, phantom.jpa.extras.iml
+├── common/   → phantom.jpa.extras.common   (loading="embedded")
 │   └── 활성화 판정, 모듈 설정 읽기(데이터소스/방언 추정), 이름 변환 유틸
-├── sql/      → intellij.phantom.jpa.extras.sql      (optional)
-│   │  deps: <module name="intellij.phantom.db.sql"/>, <module name="intellij.phantom.jpa.core"/>
+├── sql/      → phantom.jpa.extras.sql      (optional)
+│   │  deps: <module name="phantom.db.sql"/>, <module name="phantom.jpa.core"/>
 │   └── NativeSqlInjector (Java), 방언 선택
-├── sql-kotlin/ → intellij.phantom.jpa.extras.sql.kotlin (optional)
+├── sql-kotlin/ → phantom.jpa.extras.sql.kotlin (optional)
 │   │  deps: 위 + <plugin id="org.jetbrains.kotlin"/>
 │   └── KtStringTemplateExpression 등록
-├── reverse/  → intellij.phantom.jpa.extras.reverse  (optional)
-│   │  deps: <module name="intellij.phantom.db.api"/>, <plugin id="org.jetbrains.kotlin"/>
+├── reverse/  → phantom.jpa.extras.reverse  (optional)
+│   │  deps: <module name="phantom.db.api"/>, <plugin id="org.jetbrains.kotlin"/>
 │   └── EntitySpec 모델, 타입 매핑, KotlinEntityRenderer, 대화상자, 액션
-├── console/  → intellij.phantom.jpa.extras.console  (optional)
-│   │  deps: <module name="intellij.phantom.jpa.core"/>, <plugin id="com.intellij.java"/>
+├── console/  → phantom.jpa.extras.console  (optional)
+│   │  deps: <module name="phantom.jpa.core"/>, <plugin id="com.intellij.java"/>
 │   └── 콘솔 UI, ConsoleProcessManager, 프로토콜 클라이언트
-├── console-rt/ → intellij.phantom.jpa.extras.console.rt   # 콘텐츠 모듈 아님. 자식 JVM용 jar
+├── console-rt/ → phantom.jpa.extras.console.rt   # 콘텐츠 모듈 아님. 자식 JVM용 jar
 │   └── Java 17, IDE 의존 0. PROVIDED: jakarta.persistence-api 3.1, hibernate-core 6.x
-└── tests/    → intellij.phantom.jpa.extras.tests
+└── tests/    → phantom.jpa.extras.tests
 ```
 
 - 콘텐츠 모듈 디스크립터의 `<dependencies><module .../><plugin .../></dependencies>` 형식 [V: `plugins/env-files-support/kotlin/resources/intellij.dotenv.kotlin.xml`]. 다른 플러그인의 콘텐츠 모듈에 의존하는 optional 모듈은 그 플러그인이 꺼져 있으면 로드되지 않는다 [A: 플랫폼 콘텐츠 모듈 규칙. T0에서 phantom-db를 끈 상태로 확인].
-- `console-rt` 패키징은 `junit_rt`와 같은 방식이다: `.iml`은 `LANGUAGE_LEVEL`만 정하고 IDE 모듈에 의존하지 않으며, 플러그인 레이아웃에서 `spec.withModule("intellij.phantom.jpa.extras.console.rt", "phantom-jpa-console-rt.jar")`로 별도 jar를 만든다 [V: `plugins/junit_rt/intellij.junit.rt.iml`, `CommunityRepositoryModules.kt:199`의 `spec.withModule("intellij.junit.rt", "junit-rt.jar")`].
+- `console-rt` 패키징은 `junit_rt`와 같은 방식이다: `.iml`은 `LANGUAGE_LEVEL`만 정하고 IDE 모듈에 의존하지 않으며, 플러그인 레이아웃에서 `spec.withModule("phantom.jpa.extras.console.rt", "phantom-jpa-console-rt.jar")`로 별도 jar를 만든다 [V: `plugins/junit_rt/intellij.junit.rt.iml`, `CommunityRepositoryModules.kt:199`의 `spec.withModule("intellij.junit.rt", "junit-rt.jar")`].
 - 번들 등록은 `BaseIdeaProperties.kt`의 `IDEA_BUNDLED_PLUGINS`에 추가한다 [V: 목록 존재, L14].
 
 ### 3.2 커뮤니티 확장점과 API
@@ -354,7 +354,7 @@ SQL 주입의 방언과 콘솔의 Hibernate 속성은 같은 정보를 쓴다.
 |---|---|---|---|
 | 1 | phantom-jpa core | `QueryHostLocator.locate(host): QuerySite?`를 `api` 패키지로 공개. 직접 인자/같은 파일 상수/조각 판정과 `isNative` 판정을 담는다 | JPQL과 SQL 주입기가 같은 문자열을 두 번 분석하지 않고, `nativeQuery` 판정이 항상 서로 반대가 되게 하려고 |
 | 2 | phantom-db ui | 테이블 노드 팝업 그룹 ID(`PhantomDb.TableNodePopup`)와 데이터 키(`PhantomDbDataKeys.SELECTED_TABLES: List<TableRef>`, `DATA_SOURCE_ID`) 공개 | 생성 액션을 `add-to-group`으로 붙이려고 |
-| 3 | phantom-db api | v0.3 계획의 `intellij.phantom.db.api`를 **v0.1 끝**으로 당기고, 캐시 조회 외에 사용자가 시작한 요청용 `suspend fun tableDetails(dataSourceId, TableRef): TableDetails`를 추가 (연결이 닫혀 있으면 열어도 됨) | 생성기는 사용자가 명시적으로 고른 테이블만 조회하므로 "캐시만" 규칙의 예외로 둘 수 있다 |
+| 3 | phantom-db api | v0.3 계획의 `phantom.db.api`를 **v0.1 끝**으로 당기고, 캐시 조회 외에 사용자가 시작한 요청용 `suspend fun tableDetails(dataSourceId, TableRef): TableDetails`를 추가 (연결이 닫혀 있으면 열어도 됨) | 생성기는 사용자가 명시적으로 고른 테이블만 조회하므로 "캐시만" 규칙의 예외로 둘 수 있다 |
 | 4 | phantom-jpa core | JPQL 파일에 `JpqlContext.MODULE` 사용자 데이터 키를 두고, 엔티티 이름 해석이 호스트가 없을 때 이 키를 쓰게 | 콘솔 파일(`LightVirtualFile`)은 모듈이 없다 |
 | 5 | phantom-jpa core | `JpaFacade.managedClassFqns(module): List<String>` (엔티티 + MappedSuperclass + Embeddable + Converter) | 콘솔 기동 목록 |
 | 6 | phantom-db sql | 렉서의 방언을 주입된 파일에서도 정할 수 있는 방법. 후보: 주입 시 prefix 첫 줄 주석 `-- phantom:dialect=mysql`을 렉서가 읽기, 또는 `SyntaxHighlighterFactory`가 `VirtualFileWindow`의 호스트 파일 모듈로 판정 | phantom-db는 방언을 언어가 아닌 렉서 플래그로 설계했다 [V: phantom-db §3.3] |

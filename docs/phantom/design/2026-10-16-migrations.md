@@ -112,15 +112,15 @@
 
 ```
 plugins/phantom-migrations/
-├── BUILD.bazel, intellij.phantom.migrations.iml
+├── BUILD.bazel, phantom.migrations.iml
 ├── resources/META-INF/plugin.xml          # id: phantom.migrations
-├── core/       → intellij.phantom.migrations.core        필수. 감지, 위치 해석, Flyway 이름 모델, 정렬, 서비스
-├── flyway/     → intellij.phantom.migrations.flyway      필수. 툴 창, 배너, GotoRelated, New 액션, 파일 템플릿, runner 실행기
-├── spring/     → intellij.phantom.migrations.spring      optional (intellij.yaml.backend, intellij.properties.backend.psi). spring.flyway.* / spring.liquibase.* 읽기
-├── gradle/     → intellij.phantom.migrations.gradle      optional (org.jetbrains.plugins.gradle). flyway* 태스크 감지·실행
-├── liquibase/  → intellij.phantom.migrations.liquibase   optional (XML). XSD 매핑, include 참조
-├── liquibase-yaml/ → intellij.phantom.migrations.liquibase.yaml  optional (yaml + json backend). v0.2 JSON 스키마
-├── db/         → intellij.phantom.migrations.db          optional (phantom.db API). v0.3
+├── core/       → phantom.migrations.core        필수. 감지, 위치 해석, Flyway 이름 모델, 정렬, 서비스
+├── flyway/     → phantom.migrations.flyway      필수. 툴 창, 배너, GotoRelated, New 액션, 파일 템플릿, runner 실행기
+├── spring/     → phantom.migrations.spring      optional (intellij.yaml.backend, intellij.properties.backend.psi). spring.flyway.* / spring.liquibase.* 읽기
+├── gradle/     → phantom.migrations.gradle      optional (org.jetbrains.plugins.gradle). flyway* 태스크 감지·실행
+├── liquibase/  → phantom.migrations.liquibase   optional (XML). XSD 매핑, include 참조
+├── liquibase-yaml/ → phantom.migrations.liquibase.yaml  optional (yaml + json backend). v0.2 JSON 스키마
+├── db/         → phantom.migrations.db          optional (phantom.db API). v0.3
 ├── runner/     → phantom-migrations-runner.jar           IDE 의존성 없는 순수 Java 11 jar (§3.6)
 └── testSrc/, testData/
 ```
@@ -137,12 +137,12 @@ plugins/phantom-migrations/
     <plugin id="com.intellij.java"/>
   </dependencies>
   <content>
-    <module name="intellij.phantom.migrations.core"/>
-    <module name="intellij.phantom.migrations.flyway"/>
-    <module name="intellij.phantom.migrations.spring"/>          <!-- depends: intellij.yaml.backend, intellij.properties.backend.psi -->
-    <module name="intellij.phantom.migrations.gradle"/>          <!-- depends: intellij.gradle (plugin org.jetbrains.plugins.gradle) -->
-    <module name="intellij.phantom.migrations.liquibase"/>       <!-- depends: intellij.xml.psi -->
-    <module name="intellij.phantom.migrations.liquibase.yaml"/>  <!-- v0.2 -->
+    <module name="phantom.migrations.core"/>
+    <module name="phantom.migrations.flyway"/>
+    <module name="phantom.migrations.spring"/>          <!-- depends: intellij.yaml.backend, intellij.properties.backend.psi -->
+    <module name="phantom.migrations.gradle"/>          <!-- depends: intellij.gradle (plugin org.jetbrains.plugins.gradle) -->
+    <module name="phantom.migrations.liquibase"/>       <!-- depends: intellij.xml.psi -->
+    <module name="phantom.migrations.liquibase.yaml"/>  <!-- v0.2 -->
   </content>
 </idea-plugin>
 ```

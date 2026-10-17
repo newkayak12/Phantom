@@ -95,22 +95,22 @@
 
 ```
 plugins/phantom-api/
-├── BUILD.bazel, intellij.phantom.api.iml
+├── BUILD.bazel, phantom.api.iml
 ├── resources/META-INF/plugin.xml               # id: phantom.api
-├── core/      → intellij.phantom.api.core      # UrlPath 정규화, 경로 매칭, 상수 평가 도우미 (플랫폼 + UAST만 의존)
-├── client/    → intellij.phantom.api.client    # Spring 클라이언트 호출 모델, 거터, URL 참조   (depends: intellij.java, spring-web 감지)
-├── export/    → intellij.phantom.api.export    # Endpoints → OpenAPI 초안 YAML                 (depends: intellij.java)
-├── openapi/   → intellij.phantom.api.openapi   # 판정, 스키마 제공, $ref 참조·검사              (depends: intellij.json.backend, intellij.yaml.backend)
-├── preview/   → intellij.phantom.api.preview   # v0.2: TextEditorWithPreview + JCEF            (depends: intellij.platform.ui.jcef)
-├── http.ws/      → intellij.phantom.api.http.ws       # v0.2: WEBSOCKET 실행기       (depends: plugin phantom.http)
-├── http.graphql/ → intellij.phantom.api.http.graphql  # v0.2: GRAPHQL 실행기         (depends: plugin phantom.http)
-├── http.grpc/    → intellij.phantom.api.http.grpc     # v0.3: GRPC 실행기 (depends: phantom.http, intellij.libraries.grpc, intellij.libraries.grpc.netty.shaded, intellij.libraries.protobuf)
+├── core/      → phantom.api.core      # UrlPath 정규화, 경로 매칭, 상수 평가 도우미 (플랫폼 + UAST만 의존)
+├── client/    → phantom.api.client    # Spring 클라이언트 호출 모델, 거터, URL 참조   (depends: intellij.java, spring-web 감지)
+├── export/    → phantom.api.export    # Endpoints → OpenAPI 초안 YAML                 (depends: intellij.java)
+├── openapi/   → phantom.api.openapi   # 판정, 스키마 제공, $ref 참조·검사              (depends: intellij.json.backend, intellij.yaml.backend)
+├── preview/   → phantom.api.preview   # v0.2: TextEditorWithPreview + JCEF            (depends: intellij.platform.ui.jcef)
+├── http.ws/      → phantom.api.http.ws       # v0.2: WEBSOCKET 실행기       (depends: plugin phantom.http)
+├── http.graphql/ → phantom.api.http.graphql  # v0.2: GRAPHQL 실행기         (depends: plugin phantom.http)
+├── http.grpc/    → phantom.api.http.grpc     # v0.3: GRPC 실행기 (depends: phantom.http, intellij.libraries.grpc, intellij.libraries.grpc.netty.shaded, intellij.libraries.protobuf)
 └── testSrc/, testData/
 ```
 
 - 라이브러리 모듈 `intellij.libraries.grpc`, `intellij.libraries.grpc.netty.shaded`, `intellij.libraries.protobuf`, `intellij.libraries.rhino`가 커뮤니티에 있다 **[V: `libraries/*/module-content.yaml`]**. 이미 배포본(`dist.all/lib`)에 들어 있는 jar라서 새로 늘어나는 디스크 크기는 없다. grpc-netty-shaded는 10.5 MB다 **[V: Bazel 캐시]**.
 - content module 문법은 `plugins/yaml/resources/META-INF/plugin.xml`의 `<content><module name=.../>` 형식을 따른다 **[V]**. JSON 백엔드 모듈은 `intellij.json.backend`, YAML은 `intellij.yaml.backend`다 **[V]**.
-- 번들 등록은 `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` 61행의 `bundledPluginModules`에 `intellij.phantom.api`를 넣는다 **[V: 위치]**.
+- 번들 등록은 `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` 61행의 `bundledPluginModules`에 `phantom.api`를 넣는다 **[V: 위치]**.
 - `http.*` 모듈은 phantom-http 플러그인이 있을 때만 로드된다. phantom-http에 두 가지를 요청해야 한다(§6 Q1): 요청 메서드 토큰 `WEBSOCKET`, `GRAPHQL`, `GRPC`를 렉서가 받아들일 것, 그리고 실행기 확장 지점 `phantom.http.requestExecutor`. phantom-http 설계는 gRPC와 GraphQL을 "넣지 않는다"고 했다. 그 결정은 phantom-http **본체**에 대한 것이고, 이 설계는 별도 플러그인의 선택 모듈로 넣어 본체 비용을 0으로 유지한다.
 
 #### plugin.xml 뼈대 (설계)
@@ -124,14 +124,14 @@ plugins/phantom-api/
     <plugin id="com.intellij.java"/>
   </dependencies>
   <content>
-    <module name="intellij.phantom.api.core"/>
-    <module name="intellij.phantom.api.client"/>
-    <module name="intellij.phantom.api.export"/>
-    <module name="intellij.phantom.api.openapi"/>
-    <module name="intellij.phantom.api.preview"/>
-    <module name="intellij.phantom.api.http.ws"/>
-    <module name="intellij.phantom.api.http.graphql"/>
-    <module name="intellij.phantom.api.http.grpc"/>
+    <module name="phantom.api.core"/>
+    <module name="phantom.api.client"/>
+    <module name="phantom.api.export"/>
+    <module name="phantom.api.openapi"/>
+    <module name="phantom.api.preview"/>
+    <module name="phantom.api.http.ws"/>
+    <module name="phantom.api.http.graphql"/>
+    <module name="phantom.api.http.grpc"/>
   </content>
 </idea-plugin>
 ```

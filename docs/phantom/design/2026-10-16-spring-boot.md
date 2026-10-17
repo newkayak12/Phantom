@@ -72,14 +72,14 @@
 ```
 plugins/phantom-spring-boot/
 ├── BUILD.bazel                      # 플러그인 메인 모듈 (descriptor만)
-├── intellij.phantom.springBoot.iml
+├── phantom.springBoot.iml
 ├── resources/META-INF/plugin.xml    # id: phantom.spring.boot
-├── core/        → intellij.phantom.springBoot.core        (메타데이터 모델, 감지, 프로필)
-├── yaml/        → intellij.phantom.springBoot.yaml        (YAML 완성/참조/문서/inspection)
-├── properties/  → intellij.phantom.springBoot.properties  (.properties 완성/참조/문서/inspection)
-├── run/         → intellij.phantom.springBoot.run         (RunConfigurationExtension)
-├── endpoints/   → intellij.phantom.springBoot.endpoints   (EndpointsProvider + 툴 창)
-├── initializr/  → intellij.phantom.springBoot.initializr  (New Project generator)
+├── core/        → phantom.springBoot.core        (메타데이터 모델, 감지, 프로필)
+├── yaml/        → phantom.springBoot.yaml        (YAML 완성/참조/문서/inspection)
+├── properties/  → phantom.springBoot.properties  (.properties 완성/참조/문서/inspection)
+├── run/         → phantom.springBoot.run         (RunConfigurationExtension)
+├── endpoints/   → phantom.springBoot.endpoints   (EndpointsProvider + 툴 창)
+├── initializr/  → phantom.springBoot.initializr  (New Project generator)
 └── testSrc/ , testData/
 ```
 
@@ -94,19 +94,19 @@ plugins/phantom-spring-boot/
     <plugin id="com.intellij.java"/>
   </dependencies>
   <content>
-    <module name="intellij.phantom.springBoot.core"/>
-    <module name="intellij.phantom.springBoot.yaml"/>        <!-- depends: intellij.yaml.backend -->
-    <module name="intellij.phantom.springBoot.properties"/>  <!-- depends: intellij.properties.backend.psi -->
-    <module name="intellij.phantom.springBoot.run"/>         <!-- depends: intellij.java.execution.impl -->
-    <module name="intellij.phantom.springBoot.endpoints"/>
-    <module name="intellij.phantom.springBoot.initializr"/>  <!-- depends: gradle.java (optional) -->
+    <module name="phantom.springBoot.core"/>
+    <module name="phantom.springBoot.yaml"/>        <!-- depends: intellij.yaml.backend -->
+    <module name="phantom.springBoot.properties"/>  <!-- depends: intellij.properties.backend.psi -->
+    <module name="phantom.springBoot.run"/>         <!-- depends: intellij.java.execution.impl -->
+    <module name="phantom.springBoot.endpoints"/>
+    <module name="phantom.springBoot.initializr"/>  <!-- depends: gradle.java (optional) -->
   </content>
 </idea-plugin>
 ```
 
 - YAML 플러그인 id는 `org.jetbrains.plugins.yaml`, 콘텐츠 모듈 `intellij.yaml`, `intellij.yaml.backend`가 있다 [V].
 - Properties 플러그인 id는 `com.intellij.properties`, 콘텐츠 모듈 `intellij.properties.backend.psi`, `intellij.properties.backend`, `intellij.properties.psi`가 있다 [V].
-- 번들 등록: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`의 `productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(...)`(61행)에 `intellij.phantom.springBoot`을 추가한다 [V: 위치, A: 콘텐츠 모듈이 자동 포함되는지는 첫 빌드에서 확인].
+- 번들 등록: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`의 `productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(...)`(61행)에 `phantom.springBoot`을 추가한다 [V: 위치, A: 콘텐츠 모듈이 자동 포함되는지는 첫 빌드에서 확인].
 - 커뮤니티 promo 정리(별도 커밋): `java/java-promo/resources/META-INF/community-integration.xml`의 `<moduleBuilder builderClass="com.intellij.java.promo.PromoSpringModuleBuilder"/>`(37행)와 `<pluginSuggestionProvider implementation="com.intellij.java.promo.FrameworkSuggestionProvider"/>`(3행, Boot 라이브러리를 보면 `com.intellij.spring.boot` 설치를 권함)를 제거한다 [V: 두 등록이 이 트리에 아직 있음]. 과제 설명은 "제거된 promo 항목"이라 했지만, 이 트리에서는 아직 제거되지 않았다.
 
 Ultimate의 콘텐츠 모듈 이름(`intellij.spring.boot.configYaml`, `.core.ide`, `.run`, `.mvc`, `.gradle.shared` 등 25개, descriptor [V])은 기능 체크리스트로만 썼다. phantom은 6개로 시작한다.
@@ -309,7 +309,7 @@ EDT에서 PSI 검색, jar 접근, 네트워크 호출을 하지 않는다. 이�
 
 ## 6. 리스크와 남은 의문
 
-1. **Kotlin K2 light class 경로** [unknown]: Kotlin `@ConfigurationProperties` data class의 생성자 파라미터로 이동이 light class 게터를 거쳐 제대로 `KtParameter`에 닿는지. 안 되면 Kotlin 전용 resolve(`KtClass` 탐색)를 따로 둬야 하고 `plugins/kotlin` 모듈 의존이 생긴다(콘텐츠 모듈 `intellij.phantom.springBoot.kotlin` 추가).
+1. **Kotlin K2 light class 경로** [unknown]: Kotlin `@ConfigurationProperties` data class의 생성자 파라미터로 이동이 light class 게터를 거쳐 제대로 `KtParameter`에 닿는지. 안 되면 Kotlin 전용 resolve(`KtClass` 탐색)를 따로 둬야 하고 `plugins/kotlin` 모듈 의존이 생긴다(콘텐츠 모듈 `phantom.springBoot.kotlin` 추가).
 2. **kapt 출력 경로** [A]: 사용자 프로젝트는 `kotlin-kapt`를 쓴다 [V: libs.versions.toml 133행]. `spring-boot-configuration-processor`를 kapt로 돌릴 때 JSON 위치가 `build/tmp/kapt3/classes/main/META-INF`인지 실제 빌드로 확인해야 한다. 프로젝트가 configuration-processor를 아예 안 쓸 수도 있다(이번에 빌드 스크립트에서 확인하지 못함). 그 경우 F6는 사용자에게 당장 효과가 없다.
 3. **Gradle이 IDE 빌드 출력을 어디에 두는지** [unknown]: "Build and run using: Gradle"이면 출력은 Gradle `build/` 아래, IntelliJ 빌더면 `out/`. 둘 다 후보로 본다.
 4. **YAML 메타 모델 재사용 여부** [unknown]: 스파이크 결론에 따라 1–2일 차이.

@@ -14,6 +14,6 @@
   </dependencies>
 
   <content namespace="jetbrains">
-    <module name="intellij.phantom.http.core"/>
+    <module name="phantom.http.core"/>
   </content>
 </idea-plugin>

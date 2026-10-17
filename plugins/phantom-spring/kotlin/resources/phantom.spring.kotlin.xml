@@ -1,7 +1,7 @@
 <idea-plugin package="dev.phantom.spring.kotlin">
   <dependencies>
     <plugin id="org.jetbrains.kotlin"/>
-    <module name="intellij.phantom.spring.core"/>
+    <module name="phantom.spring.core"/>
   </dependencies>
   <extensions defaultExtensionNs="com.intellij">
     <codeInsight.lineMarkerProvider language="kotlin" implementationClass="dev.phantom.spring.kotlin.KotlinSpringBeanLineMarkerProvider"/>

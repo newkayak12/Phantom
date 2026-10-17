@@ -1,7 +1,7 @@
 load("@community//build:tests-options.bzl", "jps_test")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.jpa.tests.kotlin` start
+### auto-generated section `build phantom.jpa.tests.kotlin` start
 
 jvm_library(
     name = "phantom-jpa-tests-kotlin",
@@ -9,7 +9,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.jpa.tests.kotlin",
+    module_name = "phantom.jpa.tests.kotlin",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -29,7 +29,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.jpa.tests.kotlin",
+    module_name = "phantom.jpa.tests.kotlin",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -67,21 +67,21 @@ jvm_library(
         "//libraries/junit4:junit4_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.jpa.tests.kotlin` end
+### auto-generated section `build phantom.jpa.tests.kotlin` end
 
-### auto-generated section `iml intellij.phantom.jpa.tests.kotlin` start
+### auto-generated section `iml phantom.jpa.tests.kotlin` start
 exports_files(
     [
-        "intellij.phantom.jpa.tests.kotlin.iml",
+        "phantom.jpa.tests.kotlin.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.jpa.tests.kotlin` end
+### auto-generated section `iml phantom.jpa.tests.kotlin` end
 
-### auto-generated section `test intellij.phantom.jpa.tests.kotlin` start
+### auto-generated section `test phantom.jpa.tests.kotlin` start
 
 jps_test(
     name = "phantom-jpa-tests-kotlin_test",
     runtime_deps = [":phantom-jpa-tests-kotlin_test_lib"],
 )
-### auto-generated section `test intellij.phantom.jpa.tests.kotlin` end
+### auto-generated section `test phantom.jpa.tests.kotlin` end

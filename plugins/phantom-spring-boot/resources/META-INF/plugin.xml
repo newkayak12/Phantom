@@ -15,8 +15,8 @@
   </dependencies>
 
   <content namespace="jetbrains">
-    <module name="intellij.phantom.springBoot.core"/>
-    <module name="intellij.phantom.springBoot.yaml"/>
-    <module name="intellij.phantom.springBoot.properties"/>
+    <module name="phantom.springBoot.core"/>
+    <module name="phantom.springBoot.yaml"/>
+    <module name="phantom.springBoot.properties"/>
   </content>
 </idea-plugin>
