@@ -150,6 +150,7 @@
     <orderEntry type="module" module-name="intellij.phantom.db.core" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.phantom.icons" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.phantom.icons.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.phantom.theme" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.tracing.ide" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.notebooks.visualization" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.keymap.eclipse" scope="RUNTIME" />
