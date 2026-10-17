@@ -18,13 +18,13 @@ import java.nio.file.Path
 
 /** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
-  "intellij.phantom.spring",
-  "intellij.phantom.springBoot",
-  "intellij.phantom.jpa",
-  "intellij.phantom.http",
-  "intellij.phantom.db",
-  "intellij.phantom.icons",
-  "intellij.phantom.theme",
+  "phantom.spring",
+  "phantom.springBoot",
+  "phantom.jpa",
+  "phantom.http",
+  "phantom.db",
+  "phantom.icons",
+  "phantom.theme",
   "intellij.lombok", // community plugin that only Ultimate bundled; Java projects need it
 )
 

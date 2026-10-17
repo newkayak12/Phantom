@@ -1,6 +1,6 @@
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.http.core` start
+### auto-generated section `build phantom.http.core` start
 
 jvm_library(
     name = "core",
@@ -12,7 +12,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.http.core",
+    module_name = "phantom.http.core",
     resource_strip_prefix = "resources",
     resources = glob(
         ["resources/**/*"],
@@ -49,7 +49,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.http.core",
+    module_name = "phantom.http.core",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -74,13 +74,13 @@ jvm_library(
         "//libraries/kotlinx/serialization/json:json_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.http.core` end
+### auto-generated section `build phantom.http.core` end
 
-### auto-generated section `iml intellij.phantom.http.core` start
+### auto-generated section `iml phantom.http.core` start
 exports_files(
     [
-        "intellij.phantom.http.core.iml",
+        "phantom.http.core.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.http.core` end
+### auto-generated section `iml phantom.http.core` end

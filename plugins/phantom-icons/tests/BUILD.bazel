@@ -1,7 +1,7 @@
 load("@community//build:tests-options.bzl", "jps_test")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.icons.tests` start
+### auto-generated section `build phantom.icons.tests` start
 
 jvm_library(
     name = "tests",
@@ -9,7 +9,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.icons.tests",
+    module_name = "phantom.icons.tests",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -29,7 +29,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.icons.tests",
+    module_name = "phantom.icons.tests",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -61,21 +61,21 @@ jvm_library(
         "//libraries/junit4:junit4_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.icons.tests` end
+### auto-generated section `build phantom.icons.tests` end
 
-### auto-generated section `iml intellij.phantom.icons.tests` start
+### auto-generated section `iml phantom.icons.tests` start
 exports_files(
     [
-        "intellij.phantom.icons.tests.iml",
+        "phantom.icons.tests.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.icons.tests` end
+### auto-generated section `iml phantom.icons.tests` end
 
-### auto-generated section `test intellij.phantom.icons.tests` start
+### auto-generated section `test phantom.icons.tests` start
 
 jps_test(
     name = "tests_test",
     runtime_deps = [":tests_test_lib"],
 )
-### auto-generated section `test intellij.phantom.icons.tests` end
+### auto-generated section `test phantom.icons.tests` end

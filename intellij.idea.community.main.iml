@@ -135,22 +135,22 @@
     <orderEntry type="module" module-name="intellij.searchEverywhereMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.marketplaceMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.spring" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.spring.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.spring.kotlin" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.springBoot" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.springBoot.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.springBoot.yaml" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.springBoot.properties" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.jpa" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.jpa.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.http" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.http.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.db" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.db.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.icons" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.icons.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.phantom.theme" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.spring" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.spring.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.spring.kotlin" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.springBoot" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.springBoot.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.springBoot.yaml" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.springBoot.properties" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.jpa" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.jpa.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.http" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.http.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.db" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.db.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.icons" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.icons.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.theme" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.tracing.ide" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.notebooks.visualization" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.keymap.eclipse" scope="RUNTIME" />
