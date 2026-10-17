@@ -306,8 +306,11 @@ class JbImportServiceImpl(private val coroutineScope: CoroutineScope) : JbServic
   override suspend fun warmUp() {
     val parentDirs = listOf(
       PathManager.getConfigDir().parent,
-      PathManager.getConfigDir().fileSystem.getPath(PathManager.getDefaultConfigPathFor("X")).parent
-    )
+      PathManager.getConfigDir().fileSystem.getPath(PathManager.getDefaultConfigPathFor("X")).parent,
+      // phantom-idea: our configs live under ".../Phantom"; look at the JetBrains IDEs next to it too, so settings and
+      // keymaps can come over from an installed IntelliJ IDEA
+      PathManager.getConfigDir().fileSystem.getPath(PathManager.getDefaultConfigPathFor("X")).parent.resolveSibling("JetBrains"),
+    ).distinct()
     val context = PluginDescriptorLoadingContext(getBuildNumberForDefaultDescriptorVersion = { PluginManagerCore.buildNumber })
     for (parentDir in parentDirs) {
       if (!parentDir.exists() || !parentDir.isDirectory()) {
