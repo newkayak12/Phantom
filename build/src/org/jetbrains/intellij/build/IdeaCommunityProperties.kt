@@ -23,6 +23,7 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "intellij.phantom.jpa",
   "intellij.phantom.http",
   "intellij.phantom.db",
+  "intellij.phantom.icons",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
