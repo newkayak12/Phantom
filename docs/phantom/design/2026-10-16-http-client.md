@@ -93,10 +93,10 @@
 
 ```
 plugins/phantom-http/
-├── intellij.phantom.http.iml             # 플러그인 메인 모듈 (plugin.xml만)
+├── phantom.http.iml             # 플러그인 메인 모듈 (plugin.xml만)
 ├── resources/META-INF/plugin.xml
 ├── plugin-content.yaml
-├── core/                                 # content module: intellij.phantom.http.core (required)
+├── core/                                 # content module: phantom.http.core (required)
 │   ├── src/main/grammars/HttpRequest.flex, HttpRequest.bnf
 │   ├── gen/…                             # JFlex·Grammar-Kit 생성 코드 (커밋)
 │   └── src/com/phantom/http/
@@ -104,7 +104,7 @@ plugins/phantom-http/
 │       ├── psi/       HttpRequestFile, HttpRequestBlock, HttpRequestLine, HttpHeaderField, HttpBody, HttpMultipartPart, HttpVariableRef, HttpFileVariable, HttpDirective, HttpResponseHandler
 │       ├── env/       HttpEnvironmentFiles, HttpEnvironment, HttpEnvironmentSelector(툴바 콤보), JSON schema provider
 │       └── vars/      HttpVariableResolver, DynamicVariables, completion·reference·inspection
-├── exec/                                 # content module: intellij.phantom.http.exec (required, 지연 로드 대상 클래스)
+├── exec/                                 # content module: phantom.http.exec (required, 지연 로드 대상 클래스)
 │   └── src/com/phantom/http/exec/
 │       ├── HttpRequestModel.kt           # PSI와 무관한 불변 요청 스냅샷
 │       ├── HttpRequestBuilder.kt         # PSI → 모델 (read action 안)
@@ -112,15 +112,15 @@ plugins/phantom-http/
 │       ├── HttpExecutionService.kt       # @Service(PROJECT), CoroutineScope 주입
 │       ├── history/                      # HttpHistoryStore (system dir JSON)
 │       └── ui/                           # RunLineMarkerContributor, 툴 창, 응답 패널, 액션
-├── script/                               # content module: intellij.phantom.http.script (optional, rhino 의존)
+├── script/                               # content module: phantom.http.script (optional, rhino 의존)
 │   └── src/com/phantom/http/script/      # RhinoResponseHandlerRunner, client/response 바인딩
-└── spring/                               # content module: intellij.phantom.http.spring (optional)
+└── spring/                               # content module: phantom.http.spring (optional)
     └── src/com/phantom/http/spring/      # UrlPathInlayAction, RequestNavigator, 요청 생성기, URL 참조 주입
 ```
 
 - 레이아웃은 커뮤니티 `plugins/toml`의 방식(`core/src/main/grammars/*.flex|*.bnf`와 `core/src/gen/` 생성 코드 커밋, `plugin-content.yaml`, `.iml`, 자동 생성 `BUILD.bazel`)을 따른다 **[V]**: `plugins/toml/core/src/main/grammars/TomlParser.bnf`, `plugins/toml/core/src/gen/org/toml/lang/parse/TomlParser.java`, `plugins/toml/BUILD.bazel`의 `### auto-generated section` 표식.
 - `BUILD.bazel`은 `.iml`에서 생성되는 구조로 보인다 **[A]** (`jps-to-bazel` 생성기 위치는 확인하지 않음).
-- 번들 등록: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`의 `productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(...)`(61행)에 `"intellij.phantom.http"`를 추가한다 **[V]**. 여러 content module을 가진 플러그인이라 `CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS`에 `pluginLayout`이 필요할 수 있다 **[A]**.
+- 번들 등록: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`의 `productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(...)`(61행)에 `"phantom.http"`를 추가한다 **[V]**. 여러 content module을 가진 플러그인이라 `CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS`에 `pluginLayout`이 필요할 수 있다 **[A]**.
 - 패키지 접두사 `com.phantom.http`는 JetBrains 패키지(`com.intellij.httpClient`)와 겹치지 않게 고른 것이다.
 
 #### plugin.xml 뼈대 (설계)
@@ -134,10 +134,10 @@ plugins/phantom-http/
     <module name="intellij.json.backend"/>      <!-- 응답 JSON 하이라이트, env 스키마 -->
   </dependencies>
   <content>
-    <module name="intellij.phantom.http.core" loading="required"/>
-    <module name="intellij.phantom.http.exec" loading="required"/>
-    <module name="intellij.phantom.http.script"/>   <!-- depends: intellij.libraries.rhino -->
-    <module name="intellij.phantom.http.spring"/>   <!-- depends: com.intellij.java, intellij.platform.uast -->
+    <module name="phantom.http.core" loading="required"/>
+    <module name="phantom.http.exec" loading="required"/>
+    <module name="phantom.http.script"/>   <!-- depends: intellij.libraries.rhino -->
+    <module name="phantom.http.spring"/>   <!-- depends: com.intellij.java, intellij.platform.uast -->
   </content>
 </idea-plugin>
 ```

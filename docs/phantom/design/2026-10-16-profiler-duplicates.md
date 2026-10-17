@@ -94,25 +94,25 @@
 
 ```
 plugins/phantom-profiler/
-├── intellij.phantom.profiler.iml                  # 메인 모듈 (설명자 전용)
+├── phantom.profiler.iml                  # 메인 모듈 (설명자 전용)
 ├── resources/META-INF/plugin.xml                  # id: dev.phantom.profiler
-├── core/      → intellij.phantom.profiler.core    # 스냅샷 모델, JFR/collapsed 파서, HPROF 히스토그램 (UI·PSI 없음)
-├── ui/        → intellij.phantom.profiler.ui      # 뷰어(FileEditor), 플레임 그래프 컴포넌트, 도구 창
-├── jvm/       → intellij.phantom.profiler.jvm     # 실행기, ProgramRunner, RunConfigurationExtension, attach, 소스 이동 (com.intellij.java 의존)
-├── gradle/    → intellij.phantom.profiler.gradle  # Gradle 위임 실행 지원 (org.jetbrains.plugins.gradle 의존)
-├── kotlin/    → intellij.phantom.profiler.kotlin  # Kotlin 프레임 → KtElement 해석 보강 (org.jetbrains.kotlin 의존)
+├── core/      → phantom.profiler.core    # 스냅샷 모델, JFR/collapsed 파서, HPROF 히스토그램 (UI·PSI 없음)
+├── ui/        → phantom.profiler.ui      # 뷰어(FileEditor), 플레임 그래프 컴포넌트, 도구 창
+├── jvm/       → phantom.profiler.jvm     # 실행기, ProgramRunner, RunConfigurationExtension, attach, 소스 이동 (com.intellij.java 의존)
+├── gradle/    → phantom.profiler.gradle  # Gradle 위임 실행 지원 (org.jetbrains.plugins.gradle 의존)
+├── kotlin/    → phantom.profiler.kotlin  # Kotlin 프레임 → KtElement 해석 보강 (org.jetbrains.kotlin 의존)
 ├── native/                                        # async-profiler 바이너리 (Apache 2.0), plugin-local 리소스
 │   ├── macos/libasyncProfiler.dylib
 │   └── linux-{arm64,x64}/libasyncProfiler.so
-└── tests/     → intellij.phantom.profiler.tests
+└── tests/     → phantom.profiler.tests
 
 plugins/phantom-duplicates/
-├── intellij.phantom.duplicates.iml
+├── phantom.duplicates.iml
 ├── resources/META-INF/plugin.xml                  # id: dev.phantom.duplicates
-├── core/      → intellij.phantom.duplicates.core  # 분석 엔진(언어 무관), 결과 모델, 도구 창, 액션
-├── java/      → intellij.phantom.duplicates.java  # Java 프로필 (com.intellij.java 의존)
-├── kotlin/    → intellij.phantom.duplicates.kotlin# Kotlin 프로필 (org.jetbrains.kotlin 의존)
-└── tests/     → intellij.phantom.duplicates.tests
+├── core/      → phantom.duplicates.core  # 분석 엔진(언어 무관), 결과 모델, 도구 창, 액션
+├── java/      → phantom.duplicates.java  # Java 프로필 (com.intellij.java 의존)
+├── kotlin/    → phantom.duplicates.kotlin# Kotlin 프로필 (org.jetbrains.kotlin 의존)
+└── tests/     → phantom.duplicates.tests
 ```
 
 - 콘텐츠 모듈은 기본 로딩(optional)이다. `core`만 다른 모듈이 의존하므로 같은 플러그인 안에서 `embedded` 후보지만, MVP는 build-wiring P2에 따라 기본값으로 둔다.
@@ -380,7 +380,7 @@ EDT에서 PSI 조회나 파일 I/O를 하지 않는다. 플레임 그래프 `pai
 | inspection | `myFixture.enableInspections(PhantomDuplicatedCodeInspection())` + `checkHighlighting()` | 플랫폼 표준 |
 | 금지 EP | T0의 grep을 테스트로 고정(설명자 XML을 읽어 금지 태그가 없음을 확인) | — |
 
-실행: `./tests.cmd --module intellij.phantom.profiler.tests --test '*'`, `--module intellij.phantom.duplicates.tests` (build-wiring M5 방식) [A: 정확한 플래그는 build-wiring 문서 기준].
+실행: `./tests.cmd --module phantom.profiler.tests --test '*'`, `--module phantom.duplicates.tests` (build-wiring M5 방식) [A: 정확한 플래그는 build-wiring 문서 기준].
 
 ### 5.2 수동 확인 (사용자 프로젝트 `~/orca/workspaces/prototype-reservation-system`)
 

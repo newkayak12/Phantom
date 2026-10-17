@@ -1,6 +1,6 @@
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.spring` start
+### auto-generated section `build phantom.spring` start
 
 jvm_library(
     name = "phantom-spring",
@@ -8,7 +8,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.spring",
+    module_name = "phantom.spring",
     resource_strip_prefix = "resources",
     resources = glob(
         ["resources/**/*"],
@@ -23,17 +23,17 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.spring",
+    module_name = "phantom.spring",
     visibility = ["//visibility:public"],
     runtime_deps = [":phantom-spring"],
 )
-### auto-generated section `build intellij.phantom.spring` end
+### auto-generated section `build phantom.spring` end
 
-### auto-generated section `iml intellij.phantom.spring` start
+### auto-generated section `iml phantom.spring` start
 exports_files(
     [
-        "intellij.phantom.spring.iml",
+        "phantom.spring.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.spring` end
+### auto-generated section `iml phantom.spring` end

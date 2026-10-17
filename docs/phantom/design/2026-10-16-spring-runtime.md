@@ -102,16 +102,16 @@ Ultimate 기능 목록에는 `loggers`나 `configprops` 엔드포인트 탭이 �
 
 ### 3.1 모듈 레이아웃
 
-이름 규칙은 `2026-10-16-build-wiring.md` §3.2를 따른다(디렉터리 `plugins/phantom-<kebab>`, 모듈 `intellij.phantom.<camel>.<sub>`, 플러그인 ID `dev.phantom.*`, 패키지 `dev.phantom.<name>.<sub>`).
+이름 규칙은 `2026-10-16-build-wiring.md` §3.2를 따른다(디렉터리 `plugins/phantom-<kebab>`, 모듈 `phantom.<camel>.<sub>`, 플러그인 ID `dev.phantom.*`, 패키지 `dev.phantom.<name>.<sub>`).
 
 ```
 plugins/phantom-spring-runtime/
-├── intellij.phantom.springRuntime.iml
+├── phantom.springRuntime.iml
 ├── resources/META-INF/plugin.xml          # id: dev.phantom.spring.runtime
-├── launch/      → intellij.phantom.springRuntime.launch    (RunConfigurationExtension, 옵션 주입. 앱 실행 전에 적재되는 유일한 모듈)
-├── session/     → intellij.phantom.springRuntime.session   (세션 서비스, JMX 클라이언트, Services 표시, Actuator 탭 UI, DevTools 업데이트)
-├── debugger/    → intellij.phantom.springRuntime.debugger  (Transaction 노드, springContext 레이블)
-└── tests/       → intellij.phantom.springRuntime.tests
+├── launch/      → phantom.springRuntime.launch    (RunConfigurationExtension, 옵션 주입. 앱 실행 전에 적재되는 유일한 모듈)
+├── session/     → phantom.springRuntime.session   (세션 서비스, JMX 클라이언트, Services 표시, Actuator 탭 UI, DevTools 업데이트)
+├── debugger/    → phantom.springRuntime.debugger  (Transaction 노드, springContext 레이블)
+└── tests/       → phantom.springRuntime.tests
 ```
 
 `plugin.xml` 골격:
@@ -125,14 +125,14 @@ plugins/phantom-spring-runtime/
     <plugin id="com.intellij.java"/>
   </dependencies>
   <content>
-    <module name="intellij.phantom.springRuntime.launch"/>    <!-- deps: intellij.java.execution.impl, intellij.phantom.springBoot.core -->
-    <module name="intellij.phantom.springRuntime.session"/>   <!-- deps: launch, intellij.platform.execution.dashboard, intellij.libraries.jackson.databind(불필요할 수 있음, 3.4) -->
-    <module name="intellij.phantom.springRuntime.debugger"/>  <!-- deps: session, intellij.java.debugger.impl -->
+    <module name="phantom.springRuntime.launch"/>    <!-- deps: intellij.java.execution.impl, phantom.springBoot.core -->
+    <module name="phantom.springRuntime.session"/>   <!-- deps: launch, intellij.platform.execution.dashboard, intellij.libraries.jackson.databind(불필요할 수 있음, 3.4) -->
+    <module name="phantom.springRuntime.debugger"/>  <!-- deps: session, intellij.java.debugger.impl -->
   </content>
 </idea-plugin>
 ```
 
-- `intellij.phantom.springBoot.core`(phantom-spring-boot 설계 §3.1)에 의존하는 이유는 하나다. `SpringBootDetector.isBootModule(module)`을 재사용하기 위해서다. phantom-spring-boot가 늦어지면 `launch` 안에 같은 판정(아래 3.2 표의 `JavaLibraryUtil`)을 10줄로 복제해 둘 수 있다.
+- `phantom.springBoot.core`(phantom-spring-boot 설계 §3.1)에 의존하는 이유는 하나다. `SpringBootDetector.isBootModule(module)`을 재사용하기 위해서다. phantom-spring-boot가 늦어지면 `launch` 안에 같은 판정(아래 3.2 표의 `JavaLibraryUtil`)을 10줄로 복제해 둘 수 있다.
 - Ultimate의 `intellij.spring.boot.run`은 `intellij.spring`(정적 모델 전체), `intellij.spring.boot`, `intellij.java.debugger.impl`에 하드 의존한다 [관측: 디스크립터 `<dependencies>`]. phantom은 정적 Spring 모델(phantom-spring)에 의존하지 않는다. 런타임 기능만 쓰는 사용자는 phantom-spring을 꺼도 된다.
 
 ### 3.2 커뮤니티 확장 지점과 API (모두 [V]: 경로 확인)

@@ -1,7 +1,7 @@
 load("@community//build:tests-options.bzl", "jps_test")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.jpa.tests` start
+### auto-generated section `build phantom.jpa.tests` start
 
 jvm_library(
     name = "tests",
@@ -9,7 +9,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.jpa.tests",
+    module_name = "phantom.jpa.tests",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -29,7 +29,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.jpa.tests",
+    module_name = "phantom.jpa.tests",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -69,21 +69,21 @@ jvm_library(
         "//libraries/junit4:junit4_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.jpa.tests` end
+### auto-generated section `build phantom.jpa.tests` end
 
-### auto-generated section `iml intellij.phantom.jpa.tests` start
+### auto-generated section `iml phantom.jpa.tests` start
 exports_files(
     [
-        "intellij.phantom.jpa.tests.iml",
+        "phantom.jpa.tests.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.jpa.tests` end
+### auto-generated section `iml phantom.jpa.tests` end
 
-### auto-generated section `test intellij.phantom.jpa.tests` start
+### auto-generated section `test phantom.jpa.tests` start
 
 jps_test(
     name = "tests_test",
     runtime_deps = [":tests_test_lib"],
 )
-### auto-generated section `test intellij.phantom.jpa.tests` end
+### auto-generated section `test phantom.jpa.tests` end

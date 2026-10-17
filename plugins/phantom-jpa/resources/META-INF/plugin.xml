@@ -15,6 +15,6 @@
   </dependencies>
 
   <content namespace="jetbrains">
-    <module name="intellij.phantom.jpa.core"/>
+    <module name="phantom.jpa.core"/>
   </content>
 </idea-plugin>

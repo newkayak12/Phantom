@@ -68,8 +68,8 @@
 
 ```
 plugins/phantom-infra/
-  ssh-terminal/                      # content module: intellij.phantom.infra.sshTerminal (v0.1)
-    resources/intellij.phantom.infra.sshTerminal.xml
+  ssh-terminal/                      # content module: phantom.infra.sshTerminal (v0.1)
+    resources/phantom.infra.sshTerminal.xml
     src/.../SshConfigHosts.kt        # ~/.ssh/config 파서 + mtime 캐시
     src/.../SshPredefinedTerminalProvider.kt
   ssh-tunnel/                        # v0.2, 의존: intellij.java.execution.impl

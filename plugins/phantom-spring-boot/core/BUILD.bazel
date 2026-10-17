@@ -1,6 +1,6 @@
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.springBoot.core` start
+### auto-generated section `build phantom.springBoot.core` start
 
 jvm_library(
     name = "core",
@@ -12,7 +12,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.springBoot.core",
+    module_name = "phantom.springBoot.core",
     resource_strip_prefix = "resources",
     resources = glob(
         ["resources/**/*"],
@@ -46,7 +46,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.springBoot.core",
+    module_name = "phantom.springBoot.core",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -68,13 +68,13 @@ jvm_library(
         "//libraries/gson:gson_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.springBoot.core` end
+### auto-generated section `build phantom.springBoot.core` end
 
-### auto-generated section `iml intellij.phantom.springBoot.core` start
+### auto-generated section `iml phantom.springBoot.core` start
 exports_files(
     [
-        "intellij.phantom.springBoot.core.iml",
+        "phantom.springBoot.core.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.springBoot.core` end
+### auto-generated section `iml phantom.springBoot.core` end
