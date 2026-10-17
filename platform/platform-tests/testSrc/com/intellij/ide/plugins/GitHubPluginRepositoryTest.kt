@@ -71,6 +71,7 @@ class GitHubPluginRepositoryTest {
 
   @Test
   fun `only the Phantom repository is official`() {
+    assertTrue(GitHubPluginRepository.isOfficial("newkayak12/Phantom-plugins"))
     assertTrue(GitHubPluginRepository.isOfficial("newkayak12/phantom-plugins"))
     assertTrue(GitHubPluginRepository.isOfficial("https://github.com/newkayak12/phantom-plugins"))
     assertFalse(GitHubPluginRepository.isOfficial("someone/phantom-plugins"))
