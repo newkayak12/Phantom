@@ -3,6 +3,7 @@ package com.intellij.ide.plugins
 
 import com.intellij.ide.plugins.newui.PluginDtoModelBuilderFactory
 import dev.phantom.ide.plugins.GitHubPluginRepository
+import dev.phantom.ide.plugins.coordinatesOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -57,7 +58,10 @@ class GitHubPluginRepositoryTest {
     assertEquals("https://example.com/x.zip", models[1].downloadUrl)
     assertEquals("newkayak12", models[1].vendor)
 
-    assertEquals(mapOf("dev.phantom.db" to listOf("org.postgresql:postgresql")), GitHubPluginRepository.parseDetect(json.byteInputStream()))
+    val detect = GitHubPluginRepository.parseDetect(json.byteInputStream()).single()
+    assertEquals("dev.phantom.db", detect.id)
+    assertEquals("Phantom DB", detect.name)
+    assertEquals(listOf("org.postgresql:postgresql"), detect.detect)
   }
 
   @Test(expected = IOException::class)
@@ -71,5 +75,13 @@ class GitHubPluginRepositoryTest {
     assertTrue(GitHubPluginRepository.isOfficial("https://github.com/newkayak12/phantom-plugins"))
     assertFalse(GitHubPluginRepository.isOfficial("someone/phantom-plugins"))
     assertFalse(GitHubPluginRepository.isOfficial(null))
+  }
+
+  @Test
+  fun `library names give group and artifact`() {
+    assertEquals("org.postgresql:postgresql", coordinatesOf("Gradle: org.postgresql:postgresql:42.7.3"))
+    assertEquals("com.h2database:h2", coordinatesOf("Maven: com.h2database:h2:2.2.224"))
+    assertNull(coordinatesOf("KotlinJavaRuntime"))
+    assertNull(coordinatesOf(null))
   }
 }
