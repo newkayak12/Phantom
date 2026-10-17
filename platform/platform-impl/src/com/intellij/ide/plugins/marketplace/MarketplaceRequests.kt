@@ -1,6 +1,7 @@
 // Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.plugins.marketplace
 
+import dev.phantom.ide.plugins.PhantomMarketplace
 import com.intellij.diagnostic.LoadingState
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.plugins.PluginInfoProvider
@@ -654,7 +655,9 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   fun executePluginSearch(query: String, count: Int, includeUpgradeToCommercialIde: Boolean): List<PluginUiModel> {
     val activeProductCode = ApplicationInfoImpl.getShadowInstanceImpl().build.productCode
     val suggestedIdeCode = PluginAdvertiserService.getSuggestedCommercialIdeCode(activeProductCode)
-    val includeIncompatible = includeUpgradeToCommercialIde && suggestedIdeCode != null
+    // phantom-idea: production builds list only plugins Phantom can install
+    val hideUninstallable = PhantomMarketplace.hidesUninstallable()
+    val includeIncompatible = includeUpgradeToCommercialIde && suggestedIdeCode != null && !hideUninstallable
 
     val marketplaceSearchPluginData = HttpRequests.request(
       MarketplaceUrls.getSearchPluginsUrl(query, count, includeIncompatible)
@@ -673,6 +676,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
       .mapNotNull {
         val model = it.toPluginUiModel()
 
+        if (hideUninstallable && !PhantomMarketplace.isInstallable(it.isPaid, it.nearestUpdate?.compatible != false)) return@mapNotNull null
         if (it.externalUpdateId != null) return@mapNotNull model
         val nearestUpdate = it.nearestUpdate
         if (nearestUpdate == null) return@mapNotNull null

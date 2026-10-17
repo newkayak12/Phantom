@@ -39,8 +39,8 @@ Planned: see [docs/phantom/2026-10-16-feature-matrix.md](docs/phantom/2026-10-16
 
 | Plugin | Covers |
 |---|---|
-| `phantom-spring` | Bean model, injection navigation, gutter icons, autowiring inspections, events |
-| `phantom-spring-boot` | Initializr wizard, `application.yml`/`.properties` completion, run configs, Endpoints |
+| `phantom-spring` | Moved to [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) (`spring`): beans, injection navigation, autowiring inspection, Endpoints |
+| `phantom-spring-boot` | Moved to [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) (`spring-boot`): `application.yml`/`.properties` completion and docs |
 | `phantom-spring-runtime` | Actuator, runtime beans and properties, DevTools |
 | `phantom-jpa` | Entities, JPQL/HQL in `@Query`, Spring Data derived queries |
 | `phantom-db` | Moved to [phantom-plugins](https://github.com/newkayak12/Phantom-plugins): installed on demand |
