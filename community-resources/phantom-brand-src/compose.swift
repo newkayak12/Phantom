@@ -30,10 +30,10 @@ func render(_ w: Int, _ h: Int, _ draw: (CGContext) -> Void) {
 }
 switch mode {
 case "icon", "head":
-  // Square crops centered on the face (the eyes sit at about 60% across, 28% down the source art):
-  // icon shows the hood and upper cloak, head only the hood and eyes (for 16/32 px)
-  let faceX = Int(Double(W) * 0.60), faceY = Int(Double(H) * 0.28)
-  let side = mode == "icon" ? Int(Double(W) * 0.74) : Int(Double(W) * 0.50)
+  // Square crops centered on the face (phantom-hood.png: the eyes sit at about 55% across, 52% down):
+  // icon shows the whole square art, head only the hood opening and eyes (for 16/32 px)
+  let faceX = Int(Double(W) * 0.55), faceY = Int(Double(H) * 0.52)
+  let side = mode == "icon" ? min(W, H) : Int(Double(W) * 0.58)
   let x0 = min(max(faceX - side / 2, 0), W - side), y0 = min(max(faceY - side / 2, 0), H - side)
   let crop = CGRect(x: x0, y: y0, width: side, height: side)
   let piece = cg.cropping(to: crop)!
