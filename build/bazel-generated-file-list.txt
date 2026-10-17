@@ -1499,6 +1499,7 @@ plugins/phantom-spring/core
 plugins/phantom-spring/kotlin
 plugins/phantom-spring/tests
 plugins/phantom-spring/tests-kotlin
+plugins/phantom-theme
 plugins/properties
 plugins/properties/copyright
 plugins/properties/properties-common
