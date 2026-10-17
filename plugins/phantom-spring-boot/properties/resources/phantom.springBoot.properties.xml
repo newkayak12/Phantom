@@ -1,7 +1,7 @@
 <idea-plugin package="dev.phantom.springboot.properties">
   <dependencies>
     <plugin id="com.intellij.properties"/>
-    <module name="intellij.phantom.springBoot.core"/>
+    <module name="phantom.springBoot.core"/>
   </dependencies>
   <extensions defaultExtensionNs="com.intellij">
     <completion.contributor language="Properties" implementationClass="dev.phantom.springboot.properties.BootPropertiesCompletionContributor"/>

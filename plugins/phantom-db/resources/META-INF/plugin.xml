@@ -15,6 +15,6 @@
   </dependencies>
 
   <content namespace="jetbrains">
-    <module name="intellij.phantom.db.core"/>
+    <module name="phantom.db.core"/>
   </content>
 </idea-plugin>

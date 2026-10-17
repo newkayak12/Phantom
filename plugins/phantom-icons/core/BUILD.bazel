@@ -1,6 +1,6 @@
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `build intellij.phantom.icons.core` start
+### auto-generated section `build phantom.icons.core` start
 
 jvm_library(
     name = "core",
@@ -12,7 +12,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.icons.core",
+    module_name = "phantom.icons.core",
     resource_strip_prefix = "resources",
     resources = glob(
         ["resources/**/*"],
@@ -37,7 +37,7 @@ jvm_library(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.phantom.icons.core",
+    module_name = "phantom.icons.core",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
@@ -50,13 +50,13 @@ jvm_library(
         "//platform/platform-api:ide_test_lib",
     ],
 )
-### auto-generated section `build intellij.phantom.icons.core` end
+### auto-generated section `build phantom.icons.core` end
 
-### auto-generated section `iml intellij.phantom.icons.core` start
+### auto-generated section `iml phantom.icons.core` start
 exports_files(
     [
-        "intellij.phantom.icons.core.iml",
+        "phantom.icons.core.iml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.phantom.icons.core` end
+### auto-generated section `iml phantom.icons.core` end
