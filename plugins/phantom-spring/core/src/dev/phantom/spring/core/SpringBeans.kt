@@ -125,7 +125,9 @@ object SpringBeans {
     val containingClass = method.containingClass ?: return null
     val injected = when {
       isBeanMethod(method) -> true
-      method.isConstructor -> isBeanClass(containingClass) && (containingClass.constructors.size == 1 || isInjectMarked(method))
+      // @ConfigurationProperties constructors bind configuration values, not beans
+      method.isConstructor -> isBeanClass(containingClass) && !containingClass.hasAnnotation(SpringNames.CONFIGURATION_PROPERTIES) &&
+                              (containingClass.constructors.size == 1 || isInjectMarked(method))
       else -> isInjectMarked(method) && isBeanClass(containingClass)
     }
     if (!injected) return null
