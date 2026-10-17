@@ -32,7 +32,7 @@ import java.io.InputStream
 @ApiStatus.Internal
 object GitHubPluginRepository {
   /** The Phantom plugins every Phantom IDE knows about; its plugins skip the third-party plugins notice. */
-  const val OFFICIAL: String = "newkayak12/phantom-plugins"
+  const val OFFICIAL: String = "newkayak12/Phantom-plugins"
 
   const val METADATA_PATH: String = ".phantom/marketplace.json"
 
@@ -58,7 +58,7 @@ object GitHubPluginRepository {
   fun normalize(host: String): String? = parse(host)?.host
 
   @JvmStatic
-  fun isOfficial(repositoryName: String?): Boolean = parse(repositoryName)?.host == OFFICIAL
+  fun isOfficial(repositoryName: String?): Boolean = parse(repositoryName)?.host.equals(OFFICIAL, ignoreCase = true)  // GitHub names ignore case
 
   @JvmStatic
   fun parseMetadata(input: InputStream, ref: Ref, factory: PluginUiModelBuilderFactory): List<PluginUiModel> {
