@@ -1,0 +1,19 @@
+<idea-plugin>
+  <id>dev.phantom.http</id>
+  <name>Phantom HTTP Client</name>
+  <vendor>Phantom</vendor>
+  <category>Tools Integration</category>
+  <description><![CDATA[
+  Write HTTP requests in .http / .rest files and run them from the editor: variables from the file and from
+  http-client.env.json / http-client.private.env.json environments, a run gutter on each request, and a response
+  view with status, headers and a formatted body. Nothing is loaded before the first .http file is opened.
+  ]]></description>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.lang"/>
+  </dependencies>
+
+  <content namespace="jetbrains">
+    <module name="intellij.phantom.http.core"/>
+  </content>
+</idea-plugin>

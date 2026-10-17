@@ -370,6 +370,9 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/intellij.phantom.jpa.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/intellij.phantom.jpa.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/tests/intellij.phantom.jpa.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/tests/intellij.phantom.jpa.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/tests-kotlin/intellij.phantom.jpa.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/tests-kotlin/intellij.phantom.jpa.tests.kotlin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-http/core/intellij.phantom.http.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-http/core/intellij.phantom.http.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-http/intellij.phantom.http.iml" filepath="$PROJECT_DIR$/plugins/phantom-http/intellij.phantom.http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-http/tests/intellij.phantom.http.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-http/tests/intellij.phantom.http.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" filepath="$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" />
