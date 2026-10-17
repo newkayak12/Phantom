@@ -84,7 +84,12 @@ object MaterialIcons {
 
   private fun tables(): List<Table> = if (JBColor.isBright()) rules.lightTables else rules.darkTables
 
-  private fun icon(name: String): Icon = IconLoader.getIcon("$ROOT$name.svg", MaterialIcons::class.java.classLoader)
+  private fun icon(name: String): Icon {
+    // Folders have a variant whose emblem stays visible where it sticks out onto a light background
+    val variant = if (name.startsWith("folder") && JBColor.isBright()) "${name}_onlight" else name
+    val loader = MaterialIcons::class.java.classLoader
+    return IconLoader.findIcon("$ROOT$variant.svg", loader) ?: IconLoader.getIcon("$ROOT$name.svg", loader)
+  }
 
   private fun load(): Rules {
     val dark = Array(3) { HashMap<String, String>(1024) }
