@@ -704,8 +704,7 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
                        order="after ProjectsWelcomeTab"/>
     <welcomeTabFactory id="PluginsWelcomeTab" implementation="com.intellij.openapi.wm.impl.welcomeScreen.PluginsTabFactory"
                        order="after CustomizeWelcomeTab"/>
-    <welcomeTabFactory id="LearnIdeWelcomeTab" implementation="com.intellij.openapi.wm.impl.welcomeScreen.LearnIdeTabFactory"
-                       order="after PluginsWelcomeTab"/>
+    <!-- phantom-idea: no Learn tab (courses and promotions); Help | Keyboard Shortcuts PDF and Tip of the Day stay in the Help menu -->
     <welcomeScreenCustomization id="defaultCustomization"
                                 implementation="com.intellij.openapi.wm.impl.welcomeScreen.WelcomeScreenDefaultCustomization"/>
 
