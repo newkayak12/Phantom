@@ -1,0 +1,6 @@
+<idea-plugin package="dev.phantom.icons.core">
+  <extensions defaultExtensionNs="com.intellij">
+    <fileIconProvider implementation="dev.phantom.icons.core.MaterialFileIconProvider" order="first"/>
+    <iconProvider implementation="dev.phantom.icons.core.MaterialPsiIconProvider" order="first"/>
+  </extensions>
+</idea-plugin>
