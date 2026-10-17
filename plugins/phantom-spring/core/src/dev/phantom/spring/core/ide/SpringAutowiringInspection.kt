@@ -65,7 +65,8 @@ class SpringAutowiringInspection : AbstractBaseUastLocalInspectionTool() {
       }
     }
 
-    private fun fixes(point: InjectionPoint, candidates: List<PsiModifierListOwner>): Array<LocalQuickFix> {
+    private fun fixes(point: InjectionPoint, unordered: List<PsiModifierListOwner>): Array<LocalQuickFix> {
+      val candidates = unordered.sortedBy { SpringBeans.beanName(it).orEmpty() }
       val target = point.element as? com.intellij.lang.jvm.JvmModifiersOwner ?: return LocalQuickFix.EMPTY_ARRAY
       val actions = ArrayList<com.intellij.codeInsight.intention.IntentionAction>()
       for (candidate in candidates.take(MAX_FIXED_CANDIDATES)) {
