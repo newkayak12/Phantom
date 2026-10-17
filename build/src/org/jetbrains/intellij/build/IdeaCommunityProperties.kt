@@ -22,7 +22,6 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "phantom.springBoot",
   "phantom.jpa",
   "phantom.http",
-  "phantom.db",
   "phantom.icons",
   "phantom.theme",
   "intellij.lombok", // community plugin that only Ultimate bundled; Java projects need it

@@ -72,16 +72,18 @@ object GitHubPluginRepository {
     return plugins.mapNotNull { (it as? JsonObject)?.let { plugin -> toModel(plugin, ref, factory) } }
   }
 
-  /** Library coordinates (`group:artifact`) a plugin asks to be suggested for, by plugin id. */
+  /** A plugin that asks to be suggested for projects using one of [detect] (`group:artifact`). */
+  class Detect(val id: String, val name: String, val detect: List<String>)
+
   @JvmStatic
-  fun parseDetect(input: InputStream): Map<String, List<String>> {
-    val root = runCatching { Json.parseToJsonElement(input.reader().readText()) as? JsonObject }.getOrNull() ?: return emptyMap()
-    val plugins = root["plugins"] as? JsonArray ?: return emptyMap()
+  fun parseDetect(input: InputStream): List<Detect> {
+    val root = runCatching { Json.parseToJsonElement(input.reader().readText()) as? JsonObject }.getOrNull() ?: return emptyList()
+    val plugins = root["plugins"] as? JsonArray ?: return emptyList()
     return plugins.mapNotNull { element ->
       val plugin = element as? JsonObject ?: return@mapNotNull null
       val id = plugin.string("id") ?: return@mapNotNull null
-      id to plugin.strings("detect")
-    }.filter { it.second.isNotEmpty() }.toMap()
+      Detect(id, plugin.string("name") ?: id, plugin.strings("detect")).takeIf { it.detect.isNotEmpty() }
+    }
   }
 
   private fun toModel(plugin: JsonObject, ref: Ref, factory: PluginUiModelBuilderFactory): PluginUiModel? {
