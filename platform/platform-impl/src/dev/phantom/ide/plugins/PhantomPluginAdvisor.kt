@@ -73,24 +73,29 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
     val used = readAction { libraryCoordinates(project) }
     if (used.isEmpty()) return
     val properties = PropertiesComponent.getInstance(project)
-    for (plugin in DetectCache.get()) {
-      if (plugin.id in suggested || properties.getBoolean(ignoreKey(plugin.id))) continue
-      if (PluginManagerCore.getPlugin(PluginId.getId(plugin.id)) != null) continue
-      val match = plugin.detect.firstOrNull { it in used } ?: continue
-      suggested += plugin.id
-      LOG.info("Suggesting ${plugin.id}: the project uses $match")
-      notify(plugin, match)
-    }
+    val matches = DetectCache.get().mapNotNull { plugin ->
+      if (plugin.id in suggested || properties.getBoolean(ignoreKey(plugin.id))) return@mapNotNull null
+      if (PluginManagerCore.getPlugin(PluginId.getId(plugin.id)) != null) return@mapNotNull null
+      plugin.detect.firstOrNull { it in used }?.let { plugin to it }
+    }.distinctBy { it.first.id }
+    if (matches.isEmpty()) return
+    matches.forEach { (plugin, library) -> suggested += plugin.id; LOG.info("Suggesting ${plugin.id}: the project uses $library") }
+    notify(matches)
   }
 
-  private fun notify(plugin: GitHubPluginRepository.Detect, library: String) {
+  /** One balloon for everything this project could use, with one Install for all of it. */
+  private fun notify(matches: List<Pair<GitHubPluginRepository.Detect, String>>) {
+    val title = if (matches.size == 1) "${matches[0].first.name} is available" else "Plugins for this project are available"
+    val content = matches.joinToString("<br>") { (plugin, library) -> "<b>${plugin.name}</b> — uses $library" }
+    val ids = matches.map { PluginId.getId(it.first.id) }.toSet()
     NotificationGroupManager.getInstance().getNotificationGroup("Phantom Plugins")
-      .createNotification("${plugin.name} is available", "This project uses $library.", NotificationType.INFORMATION)
-      .addAction(NotificationAction.createSimpleExpiring("Install") {
-        installAndEnable(project, setOf(PluginId.getId(plugin.id)), showDialog = true) {}
+      .createNotification(title, content, NotificationType.INFORMATION)
+      .addAction(NotificationAction.createSimpleExpiring(if (ids.size == 1) "Install" else "Install all") {
+        installAndEnable(project, ids, showDialog = true) {}
       })
       .addAction(NotificationAction.createSimpleExpiring("Don't suggest") {
-        PropertiesComponent.getInstance(project).setValue(ignoreKey(plugin.id), true)
+        val properties = PropertiesComponent.getInstance(project)
+        matches.forEach { properties.setValue(ignoreKey(it.first.id), true) }
       })
       .notify(project)
   }

@@ -356,17 +356,6 @@
       <module fileurl="file://$PROJECT_DIR$/commandInterface/intellij.commandInterface.iml" filepath="$PROJECT_DIR$/commandInterface/intellij.commandInterface.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/core/phantom.spring.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/core/phantom.spring.core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/phantom.spring.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/phantom.spring.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/kotlin/phantom.spring.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/kotlin/phantom.spring.kotlin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/tests/phantom.spring.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/tests/phantom.spring.tests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring/tests-kotlin/phantom.spring.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring/tests-kotlin/phantom.spring.tests.kotlin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/core/phantom.springBoot.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/core/phantom.springBoot.core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/phantom.springBoot.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/phantom.springBoot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/properties/phantom.springBoot.properties.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/properties/phantom.springBoot.properties.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/tests/phantom.springBoot.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/tests/phantom.springBoot.tests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/tests-kotlin/phantom.springBoot.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/tests-kotlin/phantom.springBoot.tests.kotlin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/phantom.springBoot.yaml.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/phantom.springBoot.yaml.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-theme/phantom.theme.iml" filepath="$PROJECT_DIR$/plugins/phantom-theme/phantom.theme.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/core/phantom.icons.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/core/phantom.icons.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/phantom.icons.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/phantom.icons.iml" />

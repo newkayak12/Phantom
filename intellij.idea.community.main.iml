@@ -135,13 +135,6 @@
     <orderEntry type="module" module-name="intellij.searchEverywhereMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.marketplaceMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.spring" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.spring.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.spring.kotlin" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.springBoot" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.springBoot.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.springBoot.yaml" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.springBoot.properties" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.jpa" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.jpa.core" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.http" scope="RUNTIME" />
