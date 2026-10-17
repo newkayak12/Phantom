@@ -18,7 +18,7 @@ was_running=false
 if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
   was_running=true
   osascript -e 'tell application id "dev.phantom.idea" to quit' || true
-  for _ in {1..60}; do pgrep -f "$APP/Contents/MacOS/idea" > /dev/null || break; sleep 1; done
+  for _ in {1..180}; do pgrep -f "$APP/Contents/MacOS/idea" > /dev/null || break; sleep 1; done
   if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
     echo "Phantom is still running (a dialog may be asking something); close it and run again"
     exit 1
@@ -35,6 +35,8 @@ mv "$APP.new" "$APP"
 echo "installed $(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Contents/Info.plist") from $DMG ($(stat -f %Sm "$DMG"))"
 
 if $was_running; then
+  # start outside ~/Downloads so the JVM does not open its working directory there (a privacy prompt after re-signing)
+  cd /
   # LaunchServices may still be tearing down the old instance; try until the new one is up
   for _ in {1..5}; do
     sleep 2
