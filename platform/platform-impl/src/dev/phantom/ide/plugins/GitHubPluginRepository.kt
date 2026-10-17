@@ -28,10 +28,11 @@ import java.io.InputStream
  *                  "description": "...", "vendor": "Phantom", "category": "Database",
  *                  "since": "262", "until": "262.*", "depends": ["com.intellij.modules.platform"],
  *                  "download": "db-0.1.0/phantom-db-0.1.0.zip",
- *                  "detect": ["org.postgresql:postgresql"] } ] }
+ *                  "detect": ["org.postgresql:postgresql"], "detectFiles": ["Chart.yaml"] } ] }
  * ```
  * `download` is either an https URL or `<release tag>/<asset name>` of the same repository's GitHub Releases.
- * `detect` lists library coordinates whose presence in a project makes the IDE suggest the plugin.
+ * `detect` lists library coordinates whose presence in a project makes the IDE suggest the plugin; `detectFiles` lists file
+ * names that do the same (for tools that are not libraries, such as Helm charts).
  */
 @ApiStatus.Internal
 object GitHubPluginRepository {
@@ -142,8 +143,8 @@ object GitHubPluginRepository {
     return plugins.mapNotNull { (it as? JsonObject)?.let { plugin -> toModel(plugin, ref, factory, resolveAsset) } }
   }
 
-  /** A plugin that asks to be suggested for projects using one of [detect] (`group:artifact`). */
-  class Detect(val id: String, val name: String, val detect: List<String>)
+  /** A plugin that asks to be suggested for projects using one of [detect] (`group:artifact`) or containing one of [files]. */
+  class Detect(val id: String, val name: String, val detect: List<String>, val files: List<String> = emptyList())
 
   @JvmStatic
   fun parseDetect(metadata: String): List<Detect> {
@@ -152,7 +153,8 @@ object GitHubPluginRepository {
     return plugins.mapNotNull { element ->
       val plugin = element as? JsonObject ?: return@mapNotNull null
       val id = plugin.string("id") ?: return@mapNotNull null
-      Detect(id, plugin.string("name") ?: id, plugin.strings("detect")).takeIf { it.detect.isNotEmpty() }
+      Detect(id, plugin.string("name") ?: id, plugin.strings("detect"), plugin.strings("detectFiles"))
+        .takeIf { it.detect.isNotEmpty() || it.files.isNotEmpty() }
     }
   }
 
