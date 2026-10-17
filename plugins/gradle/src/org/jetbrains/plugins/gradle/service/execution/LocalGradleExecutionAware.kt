@@ -4,6 +4,7 @@ package org.jetbrains.plugins.gradle.service.execution
 import com.intellij.execution.target.TargetEnvironmentConfiguration
 import com.intellij.execution.target.TargetEnvironmentsManager
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.externalSystem.issue.BuildIssueException
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTask
@@ -18,15 +19,20 @@ import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.progress.util.ProgressIndicatorBase
 import com.intellij.openapi.progress.util.ProgressIndicatorListener
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.ProjectJdkTable
+import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.JdkUtil
 import com.intellij.openapi.roots.ui.configuration.SdkLookupProvider
 import com.intellij.openapi.roots.ui.configuration.SdkLookupProvider.SdkInfo
 import com.intellij.openapi.util.io.toCanonicalPath
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.PathMapper
+import com.intellij.util.lang.JavaVersion
+import org.gradle.util.GradleVersion
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.PropertyKey
 import org.jetbrains.plugins.gradle.issue.IncorrectGradleJdkIssue
+import org.jetbrains.plugins.gradle.jvmcompat.GradleJvmSupportMatrix
 import org.jetbrains.plugins.gradle.service.GradleInstallationManager
 import org.jetbrains.plugins.gradle.settings.GradleProjectSettings
 import org.jetbrains.plugins.gradle.settings.GradleSettings
@@ -115,7 +121,7 @@ class LocalGradleExecutionAware : GradleExecutionAware {
     val provider = getGradleJvmLookupProvider(project, projectSettings)
 
     val sdkInfo = provider.resolveGradleJvmInfo(project, projectSettings.externalProjectPath, projectSettings.gradleJvm)
-    if (sdkInfo is SdkInfo.Resolved) return sdkInfo
+    if (sdkInfo is SdkInfo.Resolved) return compatibleGradleJvm(projectSettings, sdkInfo)
 
     waitForGradleJvmResolving(provider, task, taskNotificationListener)
 
@@ -126,7 +132,44 @@ class LocalGradleExecutionAware : GradleExecutionAware {
       projectSettings.gradleJvm = originalGradleJvm ?: ExternalSystemJdkUtil.USE_PROJECT_JDK
     }
 
-    return provider.resolveGradleJvmInfo(project, projectSettings.externalProjectPath, projectSettings.gradleJvm)
+    val resolved = provider.resolveGradleJvmInfo(project, projectSettings.externalProjectPath, projectSettings.gradleJvm)
+    return if (resolved is SdkInfo.Resolved) compatibleGradleJvm(projectSettings, resolved) else missingProjectSdkFallback(projectSettings) ?: resolved
+  }
+
+  /**
+   * phantom-idea: the project SDK named in .idea/misc.xml is not registered (another IDE or a JDK still being downloaded
+   * set it). Run Gradle on the newest registered JDK it supports instead of failing with "Gradle JVM isn't resolved".
+   */
+  private fun missingProjectSdkFallback(projectSettings: GradleProjectSettings): SdkInfo.Resolved? {
+    val gradleJvm = projectSettings.gradleJvm
+    if (gradleJvm != null && gradleJvm != ExternalSystemJdkUtil.USE_PROJECT_JDK) return null
+    val gradleVersion = GradleInstallationManager.guessGradleVersion(projectSettings) ?: return null
+    val candidate = newestSupportedJdk(gradleVersion) ?: return null
+    LOG.info("Project SDK is not registered; using ${candidate.name} as Gradle JVM for Gradle ${gradleVersion.version}")
+    return SdkInfo.Resolved(candidate.name, candidate.versionString, candidate.homePath)
+  }
+
+  private fun newestSupportedJdk(gradleVersion: GradleVersion): Sdk? =
+    runReadAction { ProjectJdkTable.getInstance().getSdksOfType(ExternalSystemJdkUtil.getJavaSdkType()) }
+      .mapNotNull { sdk -> sdk.versionString?.let(JavaVersion::tryParse)?.let { sdk to it } }
+      .filter { (sdk, version) -> sdk.homePath != null && GradleJvmSupportMatrix.isSupported(gradleVersion, version) }
+      .maxByOrNull { it.second }?.first
+
+  /**
+   * phantom-idea: when the Gradle JVM just follows the project SDK and that JDK is outside what the project's Gradle
+   * version runs on (e.g. a JDK 27 project SDK with Gradle 8.13), use the newest registered JDK that Gradle supports
+   * instead of failing the sync. A JDK the user picked explicitly in the Gradle settings is never replaced.
+   */
+  private fun compatibleGradleJvm(projectSettings: GradleProjectSettings, sdkInfo: SdkInfo.Resolved): SdkInfo.Resolved {
+    val gradleJvm = projectSettings.gradleJvm
+    if (gradleJvm != null && gradleJvm != ExternalSystemJdkUtil.USE_PROJECT_JDK) return sdkInfo
+    val current = sdkInfo.versionString?.let(JavaVersion::tryParse) ?: return sdkInfo
+    val gradleVersion = GradleInstallationManager.guessGradleVersion(projectSettings) ?: return sdkInfo
+    if (GradleJvmSupportMatrix.isSupported(gradleVersion, current)) return sdkInfo
+    val candidate = newestSupportedJdk(gradleVersion) ?: return sdkInfo
+    LOG.info("Gradle ${gradleVersion.version} does not run on ${sdkInfo.name} ($current); using ${candidate.name} as Gradle JVM")
+    projectSettings.gradleJvm = candidate.name
+    return SdkInfo.Resolved(candidate.name, candidate.versionString, candidate.homePath)
   }
 
   private fun checkGradleJvmInfo(
