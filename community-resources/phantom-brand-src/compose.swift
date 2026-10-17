@@ -30,9 +30,12 @@ func render(_ w: Int, _ h: Int, _ draw: (CGContext) -> Void) {
 }
 switch mode {
 case "icon", "head":
-  // icon: square crop of the whole character; head: hood + eyes only (for 16/32 px)
-  let crop = mode == "icon" ? CGRect(x: 0, y: (H - W) / 2 + 40, width: W, height: W)
-                            : CGRect(x: 300, y: 10, width: 720, height: 720)
+  // Square crops centered on the face (the eyes sit at about 60% across, 28% down the source art):
+  // icon shows the hood and upper cloak, head only the hood and eyes (for 16/32 px)
+  let faceX = Int(Double(W) * 0.60), faceY = Int(Double(H) * 0.28)
+  let side = mode == "icon" ? Int(Double(W) * 0.74) : Int(Double(W) * 0.50)
+  let x0 = min(max(faceX - side / 2, 0), W - side), y0 = min(max(faceY - side / 2, 0), H - side)
+  let crop = CGRect(x: x0, y: y0, width: side, height: side)
   let piece = cg.cropping(to: crop)!
   render(size, size) { ctx in
     let s = CGFloat(size), inset = mode == "icon" ? s * 0.098 : 0, body = s - inset * 2
@@ -40,12 +43,7 @@ case "icon", "head":
     let path = CGPath(roundedRect: CGRect(x: inset, y: inset, width: body, height: body), cornerWidth: r, cornerHeight: r, transform: nil)
     ctx.addPath(path); ctx.clip()
     ctx.setFillColor(bgColor()); ctx.fill(CGRect(x: 0, y: 0, width: s, height: s))
-    if mode == "icon" {
-      let h = body * 0.96, w = h * CGFloat(W) / CGFloat(H)
-      drawFaded(ctx, CGRect(x: inset + (body - w) / 2, y: inset + (body - h) / 2, width: w, height: h))
-    } else {
-      ctx.draw(piece, in: CGRect(x: inset, y: inset, width: body, height: body))
-    }
+    ctx.draw(piece, in: CGRect(x: inset, y: inset, width: body, height: body))
   }
 case "splash":
   let w = size, h = size * 400 / 640, k = CGFloat(size) / 640

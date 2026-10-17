@@ -301,7 +301,11 @@ data class DialogImportItem(val item: SettingsContributor, val icon: Icon) {
       PlatformUtils.isCLion() -> StartupImportIcons.IdeIcons.CL_48
       PlatformUtils.isDataGrip() -> StartupImportIcons.IdeIcons.DG_48
       PlatformUtils.isGoIde() -> StartupImportIcons.IdeIcons.GO_48
-      PlatformUtils.isIdeaCommunity() -> StartupImportIcons.IdeIcons.IC_48
+      // phantom-idea: show our own product icon, not the IntelliJ IDEA Community one
+      PlatformUtils.isIdeaCommunity() -> com.intellij.openapi.util.IconLoader.findIcon(
+        com.intellij.openapi.application.ex.ApplicationInfoEx.getInstanceEx().applicationSvgIconUrl,
+        com.intellij.openapi.application.ex.ApplicationInfoEx::class.java
+      )?.let { com.intellij.util.IconUtil.toSize(it, 48, 48) } ?: StartupImportIcons.IdeIcons.IC_48
       PlatformUtils.isIdeaUltimate() -> StartupImportIcons.IdeIcons.IU_48
       PlatformUtils.isMPS() -> StartupImportIcons.IdeIcons.MPS_48
       PlatformUtils.isPhpStorm() -> StartupImportIcons.IdeIcons.PS_48
