@@ -1806,6 +1806,8 @@
     </group>
 
     <action class="com.intellij.ide.plugins.InstallFromDiskAction" id="plugin.InstallFromDiskAction"/>
+    <!-- phantom-idea: token for private GitHub plugin repositories -->
+    <action class="dev.phantom.ide.plugins.SetGitHubPluginTokenAction" id="Phantom.SetGitHubPluginToken"/>
 
     <action class="com.intellij.openapi.editor.actions.ShowFontsUsedByEditorAction" id="ShowFontsUsedByEditor"/>
     <group id="AnalyzeStacktraceToolbar"/>
