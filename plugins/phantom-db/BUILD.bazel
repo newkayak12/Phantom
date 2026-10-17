@@ -1,0 +1,39 @@
+load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+### auto-generated section `build intellij.phantom.db` start
+
+jvm_library(
+    name = "phantom-db",
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.phantom.db",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+jvm_library(
+    name = "phantom-db_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.phantom.db",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":phantom-db"],
+)
+### auto-generated section `build intellij.phantom.db` end
+
+### auto-generated section `iml intellij.phantom.db` start
+exports_files(
+    [
+        "intellij.phantom.db.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
+### auto-generated section `iml intellij.phantom.db` end
