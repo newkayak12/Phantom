@@ -154,8 +154,10 @@ public final class RepositoryHelper {
         indicator.setText2(IdeBundle.message("progress.connecting.to.plugin.manager", gitHub.getHost()));
       }
       var message = IdeBundle.message("progress.downloading.list.of.plugins", gitHub.getHost());
-      var models = MarketplaceRequests.readOrUpdateFile(null, gitHub.getMetadataUrl(), indicator, message,
-                                                        input -> GitHubPluginRepository.parseMetadata(input, gitHub, factory));
+      if (indicator != null) {
+        indicator.setText(message);
+      }
+      var models = GitHubPluginRepository.load(gitHub, factory, indicator);
       return process(models, build != null ? build : PluginManagerCore.getBuildNumber(), repositoryUrl);
     }
 

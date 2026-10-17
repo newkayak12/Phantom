@@ -2075,6 +2075,8 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
    <usagePresentationProvider implementation="com.intellij.find.impl.UsageInfo2UsageAdapterPresentationProvider"/>
 
     <pluginRepositoryAuthProvider implementation="com.intellij.ide.plugins.auth.EnvironmentVariablePluginRepositoryAuthProvider" />
+    <!-- phantom-idea: GitHub token for private GitHub plugin repositories -->
+    <pluginRepositoryAuthProvider implementation="dev.phantom.ide.plugins.GitHubPluginRepositoryAuthProvider"/>
     <applicationService serviceInterface="com.intellij.auth.GenericAuthService"
                         serviceImplementation="com.intellij.auth.LocalGenericAuthService"
                         client="local"/>
