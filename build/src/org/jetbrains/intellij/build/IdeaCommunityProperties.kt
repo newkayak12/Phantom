@@ -20,6 +20,7 @@ import java.nio.file.Path
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "intellij.phantom.spring",
   "intellij.phantom.springBoot",
+  "intellij.phantom.jpa",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(

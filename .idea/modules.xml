@@ -366,6 +366,10 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/properties/intellij.phantom.springBoot.properties.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/properties/intellij.phantom.springBoot.properties.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/tests/intellij.phantom.springBoot.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/tests/intellij.phantom.springBoot.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/intellij.phantom.springBoot.yaml.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/intellij.phantom.springBoot.yaml.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/core/intellij.phantom.jpa.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/core/intellij.phantom.jpa.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/intellij.phantom.jpa.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/intellij.phantom.jpa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/tests/intellij.phantom.jpa.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/tests/intellij.phantom.jpa.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/tests-kotlin/intellij.phantom.jpa.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/tests-kotlin/intellij.phantom.jpa.tests.kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" filepath="$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" />
