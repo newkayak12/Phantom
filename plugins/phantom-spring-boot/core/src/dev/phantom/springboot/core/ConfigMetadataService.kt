@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @Service(Service.Level.PROJECT)
 class ConfigMetadataService(private val project: Project) {
-  private class Entry(val rootsStamp: Long, val localStamp: List<Any>, val keys: ConfigKeys)
+  private class Entry(val rootsStamp: Long, val localStamp: List<Any>, val fromSource: ParsedMetadata, val keys: ConfigKeys)
 
   private val modules = ConcurrentHashMap<String, Entry>()
 
@@ -29,17 +29,19 @@ class ConfigMetadataService(private val project: Project) {
     val rootsStamp = ProjectRootModificationTracker.getInstance(project).modificationCount
     val local = localMetadata(module)
     val localStamp = local.map { it.stamp }
+    val fromSource = SourceConfigProperties.metadata(module)
     val cached = modules[module.name]
-    if (cached != null && cached.rootsStamp == rootsStamp && cached.localStamp == localStamp) return cached.keys
+    if (cached != null && cached.rootsStamp == rootsStamp && cached.localStamp == localStamp && cached.fromSource === fromSource) return cached.keys
 
-    val sources = ArrayList<ParsedMetadata>()
+    // Keys read from the current sources come first; generated metadata adds descriptions and hints, and may be stale.
+    val sources = arrayListOf(fromSource)
     local.mapTo(sources) { it.parse() }
     for (root in OrderEnumerator.orderEntries(module).recursively().librariesOnly().classes().roots) {
       ProgressManager.checkCanceled()
       libraryMetadata(root)?.let(sources::add)
     }
     val keys = ConfigKeys(sources)
-    modules[module.name] = Entry(rootsStamp, localStamp, keys)
+    modules[module.name] = Entry(rootsStamp, localStamp, fromSource, keys)
     return keys
   }
 

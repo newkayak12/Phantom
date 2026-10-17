@@ -365,6 +365,7 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/intellij.phantom.springBoot.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/intellij.phantom.springBoot.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/properties/intellij.phantom.springBoot.properties.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/properties/intellij.phantom.springBoot.properties.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/tests/intellij.phantom.springBoot.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/tests/intellij.phantom.springBoot.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/tests-kotlin/intellij.phantom.springBoot.tests.kotlin.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/tests-kotlin/intellij.phantom.springBoot.tests.kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/intellij.phantom.springBoot.yaml.iml" filepath="$PROJECT_DIR$/plugins/phantom-spring-boot/yaml/intellij.phantom.springBoot.yaml.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/core/intellij.phantom.jpa.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/core/intellij.phantom.jpa.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-jpa/intellij.phantom.jpa.iml" filepath="$PROJECT_DIR$/plugins/phantom-jpa/intellij.phantom.jpa.iml" />
