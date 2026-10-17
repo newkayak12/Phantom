@@ -35,9 +35,12 @@ Observed:
 - The Gradle daemon is counted separately: it serves builds, not the editor, and Phantom skipped the sync because the
   copy was already imported.
 
-Leads:
-- Phantom starts the JCEF browser process (`cef_server`, 180 MB) within the first 3 minutes, and Ultimate did not in this run.
-  Something in Phantom opens a web view at startup. Find it and make it lazy: that is about 13 % of Phantom's total.
+Why Phantom had a JCEF process (checked after the run):
+- Not a startup cost of Phantom. The copied Phantom config had `README.md` open as the current tab in Markdown
+  preview mode (`split_layout="SHOW_PREVIEW"`), so the restored tab rendered the preview, which runs in JCEF.
+  The stack trace in idea.log goes `MarkdownPreviewFileEditor.attachHtmlPanel` -> `JCEFHtmlPanel` -> `JBCefApp`.
+- Ultimate's own workspace had no Markdown tab open, so it never started the browser.
+- So Phantom did extra work in this run; without the preview tab its footprint would be about 180 MB lower.
 
 Raw output: session scratchpad `bench/phantom-v2`, `bench/ultimate-v2` (footprint, GC.heap_info before and after GC,
 VM.metaspace, Compiler.codecache, VM.classloader_stats, child processes, idea.log excerpt).
