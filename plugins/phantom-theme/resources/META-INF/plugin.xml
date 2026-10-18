@@ -4,8 +4,8 @@
   <vendor>Phantom</vendor>
   <category>User Interface</category>
   <description><![CDATA[
-  Phantom Dark and Phantom Light: the Islands themes with quieter borders, muted selections and a frame that sits
-  close to the panels, so the window reads as one calm surface. Colors only; no translucency, nothing runs.
+  Phantom Dark and Phantom Light, the default look of Phantom IDEA: charcoal panels on a near-black frame with the
+  app icon's amber for selections, tabs, the caret and focus, and a warmer editor palette. Colors only; nothing runs.
   ]]></description>
 
   <dependencies>
@@ -13,6 +13,7 @@
   </dependencies>
 
   <extensions defaultExtensionNs="com.intellij">
+    <bundledColorScheme id="Phantom Dark" path="/themes/PhantomDarkScheme.xml"/>
     <themeProvider id="Phantom Dark" path="/themes/PhantomDark.theme.json" targetUi="islands"/>
     <themeProvider id="Phantom Light" path="/themes/PhantomLight.theme.json" targetUi="islands"/>
   </extensions>

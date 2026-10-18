@@ -41,7 +41,8 @@ if $was_running; then
   # LaunchServices may still be tearing down the old instance; try until the new one is up
   for _ in {1..5}; do
     sleep 2
-    open "$APP"
+    # the user's own temp dir, not the one of whatever shell ran this script (it may be a sandbox that is gone later)
+    TMPDIR="$(getconf DARWIN_USER_TEMP_DIR)" open "$APP"
     sleep 3
     pgrep -f "$APP/Contents/MacOS/idea" > /dev/null && break
   done
