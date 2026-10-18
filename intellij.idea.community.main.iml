@@ -135,8 +135,6 @@
     <orderEntry type="module" module-name="intellij.searchEverywhereMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.marketplaceMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.http" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.http.core" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.sync" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.sync.core" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.icons" scope="RUNTIME" />
