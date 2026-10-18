@@ -26,9 +26,9 @@ class MaterialIconsTest : BasePlatformTestCase() {
     assertEquals("file", MaterialIcons.iconName("notes.zzz"))
   }
 
-  fun testJavaAndKotlinKeepClassIcons() {
+  fun testJavaKeepsClassIconsKotlinShowsLogo() {
     assertNull(MaterialIcons.iconName("Main.java"))
-    assertNull(MaterialIcons.iconName("UserService.kt"))
+    assertEquals("kotlin", MaterialIcons.iconName("UserService.kt"))
     assertEquals("kotlin", MaterialIcons.iconName("script.main.kts"))
   }
 

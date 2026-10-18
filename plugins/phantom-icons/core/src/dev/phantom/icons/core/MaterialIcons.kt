@@ -15,8 +15,8 @@ import javax.swing.Icon
 object MaterialIcons {
   private const val ROOT = "/icons/material/"
 
-  /** Files whose platform icon says more than a logo: the class, interface or object a Java/Kotlin file declares. */
-  private val KEEP_PLATFORM_ICON = setOf("java", "kt")
+  /** Files whose platform icon says more than a logo: the class, interface or record a Java file declares. Kotlin files show the logo. */
+  private val KEEP_PLATFORM_ICON = setOf("java")
 
   private class Rules(val defaultFile: String, val defaultFolder: String, val rootFolder: String, dark: Table, light: Table) {
     val darkTables: List<Table> = listOf(dark)
