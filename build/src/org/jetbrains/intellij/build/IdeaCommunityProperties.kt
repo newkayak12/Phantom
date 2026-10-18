@@ -18,7 +18,6 @@ import java.nio.file.Path
 
 /** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
-  "phantom.http",
   "phantom.icons",
   "phantom.sync",
   "phantom.theme",
