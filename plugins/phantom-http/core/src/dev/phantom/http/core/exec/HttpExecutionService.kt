@@ -65,7 +65,6 @@ class HttpExecutionService(private val project: Project, private val cs: Corouti
     }
     if (request.headers.none { it.first.equals("User-Agent", ignoreCase = true) }) builder.header("User-Agent", USER_AGENT)
     builder.method(request.method, publisher(request.body))
-    if (request.hasHandlers) warnings.add("Response handler scripts are not supported yet and were not run")
 
     val client = client(ClientKey(request.followRedirects, request.useCookies, request.connectTimeout))
     val started = System.nanoTime()
