@@ -2,6 +2,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <fileIconProvider implementation="dev.phantom.icons.core.MaterialFileIconProvider" order="first"/>
     <iconProvider implementation="dev.phantom.icons.core.MaterialPsiIconProvider" order="first"/>
-    <projectViewNodeDecorator implementation="dev.phantom.icons.core.KotlinFileNodeDecorator"/>
+    <!-- last: after the Kotlin plugin has set the class icon -->
+    <projectViewNodeDecorator implementation="dev.phantom.icons.core.KotlinFileNodeDecorator" order="last"/>
   </extensions>
 </idea-plugin>
