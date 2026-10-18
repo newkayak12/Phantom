@@ -33,6 +33,8 @@ Done:
 - Removed Ultimate upsell entries (locked Spring wizard, GitHub and Kotlin promos, welcome-screen survey banner)
 - Removed Android, Compose and declarative Android Gradle from the default bundle
 - Fixed a platform bug: the consent settings page crashed for any non-JetBrains vendor (`AppUIUtil.loadConsentsForEditing`)
+- No full rescan when a plugin fires a bare file type change that changes nothing (Atom Material Icons did this on every start, ~2 s of extra scanning); real association, ignore-list and announced changes still rescan
+- Backup and Sync to your own git repository (`phantom-sync`)
 
 Planned: see [docs/phantom/2026-10-16-feature-matrix.md](docs/phantom/2026-10-16-feature-matrix.md) and the design docs in
 [docs/phantom/design/](docs/phantom/design/).
