@@ -50,4 +50,6 @@ git tag -f "$tag" HEAD
 git push -q -f origin "refs/tags/$tag"
 # this checkout is a fork of intellij-community; name the repository, or gh picks the upstream
 repo="$(git remote get-url origin | sed -E 's#^(git@github.com:|https://github.com/)##; s#\.git$##')"
-gh release create "$tag" "$dmg" -R "$repo" --verify-tag --title "Phantom IDEA $version ($build)" --notes "$NOTES"
+# as a draft first: the release only appears once the DMG (~800 MB) has finished uploading
+gh release create "$tag" "$dmg" -R "$repo" --verify-tag --draft --title "Phantom IDEA $version ($build)" --notes "$NOTES"
+gh release edit "$tag" -R "$repo" --draft=false
