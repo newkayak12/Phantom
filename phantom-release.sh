@@ -30,7 +30,10 @@ mnt="$(mktemp -d)"
 hdiutil attach -nobrowse -readonly -mountpoint "$mnt" "$dmg" -quiet
 trap 'hdiutil detach "$mnt" -quiet || true; rmdir "$mnt" 2>/dev/null || true' EXIT
 app="$mnt/Phantom IDEA.app"
-codesign --verify "$app"
+# the build signs only the launcher, ad hoc and without sealed resources, so a strict `codesign --verify` cannot pass;
+# require that signature and a launcher macOS will start
+codesign -d "$app/Contents/MacOS/idea" 2>/dev/null
+file "$app/Contents/MacOS/idea" | grep -q "arm64"
 shown="$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app/Contents/Info.plist")"
 [[ "$shown" == "$build" ]] || { echo "Info.plist says $shown, expected $build"; exit 1; }
 hdiutil detach "$mnt" -quiet; trap - EXIT; rmdir "$mnt"
@@ -41,4 +44,8 @@ if [[ -z "${NOTES:-}" ]]; then
 fi
 # CI checks out a pushed commit; a local release first pushes what it built
 [[ -n "${GITHUB_ACTIONS:-}" ]] || git push -q origin HEAD
-gh release create "$tag" "$dmg" --target "$(git rev-parse HEAD)" --title "Phantom IDEA $version ($build)" --notes "$NOTES"
+# the tag goes up with git: creating it through the API needs the token's workflow scope, since the commit touches
+# .github/workflows
+git tag -f "$tag" HEAD
+git push -q -f origin "refs/tags/$tag"
+gh release create "$tag" "$dmg" --verify-tag --title "Phantom IDEA $version ($build)" --notes "$NOTES"
