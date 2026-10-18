@@ -24,6 +24,8 @@ class HttpRequestBlock(node: ASTNode) : HttpElement(node) {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, HttpHandler::class.java).filter { it.startOffsetInParent > line.startOffsetInParent }
   }
   val directives: List<HttpDirective> get() = PsiTreeUtil.getChildrenOfTypeAsList(this, HttpDirective::class.java)
+  /** `run #name` / `run ./file.http` lines of this block. */
+  val runs: List<HttpRun> get() = PsiTreeUtil.getChildrenOfTypeAsList(this, HttpRun::class.java)
 
   /** `### Login` or `# @name login`. */
   val requestName: String?

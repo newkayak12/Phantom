@@ -43,6 +43,8 @@ class HttpParser : PsiParser {
         HttpTokens.HEADER_NAME -> header(b)
         HttpTokens.BODY_TEXT, HttpTokens.INPUT_FILE -> body(b)
         HttpTokens.HANDLER_START, HttpTokens.HANDLER_FILE -> handler(b)
+        HttpTokens.IMPORT_KEYWORD -> line(b, HttpElements.IMPORT, HttpTokens.IMPORT_PATH)
+        HttpTokens.RUN_KEYWORD -> line(b, HttpElements.RUN, HttpTokens.RUN_REQUEST_NAME, HttpTokens.RUN_PATH, HttpTokens.RUN_VARIABLES)
         else -> b.advanceLexer()
       }
     }
@@ -52,6 +54,14 @@ class HttpParser : PsiParser {
   private fun single(b: PsiBuilder, type: IElementType) {
     val m = b.mark()
     b.advanceLexer()
+    m.done(type)
+  }
+
+  /** A keyword and the tokens of the same line that may follow it. */
+  private fun line(b: PsiBuilder, type: IElementType, vararg parts: IElementType) {
+    val m = b.mark()
+    b.advanceLexer()
+    while (b.tokenType in parts) b.advanceLexer()
     m.done(type)
   }
 
@@ -136,6 +146,8 @@ class HttpParserDefinition : ParserDefinition {
     HttpElements.DIRECTIVE -> HttpDirective(node)
     HttpElements.FILE_VARIABLE -> HttpFileVariable(node)
     HttpElements.VARIABLE_REF -> HttpVariableRef(node)
+    HttpElements.IMPORT -> HttpImport(node)
+    HttpElements.RUN -> HttpRun(node)
     else -> HttpElement(node)
   }
 }

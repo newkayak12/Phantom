@@ -56,7 +56,10 @@ class HttpSyntaxHighlighter : SyntaxHighlighterBase() {
       HttpTokens.LBRACES, HttpTokens.RBRACES -> HttpColors.BRACES
       HttpTokens.FILE_VARIABLE_NAME -> HttpColors.FILE_VARIABLE
       HttpTokens.HANDLER_START, HttpTokens.HANDLER_END, HttpTokens.SCRIPT, HttpTokens.HANDLER_FILE -> HttpColors.HANDLER
-      HttpTokens.INPUT_FILE -> HttpColors.FILE_REF
+      HttpTokens.INPUT_FILE, HttpTokens.IMPORT_PATH, HttpTokens.RUN_PATH -> HttpColors.FILE_REF
+      HttpTokens.IMPORT_KEYWORD, HttpTokens.RUN_KEYWORD -> HttpColors.METHOD
+      HttpTokens.RUN_REQUEST_NAME -> HttpColors.SEPARATOR
+      HttpTokens.RUN_VARIABLES -> HttpColors.FILE_VARIABLE
       TokenType.BAD_CHARACTER -> Colors.INVALID_STRING_ESCAPE
       else -> null
     }

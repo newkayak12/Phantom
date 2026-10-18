@@ -112,6 +112,9 @@ class HttpLexer : LexerBase() {
         bodyLine(first, content)
         if (section == SCRIPT) section = LONE_SCRIPT else if (section == AFTER_HANDLER) section = BETWEEN
       }
+      // `import ./a.http` and `run #name` / `run ./a.http (@v=x)`: a line of its own, no request follows from it
+      keyword(first, content, "import") -> importLine(first, content)
+      keyword(first, content, "run") -> runLine(first, content)
       else -> {
         requestLine(first, content)
         section = AFTER_REQUEST
@@ -129,6 +132,36 @@ class HttpLexer : LexerBase() {
       i = whitespace(i + 1, content)
     }
     if (i < content) text(i, content, HttpTokens.VALUE_TEXT, splitSpaces = false)
+  }
+
+  /** [word] followed by whitespace and something more. */
+  private fun keyword(first: Int, content: Int, word: String): Boolean {
+    val after = first + word.length
+    return startsWith(first, content, word) && after < content && buffer[after].isWhitespace() && spaces(after, content) < content
+  }
+
+  private fun importLine(first: Int, content: Int) {
+    add(first, HttpTokens.IMPORT_KEYWORD)
+    add(whitespace(first + "import".length, content), HttpTokens.IMPORT_PATH)
+  }
+
+  private fun runLine(first: Int, content: Int) {
+    add(first, HttpTokens.RUN_KEYWORD)
+    val target = whitespace(first + "run".length, content)
+    // `(@var=value, ...)` at the end of the line; a request name may itself contain spaces and parentheses before it
+    var variables = -1
+    if (buffer[content - 1] == ')') {
+      var i = content - 1
+      while (i > target && buffer[i] != '(') i--
+      if (i > target && buffer[i] == '(' && spaces(i + 1, content) < content && buffer[spaces(i + 1, content)] == '@') variables = i
+    }
+    var targetEnd = if (variables > 0) variables else content
+    while (targetEnd > target && buffer[targetEnd - 1].isWhitespace()) targetEnd--
+    add(target, if (buffer[target] == '#') HttpTokens.RUN_REQUEST_NAME else HttpTokens.RUN_PATH)
+    if (variables > 0) {
+      if (variables > targetEnd) add(targetEnd, TokenType.WHITE_SPACE)
+      add(variables, HttpTokens.RUN_VARIABLES)
+    }
   }
 
   private fun requestLine(first: Int, content: Int) {

@@ -10,6 +10,7 @@ import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.ui.EditorNotifications
 import dev.phantom.http.core.HttpEnvironmentService
+import dev.phantom.http.core.HttpImports
 import dev.phantom.http.core.HttpRequestBlock
 import dev.phantom.http.core.HttpVariables
 import dev.phantom.http.core.PhantomHttpBundle
@@ -24,8 +25,16 @@ import java.net.http.HttpTimeoutException
 object HttpRunner {
   /** Runs [blocks] one after another. Asks for an environment first when the file has several and none is chosen. */
   fun run(project: Project, file: VirtualFile, blocks: List<HttpRequestBlock>, popupOwner: Component?) {
-    if (blocks.isEmpty()) return
-    val pointers = blocks.map { SmartPointerManager.createPointer(it) }
+    runSteps(project, file, blocks.map { HttpImports.Step(it, emptyMap()) }, popupOwner)
+  }
+
+  /**
+   * Runs [steps] one after another; a step may be a request of an imported file, with the values its `run` line gives.
+   * The environment is the one chosen for [file], the file the run started from.
+   */
+  fun runSteps(project: Project, file: VirtualFile, steps: List<HttpImports.Step>, popupOwner: Component?) {
+    if (steps.isEmpty()) return
+    val pointers = steps.map { RunStep(SmartPointerManager.createPointer(it.block), it.overrides) }
     val envService = HttpEnvironmentService.getInstance(project)
     val names = envService.environmentsFor(file).names
     val selected = envService.selectedEnvironment(file)
@@ -56,14 +65,16 @@ object HttpRunner {
     if (owner != null && owner.isShowing) popup.showInCenterOf(owner) else popup.showCenteredInCurrentWindow(project)
   }
 
-  private fun start(project: Project, pointers: List<SmartPsiElementPointer<HttpRequestBlock>>, environment: String?) {
+  private class RunStep(val pointer: SmartPsiElementPointer<HttpRequestBlock>, val overrides: Map<String, String>)
+
+  private fun start(project: Project, steps: List<RunStep>, environment: String?) {
     val service = HttpExecutionService.getInstance(project)
     service.launch {
-      for (pointer in pointers) {
-        val title = readAction { pointer.element?.presentableName } ?: continue
+      for (step in steps) {
+        val title = readAction { step.pointer.element?.presentableName } ?: continue
         val panel = withContext(Dispatchers.EDT) { HttpResponseToolWindow.newTab(project, title) }
         withContext(Dispatchers.EDT) { panel.job = coroutineContext[Job] }
-        if (!runOne(service, pointer, environment, panel)) break
+        if (!runOne(service, step, environment, panel)) break
       }
     }
   }
@@ -71,15 +82,15 @@ object HttpRunner {
   /** False when the run was cancelled, so "Run All" stops too. */
   private suspend fun runOne(
     service: HttpExecutionService,
-    pointer: SmartPsiElementPointer<HttpRequestBlock>,
+    step: RunStep,
     environment: String?,
     panel: HttpResponsePanel,
   ): Boolean {
     var resolver: HttpVariables.Resolver? = null
     val request = try {
       readAction {
-        val block = pointer.element ?: throw HttpRequestBuildException(PhantomHttpBundle.message("http.run.no.request"))
-        val r = HttpVariables.resolver(block.containingFile, service.globals, environment)
+        val block = step.pointer.element ?: throw HttpRequestBuildException(PhantomHttpBundle.message("http.run.no.request"))
+        val r = HttpVariables.resolver(block.containingFile, service.globals, environment, step.overrides)
         resolver = r
         HttpRequestBuilder.build(block, r)
       }
