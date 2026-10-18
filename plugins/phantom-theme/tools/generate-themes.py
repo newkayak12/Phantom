@@ -12,6 +12,7 @@ looks the same with that option on or off.
 """
 import json
 import pathlib
+import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = pathlib.Path(__file__).resolve().parent.parent / "resources" / "themes"
@@ -28,39 +29,41 @@ SHAPE = {
 
 THEMES = {
   "PhantomDark": {
-    "name": "Phantom Dark", "dark": True, "parent": "Islands Dark", "scheme": "Islands Dark",
+    "name": "Phantom Dark", "dark": True, "parent": "Islands Dark", "scheme": "Phantom Dark",
     "source": "platform/platform-resources/src/themes/islands/ManyIslandsDark.theme.json",
     "tokens": {
-      # The frame sits just above the panels instead of standing out as a lighter band
-      "main-window-bg": "#1D1E21",
-      "main-window-bg-alt": "#1D1E21",
-      "tool-window-bg-alt": "#191A1C",
+      # The app icon: panels of soft charcoal floating on a near-black frame, lit by warm amber eyes
+      "layer-0-bg": "#17181B",
+      "main-window-bg": "#111214",
+      "main-window-bg-alt": "#111214",
+      "tool-window-bg-alt": "#17181B",
       # Borders fade into the panels
-      "layer-0-border": "#202125",
-      "editor-border": "#202125",
-      "editor-border-alt": "#202125",
-      "tool-window-border": "#202125",
-      "popup-border": "#2C2E33",
-      "control-border": "#36383E",
+      "layer-0-border": "#1E1F23",
+      "editor-border": "#1E1F23",
+      "editor-border-alt": "#1E1F23",
+      "tool-window-border": "#1E1F23",
+      "popup-border": "#2E2D30",
+      "control-border": "#3A3A40",
       "tree-indent-guide-border": "#222327",
-      # Quiet selections and tabs
-      "selection-bg-active": "#2A3142",
-      "selection-bg-active-muted": "#242936",
-      "selection-bg-inactive": "#26282D",
-      "tab-selected-bg-active": "#262930",
-      "tab-selected-bg-inactive": "#212226",
-      "tab-selected-border-active": "#262930",
-      "tab-selected-border-inactive": "#212226",
+      # Selections glow amber instead of IntelliJ blue
+      "selection-bg-active": "#45331D",
+      "selection-bg-active-muted": "#30271C",
+      "selection-bg-inactive": "#27272B",
+      # The open tab is a warm pill with an amber edge
+      "tab-selected-bg-active": "#2B2419",
+      "tab-selected-bg-inactive": "#202024",
+      "tab-selected-border-active": "#E0A250",
+      "tab-selected-border-inactive": "#3A3A40",
       # Amber accent from the app icon's eyes: buttons, focus rings, selected toolbar items, completion matches
-      "accent-brand-bg": "#C17F35",
-      "accent-brand-border": "#C17F35",
+      "accent-brand-bg": "#D08C3A",
+      "accent-brand-border": "#E0A250",
       "accent-brand-bg-secondary": "#3A2C1C",
       "accent-brand-border-secondary": "#6B4A26",
       "toolbar-selected-bg": "#4A3720",
       "toolbar-selected-bg-hovered": "#5A4226",
-      "popup-completion-match-text": "#E2A65A",
+      "popup-completion-match-text": "#F0B865",
     },
-    "ui": SHAPE,
+    "ui": {**SHAPE, "Tree.rowHeight": 26, "Tree.rowHeight.compact": 22, "EditorTabs.underlineHeight": 2},
   },
   "PhantomLight": {
     "name": "Phantom Light", "dark": False, "parent": "Islands Light", "scheme": "Light",
@@ -75,12 +78,12 @@ THEMES = {
       "tool-window-border": "#ECEDF0",
       "popup-border": "#E3E4E8",
       "tree-indent-guide-border": "#ECEDF0",
-      "selection-bg-active": "#DDE6FA",
-      "selection-bg-active-muted": "#E8EEFB",
+      "selection-bg-active": "#F3E2C9",
+      "selection-bg-active-muted": "#F8EEDF",
       "selection-bg-inactive": "#E9EAEE",
-      "tab-selected-bg-active": "#E4EAF8",
+      "tab-selected-bg-active": "#F6E9D6",
       "tab-selected-bg-inactive": "#EFF0F3",
-      "tab-selected-border-active": "#E4EAF8",
+      "tab-selected-border-active": "#B5711F",
       "tab-selected-border-inactive": "#EFF0F3",
       "accent-brand-bg": "#B5711F",
       "accent-brand-border": "#B5711F",
@@ -114,7 +117,36 @@ def resolve(value, colors: dict, tokens: dict):
   return None
 
 
+# Editor schemes: the Islands scheme with tools/<name>.overrides.xml merged over it. A bundled scheme cannot name
+# another bundled scheme as its parent (plugin schemes may load first), so the result is a full copy on Darcula.
+SCHEMES = {
+  "PhantomDarkScheme": "platform/platform-resources/src/themes/islands/IslandSchemeDark.xml",
+}
+
+
+def merge_scheme(file_name: str, source: str) -> None:
+  base = ET.parse(ROOT / source).getroot()
+  overrides = ET.parse(pathlib.Path(__file__).resolve().parent / f"{file_name}.overrides.xml").getroot()
+  base.set("name", overrides.get("name"))
+  base.set("parent_scheme", "Darcula")
+  for section in ("colors", "attributes"):
+    target = base.find(section)
+    by_name = {option.get("name"): option for option in target}
+    for option in overrides.find(section):
+      old = by_name.get(option.get("name"))
+      if old is not None:
+        target.remove(old)
+      target.append(option)
+  ET.indent(base, space="    ")
+  text = ("<!-- generated by tools/generate-themes.py from " + source + " and tools/" + file_name + ".overrides.xml -->\n" +
+          ET.tostring(base, encoding="unicode") + "\n")
+  (OUT / f"{file_name}.xml").write_text(text, encoding="utf-8")
+  print(f"{overrides.get('name')}: scheme with {len(list(overrides.find('colors'))) + len(list(overrides.find('attributes')))} overrides")
+
+
 def main() -> None:
+  for file_name, source in SCHEMES.items():
+    merge_scheme(file_name, source)
   for file_name, spec in THEMES.items():
     parent = json.loads((ROOT / spec["source"]).read_text(encoding="utf-8"))
     colors, tokens = parent["colors"], spec["tokens"]

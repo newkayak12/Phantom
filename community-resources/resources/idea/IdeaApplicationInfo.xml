@@ -7,6 +7,8 @@
   <icon-eap svg="/phantom-eap.svg" svg-small="/phantom-eap_16.svg"/>
   <names product="Phantom" fullname="Phantom IDEA" script="idea" motto="A lighter IDE on the IntelliJ Platform"/>
 
+  <default-laf light="Phantom Light" dark="Phantom Dark"/>
+
   <essential-plugin>com.intellij.java</essential-plugin>
   <essential-plugin>com.intellij.java.ide</essential-plugin>
   <essential-plugin>com.intellij.modules.json</essential-plugin>
