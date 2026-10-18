@@ -10,6 +10,33 @@
     <annotator language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.HttpAnnotator"/>
     <runLineMarkerContributor language="PhantomHttpRequest" implementationClass="dev.phantom.http.core.exec.HttpRunLineMarkerContributor"/>
     <editorNotificationProvider implementation="dev.phantom.http.core.exec.HttpEnvironmentNotificationProvider"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpRestrictedHeader" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpRestrictedHeader.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpRestrictedHeaderInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpCustomMethod" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpCustomMethod.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpCustomMethodInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpWhitespaceInTarget" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpWhitespaceInTarget.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpWhitespaceInTargetInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpJsonBody" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpJsonBody.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpJsonBodyInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpMissingSeparator" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpMissingSeparator.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpMissingSeparatorInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpPlaceholder" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpPlaceholder.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpPlaceholderInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpInvalidHeader" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpInvalidHeader.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpInvalidHeaderInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpUnknownHeader" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpUnknownHeader.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WEAK WARNING"
+                     implementationClass="dev.phantom.http.core.HttpUnknownHeaderInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpInsecureUrl" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpInsecureUrl.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WEAK WARNING"
+                     implementationClass="dev.phantom.http.core.HttpInsecureUrlInspection"/>
     <actionPromoter implementation="dev.phantom.http.core.exec.HttpActionPromoter"/>
   </extensions>
   <actions resource-bundle="messages.PhantomHttpBundle">
