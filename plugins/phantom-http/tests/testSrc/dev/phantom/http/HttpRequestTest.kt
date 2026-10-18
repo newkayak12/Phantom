@@ -227,6 +227,50 @@ class HttpRequestTest : BasePlatformTestCase() {
     Files.deleteIfExists(upload)
   }
 
+  fun testResponseHandlersSetGlobalsRunTestsAndLog() {
+    val base = startServer()
+    val file = file("""
+      POST $base/echo?q=3
+      Authorization: Bearer first
+
+      > {%
+        client.test("created", function () {
+          client.assert(response.status === 201, "status " + response.status);
+        });
+        client.test("method", () => client.assert(response.body.method === "GET", "was " + response.body.method));
+        client.global.set("token", response.body.query + "-" + response.headers.valueOf("content-type"));
+        client.log("length", response.body.length, { ok: true });
+      %}
+
+      ###
+      GET $base/echo
+      Authorization: Bearer {{token}}
+    """.trimIndent())
+    val service = HttpExecutionService.getInstance(project)
+    service.globals.clear()
+    val first = build(file.requests[0])
+    assertEquals(1, first.handlers.size)
+    assertEquals(5, first.handlers[0].line)
+    val response = runBlocking { service.send(first) }
+    val report = HttpHandlerRunner.run(first.handlers, first, response, service.globals) { null }
+    assertEquals(listOf(HttpTestResult("created", true, null), HttpTestResult("method", false, "was POST")), report.tests)
+    assertEquals(listOf("length 0 {\"ok\":true}"), report.logs)
+    assertEmpty(report.errors)
+    assertEquals("q=3-application/json", service.globals["token"])
+
+    val second = HttpRequestBuilder.build(file.requests[1], HttpVariables.resolver(file, service.globals, null))
+    assertEquals("Bearer q=3-application/json", second.headers.single { it.first == "Authorization" }.second)
+
+    // an error in a script names the file and line, and does not stop the request
+    val broken = file("GET $base/echo\n\n> {%\nclient.log(1);\nresponse.nope.x;\n%}")
+    val request = build(broken.requests[0])
+    val brokenReport = HttpHandlerRunner.run(request.handlers, request, runBlocking { service.send(request) }, service.globals) { null }
+    assertEquals(listOf("1"), brokenReport.logs)
+    assertEquals(1, brokenReport.errors.size)
+    assertTrue(brokenReport.errors[0], brokenReport.errors[0].startsWith("api.http, line 5: TypeError: Cannot read properties of undefined"))
+    service.globals.clear()
+  }
+
   fun testRunShowsResponseInToolWindow() {
     val base = startServer()
     val file = file("POST $base/echo?q=2\nAuthorization: Bearer t\n\nhello")

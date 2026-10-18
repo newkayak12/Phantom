@@ -75,10 +75,13 @@ object HttpRunner {
     environment: String?,
     panel: HttpResponsePanel,
   ): Boolean {
+    var resolver: HttpVariables.Resolver? = null
     val request = try {
       readAction {
         val block = pointer.element ?: throw HttpRequestBuildException(PhantomHttpBundle.message("http.run.no.request"))
-        HttpRequestBuilder.build(block, HttpVariables.resolver(block.containingFile, service.globals, environment))
+        val r = HttpVariables.resolver(block.containingFile, service.globals, environment)
+        resolver = r
+        HttpRequestBuilder.build(block, r)
       }
     }
     catch (e: HttpRequestBuildException) {
@@ -89,7 +92,13 @@ object HttpRunner {
     try {
       val response = service.send(request)
       val body = HttpResponseFormatter.prepare(response)
-      withContext(Dispatchers.EDT) { panel.showResponse(request, response, body) }
+      // the script interpreter loads only when a request has a handler
+      val report = if (request.hasHandlers) {
+        val lookup = resolver
+        HttpHandlerRunner.run(request.handlers, request, response, service.globals) { lookup?.lookup(it) }
+      }
+      else null
+      withContext(Dispatchers.EDT) { panel.showResponse(request, response, body, report) }
       return true
     }
     catch (e: CancellationException) {
