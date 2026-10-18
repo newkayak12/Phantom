@@ -152,6 +152,14 @@ object HttpVariables {
     CachedValueProvider.Result.create(map as Map<String, HttpFileVariable>, file)
   }
 
+  /** File variables of the files this one imports (`import ./other.http`); this file's own come first. */
+  fun importedFileVariables(file: PsiFile): Map<String, HttpFileVariable> {
+    val httpFile = file as? HttpRequestFile ?: return emptyMap()
+    val map = LinkedHashMap<String, HttpFileVariable>()
+    for (imported in HttpImports.importedFiles(httpFile)) for ((name, v) in fileVariables(imported)) map.putIfAbsent(name, v)
+    return map
+  }
+
   /** Names a response handler sets with `client.global.set("name", ...)` somewhere in the file. */
   fun handlerGlobals(file: PsiFile): Set<String> = CachedValuesManager.getCachedValue(file) {
     val names = GLOBAL_SET.findAll(file.text).map { it.groupValues[1] }.toSet()
@@ -168,7 +176,7 @@ object HttpVariables {
 
   /** Whether [name] can get a value at run time; with no environment chosen, any environment counts. */
   fun isKnown(file: PsiFile, name: String): Boolean {
-    if (isDynamic(name) || name in fileVariables(file) || name in handlerGlobals(file)) return true
+    if (isDynamic(name) || name in fileVariables(file) || name in handlerGlobals(file) || name in importedFileVariables(file)) return true
     val (envs, selected) = environments(file)
     return envs.definingFile(selected, name) != null
   }
@@ -182,7 +190,7 @@ object HttpVariables {
       val offset = envPsi.text.indexOf("\"" + StringUtil.escapeStringCharacters(name) + "\"")
       return if (offset >= 0) envPsi.findElementAt(offset + 1) ?: envPsi else envPsi
     }
-    return fileVariables(file)[name]
+    return fileVariables(file)[name] ?: importedFileVariables(file)[name]
   }
 
   /** Completion candidates with where they come from. */
@@ -192,6 +200,7 @@ object HttpVariables {
     val result = LinkedHashMap<String, String>()
     for (name in envs.keys(selected)) result.putIfAbsent(name, selected ?: "environment")
     for (name in fileVariables(file).keys) result.putIfAbsent(name, "file variable")
+    for ((name, v) in importedFileVariables(file)) result.putIfAbsent(name, v.containingFile.name)
     for (name in handlerGlobals(file)) result.putIfAbsent(name, "set by handler")
     for ((name, description) in DYNAMIC) result.putIfAbsent(name, description)
     return result.map { it.key to it.value }
@@ -206,6 +215,8 @@ object HttpVariables {
     private val environment: String?,
     private val fileValues: Map<String, String>,
     private val globals: Map<String, String>,
+    /** Values a `run ... (@name=value)` line gives; they win over everything else. */
+    private val overrides: Map<String, String> = emptyMap(),
   ) {
     val unresolved: MutableSet<String> = LinkedHashSet()
     private val dynamicCache = HashMap<String, String>()
@@ -241,6 +252,7 @@ object HttpVariables {
 
     private fun value(name: String, depth: Int): String? {
       if (depth > MAX_DEPTH) return null
+      overrides[name]?.let { return substitute(it, depth + 1) }
       globals[name]?.let { return it }
       environments.value(environment, name)?.let { return substitute(it, depth + 1) }
       fileValues[name]?.let { return substitute(it, depth + 1) }
@@ -249,8 +261,9 @@ object HttpVariables {
     }
   }
 
-  fun resolver(file: PsiFile, globals: Map<String, String>, environment: String?): Resolver {
+  fun resolver(file: PsiFile, globals: Map<String, String>, environment: String?, overrides: Map<String, String> = emptyMap()): Resolver {
     val (envs, _) = environments(file)
-    return Resolver(envs, environment, fileVariables(file).mapValues { it.value.rawValue }, globals)
+    val values = (importedFileVariables(file) + fileVariables(file)).mapValues { it.value.rawValue }
+    return Resolver(envs, environment, values, globals, overrides)
   }
 }
