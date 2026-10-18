@@ -293,4 +293,29 @@ class HttpRequestTest : BasePlatformTestCase() {
       toolWindow()?.contentManager?.removeAllContents(true)
     }
   }
+
+  fun testHandlerWithoutRequestLineIsNotSentAsUrl() {
+    val base = startServer()
+    val file = file("> {% client.test(\"ok\", () => client.assert(response.status === 200)) %}\n\nGET $base/echo\n\n> {% client.log(response.status) %}\n")
+    assertEquals(listOf("GET $base/echo"), file.requests.map { build(it).requestLine })
+    assertEquals(1, build(file.requests[0]).handlers.size)
+    assertContainsElements(warnings(), PhantomHttpBundle.message("http.handler.no.request"))
+    val multiLine = file("> {%\nclient.log(1);\n%}\nGET $base/echo\n")
+    assertEquals(listOf("GET $base/echo"), multiLine.requests.map { build(it).requestLine })
+  }
+
+  fun testRunShowsHandlerTestResults() {
+    val base = startServer()
+    val file = file("GET $base/echo\n\n> {% client.test(\"ok\", () => client.assert(response.status === 201)) %}\n")
+    HttpRunner.run(project, file.virtualFile, file.requests, null)
+    val toolWindow = { ToolWindowManager.getInstance(project).getToolWindow(HttpResponseToolWindow.ID) }
+    val panel = { toolWindow()?.contentManager?.selectedContent?.component as? HttpResponsePanel }
+    try {
+      PlatformTestUtil.waitWithEventsDispatching("no response shown", { panel()?.shownBody != null }, 20)
+      assertContainsElements(panel()!!.shownLabels, PhantomHttpBundle.message("http.handler.tests", 1, 1))
+    }
+    finally {
+      toolWindow()?.contentManager?.removeAllContents(true)
+    }
+  }
 }
