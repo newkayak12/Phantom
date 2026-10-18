@@ -38,3 +38,21 @@ internal class KotlinFileNodeDecorator : com.intellij.ide.projectView.ProjectVie
     MaterialIcons.forFile(file)?.let(data::setIcon)
   }
 }
+
+/**
+ * The navigation bar shows a Kotlin file with one class as that class and asks the navbar extensions for its icon
+ * before the PSI icon; give it the file's logo there too, like the Project view. Only the file-level element: the
+ * methods and nested classes after it keep their own icons.
+ */
+class KotlinFileNavBarIcon : com.intellij.ide.navigationToolbar.AbstractNavBarModelExtension() {
+  override fun getPresentableText(`object`: Any?): String? = null
+
+  override fun getIcon(`object`: Any?): Icon? {
+    val element = `object` as? PsiElement ?: return null
+    if (!element.isValid) return null
+    val file = element as? PsiFile ?: element.parent as? PsiFile ?: return null
+    val virtualFile = file.virtualFile ?: return null
+    if (virtualFile.extension != "kt") return null
+    return MaterialIcons.forFile(virtualFile)
+  }
+}
