@@ -32,7 +32,8 @@ internal class MaterialPsiIconProvider : IconProvider(), DumbAware {
  */
 internal class KotlinFileNodeDecorator : com.intellij.ide.projectView.ProjectViewNodeDecorator {
   override fun decorate(node: com.intellij.ide.projectView.ProjectViewNode<*>, data: com.intellij.ide.projectView.PresentationData) {
-    val file = node.virtualFile ?: return
+    // a class node may not carry the file itself; take it from the class's PSI
+    val file = node.virtualFile ?: (node.value as? PsiElement)?.takeIf { it.isValid }?.containingFile?.virtualFile ?: return
     if (file.isDirectory || file.extension != "kt") return
     MaterialIcons.forFile(file)?.let(data::setIcon)
   }
