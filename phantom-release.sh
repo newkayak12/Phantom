@@ -48,4 +48,6 @@ fi
 # .github/workflows
 git tag -f "$tag" HEAD
 git push -q -f origin "refs/tags/$tag"
-gh release create "$tag" "$dmg" --verify-tag --title "Phantom IDEA $version ($build)" --notes "$NOTES"
+# this checkout is a fork of intellij-community; name the repository, or gh picks the upstream
+repo="$(git remote get-url origin | sed -E 's#^(git@github.com:|https://github.com/)##; s#\.git$##')"
+gh release create "$tag" "$dmg" -R "$repo" --verify-tag --title "Phantom IDEA $version ($build)" --notes "$NOTES"
