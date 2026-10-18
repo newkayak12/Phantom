@@ -18,7 +18,11 @@ class HttpRequestBlock(node: ASTNode) : HttpElement(node) {
   val requestLine: HttpRequestLine? get() = findChildByClass(HttpRequestLine::class.java)
   val headers: List<HttpHeader> get() = PsiTreeUtil.getChildrenOfTypeAsList(this, HttpHeader::class.java)
   val body: HttpBody? get() = findChildByClass(HttpBody::class.java)
-  val handlers: List<HttpHandler> get() = PsiTreeUtil.getChildrenOfTypeAsList(this, HttpHandler::class.java)
+  /** Handlers after the request line; one written before it belongs to no request. */
+  val handlers: List<HttpHandler> get() {
+    val line = requestLine ?: return emptyList()
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, HttpHandler::class.java).filter { it.startOffsetInParent > line.startOffsetInParent }
+  }
   val directives: List<HttpDirective> get() = PsiTreeUtil.getChildrenOfTypeAsList(this, HttpDirective::class.java)
 
   /** `### Login` or `# @name login`. */

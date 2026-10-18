@@ -102,6 +102,9 @@ class HttpAnnotator : Annotator {
           holder.newAnnotation(HighlightSeverity.WARNING, PhantomHttpBundle.message("http.variable.unresolved", name)).range(element).create()
         }
       }
+      is HttpHandler -> if ((element.parent as? HttpRequestBlock)?.handlers?.contains(element) != true) {
+        holder.newAnnotation(HighlightSeverity.WARNING, PhantomHttpBundle.message("http.handler.no.request")).range(element).create()
+      }
       is HttpDirective -> if (element.directiveName !in KNOWN_DIRECTIVES) {
         holder.newAnnotation(HighlightSeverity.WEAK_WARNING, PhantomHttpBundle.message("http.directive.unknown", element.directiveName))
           .range(element).create()

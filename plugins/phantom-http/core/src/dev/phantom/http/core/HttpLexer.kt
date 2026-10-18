@@ -77,7 +77,7 @@ class HttpLexer : LexerBase() {
       queueEnd = next
       return
     }
-    if (section != SCRIPT && startsWith(first, content, "###")) {
+    if (section != SCRIPT && section != LONE_SCRIPT && startsWith(first, content, "###")) {
       separator(lineStart, first, content)
       section = BETWEEN
     }
@@ -86,7 +86,7 @@ class HttpLexer : LexerBase() {
         BETWEEN -> between(lineStart, first, content)
         AFTER_REQUEST, HEADERS -> headers(lineStart, first, content)
         BODY -> body(lineStart, first, content)
-        SCRIPT -> script(lineStart, content)
+        SCRIPT, LONE_SCRIPT -> script(lineStart, content)
         else -> afterHandler(lineStart, first, content)
       }
     }
@@ -107,6 +107,11 @@ class HttpLexer : LexerBase() {
     when {
       isComment(first, content) -> add(first, if (isDirective(first, content)) HttpTokens.DIRECTIVE else HttpTokens.COMMENT)
       buffer[first] == '@' -> fileVariable(first, content)
+      // `> {% %}` with no request before it: a handler, never a request to `>` (it runs with no request)
+      (buffer[first] == '>' || buffer[first] == '<') && (first + 1 == content || buffer[first + 1].isWhitespace()) -> {
+        bodyLine(first, content)
+        if (section == SCRIPT) section = LONE_SCRIPT else if (section == AFTER_HANDLER) section = BETWEEN
+      }
       else -> {
         requestLine(first, content)
         section = AFTER_REQUEST
@@ -226,7 +231,7 @@ class HttpLexer : LexerBase() {
       if (i > from) add(from, HttpTokens.SCRIPT)
       add(i, HttpTokens.HANDLER_END)
       if (i + 2 < content) add(i + 2, HttpTokens.COMMENT)
-      section = AFTER_HANDLER
+      section = if (section == LONE_SCRIPT) BETWEEN else AFTER_HANDLER
     }
     else {
       add(from, HttpTokens.SCRIPT)
@@ -320,6 +325,8 @@ class HttpLexer : LexerBase() {
     const val BODY: Int = 3
     const val SCRIPT: Int = 4
     const val AFTER_HANDLER: Int = 5
+    /** A handler script with no request line before it; the lines after it are between requests again. */
+    const val LONE_SCRIPT: Int = 6
     private const val LINE_START_LIMIT = 8
     private const val MAX_LINE_TOKENS = 512
 
