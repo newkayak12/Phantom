@@ -25,3 +25,15 @@ internal class MaterialPsiIconProvider : IconProvider(), DumbAware {
     else -> null
   }
 }
+
+/**
+ * A Kotlin file with one class shows as that class in the Project view, which takes the class icon; give it the file's
+ * logo there. Only the Project view: completion and the structure view keep class/interface/object icons.
+ */
+internal class KotlinFileNodeDecorator : com.intellij.ide.projectView.ProjectViewNodeDecorator {
+  override fun decorate(node: com.intellij.ide.projectView.ProjectViewNode<*>, data: com.intellij.ide.projectView.PresentationData) {
+    val file = node.virtualFile ?: return
+    if (file.isDirectory || file.extension != "kt") return
+    MaterialIcons.forFile(file)?.let(data::setIcon)
+  }
+}
