@@ -1,0 +1,70 @@
+load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+### auto-generated section `build phantom.sync.core` start
+
+jvm_library(
+    name = "core",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "phantom.sync.core",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort,
+        "@lib//:kotlin-stdlib",
+        "//platform/core-api:core",
+        "//platform/core-ui",
+        "//platform/util",
+        "//platform/util:util-ui",
+        "//platform/analysis-api:analysis",
+        "//platform/projectModel-api:projectModel",
+        "//platform/platform-api:ide",
+        "//platform/ide-core",
+        "//platform/settings-sync-core:settingsSync-core",
+        "//libraries/kotlinx/coroutines/core",
+    ],
+)
+
+jvm_library(
+    name = "core_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "phantom.sync.core",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":core",
+        "//platform/core-api:core_test_lib",
+        "//platform/core-ui:core-ui_test_lib",
+        "//platform/util:util_test_lib",
+        "//platform/util:util-ui_test_lib",
+        "//platform/analysis-api:analysis_test_lib",
+        "//platform/projectModel-api:projectModel_test_lib",
+        "//platform/platform-api:ide_test_lib",
+        "//platform/ide-core:ide-core_test_lib",
+        "//platform/settings-sync-core:settingsSync-core_test_lib",
+        "//libraries/kotlinx/coroutines/core:core_test_lib",
+    ],
+)
+### auto-generated section `build phantom.sync.core` end
+
+### auto-generated section `iml phantom.sync.core` start
+exports_files(
+    [
+        "phantom.sync.core.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
+### auto-generated section `iml phantom.sync.core` end
