@@ -20,8 +20,10 @@ data class HttpRequestModel(
   val useCookies: Boolean,
   val timeout: Duration?,
   val connectTimeout: Duration?,
-  val hasHandlers: Boolean,
+  val handlers: List<HttpHandlerSource> = emptyList(),
 ) {
+  val hasHandlers: Boolean get() = handlers.isNotEmpty()
+
   sealed interface BodyPart {
     data class Text(val text: String) : BodyPart
     data class File(val path: Path) : BodyPart
@@ -65,8 +67,28 @@ object HttpRequestBuilder {
       useCookies = block.directive("no-cookie-jar") == null,
       timeout = block.directive("timeout")?.let { duration(it.argument) },
       connectTimeout = block.directive("connection-timeout")?.let { duration(it.argument) },
-      hasHandlers = block.handlers.isNotEmpty(),
+      handlers = block.handlers.mapNotNull(::handlerSource),
     )
+  }
+
+  /** The script of `> {% ... %}`, or the text of the file `> handler.js` names (relative to the `.http` file). */
+  private fun handlerSource(handler: HttpHandler): HttpHandlerSource? {
+    val file = handler.containingFile
+    val fileName = file.originalFile.virtualFile?.name ?: file.name
+    val fileText = file.text
+    val fileRef = handler.node.findChildByType(HttpTokens.HANDLER_FILE)
+    if (fileRef != null) {
+      val name = fileRef.text.removePrefix(">").trim()
+      val dir = file.originalFile.virtualFile?.parent
+      val script = (if (java.nio.file.Path.of(name).isAbsolute) com.intellij.openapi.vfs.LocalFileSystem.getInstance().findFileByPath(name) else dir?.findFileByRelativePath(name))
+                   ?: throw HttpRequestBuildException(PhantomHttpBundle.message("http.run.handler.missing", name))
+      return HttpHandlerSource(com.intellij.openapi.vfs.VfsUtilCore.loadText(script), 1, script.name)
+    }
+    val scripts = handler.node.getChildren(null).filter { it.elementType == HttpTokens.SCRIPT }
+    val first = scripts.firstOrNull() ?: return null
+    val end = handler.node.findChildByType(HttpTokens.HANDLER_END)?.startOffset ?: (scripts.last().startOffset + scripts.last().textLength)
+    val text = fileText.substring(first.startOffset, end)
+    return HttpHandlerSource(text, StringUtil.offsetToLineNumber(fileText, first.startOffset) + 1, fileName)
   }
 
   /** URL text without the whitespace that separates continuation lines. */

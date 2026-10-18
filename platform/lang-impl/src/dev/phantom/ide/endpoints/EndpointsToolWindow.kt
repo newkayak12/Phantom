@@ -74,7 +74,8 @@ internal class EndpointsToolWindowFactory : ToolWindowFactory {
 private object AllEndpoints : EndpointsFilter
 
 /** One row: what the provider says about an endpoint, plus how to open it. */
-internal class EndpointRow(val url: String, val methods: List<String>, val location: String, val target: () -> PsiElement?) {
+internal class EndpointRow(val url: String, val methods: List<String>, val location: String,
+                           val module: com.intellij.openapi.module.Module? = null, val target: () -> PsiElement?) {
   fun matches(query: String): Boolean {
     if (query.isBlank()) return true
     val words = query.trim().lowercase().split(Regex("\\s+"))
@@ -116,7 +117,7 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
     object : DoubleClickListener() {
       override fun onDoubleClick(event: MouseEvent): Boolean = open()
     }.installOn(tree)
-    PopupHandler.installPopupMenu(tree, DefaultActionGroup(CopyUrlAction(), OpenAction()), "EndpointsPopup")
+    PopupHandler.installPopupMenu(tree, DefaultActionGroup(GenerateRequestAction(), CopyUrlAction(), OpenAction()), "EndpointsPopup")
 
     search.border = JBUI.Borders.empty(4, 6)
     add(search, BorderLayout.NORTH)
@@ -162,10 +163,10 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
           if (!typed.isValidEndpoint(group, endpoint)) continue
           val presentation = typed.getEndpointPresentation(group, endpoint)
           val methods = (presentation as? EndpointMethodPresentation)?.endpointMethods.orEmpty()
-          val row = EndpointRow(presentation.presentableText ?: "", methods, presentation.locationString ?: "") {
+          val module = typed.getNavigationElement(group, endpoint)?.let { ModuleUtilCore.findModuleForPsiElement(it) }
+          val row = EndpointRow(presentation.presentableText ?: "", methods, presentation.locationString ?: "", module) {
             typed.getNavigationElement(group, endpoint)
           }
-          val module = typed.getNavigationElement(group, endpoint)?.let { ModuleUtilCore.findModuleForPsiElement(it) }
           byModule.getOrPut(module?.name ?: "Other sources") { ArrayList() } += row
         }
       }
@@ -201,6 +202,20 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
   }
 
   override fun dispose() {}
+
+  private fun generateRequest() {
+    val row = selected() ?: return
+    ReadAction.nonBlocking<String> { EndpointRequests.requestText(row.methods, row.url, EndpointRequests.baseUrl(project, row.module)) }
+      .expireWith(this)
+      .finishOnUiThread(ModalityState.defaultModalityState()) { EndpointRequests.appendAndOpen(project, it) }
+      .submit(AppExecutorUtil.getAppExecutorService())
+  }
+
+  private inner class GenerateRequestAction : DumbAwareAction("Generate HTTP Request", "Add a request for this endpoint to generated-requests.http", AllIcons.Actions.Execute) {
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+    override fun update(e: AnActionEvent) { e.presentation.isEnabled = selected() != null }
+    override fun actionPerformed(e: AnActionEvent) = generateRequest()
+  }
 
   private inner class CopyUrlAction : DumbAwareAction("Copy URL", null, AllIcons.Actions.Copy) {
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
