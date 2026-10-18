@@ -164,7 +164,9 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     return "PhantomIDEA" // phantom-idea: fixed so settings survive date-based version bumps
   }
 
-  override fun getBaseArtifactName(appInfo: ApplicationInfoProperties, buildNumber: String): String = "phantom-idea-${buildNumber.substringAfter('.')}" // 262.261016 -> phantom-idea-261016
+  // Phantom's own build number when phantom-build.sh sets it (PH-261018.2 -> phantom-idea-261018.2), else 262.261016 -> phantom-idea-261016
+  override fun getBaseArtifactName(appInfo: ApplicationInfoProperties, buildNumber: String): String =
+    "phantom-idea-" + (System.getProperty("phantom.build.number")?.takeIf { it.isNotBlank() }?.substringAfter('-') ?: buildNumber.substringAfter('.'))
 
   override fun getOutputDirectoryName(appInfo: ApplicationInfoProperties): String = "phantom-idea"
 }

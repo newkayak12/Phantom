@@ -568,7 +568,7 @@ class MacDistributionBuilder(
       outputFile = macAppDir.resolve("Info.plist"),
       placeholder = "@@",
       values = listOf(
-        Pair("build", context.fullBuildNumber),
+        Pair("build", phantomBuildNumber(context)),
         Pair("doc_types", docTypes ?: ""),
         Pair("executable", context.productProperties.baseFileName),
         Pair("icns", targetIcnsFileName),
@@ -594,7 +594,7 @@ class MacDistributionBuilder(
             Pair("bundle_name", fullName),
             Pair("version", version),
             Pair("year", todayYear),
-            Pair("build", context.fullBuildNumber)
+            Pair("build", phantomBuildNumber(context))
           )
         )
       }

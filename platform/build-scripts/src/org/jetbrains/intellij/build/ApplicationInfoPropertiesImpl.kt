@@ -161,6 +161,13 @@ internal fun computeAppInfoXml(appInfo: ApplicationInfoProperties, context: Buil
     marker = "__"
   )
 
+  // phantom-idea: the IDE shows its own build number; plugins keep being checked against the platform build (apiVersion)
+  System.getProperty(org.jetbrains.intellij.build.impl.PHANTOM_BUILD_NUMBER_PROPERTY)?.takeIf { it.isNotBlank() }?.let { phantom ->
+    val platformBuild = "${appInfo.productCode}-${context.buildNumber}"
+    check(patchedAppInfo.contains("number=\"$platformBuild\"")) { "no <build number=\"$platformBuild\"> in $appInfoXmlPath" }
+    patchedAppInfo = patchedAppInfo.replace("number=\"$platformBuild\"", "number=\"$phantom\" apiVersion=\"$platformBuild\"")
+  }
+
   val isEapOverride = System.getProperty(BuildOptions.INTELLIJ_BUILD_OVERRIDE_APPLICATION_VERSION_IS_EAP)
   val suffixOverride = System.getProperty(BuildOptions.INTELLIJ_BUILD_OVERRIDE_APPLICATION_VERSION_SUFFIX)
 
