@@ -236,6 +236,9 @@ object HttpVariables {
       return sb.toString()
     }
 
+    /** The value [name] has for this run, for `request.environment.get(name)` in handlers. */
+    fun lookup(name: String): String? = value(name, 0)
+
     private fun value(name: String, depth: Int): String? {
       if (depth > MAX_DEPTH) return null
       globals[name]?.let { return it }

@@ -91,7 +91,7 @@ class HttpResponsePanel(private val project: Project, private val title: String)
     replace(top, center)
   }
 
-  fun showResponse(request: HttpRequestModel, response: HttpResponseModel, body: PreparedBody) {
+  fun showResponse(request: HttpRequestModel, response: HttpResponseModel, body: PreparedBody, report: HttpHandlerReport? = null) {
     val header = JPanel(BorderLayout())
     val status = row()
     val reason = REASONS[response.status].orEmpty()
@@ -123,10 +123,44 @@ class HttpResponsePanel(private val project: Project, private val title: String)
     })
     summary.add(ActionLink(PhantomHttpBundle.message("http.response.open.editor")) { openInEditor(body) })
     for (warning in response.warnings) summary.add(JBLabel(warning, AllIcons.General.Warning, JBLabel.LEFT))
+    val details = JPanel(com.intellij.ui.components.panels.VerticalLayout(0))
+    if (report != null) handlerRows(report).forEach(details::add)
+    details.add(headerScroll)
+    headerScroll.isVisible = false
     header.add(summary, BorderLayout.CENTER)
-    header.add(headerScroll, BorderLayout.SOUTH)
+    header.add(details, BorderLayout.SOUTH)
 
     replace(header, bodyEditor(body).component)
+  }
+
+  /** Test results first (failed ones with their message), then handler errors, then `client.log` lines. */
+  private fun handlerRows(report: HttpHandlerReport): List<JComponent> {
+    val out = ArrayList<JComponent>()
+    if (report.tests.isNotEmpty()) {
+      val line = row()
+      val passed = report.tests.size - report.failed
+      line.add(JBLabel(PhantomHttpBundle.message("http.handler.tests", passed, report.tests.size),
+                       if (report.failed == 0) AllIcons.RunConfigurations.TestPassed else AllIcons.RunConfigurations.TestFailed, JBLabel.LEFT))
+      out.add(line)
+      for (test in report.tests.filter { !it.passed }) {
+        out.add(row().apply {
+          add(JBLabel("${test.name}: ${test.message.orEmpty()}", AllIcons.RunConfigurations.TestFailed, JBLabel.LEFT).apply { foreground = JBColor.RED })
+        })
+      }
+    }
+    for (error in report.errors) {
+      out.add(row().apply { add(JBLabel(error, AllIcons.General.Error, JBLabel.LEFT).apply { foreground = JBColor.RED }) })
+    }
+    if (report.logs.isNotEmpty()) {
+      val text = JBTextArea(report.logs.joinToString("\n")).apply {
+        isEditable = false
+        font = JBUI.Fonts.create(java.awt.Font.MONOSPACED, font.size)
+        border = JBUI.Borders.empty(4, 8)
+        rows = minOf(report.logs.size, 6)
+      }
+      out.add(JBScrollPane(text).apply { border = JBUI.Borders.empty() })
+    }
+    return out
   }
 
   private fun bodyEditor(body: PreparedBody): Editor {
