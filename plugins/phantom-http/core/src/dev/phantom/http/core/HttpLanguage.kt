@@ -49,6 +49,7 @@ class HttpRequestFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider
 
   val blocks: List<HttpRequestBlock> get() = PsiTreeUtil.getChildrenOfTypeAsList(this, HttpRequestBlock::class.java)
   val requests: List<HttpRequestBlock> get() = blocks.filter { it.requestLine != null }
+  val imports: List<HttpImport> get() = PsiTreeUtil.findChildrenOfType(this, HttpImport::class.java).toList()
 }
 
 class HttpTokenType(@NonNls debugName: String) : IElementType(debugName, HttpRequestLanguage)
@@ -83,6 +84,15 @@ object HttpTokens {
   @JvmField val VARIABLE_NAME: IElementType = HttpTokenType("VARIABLE_NAME")
   @JvmField val RBRACES: IElementType = HttpTokenType("}}")
 
+  /** `import ./other.http`: the keyword and the path. */
+  @JvmField val IMPORT_KEYWORD: IElementType = HttpTokenType("IMPORT_KEYWORD")
+  @JvmField val IMPORT_PATH: IElementType = HttpTokenType("IMPORT_PATH")
+  /** `run #Login (@user=admin)`, `run ./other.http`: the keyword, `#name` or a path, then `(@var=value, ...)`. */
+  @JvmField val RUN_KEYWORD: IElementType = HttpTokenType("RUN_KEYWORD")
+  @JvmField val RUN_REQUEST_NAME: IElementType = HttpTokenType("RUN_REQUEST_NAME")
+  @JvmField val RUN_PATH: IElementType = HttpTokenType("RUN_PATH")
+  @JvmField val RUN_VARIABLES: IElementType = HttpTokenType("RUN_VARIABLES")
+
   @JvmField val COMMENTS: TokenSet = TokenSet.create(COMMENT)
 
   val METHODS: Set<String> = setOf("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT")
@@ -98,6 +108,8 @@ object HttpElements {
   @JvmField val DIRECTIVE: IElementType = HttpElementType("DIRECTIVE")
   @JvmField val FILE_VARIABLE: IElementType = HttpElementType("FILE_VARIABLE")
   @JvmField val VARIABLE_REF: IElementType = HttpElementType("VARIABLE_REF")
+  @JvmField val IMPORT: IElementType = HttpElementType("IMPORT")
+  @JvmField val RUN: IElementType = HttpElementType("RUN")
 
   @JvmField val FILE: IFileElementType = IFileElementType(HttpRequestLanguage)
 }

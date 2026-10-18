@@ -18,46 +18,58 @@ import dev.phantom.http.core.*
 import java.util.function.Function
 import javax.swing.JComponent
 
-/** ▶ on the first token of each request line. */
+/** ▶ on the first token of each request line and of each `run` line. */
 class HttpRunLineMarkerContributor : RunLineMarkerContributor() {
   override fun getInfo(element: PsiElement): Info? {
     if (element.firstChild != null) return null
-    val line = element.parent?.let { if (it is HttpRequestLine) it else it.parent as? HttpRequestLine } ?: return null
+    val line = element.parent?.let { if (it is HttpRequestLine || it is HttpRun) it else it.parent as? HttpRequestLine } ?: return null
     if (PsiTreeUtil.getDeepestFirst(line) != element) return null
-    val action = ActionManager.getInstance().getAction(RUN_ACTION_ID) ?: return null
-    return Info(AllIcons.Actions.Execute, arrayOf(action)) { PhantomHttpBundle.message("http.action.run.text") }
+    val manager = ActionManager.getInstance()
+    val action = manager.getAction(RUN_ACTION_ID) ?: return null
+    // the same menu also runs the whole file
+    val actions = listOfNotNull(action, manager.getAction(RUN_ALL_ACTION_ID)).toTypedArray()
+    return Info(AllIcons.Actions.Execute, actions) { PhantomHttpBundle.message("http.action.run.text") }
   }
 
   override fun isDumbAware(): Boolean = true
 
   companion object {
     const val RUN_ACTION_ID: String = "PhantomHttp.RunRequest"
+    const val RUN_ALL_ACTION_ID: String = "PhantomHttp.RunAll"
   }
 }
 
 private fun httpFile(e: AnActionEvent): HttpRequestFile? = e.getData(CommonDataKeys.PSI_FILE) as? HttpRequestFile
 
-/** Runs the request at the gutter icon or at the caret. */
+/** Runs the request (or the `run` line) at the gutter icon or at the caret. */
 class HttpRunRequestAction : DumbAwareAction() {
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
   override fun update(e: AnActionEvent) {
-    e.presentation.isEnabledAndVisible = block(e) != null
+    e.presentation.isEnabledAndVisible = target(e) != null
   }
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
-    val block = block(e) ?: return
-    val vFile = block.containingFile.virtualFile ?: return
-    HttpRunner.run(project, vFile, listOf(block), e.getData(PlatformCoreDataKeys.CONTEXT_COMPONENT))
+    val target = target(e) ?: return
+    val vFile = target.containingFile.virtualFile ?: return
+    val steps = when (target) {
+      is HttpRun -> HttpImports.steps(target)
+      is HttpRequestBlock -> listOf(HttpImports.Step(target, emptyMap()))
+      else -> emptyList()
+    }
+    HttpRunner.runSteps(project, vFile, steps, e.getData(PlatformCoreDataKeys.CONTEXT_COMPONENT))
   }
 
-  private fun block(e: AnActionEvent): HttpRequestBlock? {
+  /** The `run` line at the caret, else the block with a request line. */
+  private fun target(e: AnActionEvent): PsiElement? {
     val element = e.getData(Location.DATA_KEY)?.psiElement
                   ?: httpFile(e)?.let { file -> e.getData(CommonDataKeys.CARET)?.offset?.let { file.findElementAt(it) ?: file.findElementAt(it - 1) } }
                   ?: return null
     if (element.containingFile !is HttpRequestFile) return null
-    return PsiTreeUtil.getParentOfType(element, HttpRequestBlock::class.java, false)?.takeIf { it.requestLine != null }
+    PsiTreeUtil.getParentOfType(element, HttpRun::class.java, false)?.let { return it }
+    val block = PsiTreeUtil.getParentOfType(element, HttpRequestBlock::class.java, false) ?: return null
+    return block.takeIf { it.requestLine != null } ?: block.runs.singleOrNull()
   }
 }
 
@@ -65,13 +77,15 @@ class HttpRunAllRequestsAction : DumbAwareAction() {
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
   override fun update(e: AnActionEvent) {
-    e.presentation.isEnabledAndVisible = httpFile(e)?.requests?.isNotEmpty() == true
+    val file = httpFile(e)
+    e.presentation.isEnabledAndVisible = file != null && (file.requests.isNotEmpty() || file.blocks.any { it.runs.isNotEmpty() })
   }
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val file = httpFile(e) ?: return
-    HttpRunner.run(project, file.virtualFile ?: return, file.requests, e.getData(PlatformCoreDataKeys.CONTEXT_COMPONENT))
+    // `run` lines take part in their place
+    HttpRunner.runSteps(project, file.virtualFile ?: return, HttpImports.steps(file), e.getData(PlatformCoreDataKeys.CONTEXT_COMPONENT))
   }
 }
 
@@ -115,7 +129,7 @@ class HttpEnvironmentNotificationProvider : EditorNotificationProvider {
         }
         createActionLabel(PhantomHttpBundle.message("http.action.run.all.text")) {
           val psi = PsiManager.getInstance(project).findFile(file) as? HttpRequestFile ?: return@createActionLabel
-          HttpRunner.run(project, file, psi.requests, this)
+          HttpRunner.runSteps(project, file, HttpImports.steps(psi), this)
         }
       }
     }

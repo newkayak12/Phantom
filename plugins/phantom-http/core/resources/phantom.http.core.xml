@@ -37,6 +37,15 @@
     <localInspection language="PhantomHttpRequest" shortName="PhantomHttpInsecureUrl" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpInsecureUrl.display.name"
                      groupKey="inspection.group" enabledByDefault="true" level="WEAK WARNING"
                      implementationClass="dev.phantom.http.core.HttpInsecureUrlInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpDuplicateImport" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpDuplicateImport.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="WARNING"
+                     implementationClass="dev.phantom.http.core.HttpDuplicateImportInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpUnresolvedImport" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpUnresolvedImport.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="ERROR"
+                     implementationClass="dev.phantom.http.core.HttpUnresolvedImportInspection"/>
+    <localInspection language="PhantomHttpRequest" shortName="PhantomHttpRunRequestName" bundle="messages.PhantomHttpBundle" key="inspection.PhantomHttpRunRequestName.display.name"
+                     groupKey="inspection.group" enabledByDefault="true" level="ERROR"
+                     implementationClass="dev.phantom.http.core.HttpRunRequestNameInspection"/>
     <actionPromoter implementation="dev.phantom.http.core.exec.HttpActionPromoter"/>
   </extensions>
   <actions resource-bundle="messages.PhantomHttpBundle">

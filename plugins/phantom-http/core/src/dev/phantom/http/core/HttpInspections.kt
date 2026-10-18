@@ -358,3 +358,51 @@ object JsonCheck {
     }
   }
 }
+
+/** The same file imported twice: the second line adds nothing. */
+class HttpDuplicateImportInspection : HttpInspection() {
+  override fun check(element: PsiElement, holder: ProblemsHolder) {
+    if (element !is HttpImport) return
+    val file = element.containingFile as? HttpRequestFile ?: return
+    val key = importKey(element) ?: return
+    val first = file.imports.firstOrNull { importKey(it) == key } ?: return
+    if (first != element) {
+      holder.report(element, element.pathRange, "http.inspection.import.duplicate", element.path, type = ProblemHighlightType.LIKE_UNUSED_SYMBOL)
+    }
+  }
+
+  /** The file it resolves to, or the written path when it resolves to nothing. */
+  private fun importKey(import: HttpImport): String? = import.importedFile?.path ?: import.path.removePrefix("./").takeIf { it.isNotEmpty() }
+}
+
+/** `import` or `run` naming a file that does not exist (next to the `.http` file, or as an absolute path). */
+class HttpUnresolvedImportInspection : HttpInspection() {
+  override fun check(element: PsiElement, holder: ProblemsHolder) {
+    when (element) {
+      is HttpImport -> if (element.path.isNotEmpty() && element.importedFile == null) {
+        holder.report(element, element.pathRange, "http.inspection.import.unresolved", element.path)
+      }
+      is HttpRun -> {
+        val path = element.path ?: return
+        if (path.isNotEmpty() && !path.contains("{{") && element.targetFile == null) {
+          holder.report(element, element.targetRange, "http.inspection.import.unresolved", path)
+        }
+      }
+    }
+  }
+}
+
+/** `run #name` where neither this file nor the files it imports has a request of that name. */
+class HttpRunRequestNameInspection : HttpInspection() {
+  override fun check(element: PsiElement, holder: ProblemsHolder) {
+    if (element !is HttpRun) return
+    val name = element.requestName ?: return
+    val file = element.containingFile as? HttpRequestFile ?: return
+    if (name.isEmpty()) {
+      holder.report(element, element.targetRange, "http.inspection.run.name.empty")
+    }
+    else if (HttpImports.findRequest(file, name) == null) {
+      holder.report(element, element.targetRange, "http.inspection.run.name.unknown", name)
+    }
+  }
+}
