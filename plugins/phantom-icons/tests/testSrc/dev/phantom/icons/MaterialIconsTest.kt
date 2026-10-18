@@ -5,6 +5,7 @@ import com.intellij.ide.FileIconProvider
 import com.intellij.ide.IconProvider
 import com.intellij.openapi.util.IconLoader
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import dev.phantom.icons.core.KotlinFileNavBarIcon
 import dev.phantom.icons.core.MaterialIcons
 
 class MaterialIconsTest : BasePlatformTestCase() {
@@ -58,5 +59,13 @@ class MaterialIconsTest : BasePlatformTestCase() {
       assertNotNull(name, icon)
       assertEquals(name, 16, icon!!.iconWidth)
     }
+  }
+
+  fun testKotlinFileGetsTheLogoInTheNavigationBar() {
+    val kt = myFixture.configureByText("Listener.kt", "class Listener")
+    assertNotNull(KotlinFileNavBarIcon().getIcon(kt))
+    val java = myFixture.configureByText("Main.java", "class Main {}")
+    assertNull(KotlinFileNavBarIcon().getIcon(java))
+    assertNull(KotlinFileNavBarIcon().getIcon("not psi"))
   }
 }
