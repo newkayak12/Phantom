@@ -33,6 +33,7 @@ rm -rf "$APP.new"
 ditto "$mnt/Phantom IDEA.app" "$APP.new"
 rm -rf "$APP"
 mv "$APP.new" "$APP"
+./phantom-sign.sh "$APP"
 echo "installed $(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Contents/Info.plist") from $DMG ($(stat -f %Sm "$DMG"))"
 
 if $was_running; then
