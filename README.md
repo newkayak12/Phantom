@@ -46,6 +46,7 @@ Planned: see [docs/phantom/2026-10-16-feature-matrix.md](docs/phantom/2026-10-16
 | `phantom-jpa` | Moved to [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) (`jpa`): JPQL in `@Query`, derived queries, `@Modifying` and mapping checks, repository navigation |
 | `phantom-db` | Moved to [phantom-plugins](https://github.com/newkayak12/Phantom-plugins): installed on demand |
 | `phantom-http` | `.http` request files, environments, requests from endpoints |
+| `phantom-sync` | Backup and Sync to your own git repository (GitHub or any remote) instead of a JetBrains account |
 | `phantom-containers` | Docker, Compose, Kubernetes |
 
 Design rules for every Phantom plugin:
