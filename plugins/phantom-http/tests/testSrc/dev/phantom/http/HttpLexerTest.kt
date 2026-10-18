@@ -10,6 +10,10 @@ class HttpLexerTest : LexerTestCase() {
   override fun getDirPath(): String = ""
 
   private val sample = """
+    > {% client.log(1) %}
+    > {%
+      client.log(2);
+    %}
     @host = http://localhost:8080
 
     ### Login
