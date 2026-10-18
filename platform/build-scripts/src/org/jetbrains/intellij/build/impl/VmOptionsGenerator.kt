@@ -24,7 +24,7 @@ private val COMMON_VM_OPTIONS: List<String> = listOf(
   "-XX:TieredOldPercentage=100000",
   "-XX:+UseCompactObjectHeaders",  // expected to become the default in JBR 29
   "--sun-misc-unsafe-memory-access=allow",  // temporary option, to be removed before adopting JBR 29
-  "-ea",
+  // phantom-idea: no "-ea"; assertions cost CPU on every edit and index pass and only JetBrains' error reports read them
   "-Dsun.io.useCanonCaches=false",
   "-Dsun.java2d.metal=true",
   "-Djbr.catch.SIGABRT=true",

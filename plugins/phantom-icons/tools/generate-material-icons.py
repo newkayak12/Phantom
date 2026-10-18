@@ -9,6 +9,7 @@ Copies only the SVGs the mapping references, sizes them to 16x16 so IconLoader r
 and writes mapping.txt, one rule per line: `<kind> <key> <icon>` where kind is
 f (file name), e (extension), d (folder name), and the same letters in upper case for the light-theme variants.
 """
+import colorsys
 import json
 import pathlib
 import re
@@ -78,25 +79,40 @@ def main(theme_dir: pathlib.Path) -> None:
 FOLDER_BODY = re.compile(r'<path\b(?=[^>]*\bd="M10 4H4)[^>]*?\bfill(?:="|:)(#[0-9a-fA-F]{6})[^>]*/>')
 
 
+# The theme's grey-blue default folder disappears on a charcoal tree; plain folders take the app icon's amber instead
+DEFAULT_FOLDER_COLOR = "#90a4ae"
+PHANTOM_FOLDER_COLOR = "#e0a250"
+
+
 def glass_folder(text: str) -> str:
   """
-  Redraws the folder body as a tab behind a front panel with a top-down gradient and a thin highlight, the soft
-  "glass" look of current macOS folders. The emblem drawn on top of the body is kept as it is.
+  Redraws the folder body as a darker tab behind a solid front panel with a thin highlight. Colors are made more
+  saturated than the theme's so folders read at 16px on a dark tree. The emblem drawn on top of the body is kept.
   """
   match = FOLDER_BODY.search(text)
   if match is None:
     return text
-  # Each folder keeps its own color: it is what tells src, test, docs... apart at a glance
-  color = match.group(1)
-  light, dark = mix(color, "#ffffff", 0.38), mix(color, "#000000", 0.22)
+  # Each folder keeps its own hue: it is what tells src, test, docs... apart at a glance
+  color = match.group(1).lower()
+  color = PHANTOM_FOLDER_COLOR if color == DEFAULT_FOLDER_COLOR else vivid(color)
+  light, dark = mix(color, "#ffffff", 0.12), mix(color, "#000000", 0.3)
   body = (
     f'<defs><linearGradient id="phantom-glass" x1="0" y1="0" x2="0" y2="1">'
     f'<stop offset="0" stop-color="{light}"/><stop offset="1" stop-color="{color}"/></linearGradient></defs>'
     f'<path d="M10 4H4c-1.1 0-2 .9-2 2v12h20V8c0-1.1-.9-2-2-2h-8z" fill="{dark}"/>'
     f'<rect x="2" y="7.5" width="20" height="12.5" rx="2" fill="url(#phantom-glass)"/>'
-    f'<rect x="3" y="8.1" width="18" height=".9" rx=".45" fill="#ffffff" fill-opacity=".45"/>'
+    f'<rect x="3" y="8.1" width="18" height=".9" rx=".45" fill="#ffffff" fill-opacity=".35"/>'
   )
   return text[:match.start()] + body + text[match.end():]
+
+
+def vivid(color: str) -> str:
+  """More saturation, lightness kept in the band that stands out on both the dark and the light tree."""
+  r, g, b = (int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
+  h, l, s = colorsys.rgb_to_hls(r, g, b)
+  s = min(1.0, s * 1.3 + 0.05) if s > 0.08 else s
+  l = min(0.64, max(0.48, l))
+  return "#" + "".join(f"{round(x * 255):02x}" for x in colorsys.hls_to_rgb(h, l, s))
 
 
 def mix(color: str, other: str, amount: float) -> str:
