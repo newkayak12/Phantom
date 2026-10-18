@@ -34,5 +34,7 @@ dmg="$artifacts/phantom-idea-$d.$n-aarch64.dmg"
 rm -f "$artifacts"/phantom-idea-*.sit "$artifacts"/phantom-idea-*.sit.*
 find "$artifacts" -maxdepth 1 -name 'phantom-idea-*.dmg*' ! -name "phantom-idea-$d.$n-aarch64.dmg*" -delete
 rm -rf "$root/out/phantom-idea/temp"
+# maven-artifacts (platform libraries for publishing), jps and the dist.* trees are rebuilt every time and not shipped
+rm -rf "$artifacts/maven-artifacts" "$artifacts/jps" "$root"/out/phantom-idea/dist.*
 echo "$phantom" > "$root/out/phantom-build-number"
 echo "built $dmg"
