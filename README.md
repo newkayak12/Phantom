@@ -74,18 +74,30 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 ```
 
 The first build takes about 2 hours (Bazel downloads and compiles everything); later builds take minutes.
-Output: `out/phantom-idea/artifacts/phantom-idea-<YYMMDD>-aarch64.dmg`.
+Output: `out/phantom-idea/artifacts/phantom-idea-<YYMMDD>.<N>-aarch64.dmg` (Apple silicon only; the newest DMG is
+kept, and the `.sit` archives and `out/phantom-idea/temp` are removed after each build).
+
+### Releases
+
+`./phantom-release.sh` builds, checks the app in the DMG, and publishes it as a GitHub release `v<YY>.<MM>.<DD>.<N>`
+(`--no-build` releases the last build). The **Phantom release** workflow does the same from the Actions tab; it runs
+on a self-hosted runner on your Mac, since a GitHub-hosted macOS runner (7 GB memory, small disk, 10x minutes on a
+private repository) cannot build this. Register one once with `tools/phantom-runner-setup.sh`.
+
+The DMG's app is ad-hoc signed. `phantom-install.sh` re-signs it with the local `Phantom Local` certificate (see
+`phantom-sign.sh`), so macOS keeps its privacy permissions across builds.
 
 ### Versioning
 
 | | Example | Note |
 |---|---|---|
-| Build number | `262.261016` | `262` is the IntelliJ platform branch, kept so Marketplace plugins (`since-build="262"`) still install. The rest is the build date |
-| Display version | `26.10.16` | shown in About and the title bar |
-| Artifacts | `phantom-idea-261016-aarch64.dmg` | |
+| Build number | `PH-261018.2` | Phantom's own: build date and the build of that day. Shown in About, Info.plist and the artifact names |
+| Display version | `26.10.18` | shown in About and the title bar |
+| Platform build | `262.261018` | internal only: the IDE declares it as `apiVersion` and bundled plugins get `since/until-build` from it, so plugins built for IntelliJ Platform 262 (`since-build="262"`) keep loading |
+| Artifacts | `phantom-idea-261018.2-aarch64.dmg` | |
 | Settings folder | `PhantomIDEA` | fixed, so settings survive version bumps |
 
-`phantom-build.sh` stamps the date automatically.
+`phantom-build.sh` stamps the date and the build of the day automatically.
 
 ## Upstream
 

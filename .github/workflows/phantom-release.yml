@@ -1,0 +1,71 @@
+# Builds Phantom IDEA for Apple silicon and publishes the DMG as a GitHub release (tag v<YY>.<MM>.<DD>.<N>).
+#   manual:    Actions → Phantom release → Run workflow (optional notes)
+#   tag push:  v<YY>.<MM>.<DD>.<N> made by hand; builds that number if today is its date and the release has no DMG yet
+# Runs on a self-hosted runner on the owner's Mac (labels self-hosted, macOS, ARM64; see tools/phantom-runner-setup.sh):
+# a GitHub-hosted macOS runner has 7 GB of memory and too little disk for this monorepo build, and its minutes count
+# ten times against a private repository's quota. It only builds aarch64, and phantom-build.sh removes the .sit
+# archives and out/phantom-idea/temp afterwards. The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it
+# with the "Phantom Local" certificate where it is installed, so no signing secret is stored on GitHub.
+name: Phantom release
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: Release notes (default: commits since the previous release)
+        required: false
+  push:
+    tags: ['v[0-9]*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phantom-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the release notes list the commits since the previous release tag
+          fetch-depth: 200
+          fetch-tags: true
+          # the checkout stays between runs, so the build's caches stay warm
+          clean: false
+
+      - name: Build number from the tag
+        if: github.event_name == 'push'
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"                       # v26.10.18.2
+          day="${tag#v}"; n="${day##*.}"; day="${day%.*}"
+          if [[ "$day" != "$(date +%y.%m.%d)" ]]; then
+            echo "::error::$tag is not today's date; the build number follows the build day"; exit 1
+          fi
+          if gh release view "$tag" --json assets -q '.assets[].name' 2>/dev/null | grep -q '\.dmg$'; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"       # phantom-release.sh already built and published it
+          fi
+          echo "seq=$n" >> "$GITHUB_OUTPUT"
+
+      - name: Build and release
+        if: steps.tag.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ inputs.notes }}
+          PHANTOM_BUILD_SEQ: ${{ steps.tag.outputs.seq }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            ./phantom-build.sh
+            build="$(cat out/phantom-build-number)"; day="${build#PH-}"; day="${day%%.*}"
+            gh release create "$GITHUB_REF_NAME" "out/phantom-idea/artifacts/phantom-idea-${build#PH-}-aarch64.dmg" \
+              --verify-tag --title "Phantom IDEA ${day:0:2}.${day:2:2}.${day:4:2} ($build)" --notes "${NOTES:-Built from $GITHUB_SHA}"
+          else
+            unset PHANTOM_BUILD_SEQ
+            ./phantom-release.sh
+          fi
