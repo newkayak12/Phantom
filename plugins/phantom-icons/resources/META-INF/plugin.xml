@@ -5,7 +5,7 @@
   <category>User Interface</category>
   <description><![CDATA[
   Colored file and folder icons by name and extension, drawn from the Material Icon Theme by Philipp Kief (MIT).
-  Java and Kotlin files keep their class, interface and object icons; source, test and resource roots get their own
+  Java files keep their class, interface and record icons; Kotlin files show the Kotlin logo; source, test and resource roots get their own
   folder colors. Only the icons of files on screen are loaded. Turn the plugin off to get the platform icons back.
   ]]></description>
 
