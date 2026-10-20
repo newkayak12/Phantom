@@ -512,7 +512,11 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
 
               synchronized(this) {
                 LOG.debug { "Downloading new $file from Marketplace for $url" }
-                request.saveToFile(file, indicator)
+                // download next to the file and move it in: an interrupted download must not leave a truncated
+                // file behind that the next start (or a "not modified" answer) would read
+                val partial = file.resolveSibling("${file.fileName}.part")
+                request.saveToFile(partial, indicator)
+                Files.move(partial, file, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
                 val newEtag = connection.getHeaderField("ETag")
                 LOG.debug { "Downloaded new $file from Marketplace for $url, new etag=$newEtag" }
                 if (newEtag != null) {
@@ -608,6 +612,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
     }
     catch (e: JacksonException) {
       LOG.infoOrDebug("Cannot parse plugins from Marketplace (corrupted or truncated response)", e)
+      dropCachedFile(Path.of(PathManager.getPluginTempPath(), MarketplaceUrls.FULL_PLUGINS_XML_IDS_FILENAME))
       return emptySet()
     }
     catch (e: IOException) {
@@ -630,6 +635,11 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
       }
     }
     catch (_: IOException) {
+    }
+    catch (e: JacksonException) {
+      // a truncated or corrupted cache: drop it with its ETag so the next request downloads it again
+      LOG.info("Dropping unreadable $pluginXmlIdsFile: ${e.message}")
+      dropCachedFile(pluginXmlIdsFile)
     }
     return null
   }
@@ -1081,6 +1091,15 @@ private fun loadETagForFile(file: Path): String {
     LOG.warn("Can't load ETag from '$eTagFile'", e)
   }
   return NO_ETAG
+}
+
+private fun dropCachedFile(file: Path) {
+  try {
+    Files.deleteIfExists(file)
+    Files.deleteIfExists(getETagFile(file))
+  }
+  catch (_: IOException) {
+  }
 }
 
 private fun getETagFile(file: Path): Path = file.parent.resolve("${file.fileName}.etag")
