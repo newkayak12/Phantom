@@ -250,10 +250,6 @@ inline fun ideaCommunityWindowsCustomizer(
   fullName { "Phantom IDEA" }
   installDirNameHandler { "Phantom IDEA" }
 
-  uninstallFeedbackUrl { appInfo ->
-    "https://www.jetbrains.com/idea/uninstall/?edition=IC-${appInfo.majorVersion}.${appInfo.minorVersion}"
-  }
-
   configure()
 }
 
