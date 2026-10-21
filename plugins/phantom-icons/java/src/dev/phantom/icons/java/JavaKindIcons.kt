@@ -4,6 +4,7 @@ package dev.phantom.icons.java
 import com.intellij.ide.IconProvider
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.Iconable
 import com.intellij.psi.PsiAnonymousClass
 import com.intellij.psi.PsiClass
@@ -13,11 +14,16 @@ import com.intellij.psi.PsiTypeParameter
 import com.intellij.psi.impl.ElementPresentationUtil
 import com.intellij.ui.IconManager
 import com.intellij.util.BitUtil
-import dev.phantom.icons.core.MaterialIcons
 import javax.swing.Icon
 
-/** Which Material icon a Java class gets: by the same kinds the platform tells apart with its C/I/E/@/R icons. */
+/**
+ * Which icon a Java class gets: by the same kinds the platform tells apart with its C/I/E/@/R icons. The icons are
+ * Phantom's own, drawn in the Material set's style, and live apart from the generated `icons/material/` directory.
+ */
 object JavaKindIcons {
+  /** The icon for an id from [iconName]. */
+  fun icon(name: String): Icon = IconLoader.getIcon("/icons/phantom/$name.svg", JavaKindIcons::class.java.classLoader)
+
   /** The icon id for a Java class, or null to keep the platform's icon (anything else, anonymous classes, type parameters). */
   fun iconName(element: PsiElement): String? {
     val aClass = element as? PsiClass ?: return null
@@ -47,7 +53,7 @@ internal class JavaKindIconProvider : IconProvider(), DumbAware {
     val name = JavaKindIcons.iconName(element) ?: return null
     val aClass = element as PsiClass
     val locked = BitUtil.isSet(flags, Iconable.ICON_FLAG_READ_STATUS) && !aClass.isWritable
-    val row = IconManager.getInstance().createLayeredIcon(aClass, MaterialIcons.icon(name), ElementPresentationUtil.getFlags(aClass, locked))
+    val row = IconManager.getInstance().createLayeredIcon(aClass, JavaKindIcons.icon(name), ElementPresentationUtil.getFlags(aClass, locked))
     return ElementPresentationUtil.addVisibilityIcon(aClass, flags, row)
   }
 }
