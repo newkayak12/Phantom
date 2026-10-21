@@ -21,7 +21,7 @@
       serviceImplementation="com.intellij.openapi.editor.impl.EditorThreadingImpl"
     />
 
-    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+    <!-- Phantom: no "Report to JetBrains" for Phantom's errors -->
     <applicationService serviceInterface="com.intellij.openapi.diagnostic.UnhandledReportSinkService"
                         serviceImplementation="com.intellij.diagnostic.UnhandledReportSinkServiceImpl"/>
 
@@ -1380,7 +1380,7 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
       implementation="com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkSettingsActionRegistryActionProvider"/>
 
     <registryKey key="jdk.auto.setup" defaultValue="true" description="Attempt to use local or downloadable SDK to configure project"/>
-    <registryKey key="jdk.updater" defaultValue="true" description="Check for JDK updates and suggest actions in notifications"/>
+    <registryKey key="jdk.updater" defaultValue="false" description="Check for JDK updates and suggest actions in notifications"/>
     <registryKey key="jdk.downloader" defaultValue="true" description="Suggest JDK downloads"/>
     <registryKey key="jdk.downloader.url" description="Custom URL to download the list of available JDKs" defaultValue=""/>
     <registryKey key="jdk.downloader.reuse.installed" defaultValue="true"

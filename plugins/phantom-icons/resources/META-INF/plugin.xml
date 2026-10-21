@@ -16,5 +16,6 @@
   <content namespace="jetbrains">
     <module name="phantom.icons.core"/>
     <module name="phantom.icons.java"/>
+    <module name="phantom.icons.vcs"/>
   </content>
 </idea-plugin>
