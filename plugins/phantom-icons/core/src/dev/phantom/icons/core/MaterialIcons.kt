@@ -15,9 +15,6 @@ import javax.swing.Icon
 object MaterialIcons {
   private const val ROOT = "/icons/material/"
 
-  /** Files whose platform icon says more than a logo: the class, interface or record a Java file declares. Kotlin files show the logo. */
-  private val KEEP_PLATFORM_ICON = setOf("java")
-
   private class Rules(val defaultFile: String, val defaultFolder: String, val rootFolder: String, dark: Table, light: Table) {
     val darkTables: List<Table> = listOf(dark)
     val lightTables: List<Table> = listOf(light, dark)
@@ -29,11 +26,12 @@ object MaterialIcons {
 
   fun forFile(file: VirtualFile): Icon? = iconName(file.name)?.let(::icon)
 
-  /** The icon id for a file name, or null to keep the platform's icon. */
+  /**
+   * The icon id for a file name. A `.java` file gets the generic Java icon here; the
+   * Java plugin's file icon patcher then shows the icon of the class it declares, which `phantom.icons.java` draws by kind.
+   */
   fun iconName(fileName: String): String? {
     val name = fileName.lowercase()
-    val extension = name.substringAfterLast('.', "")
-    if (extension in KEEP_PLATFORM_ICON) return null
     for (table in tables()) {
       table.fileNames[name]?.let { return it }
     }
