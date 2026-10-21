@@ -1,9 +1,11 @@
-# Builds Phantom IDEA for Apple silicon and publishes the DMG as a GitHub release (tag v<YY>.<MM>.<DD>.<N>).
+# Builds Phantom IDEA for Apple silicon and Windows x64 and publishes the DMG, the Windows installer and the Windows zip
+# as a GitHub release (tag v<YY>.<MM>.<DD>.<N>).
 #   Actions → Phantom release → Run workflow (optional notes). Not on tag pushes: phantom-release.sh pushes the tag
 #   itself, so a tag trigger would build every release twice.
 # Runs on a self-hosted runner on the owner's Mac (labels self-hosted, macOS, ARM64; see tools/phantom-runner-setup.sh):
 # a GitHub-hosted macOS runner has 7 GB of memory and too little disk for this monorepo build, and its minutes count
-# ten times against a private repository's quota. It only builds aarch64, and phantom-build.sh removes the .sit
+# ten times against a private repository's quota. Windows is cross-built on the same Mac (macOS aarch64 and Windows x64
+# only), and phantom-build.sh removes the .sit
 # archives and out/phantom-idea/temp afterwards. The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it
 # with the "Phantom Local" certificate where it is installed, so no signing secret is stored on GitHub.
 name: Phantom release
