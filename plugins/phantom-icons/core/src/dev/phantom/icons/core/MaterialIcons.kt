@@ -82,8 +82,7 @@ object MaterialIcons {
 
   private fun tables(): List<Table> = if (JBColor.isBright()) rules.lightTables else rules.darkTables
 
-  /** An icon of the set by id, e.g. `java-class`. */
-  fun icon(name: String): Icon = IconLoader.getIcon("$ROOT$name.svg", MaterialIcons::class.java.classLoader)
+  private fun icon(name: String): Icon = IconLoader.getIcon("$ROOT$name.svg", MaterialIcons::class.java.classLoader)
 
   private fun load(): Rules {
     val dark = Array(3) { HashMap<String, String>(1024) }
