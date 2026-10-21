@@ -5,7 +5,7 @@
   <category>User Interface</category>
   <description><![CDATA[
   Colored file and folder icons by name and extension, drawn from the Material Icon Theme by Philipp Kief (MIT).
-  Java files keep their class, interface and record icons; Kotlin files show the Kotlin logo; source, test and resource roots get their own
+  Java files and classes show Material icons by kind (class, abstract class, interface, enum, record, annotation, exception); Kotlin files show the Kotlin logo; source, test and resource roots get their own
   folder colors. Only the icons of files on screen are loaded. Turn the plugin off to get the platform icons back.
   ]]></description>
 
@@ -15,5 +15,6 @@
 
   <content namespace="jetbrains">
     <module name="phantom.icons.core"/>
+    <module name="phantom.icons.java"/>
   </content>
 </idea-plugin>
