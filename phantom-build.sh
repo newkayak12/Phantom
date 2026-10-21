@@ -40,13 +40,14 @@ rm -rf "$root/out/phantom-idea/temp"
 rm -rf "$artifacts/maven-artifacts" "$artifacts/jps" "$root"/out/phantom-idea/dist.*
 
 if [[ "${PHANTOM_WINDOWS:-1}" != 0 ]]; then
-  # clean.output.root=false: a clean would delete the DMG built above
+  # The Windows build cleans out/phantom-idea like any build (leftovers of the macOS one make it fail), so the DMG
+  # waits outside it
+  mv "$dmg"* "$root/out/"
   nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=windows -Dintellij.build.target.arch=x64 \
-    -Dintellij.build.clean.output.root=false -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" "$@"
+    -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" "$@"
+  mv "$root/out/$(basename "$dmg")"* "$artifacts/"
   ls "$artifacts/phantom-idea-$d.$n".exe "$artifacts/phantom-idea-$d.$n".win.zip >/dev/null \
     || { echo "no Windows installer or zip for $d.$n after the build"; exit 1; }
-  find "$artifacts" -maxdepth 1 \( -name 'phantom-idea-*.exe*' -o -name 'phantom-idea-*.win.zip*' -o -name 'Uninstall-*.exe' \) \
-    ! -name "phantom-idea-$d.$n.*" -delete
   rm -rf "$root/out/phantom-idea/temp" "$artifacts/maven-artifacts" "$artifacts/jps" "$root"/out/phantom-idea/dist.*
 fi
 echo "$phantom" > "$root/out/phantom-build-number"

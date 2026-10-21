@@ -3,7 +3,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.intellij.build.BuildOptions
-import org.jetbrains.intellij.build.OsFamily
 import org.jetbrains.intellij.build.buildCommunityStandaloneJpsBuilder
 import org.jetbrains.intellij.build.createCommunityBuildContext
 import org.jetbrains.intellij.build.impl.buildDistributions
@@ -17,7 +16,7 @@ object OpenSourceCommunityInstallersBuildTarget {
    * Also, skipping them allows sparing the GitHub runner's disk space.
    */
   private val BUILD_STEPS_DISABLED_FOR_GITHUB_ACTIONS: Set<String> = setOf(
-    BuildOptions.WINDOWS_ZIP_STEP,
+    // phantom-idea: the Windows zip is released next to the installer
     BuildOptions.CROSS_PLATFORM_DISTRIBUTION_STEP,
     BuildOptions.SOURCES_ARCHIVE_STEP,
     BuildOptions.ARCHIVE_PLUGINS,
@@ -30,10 +29,7 @@ object OpenSourceCommunityInstallersBuildTarget {
     useCompiledClassesFromProjectOutput = false
     buildStepsToSkip += BuildOptions.MAC_SIGN_STEP
     buildStepsToSkip += BuildOptions.WIN_SIGN_STEP
-    if (OsFamily.currentOs == OsFamily.MACOS) {
-      // generally not needed; doesn't work well on build agents
-      buildStepsToSkip += BuildOptions.WINDOWS_EXE_INSTALLER_STEP
-    }
+    // phantom-idea: the Windows installer is built on macOS too (the release Mac builds it)
   }
 
   @JvmStatic
