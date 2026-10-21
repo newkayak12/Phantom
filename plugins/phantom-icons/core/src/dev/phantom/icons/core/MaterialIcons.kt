@@ -26,6 +26,9 @@ object MaterialIcons {
 
   fun forFile(file: VirtualFile): Icon? = iconName(file.name)?.let(::icon)
 
+  /** For a path with no file behind it, such as a deleted file in the VCS changes. */
+  fun forFileName(fileName: String): Icon? = iconName(fileName)?.let(::icon)
+
   /**
    * The icon id for a file name. A `.java` file gets the generic Java icon here; the
    * Java plugin's file icon patcher then shows the icon of the class it declares, which `phantom.icons.java` draws by kind.
