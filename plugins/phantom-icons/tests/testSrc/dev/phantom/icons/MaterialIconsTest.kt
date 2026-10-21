@@ -11,7 +11,7 @@ import dev.phantom.icons.core.MaterialIcons
 class MaterialIconsTest : BasePlatformTestCase() {
   companion object {
     init {
-      System.setProperty("idea.load.plugins.id", "dev.phantom.icons")
+      System.setProperty("idea.load.plugins.id", "dev.phantom.icons,com.intellij.java")
     }
   }
 
@@ -27,8 +27,9 @@ class MaterialIconsTest : BasePlatformTestCase() {
     assertEquals("file", MaterialIcons.iconName("notes.zzz"))
   }
 
-  fun testJavaKeepsClassIconsKotlinShowsLogo() {
-    assertNull(MaterialIcons.iconName("Main.java"))
+  fun testJavaGetsTheGenericIconKotlinShowsLogo() {
+    // the class kind comes from the Java plugin's file icon patcher, see JavaKindIconsTest
+    assertEquals("java", MaterialIcons.iconName("Main.java"))
     assertEquals("kotlin", MaterialIcons.iconName("UserService.kt"))
     assertEquals("kotlin", MaterialIcons.iconName("script.main.kts"))
   }
