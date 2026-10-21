@@ -40,15 +40,16 @@ shown="$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app/Contents/Info.
 [[ "$shown" == "$build" ]] || { echo "Info.plist says $shown, expected $build"; exit 1; }
 hdiutil detach "$mnt" -quiet; trap - EXIT; rmdir "$mnt"
 
-# Windows x64, when phantom-build.sh built it: a PE installer, and a zip whose product-info.json reports this build
+# Windows x64, when phantom-build.sh built it: an NSIS installer, and a zip whose product-info.json reports this
+# version and platform build (the Windows files carry no PH- number)
 assets=("$dmg")
 exe="out/phantom-idea/artifacts/phantom-idea-$day.$n.exe"
 zip="out/phantom-idea/artifacts/phantom-idea-$day.$n.win.zip"
 if [[ -f "$exe" || -f "$zip" ]]; then
-  file "$exe" | grep -q "PE32"
-  info="$(unzip -p "$zip" '*/product-info.json')"
-  grep -q "\"buildNumber\": *\"$build\"" <<< "$info" || grep -q "\"version\": *\"$version\"" <<< "$info" \
-    || { echo "$zip does not report $build"; exit 1; }
+  file "$exe" | grep -q "Nullsoft Installer"
+  info="$(unzip -p "$zip" product-info.json)"
+  grep -q "\"version\": *\"$version\"" <<< "$info" && grep -q "\"buildNumber\": *\"262.$day\"" <<< "$info" \
+    || { echo "$zip does not report $version (262.$day)"; exit 1; }
   assets+=("$exe" "$zip")
 fi
 
