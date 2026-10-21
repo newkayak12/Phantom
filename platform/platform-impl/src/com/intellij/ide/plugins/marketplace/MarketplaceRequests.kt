@@ -100,6 +100,14 @@ private val objectMapper: ObjectMapper by lazy {
 @ApiStatus.Internal
 class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginInfoProvider {
   companion object {
+    /**
+     * Phantom: the IDE does not call JetBrains' plugin servers on its own (broken-plugin list, plugin id lists,
+     * feature suggestions). Browsing the Marketplace tab still works; `-Dphantom.jetbrains.services=true` turns the rest back on.
+     */
+    @JvmStatic
+    val jetBrainsServicesEnabled: Boolean
+      get() = java.lang.Boolean.getBoolean("phantom.jetbrains.services")
+
     private val cacheFilesLocks = ContainerUtil.createConcurrentWeakValueMap<String, Any>()
       .takeIf { System.getProperty("revert.IJPL244583") == null }
 
@@ -392,6 +400,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
      * @return null if failed to download brokenPlugins from the Marketplace
      */
     fun getBrokenPlugins(currentBuild: BuildNumber): Map<PluginId, Set<String>>? {
+      if (!jetBrainsServicesEnabled) return null
       LOG.debug { "Fetching broken plugins for build $currentBuild" }
       val brokenPlugins = try {
         readOrUpdateFile(
@@ -560,7 +569,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
 
   @Throws(IOException::class)
   internal suspend fun getFeatures(param: Map<String, String>): List<FeatureImpl> {
-    if (param.isEmpty()) {
+    if (param.isEmpty() || !jetBrainsServicesEnabled) {
       return emptyList()
     }
 
@@ -601,6 +610,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   @RequiresBackgroundThread
   @JvmOverloads
   fun getMarketplacePlugins(indicator: ProgressIndicator? = null): Set<PluginId> {
+    if (!jetBrainsServicesEnabled) return emptySet()
     try {
       return readOrUpdateFile(
         Path.of(PathManager.getPluginTempPath(), MarketplaceUrls.FULL_PLUGINS_XML_IDS_FILENAME),
@@ -922,6 +932,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   }
 
   private fun schedulePluginIdsUpdate() {
+    if (!jetBrainsServicesEnabled) return
     coroutineScope.launch {
       delay(30.seconds)
 

@@ -210,8 +210,8 @@ private val builtFromSources = PluginInfo(PluginType.FROM_SOURCES, null, null)
 private val pluginIdsFromOfficialJbPluginRepo: Supplier<Set<PluginId>> = TimeoutCachedValue(1, TimeUnit.HOURS) {
   // before loading default repository plugins lets check it's not changed, and is really official JetBrains repository
   val infoProvider = PluginInfoProvider.getInstance()
-  infoProvider.loadCachedPlugins()
-  ?: emptySet<PluginId?>().also { infoProvider.loadPlugins(null) } // schedule plugins loading, report nothing until repo plugins loaded
+  // Phantom: never download the Marketplace id list for this; use it only if something else cached it
+  infoProvider.loadCachedPlugins() ?: emptySet<PluginId?>()
 }
 
 /**
