@@ -1,0 +1,12 @@
+<!-- Optional: loads only where the Java plugin is installed; without it .java files keep the generic Java icon from core. -->
+<idea-plugin package="dev.phantom.icons.java">
+  <dependencies>
+    <module name="phantom.icons.core"/>
+    <module name="intellij.java.psi"/>
+    <module name="intellij.java.psi.impl"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- after the core provider, which answers for files and folders only, and before the platform's class icon -->
+    <iconProvider implementation="dev.phantom.icons.java.JavaKindIconProvider" order="after phantomMaterial"/>
+  </extensions>
+</idea-plugin>

@@ -11,7 +11,7 @@ import dev.phantom.icons.core.MaterialIcons
 class MaterialIconsTest : BasePlatformTestCase() {
   companion object {
     init {
-      System.setProperty("idea.load.plugins.id", "dev.phantom.icons")
+      System.setProperty("idea.load.plugins.id", "dev.phantom.icons,com.intellij.java")
     }
   }
 
@@ -27,8 +27,9 @@ class MaterialIconsTest : BasePlatformTestCase() {
     assertEquals("file", MaterialIcons.iconName("notes.zzz"))
   }
 
-  fun testJavaKeepsClassIconsKotlinShowsLogo() {
-    assertNull(MaterialIcons.iconName("Main.java"))
+  fun testJavaGetsTheGenericIconKotlinShowsLogo() {
+    // the class kind comes from the Java plugin's file icon patcher, see JavaKindIconsTest
+    assertEquals("java", MaterialIcons.iconName("Main.java"))
     assertEquals("kotlin", MaterialIcons.iconName("UserService.kt"))
     assertEquals("kotlin", MaterialIcons.iconName("script.main.kts"))
   }
@@ -54,7 +55,8 @@ class MaterialIconsTest : BasePlatformTestCase() {
     val icons = text.lines().filter { it.isNotBlank() && !it.startsWith('#') }
       .flatMap { line -> line.split(' ').let { if (it[0] == "default") it.drop(1) else listOf(it[2]) } }.toSet()
     assertTrue(icons.size > 500)
-    for (name in icons + listOf("folder-src", "folder-test", "folder-resource", "folder-packages")) {
+    for (name in icons + listOf("folder-src", "folder-test", "folder-resource", "folder-packages") +
+                      listOf("class", "abstract", "interface", "enum", "record", "annotation", "exception").map { "java-$it" }) {
       val icon = IconLoader.findIcon("/icons/material/$name.svg", MaterialIcons::class.java.classLoader)
       assertNotNull(name, icon)
       assertEquals(name, 16, icon!!.iconWidth)

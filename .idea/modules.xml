@@ -358,6 +358,7 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-theme/phantom.theme.iml" filepath="$PROJECT_DIR$/plugins/phantom-theme/phantom.theme.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/core/phantom.icons.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/core/phantom.icons.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/java/phantom.icons.java.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/java/phantom.icons.java.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/phantom.icons.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/phantom.icons.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-icons/tests/phantom.icons.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-icons/tests/phantom.icons.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/core/phantom.sync.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/core/phantom.sync.core.iml" />
