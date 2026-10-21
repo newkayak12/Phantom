@@ -2,17 +2,41 @@
 # Installs the latest Phantom IDEA build into /Applications and restarts it.
 #   ./phantom-install.sh            build with phantom-build.sh, then install
 #   ./phantom-install.sh --no-build install the DMG that is already built
+#   ./phantom-install.sh --release [v26.10.21.1]   install the newest GitHub release's DMG (or that tag's)
+# A release is downloaded with curl, not a browser: curl sets no quarantine flag, so Gatekeeper does not stop the
+# app, which is not notarized. The repository is private: the token is $GH_TOKEN, else the one gh is logged in with
+# (that account must see the repository).
 # A running Phantom is asked to quit first (it saves its state); its open projects reopen on the next start.
 set -euo pipefail
 cd "$(dirname "$0")"
 
 APP="/Applications/Phantom IDEA.app"
 
-if [[ "${1:-}" != "--no-build" ]]; then
-  ./phantom-build.sh
-fi
+DMG=""
+case "${1:-}" in
+  --no-build) ;;
+  --release)
+    token="${GH_TOKEN:-$(gh auth token)}"
+    repo="$(git remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
+    api="https://api.github.com/repos/$repo/releases"
+    if [[ -n "${2:-}" ]]; then which="tags/$2"; else which="latest"; fi
+    release="$(curl -fsSL -H "Authorization: Bearer $token" "$api/$which")"
+    i=0
+    while name="$(plutil -extract "assets.$i.name" raw - <<< "$release" 2>/dev/null)"; do
+      [[ "$name" == *-aarch64.dmg ]] && break
+      i=$((i + 1))
+    done
+    [[ "$name" == *-aarch64.dmg ]] || { echo "no macOS DMG in release ${2:-latest} of $repo"; exit 1; }
+    mkdir -p out/phantom-release-download
+    DMG="out/phantom-release-download/$name"
+    curl -fL --progress-bar -H "Authorization: Bearer $token" -H "Accept: application/octet-stream" \
+      -o "$DMG" "$(plutil -extract "assets.$i.url" raw - <<< "$release")"
+    find out/phantom-release-download -name '*.dmg' ! -name "$name" -delete
+    ;;
+  *) ./phantom-build.sh ;;
+esac
 # The build number in the name follows the build date, so take the newest one
-DMG=$(ls -t out/phantom-idea/artifacts/phantom-idea-*-aarch64.dmg 2>/dev/null | head -1)
+[[ -n "$DMG" ]] || DMG=$(ls -t out/phantom-idea/artifacts/phantom-idea-*-aarch64.dmg 2>/dev/null | head -1)
 [[ -n "$DMG" ]] || { echo "no DMG in out/phantom-idea/artifacts"; exit 1; }
 
 was_running=false
