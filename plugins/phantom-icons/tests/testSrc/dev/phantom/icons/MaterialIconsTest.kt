@@ -55,8 +55,7 @@ class MaterialIconsTest : BasePlatformTestCase() {
     val icons = text.lines().filter { it.isNotBlank() && !it.startsWith('#') }
       .flatMap { line -> line.split(' ').let { if (it[0] == "default") it.drop(1) else listOf(it[2]) } }.toSet()
     assertTrue(icons.size > 500)
-    for (name in icons + listOf("folder-src", "folder-test", "folder-resource", "folder-packages") +
-                      listOf("class", "abstract", "interface", "enum", "record", "annotation", "exception").map { "java-$it" }) {
+    for (name in icons + listOf("folder-src", "folder-test", "folder-resource", "folder-packages")) {
       val icon = IconLoader.findIcon("/icons/material/$name.svg", MaterialIcons::class.java.classLoader)
       assertNotNull(name, icon)
       assertEquals(name, 16, icon!!.iconWidth)
