@@ -1477,6 +1477,7 @@ plugins/performanceTesting/scripts-ui
 plugins/performanceTesting/vcs
 plugins/phantom-icons
 plugins/phantom-icons/core
+plugins/phantom-icons/java
 plugins/phantom-icons/tests
 plugins/phantom-sync
 plugins/phantom-sync/core
