@@ -4,6 +4,8 @@ package dev.phantom.icons
 import com.intellij.ide.FileIconProvider
 import com.intellij.ide.IconProvider
 import com.intellij.openapi.util.IconLoader
+import com.intellij.openapi.vcs.LocalFilePath
+import com.intellij.openapi.vcs.changes.FilePathIconProvider
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import dev.phantom.icons.core.KotlinFileNavBarIcon
 import dev.phantom.icons.core.MaterialIcons
@@ -68,5 +70,12 @@ class MaterialIconsTest : BasePlatformTestCase() {
     val java = myFixture.configureByText("Main.java", "class Main {}")
     assertNull(KotlinFileNavBarIcon().getIcon(java))
     assertNull(KotlinFileNavBarIcon().getIcon("not psi"))
+  }
+
+  fun testDeletedKotlinFileKeepsItsIconInChanges() {
+    fun icon(path: String) = FilePathIconProvider.EP_NAME.computeSafeIfAny { it.getIcon(LocalFilePath(path, false), false, project) }
+    assertNotNull(icon("/nonexistent/phantom/UserService.kt"))
+    // a deleted Java file has no class to look at: the generic Java icon
+    assertNotNull(icon("/nonexistent/phantom/Main.java"))
   }
 }
