@@ -67,6 +67,10 @@ class IndexDiagnosticDumper(private val coroutineScope: CoroutineScope) : Dispos
     val projectIndexingActivityHistoryListenerEpName: ExtensionPointName<ProjectIndexingActivityHistoryListener> =
       ExtensionPointName("com.intellij.projectIndexingActivityHistoryListener")
 
+    // Phantom: indexing reports are JetBrains' diagnostics; write them only on request
+    private val shouldDumpDiagnostics: Boolean
+      get() = SystemProperties.getBooleanProperty("intellij.indexes.diagnostics.dump", false)
+
     private val shouldDumpDiagnosticsForInterruptedUpdaters: Boolean
       get() = SystemProperties.getBooleanProperty("intellij.indexes.diagnostics.should.dump.for.interrupted.index.updaters", true)
 
@@ -244,6 +248,9 @@ class IndexDiagnosticDumper(private val coroutineScope: CoroutineScope) : Dispos
       if (ApplicationManager.getApplication().isUnitTestMode && !shouldDumpInUnitTestMode) {
         return
       }
+      if (!shouldDumpDiagnostics && !ApplicationManager.getApplication().isUnitTestMode) {
+        return
+      }
       if (projectScanningHistory.times.isCancelled && !shouldDumpDiagnosticsForInterruptedUpdaters) {
         return
       }
@@ -272,6 +279,9 @@ class IndexDiagnosticDumper(private val coroutineScope: CoroutineScope) : Dispos
         return
       }
       projectDumbIndexingHistory.indexingFinished()
+      if (!shouldDumpDiagnostics && !ApplicationManager.getApplication().isUnitTestMode) {
+        return
+      }
       unsavedIndexingActivityHistories.add(projectDumbIndexingHistory)
       coroutineScope.launch { dumpProjectIndexingActivityHistoryToLogSubdirectory(projectDumbIndexingHistory) }
     }
