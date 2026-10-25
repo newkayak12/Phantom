@@ -67,10 +67,12 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     )
 
     // phantom-idea: no feature trainer ("Learn IDE Features" courses, Learn tool window), and no AI agent plumbing
-    // (MCP server for external agents, Agent Client Protocol); nothing bundled depends on either
+    // (MCP server for external agents, Agent Client Protocol); nothing bundled depends on either.
+    // No performanceTesting either: JetBrains' scripted performance-test runner, nothing for users
     productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS
       .removing("intellij.featuresTrainer")
       .removing("intellij.mcpserver")
+      .removing("intellij.performanceTesting")
       .removing("intellij.platform.acp.plugin") + sequenceOf(
       "intellij.javaFX.community"
     ) + PHANTOM_BUNDLED_PLUGINS
