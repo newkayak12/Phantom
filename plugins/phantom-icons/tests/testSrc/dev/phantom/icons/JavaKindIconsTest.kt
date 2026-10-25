@@ -2,6 +2,7 @@
 package dev.phantom.icons
 
 import com.intellij.ide.IconProvider
+import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.Iconable
 import com.intellij.psi.PsiJavaFile
 import com.intellij.testFramework.DumbModeTestUtils
@@ -19,6 +20,10 @@ class JavaKindIconsTest : LightJavaCodeInsightFixtureTestCase() {
   companion object {
     init {
       System.setProperty("idea.load.plugins.id", "dev.phantom.icons,com.intellij.java")
+      // as in the IDE: real icons (not 1-px stand-ins) and the icon manager that adds the static/final marks;
+      // before any test, so the mark layers Java registers on first use land in the real manager
+      IconLoader.activate()
+      IconManager.activate(null)
     }
 
     private val KINDS = listOf("class", "abstract", "interface", "enum", "record", "annotation", "exception").map { "java-$it" }

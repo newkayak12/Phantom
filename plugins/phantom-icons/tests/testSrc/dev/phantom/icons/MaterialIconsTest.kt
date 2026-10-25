@@ -7,6 +7,7 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.changes.FilePathIconProvider
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.ui.IconManager
 import dev.phantom.icons.core.KotlinFileNavBarIcon
 import dev.phantom.icons.core.MaterialIcons
 
@@ -14,6 +15,10 @@ class MaterialIconsTest : BasePlatformTestCase() {
   companion object {
     init {
       System.setProperty("idea.load.plugins.id", "dev.phantom.icons,com.intellij.java")
+      // as in the IDE: real icons (not 1-px stand-ins) and the icon manager that adds the static/final marks;
+      // before any test, so the mark layers Java registers on first use land in the real manager
+      IconLoader.activate()
+      IconManager.activate(null)
     }
   }
 
