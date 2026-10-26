@@ -1082,9 +1082,7 @@ open class EditorsSplitters internal constructor(
   fun windows(): Sequence<EditorWindow> = windows.asSequence()
 
   // collector for windows in tree ordering: get a root component and traverse splitters tree
-  // phantom-idea: public (internal API) so that phantom-tabs saves tab groups per pane in the order panes are restored
-  @Internal
-  fun getOrderedWindows(): MutableList<EditorWindow> {
+  internal fun getOrderedWindows(): MutableList<EditorWindow> {
     val result = ArrayList<EditorWindow>()
 
     fun collectWindow(component: JComponent) {
