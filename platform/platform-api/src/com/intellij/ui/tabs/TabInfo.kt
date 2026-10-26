@@ -40,6 +40,8 @@ class TabInfo(var component: JComponent) : Queryable, PlaceProvider {
     const val ALERT_STATUS: String = "alertStatus"
     const val HIDDEN: String = "hidden"
     const val ENABLED: String = "enabled"
+    // phantom-idea: tab group chips
+    const val LABEL_LEADING: String = "labelLeading"
 
     private val DEFAULT_ALERT_ICON = AlertIcon(AllIcons.Nodes.TabAlert, 0, -JBUI.scale(6))
   }
@@ -102,6 +104,22 @@ class TabInfo(var component: JComponent) : Queryable, PlaceProvider {
 
   var actionsContextComponent: JComponent? = null
     private set
+
+  /** phantom-idea: shown at the start of the tab label, before the icon (a tab group chip). */
+  var labelLeadingComponent: JComponent? = null
+    set(component) {
+      val old = field
+      field = component
+      changeSupport.firePropertyChange(LABEL_LEADING, old, component)
+    }
+
+  /** phantom-idea: the label shows only [labelLeadingComponent] (a collapsed tab group). */
+  var isLabelCollapsed: Boolean = false
+    set(collapsed) {
+      val old = field
+      field = collapsed
+      changeSupport.firePropertyChange(LABEL_LEADING, old, collapsed)
+    }
 
   val coloredText: SimpleColoredText = SimpleColoredText()
 
