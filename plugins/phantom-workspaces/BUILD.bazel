@@ -1,0 +1,39 @@
+load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+### auto-generated section `build phantom.workspaces` start
+
+jvm_library(
+    name = "phantom-workspaces",
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "phantom.workspaces",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+jvm_library(
+    name = "phantom-workspaces_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "phantom.workspaces",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":phantom-workspaces"],
+)
+### auto-generated section `build phantom.workspaces` end
+
+### auto-generated section `iml phantom.workspaces` start
+exports_files(
+    [
+        "phantom.workspaces.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
+### auto-generated section `iml phantom.workspaces` end

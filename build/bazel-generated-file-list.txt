@@ -1487,6 +1487,9 @@ plugins/phantom-tabs
 plugins/phantom-tabs/core
 plugins/phantom-tabs/tests
 plugins/phantom-theme
+plugins/phantom-workspaces
+plugins/phantom-workspaces/core
+plugins/phantom-workspaces/tests
 plugins/properties
 plugins/properties/copyright
 plugins/properties/properties-common
