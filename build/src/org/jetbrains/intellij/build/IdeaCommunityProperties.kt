@@ -20,6 +20,7 @@ import java.nio.file.Path
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "phantom.icons",
   "phantom.sync",
+  "phantom.tabs",
   "phantom.theme",
   "intellij.lombok", // community plugin that only Ultimate bundled; Java projects need it
 )
