@@ -1,0 +1,19 @@
+<idea-plugin>
+  <id>dev.phantom.tabs</id>
+  <name>Phantom Tab Groups</name>
+  <vendor>Phantom</vendor>
+  <category>User Interface</category>
+  <description><![CDATA[
+  Editor tab groups, as in a web browser: put tabs into a named, colored group, collapse the group to its chip and
+  expand it again, drag tabs in and out. Groups belong to each editor split and are kept with the project.
+  Collapsing only hides tabs; files stay open. Nothing changes in the tab bar until you make a group.
+  ]]></description>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.platform"/>
+  </dependencies>
+
+  <content namespace="jetbrains">
+    <module name="phantom.tabs.core"/>
+  </content>
+</idea-plugin>
