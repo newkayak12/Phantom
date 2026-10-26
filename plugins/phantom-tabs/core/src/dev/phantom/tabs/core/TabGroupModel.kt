@@ -57,7 +57,7 @@ class TabGroupModel {
   }
 
   /**
-   * [current] reordered so that each group's tabs sit together, where the group's first tab is, in their current order.
+   * [current] reordered so that each group's tabs sit together, where the group's first tab is, in the group's own order.
    * Tabs that are in no group keep their places relative to each other.
    */
   fun desiredOrder(current: List<String>): List<String> {
@@ -70,7 +70,7 @@ class TabGroupModel {
         result.add(url)
       }
       else if (placed.add(group)) {
-        current.filterTo(result) { it in group.members }
+        group.members.filterTo(result) { it in current }
       }
     }
     return result
@@ -92,6 +92,20 @@ class TabGroupModel {
       left != null && left === right -> add(moved, left)
       own != null && (left === own || right === own) -> {}
       else -> remove(moved)
+    }
+    groupOf(moved)?.members?.sortBy { after.indexOf(it) }
+  }
+
+  /** [oldUrl] (a file, or a folder and everything in it) is now at [newUrl]. */
+  fun rename(oldUrl: String, newUrl: String) {
+    for (group in myGroups) {
+      group.members.replaceAll { url ->
+        when {
+          url == oldUrl -> newUrl
+          url.startsWith("$oldUrl/") -> newUrl + url.substring(oldUrl.length)
+          else -> url
+        }
+      }
     }
   }
 }

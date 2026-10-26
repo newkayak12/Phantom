@@ -8,6 +8,7 @@
 
   <projectListeners>
     <listener class="dev.phantom.tabs.core.TabGroupsListener" topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    <listener class="dev.phantom.tabs.core.TabGroupsFileListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
   </projectListeners>
 
   <actions resource-bundle="messages.PhantomTabsBundle">

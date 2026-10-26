@@ -51,9 +51,8 @@ class TabGroupPaneController(
       override fun tabRemoved(tabToRemove: TabInfo) {
         val url = tabToRemove.url ?: return
         if (model.groupOf(url) == null) return
+        // the tab is being taken apart: leave its TabInfo alone
         model.remove(url)
-        tabToRemove.labelLeadingComponent = null
-        tabToRemove.isLabelCollapsed = false
         ApplicationManager.getApplication().invokeLater({ refresh() }, { window.isDisposed })
       }
     })
@@ -117,9 +116,9 @@ class TabGroupPaneController(
     val selected = tabs.selectedInfo
     if (selected != null && selected.url in group.members) {
       val index = visible.indexOf(selected)
-      val target = visible.drop(index + 1).firstOrNull { it.url !in group.members }
-                   ?: visible.take(index).lastOrNull { it.url !in group.members }
-                   ?: return
+      // not the chip of another collapsed group
+      fun selectable(info: TabInfo) = info.url !in group.members && info.url?.let(model::groupOf)?.collapsed != true
+      val target = visible.drop(index + 1).firstOrNull(::selectable) ?: visible.take(index).lastOrNull(::selectable) ?: return
       suppressExpand = true
       try {
         tabs.select(target, false)
@@ -158,20 +157,30 @@ class TabGroupPaneController(
 
     val chipsShown = chipsSupported()
     val order = model.desiredOrder(all.mapNotNull { it.url })
-    if (chipsShown) {
-      val position = order.withIndex().associate { it.value to it.index }
-      (tabs as? JBTabsEx)?.sortTabs(compareBy<TabInfo> { position[it.url] ?: Int.MAX_VALUE })
-    }
+    // a group's first tab is its chip; the other tabs of a collapsed group are hidden
     val anchors = model.groups.associateWith { group -> order.first { it in group.members } }
+    // the selected tab is never hidden: its collapsed group opens (a tab just added to it, or a group being restored)
+    val selectedGroup = tabs.selectedInfo?.url?.let(model::groupOf)
+    if (selectedGroup != null && selectedGroup.collapsed && anchors[selectedGroup] != tabs.selectedInfo?.url) {
+      selectedGroup.collapsed = false
+    }
 
     chips.keys.retainAll(model.groups.mapTo(HashSet()) { it.id })
     for (info in all) {
       val url = info.url ?: continue
       val group = model.groupOf(url)
       val anchor = group != null && chipsShown && anchors[group] == url
-      info.labelLeadingComponent = if (anchor) chips.getOrPut(group.id) { TabGroupChip(this, group) } else null
-      info.isLabelCollapsed = anchor && group.collapsed
-      info.isHidden = chipsShown && group != null && group.collapsed && !anchor
+      val chip = if (anchor) chips.getOrPut(group.id) { TabGroupChip(this, group) } else null
+      // TabInfo fires a change, and JBTabs relayouts, even when null is set over null
+      if (info.labelLeadingComponent !== chip) info.labelLeadingComponent = chip
+      if (info.isLabelCollapsed != (anchor && group.collapsed)) info.isLabelCollapsed = anchor && group.collapsed
+      val hidden = chipsShown && group != null && group.collapsed && !anchor
+      if (info.isHidden != hidden) info.isHidden = hidden
+    }
+    // hidden tabs come back at stale places, so sort after hiding and showing
+    if (chipsShown) {
+      val position = order.withIndex().associate { it.value to it.index }
+      (tabs as? JBTabsEx)?.sortTabs(compareBy<TabInfo> { position[it.url] ?: Int.MAX_VALUE })
     }
     chips.values.forEach { it.revalidate(); it.repaint() }
 
