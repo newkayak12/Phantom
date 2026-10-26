@@ -1483,6 +1483,9 @@ plugins/phantom-icons/vcs
 plugins/phantom-sync
 plugins/phantom-sync/core
 plugins/phantom-sync/tests
+plugins/phantom-tabs
+plugins/phantom-tabs/core
+plugins/phantom-tabs/tests
 plugins/phantom-theme
 plugins/properties
 plugins/properties/copyright
