@@ -137,6 +137,8 @@
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.sync" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.sync.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.workspaces" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.workspaces.core" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.icons" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.icons.core" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.icons.java" scope="RUNTIME" />

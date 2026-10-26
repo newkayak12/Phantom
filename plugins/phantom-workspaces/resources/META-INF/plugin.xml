@@ -1,0 +1,20 @@
+<idea-plugin>
+  <id>dev.phantom.workspaces</id>
+  <name>Phantom Workspaces</name>
+  <vendor>Phantom</vendor>
+  <category>User Interface</category>
+  <description><![CDATA[
+  All open projects in one window. On macOS, a project that opens while another is open joins the same window as a
+  native window tab, so every project is one click (or Cmd+`) away. Each tab is still a whole project with its own
+  tool windows and editors. Drag a tab out to give a project its own window again. Turn it off in
+  Settings | Advanced Settings | Phantom Workspaces.
+  ]]></description>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.platform"/>
+  </dependencies>
+
+  <content namespace="jetbrains">
+    <module name="phantom.workspaces.core"/>
+  </content>
+</idea-plugin>

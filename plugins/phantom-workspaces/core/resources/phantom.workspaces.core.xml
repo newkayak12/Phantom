@@ -1,0 +1,7 @@
+<idea-plugin package="dev.phantom.workspaces.core">
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="dev.phantom.workspaces.core.MergeProjectWindowActivity"/>
+    <advancedSetting id="phantom.workspaces.merge.project.windows" default="true"
+                     bundle="messages.PhantomWorkspacesBundle" groupKey="advanced.settings.phantom.workspaces"/>
+  </extensions>
+</idea-plugin>

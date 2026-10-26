@@ -1484,6 +1484,9 @@ plugins/phantom-sync
 plugins/phantom-sync/core
 plugins/phantom-sync/tests
 plugins/phantom-theme
+plugins/phantom-workspaces
+plugins/phantom-workspaces/core
+plugins/phantom-workspaces/tests
 plugins/properties
 plugins/properties/copyright
 plugins/properties/properties-common
