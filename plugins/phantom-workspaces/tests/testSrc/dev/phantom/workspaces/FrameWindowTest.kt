@@ -1,16 +1,22 @@
 // Copyright 2026 Phantom IDEA contributors. Use of this source code is governed by the Apache 2.0 license.
 package dev.phantom.workspaces
 
+import com.intellij.openapi.project.Project
 import dev.phantom.workspaces.core.FrameWindow
+import dev.phantom.workspaces.core.FullScreenControl
+import dev.phantom.workspaces.core.ProjectTabStrip
 import dev.phantom.workspaces.core.WindowStack
 import dev.phantom.workspaces.core.WindowState
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.Test
+import java.awt.Frame
 import java.awt.GraphicsEnvironment
+import java.lang.reflect.Proxy
 import java.awt.Rectangle
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
@@ -52,6 +58,56 @@ class FrameWindowTest {
       val window = FrameWindow(frame(Rectangle(120, 130, 640, 480)), null)
       assertEquals(WindowState(Rectangle(120, 130, 640, 480), maximized = false, fullScreen = false), window.state)
       assertFalse(window.isActive)
+    }
+  }
+
+  // finding 5
+  @Test
+  fun `maximizing a frame keeps its normal bounds`() {
+    SwingUtilities.invokeAndWait {
+      val frame = frame(Rectangle(120, 130, 640, 480))
+      FrameWindow(frame, null).apply(WindowState(Rectangle(0, 0, 1920, 1080), maximized = true, fullScreen = false))
+      assertEquals(Frame.MAXIMIZED_BOTH, frame.extendedState and Frame.MAXIMIZED_BOTH)
+      assertEquals(Rectangle(120, 130, 640, 480), frame.bounds)
+    }
+  }
+
+  // finding 2
+  @Test
+  fun `bounds are set only after the frame has left full screen`() {
+    SwingUtilities.invokeAndWait {
+      val frame = frame(Rectangle(0, 0, 1920, 1080))
+      val control = object : FullScreenControl {
+        override var isInFullScreen = true
+        var done: (() -> Unit)? = null
+        override fun toggle(state: Boolean, done: () -> Unit) {
+          this.done = done
+        }
+      }
+      val window = FrameWindow(frame, control)
+      window.apply(WindowState(Rectangle(100, 100, 800, 600), maximized = false, fullScreen = false))
+      assertTrue(window.isInTransition)
+      assertEquals(Rectangle(0, 0, 1920, 1080), frame.bounds)
+
+      control.isInFullScreen = false
+      control.done!!()
+      assertFalse(window.isInTransition)
+      assertEquals(Rectangle(100, 100, 800, 600), frame.bounds)
+    }
+  }
+
+  // finding 6
+  @Test
+  fun `a strip leaving its frame removes its listeners even when the IDE is gone`() {
+    SwingUtilities.invokeAndWait {
+      val frame = frame(Rectangle(0, 0, 400, 300))
+      val listeners = Triple(frame.windowListeners.size, frame.windowStateListeners.size, frame.componentListeners.size)
+      val project = Proxy.newProxyInstance(Project::class.java.classLoader, arrayOf(Project::class.java)) { _, _, _ -> null } as Project
+      val strip = ProjectTabStrip(project)
+      strip.watch(frame)
+      runCatching { strip.detach() }
+      assertEquals(listeners, Triple(frame.windowListeners.size, frame.windowStateListeners.size, frame.componentListeners.size))
+      strip.detach() // and does not fail
     }
   }
 }
