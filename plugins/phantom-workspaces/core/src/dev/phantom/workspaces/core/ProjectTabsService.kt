@@ -53,9 +53,23 @@ class ProjectTabsService {
     if (isEnabled) stack.activated(window)
   }
 
+  /** Records a move of [window] when it happens; true when it leads and [flushMoves] should follow (debounced). */
   @RequiresEdt
-  internal fun windowChanged(window: StackedWindow) {
-    if (isEnabled) stack.changed(window)
+  internal fun windowMoved(window: StackedWindow): Boolean = isEnabled && stack.moved(window)
+
+  @RequiresEdt
+  internal fun flushMoves() {
+    if (isEnabled) stack.flush()
+  }
+
+  @RequiresEdt
+  internal fun settingChanged() {
+    if (isEnabled) {
+      val windows = strips.mapNotNull { it.window }
+      val leader = windows.firstOrNull { it.isActive } ?: windows.firstOrNull { it === stack.front } ?: windows.firstOrNull()
+      leader?.let(stack::lead)
+    }
+    refresh()
   }
 
   /** Brings the window of [project] to front, in place. False when the project has no window here. */
@@ -115,6 +129,8 @@ internal class ProjectTabsRenameListener : ProjectNameListener {
 
 internal class ProjectTabsSettingListener : AdvancedSettingsChangeListener {
   override fun advancedSettingChanged(id: String, oldValue: Any, newValue: Any) {
-    if (id == ProjectTabs.SETTING_ID) serviceIfCreated<ProjectTabsService>()?.refreshLater()
+    if (id != ProjectTabs.SETTING_ID) return
+    val service = serviceIfCreated<ProjectTabsService>() ?: return
+    ApplicationManager.getApplication().invokeLater({ service.settingChanged() }, ModalityState.any())
   }
 }
