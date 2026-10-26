@@ -1821,6 +1821,10 @@ open class JBTabsImpl internal constructor(
       TabInfo.ENABLED -> {
         updateEnabling()
       }
+      TabInfo.LABEL_LEADING -> {
+        tabInfo.tabLabel?.updateLeading()
+        relayout(forced = true, layoutNow = false)
+      }
     }
   }
 
@@ -2591,6 +2595,10 @@ open class JBTabsImpl internal constructor(
     }
     else if (visibleInfos.contains(forcedSelectionTransfer)) {
       forcedSelectionTransfer
+    }
+    else if (forcedSelectionTransfer.isHidden) {
+      // phantom-idea: a tab hidden in a collapsed tab group is not selectable; pick a visible one
+      getToSelectOnRemoveOf(info!!)
     }
     else {
       LOG.error("Cannot find tab for selection transfer, tab=$forcedSelectionTransfer")
