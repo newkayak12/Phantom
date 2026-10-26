@@ -9,10 +9,12 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileEditor.impl.EditorWindow
+import com.intellij.openapi.fileEditor.impl.FileEditorManagerImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.containers.ContainerUtil
+import org.jetbrains.annotations.TestOnly
 import java.util.WeakHashMap
 
 /** The tab groups of a project: one controller per editor pane, saved in the workspace in the order of the panes. */
@@ -32,6 +34,8 @@ class TabGroupsService(private val project: Project) : PersistentStateComponent<
 
   @RequiresEdt
   fun controllerFor(window: EditorWindow): TabGroupPaneController = controllers.getOrPut(window) {
+    // the controller holds its window, so the weak keys alone would never let a closed split go
+    controllers.keys.removeIf { it.isDisposed }
     val index = windows().indexOf(window)
     TabGroupPaneController(window, TabGroupModel(), saved.panes.getOrNull(index), ::onChanged)
   }
@@ -49,16 +53,32 @@ class TabGroupsService(private val project: Project) : PersistentStateComponent<
     colorSnapshot = colors
   }
 
+  @get:TestOnly
+  val controllerCount: Int
+    get() = controllers.size
+
   /** Controllers of the open panes, made for panes that have none yet. */
   @RequiresEdt
-  fun allControllers(): List<TabGroupPaneController> = windows().filter { !it.isDisposed }.map(::controllerFor)
+  fun allControllers(): List<TabGroupPaneController> {
+    controllers.keys.removeIf { it.isDisposed }
+    return windows().filter { !it.isDisposed }.map(::controllerFor)
+  }
+
+  /** [oldUrl], a file or a folder, was renamed or moved to [newUrl]. */
+  @RequiresEdt
+  fun fileMoved(oldUrl: String, newUrl: String) {
+    for (controller in controllers.values) controller.model.rename(oldUrl, newUrl)
+  }
 
   /** The color of the first group [file] is in, in any pane. */
   fun groupColorOf(file: VirtualFile): TabGroupColor? = colorSnapshot[file.url]
 
   fun isGrouped(file: VirtualFile): Boolean = groupColorOf(file) != null
 
-  private fun windows(): List<EditorWindow> = FileEditorManagerEx.getInstanceEx(project).windows.toList()
+  /** Panes in screen order (the order of the splitter tree), which is also the order they are restored in. */
+  private fun windows(): List<EditorWindow> =
+    (FileEditorManagerEx.getInstanceEx(project) as? FileEditorManagerImpl)?.getAllSplitters()?.flatMap { it.getOrderedWindows() }
+    ?: FileEditorManagerEx.getInstanceEx(project).windows.toList()
 
   override fun getState(): TabGroupsState = stateSnapshot ?: saved
 

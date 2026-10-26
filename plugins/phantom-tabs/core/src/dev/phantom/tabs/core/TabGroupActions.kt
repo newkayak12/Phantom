@@ -25,7 +25,7 @@ private fun AnActionEvent.groupableTab(): Pair<TabGroupPaneController, VirtualFi
   val project = project ?: return null
   val window = tabWindow?.takeIf { !it.isDisposed } ?: return null
   val file = tabFile?.takeIf { window.isFileOpen(it) } ?: return null
-  if (window.isFilePinned(file)) return null
+  if (window.isFilePinned(file) || window.getComposite(file)?.isPreview == true) return null
   return TabGroupsService.getInstance(project).controllerFor(window) to file
 }
 
