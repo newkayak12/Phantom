@@ -578,6 +578,7 @@ open class TabLabel @Internal constructor(
   open fun setTabActions(group: ActionGroup?) {
     removeOldActionPanel()
     if (group == null) {
+      updateLeading()
       return
     }
 
@@ -589,8 +590,24 @@ open class TabLabel @Internal constructor(
     )
     toggleShowActions(false)
     add(actionPanel!!, if (isTabActionsOnTheRight) BorderLayout.EAST else BorderLayout.WEST)
+    updateLeading()
 
     tabs.revalidateAndRepaint(false)
+  }
+
+  private var leadingComponent: JComponent? = null
+
+  /** phantom-idea: puts [TabInfo.labelLeadingComponent] at the start of the label; with the actions on the left there is no room for it. */
+  fun updateLeading() {
+    val wanted = if (isTabActionsOnTheRight) info.labelLeadingComponent else null
+    if (leadingComponent !== wanted) {
+      leadingComponent?.let { remove(it) }
+      leadingComponent = wanted
+      wanted?.let { add(it, BorderLayout.WEST) }
+    }
+    val collapsed = wanted != null && info.isLabelCollapsed
+    labelPlaceholder.isVisible = !collapsed
+    actionPanel?.isVisible = !collapsed
   }
 
   protected open val isShowTabActions: Boolean
