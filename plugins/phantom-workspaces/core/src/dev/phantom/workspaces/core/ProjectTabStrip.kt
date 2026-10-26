@@ -3,6 +3,7 @@ package dev.phantom.workspaces.core
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.components.serviceIfCreated
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeRootPaneNorthExtension
 import com.intellij.openapi.wm.impl.ProjectFrameHelper
@@ -50,17 +51,30 @@ class ProjectTabStrip(val project: Project) : JPanel(HorizontalLayout(0)) {
 
   private val service: ProjectTabsService get() = ProjectTabsService.getInstance()
 
-  private val syncTimer = Timer(SYNC_DELAY_MS) { window?.let { service.windowChanged(it) } }.apply { isRepeats = false }
+  private val syncTimer = Timer(SYNC_DELAY_MS) { service.flushMoves() }.apply { isRepeats = false }
   private val activationListener = object : WindowAdapter() {
     override fun windowActivated(e: WindowEvent) {
       window?.let { service.windowActivated(it) }
     }
+
+    override fun windowDeactivated(e: WindowEvent) {
+      if (syncTimer.isRunning) {
+        syncTimer.stop()
+        service.flushMoves()
+      }
+    }
   }
   private val moveListener = object : ComponentAdapter() {
-    override fun componentMoved(e: ComponentEvent) = syncTimer.restart()
-    override fun componentResized(e: ComponentEvent) = syncTimer.restart()
+    override fun componentMoved(e: ComponentEvent) = moved()
+    override fun componentResized(e: ComponentEvent) = moved()
   }
-  private val stateListener = WindowStateListener { syncTimer.restart() }
+  private val stateListener = WindowStateListener { moved() }
+
+  // whether this window leads is decided now, not when the timer fires
+  private fun moved() {
+    val window = window ?: return
+    if (service.windowMoved(window)) syncTimer.restart()
+  }
 
   init {
     isVisible = false
@@ -79,25 +93,36 @@ class ProjectTabStrip(val project: Project) : JPanel(HorizontalLayout(0)) {
 
   /** Joins the open project windows. Called when the strip is added to its frame. */
   fun attach() {
-    val frame = SwingUtilities.getWindowAncestor(this) as? JFrame
-    if (frame != null && window == null) {
-      window = FrameWindow(frame, ProjectFrameHelper.getFrameHelper(frame)) { ProjectUtil.focusProjectWindow(project) }
-      frame.addWindowListener(activationListener)
-      frame.addWindowStateListener(stateListener)
-      frame.addComponentListener(moveListener)
-    }
+    (SwingUtilities.getWindowAncestor(this) as? JFrame)?.let(::watch)
     service.attach(this)
+  }
+
+  /** Watches [frame] for the stack. */
+  fun watch(frame: JFrame) {
+    if (window != null) return
+    val helper = ProjectFrameHelper.getFrameHelper(frame)
+    val control = helper?.let { object : FullScreenControl {
+      override val isInFullScreen: Boolean get() = it.isInFullScreen
+      override fun toggle(state: Boolean, done: () -> Unit) {
+        it.toggleFullScreen(state).invokeOnCompletion { SwingUtilities.invokeLater(done) }
+      }
+    } }
+    window = FrameWindow(frame, control) { ProjectUtil.focusProjectWindow(project) }
+    frame.addWindowListener(activationListener)
+    frame.addWindowStateListener(stateListener)
+    frame.addComponentListener(moveListener)
   }
 
   /** Leaves the open project windows. Called when the strip is removed from its frame. */
   fun detach() {
-    service.detach(this)
+    // listeners first: on plugin unload the service may already be gone
     syncTimer.stop()
     window?.frame?.let { frame ->
       frame.removeWindowListener(activationListener)
       frame.removeWindowStateListener(stateListener)
       frame.removeComponentListener(moveListener)
     }
+    serviceIfCreated<ProjectTabsService>()?.detach(this)
     window = null
   }
 
