@@ -365,6 +365,9 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/core/phantom.sync.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/core/phantom.sync.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/phantom.sync.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/phantom.sync.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/tests/phantom.sync.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/tests/phantom.sync.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-workspaces/core/phantom.workspaces.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-workspaces/core/phantom.workspaces.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-workspaces/phantom.workspaces.iml" filepath="$PROJECT_DIR$/plugins/phantom-workspaces/phantom.workspaces.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-workspaces/tests/phantom.workspaces.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-workspaces/tests/phantom.workspaces.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" filepath="$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" />

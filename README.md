@@ -1,3 +1,4 @@
+| `phantom-workspaces` | All open projects in one window on macOS: each project opens as a tab of the same window |
 <p align="center">
   <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom IDEA" width="180">
 </p>
