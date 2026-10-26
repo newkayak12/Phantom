@@ -22,6 +22,7 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "phantom.sync",
   "phantom.tabs",
   "phantom.theme",
+  "phantom.workspaces",
   "intellij.lombok", // community plugin that only Ultimate bundled; Java projects need it
 )
 
