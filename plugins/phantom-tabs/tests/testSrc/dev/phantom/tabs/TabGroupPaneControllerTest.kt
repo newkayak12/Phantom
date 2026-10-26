@@ -6,7 +6,9 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.fileEditor.impl.EditorAutoClosingHandler
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.fileEditor.impl.EditorWindow
+import com.intellij.openapi.fileEditor.impl.FileEditorOpenOptions
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.FileEditorManagerTestCase
 import com.intellij.testFramework.PlatformTestUtil
@@ -15,6 +17,7 @@ import com.intellij.ui.tabs.TabInfo
 import dev.phantom.tabs.core.TabGroupChip
 import dev.phantom.tabs.core.TabGroupPaneController
 import dev.phantom.tabs.core.TabGroupsService
+import javax.swing.SwingConstants
 
 class TabGroupPaneControllerTest : FileEditorManagerTestCase() {
   private lateinit var a: VirtualFile
@@ -164,5 +167,115 @@ class TabGroupPaneControllerTest : FileEditorManagerTestCase() {
     controller.createGroup(listOf(a))
     assertNotNull(dev.phantom.tabs.core.TabGroupColorProvider().getEditorTabColor(project, a))
     assertNull(dev.phantom.tabs.core.TabGroupColorProvider().getEditorTabColor(project, b))
+  }
+
+  private fun split(window: EditorWindow): EditorWindow {
+    val before = manager!!.windows.toSet()
+    manager!!.createSplitter(SwingConstants.VERTICAL, window)
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    return manager!!.windows.first { it !in before }
+  }
+
+  private fun newFile(name: String): VirtualFile = myFixture.addFileToProject(name, name).virtualFile
+
+  fun testPinningInOneSplitWorksWithGroupsInTheOther() {
+    val left = window
+    val right = split(left)
+    val d = newFile("d.txt")
+    manager!!.openFile(d, right, FileEditorOpenOptions(requestFocus = true))
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    val service = TabGroupsService.getInstance(project)
+    service.controllerFor(left).createGroup(listOf(a, b))
+    service.controllerFor(right).createGroup(listOf(d))
+
+    left.setFilePinned(a, true)
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+
+    assertNull(service.controllerFor(left).model.groupOf(a.url))
+    assertNotNull(service.controllerFor(right).model.groupOf(d.url))
+  }
+
+  fun testCollapseAndExpandKeepGroupOrder() {
+    val d = newFile("d.txt")
+    open(d)
+    val group = controller.createGroup(listOf(a, b, c))
+    controller.toggleCollapsed(group)
+    controller.toggleCollapsed(group)
+    assertEquals(listOf(a, b, c, d), order())
+  }
+
+  fun testAddingSelectedTabToCollapsedGroupExpandsIt() {
+    val group = controller.createGroup(listOf(a, b))
+    controller.toggleCollapsed(group)
+    assertEquals(c, window.selectedFile)
+    controller.addTo(c, group)
+    assertFalse(group.collapsed)
+    assertFalse(info(c).isHidden)
+    assertEquals(c, window.selectedFile)
+  }
+
+  fun testCollapseDoesNotSelectAnotherCollapsedGroup() {
+    val d = newFile("d.txt")
+    open(d)
+    val other = controller.createGroup(listOf(c))
+    controller.toggleCollapsed(other)
+    open(b)
+    val group = controller.createGroup(listOf(a, b))
+    controller.toggleCollapsed(group)
+    assertTrue(group.collapsed)
+    assertEquals(d, window.selectedFile)
+  }
+
+  fun testPanesAreSavedInScreenOrder() {
+    val left = window
+    split(left)
+    val middle = split(left)
+    try {
+      TabGroupsService.getInstance(project).controllerFor(middle).createGroup(listOf(middle.selectedFile!!))
+      val panes = TabGroupsService.getInstance(project).state.panes
+      assertEquals(3, panes.size)
+      assertEquals(1, panes[1].groups.size)
+      assertEquals(0, panes[2].groups.size)
+    }
+    finally {
+      manager!!.unsplitAllWindow()
+      PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    }
+  }
+
+  fun testControllersOfClosedSplitsAreDropped() {
+    val service = TabGroupsService.getInstance(project)
+    service.controllerFor(split(window))
+    service.controllerFor(window)
+    manager!!.unsplitAllWindow()
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    assertEquals(1, service.allControllers().size)
+    assertEquals(1, service.controllerCount)
+  }
+
+  fun testRenamedFileStaysInGroup() {
+    val group = controller.createGroup(listOf(a, b))
+    WriteAction.runAndWait<Throwable> { b.rename(this, "b2.txt") }
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    controller.refresh()
+    assertSame(group, controller.model.groupOf(b.url))
+  }
+
+  fun testPreviewTabCannotBeGrouped() {
+    UISettings.getInstance().openInPreviewTabIfPossible = true
+    val d = newFile("d.txt")
+    manager!!.openFile(d, window, FileEditorOpenOptions(requestFocus = true, usePreviewTab = true))
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    assertTrue(window.getComposite(d)!!.isPreview)
+    val action = ActionManager.getInstance().getAction("PhantomTabs.AddToNewGroup")
+    val context = SimpleDataContext.builder()
+      .add(CommonDataKeys.PROJECT, project)
+      .add(CommonDataKeys.VIRTUAL_FILE, d)
+      .add(EditorWindow.DATA_KEY, window)
+      .build()
+    val event = TestActionEvent.createTestEvent(action, context)
+    action.update(event)
+    UISettings.getInstance().openInPreviewTabIfPossible = false
+    assertFalse(event.presentation.isEnabledAndVisible)
   }
 }

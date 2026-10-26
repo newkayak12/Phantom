@@ -17,7 +17,7 @@ internal class TabGroupsListener : FileEditorManagerListener {
     ApplicationManager.getApplication().invokeLater({
       val service = TabGroupsService.getInstance(source.project)
       for (controller in service.allControllers()) {
-        if (controller.window.isFilePinned(file)) controller.removeFromGroup(file) else controller.refresh()
+        if (controller.window.isFileOpen(file) && controller.window.isFilePinned(file)) controller.removeFromGroup(file) else controller.refresh()
       }
     }, source.project.disposed)
   }

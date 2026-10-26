@@ -84,4 +84,25 @@ class TabGroupModelTest {
     model.create(listOf("a"), "g", TabGroupColor.GREY)
     assertEquals(TabGroupColor.BLUE, model.nextColor())
   }
+
+  @Test
+  fun `a group keeps its own order wherever its tabs are`() {
+    model.create(listOf("a", "b", "c"), "g", TabGroupColor.BLUE)
+    assertEquals(listOf("a", "b", "c", "x"), model.desiredOrder(listOf("c", "x", "b", "a")))
+  }
+
+  @Test
+  fun `dragging a member inside its group changes the group order`() {
+    val g = model.create(listOf("a", "b", "c"), "g", TabGroupColor.BLUE)
+    model.onMoved(listOf("a", "b", "c", "x"), listOf("a", "c", "b", "x"), dragged = "c")
+    assertEquals(listOf("a", "c", "b"), g.members)
+  }
+
+  @Test
+  fun `a renamed file and the files of a renamed folder stay in their group`() {
+    val g = model.create(listOf("file:///p/a.kt", "file:///p/dir/b.kt"), "g", TabGroupColor.BLUE)
+    model.rename("file:///p/a.kt", "file:///p/a2.kt")
+    model.rename("file:///p/dir", "file:///p/lib")
+    assertEquals(listOf("file:///p/a2.kt", "file:///p/lib/b.kt"), g.members)
+  }
 }
