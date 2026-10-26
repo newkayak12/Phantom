@@ -172,8 +172,11 @@ class TabGroupPaneControllerTest : FileEditorManagerTestCase() {
   private fun split(window: EditorWindow): EditorWindow {
     val before = manager!!.windows.toSet()
     manager!!.createSplitter(SwingConstants.VERTICAL, window)
-    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-    return manager!!.windows.first { it !in before }
+    val split = manager!!.windows.first { it !in before }
+    // the new pane's editors are created off the EDT and handed to their composite later; dispatching events does not wait
+    // for that, and a composite closed before it gets its editors never releases them
+    PlatformTestUtil.waitWithEventsDispatching("editors of the new pane not loaded", { split.composites().all { it.isAvailable() } }, 10)
+    return split
   }
 
   private fun newFile(name: String): VirtualFile = myFixture.addFileToProject(name, name).virtualFile
