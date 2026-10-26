@@ -49,7 +49,7 @@ Planned: see [docs/phantom/2026-10-16-feature-matrix.md](docs/phantom/2026-10-16
 | `phantom-db` | Moved to [phantom-plugins](https://github.com/newkayak12/Phantom-plugins): installed on demand |
 | `phantom-http` | Moved to [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) (`http-client`): `.http` request files, environments, `import`/`run`, checks |
 | `phantom-sync` | Backup and Sync to your own git repository (GitHub or any remote) instead of a JetBrains account |
-| `phantom-tabs` | Editor tab groups as in a browser: name, color, collapse to a chip, drag in and out, per split |
+| `phantom-tabs` | Moved to [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) (`tabs`): editor tab groups as in a browser, name, color, collapse, drag in and out, per split |
 | `phantom-workspaces` | Moved to [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) (`workspaces`): all open projects as tabs of one window, project windows stacked at one size and position |
 | `phantom-containers` | Docker, Compose, Kubernetes |
 
