@@ -3,9 +3,11 @@ package com.intellij.openapi.editor.colors
 
 import com.intellij.configurationStore.schemeManager.SchemeManagerFactoryBase
 import com.intellij.ide.ui.UISettings
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.impl.AbstractColorsScheme
 import com.intellij.openapi.editor.colors.impl.AdditionalTextAttributesEP
 import com.intellij.openapi.editor.colors.impl.EditorColorsManagerImpl
+import com.intellij.openapi.editor.colors.impl.EditorColorsManagerListener
 import com.intellij.openapi.extensions.DefaultPluginDescriptor
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.testFramework.DisposableRule
@@ -18,6 +20,8 @@ import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import kotlin.io.path.readText
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 class EditorColorSchemeTest {
   companion object {
@@ -75,6 +79,57 @@ class EditorColorSchemeTest {
     assertThat(manager.schemeManager.allSchemes
       .map { it.name })
       .isEqualTo(schemeNamesBeforeReload)
+  }
+
+  // phantom-idea: every dynamic plugin load/unload reloads the color schemes; a reader on another thread must keep resolving a
+  // bundled scheme (the current theme's editor scheme) while the reload is in progress, or it logs "refers to unknown color scheme"
+  @Test
+  fun bundledSchemeStaysResolvableDuringReload() {
+    val schemeManagerFactory = SchemeManagerFactoryBase.TestSchemeManagerFactory(fsRule.fs.getPath(""))
+    val manager = EditorColorsManagerImpl(schemeManagerFactory)
+    val schemeName = "Bundled For Reload Test"
+    val descriptor = DefaultPluginDescriptor(PluginId.getId("bundledSchemeStaysResolvableDuringReload"),
+                                             EditorColorSchemeTest::class.java.classLoader)
+    fun loadBundled() {
+      manager.schemeManager.loadBundledScheme("com/intellij/openapi/editor/colors/bundledSchemeForReloadTest.xml", null, descriptor)
+    }
+    loadBundled()
+    assertThat(manager.getScheme(schemeName)).isNotNull()
+
+    // the headless manager does not re-add plugin bundled schemes itself, so the end of a reload is marked by `schemesReloaded`;
+    // an odd epoch means a reload is in progress
+    val epoch = AtomicInteger()
+    ApplicationManager.getApplication().messageBus.connect(disposableRule.disposable)
+      .subscribe(EditorColorsManagerListener.TOPIC, object : EditorColorsManagerListener {
+        override fun schemesReloaded() {
+          epoch.incrementAndGet()
+        }
+      })
+    val stop = AtomicBoolean(false)
+    val misses = AtomicInteger()
+    val reader = Thread {
+      while (!stop.get()) {
+        val before = epoch.get()
+        if (before % 2 == 1 && manager.getScheme(schemeName) == null && epoch.get() == before) {
+          misses.incrementAndGet()
+        }
+      }
+    }
+    reader.start()
+    try {
+      repeat(300) {
+        if (manager.schemeManager.findSchemeByName(schemeName) == null) {
+          loadBundled()
+        }
+        epoch.incrementAndGet()
+        manager.schemeManager.reload()
+      }
+    }
+    finally {
+      stop.set(true)
+      reader.join()
+    }
+    assertThat(misses.get()).isEqualTo(0)
   }
 
   @Test
