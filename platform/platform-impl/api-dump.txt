@@ -3789,7 +3789,6 @@ e:com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
 - sf:BREW:com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
 - sf:FLATPAK:com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
 - sf:SNAP:com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
-- sf:TOOLBOX:com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
 - sf:UNKNOWN:com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
 - f:toolName:java.lang.String
 - s:valueOf(java.lang.String):com.intellij.openapi.updateSettings.impl.ExternalUpdateManager

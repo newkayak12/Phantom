@@ -72,7 +72,6 @@ internal object PluginAdvertiserUsageCollector : CounterUsagesCollector() {
   )
 
   val TRY_ULTIMATE_EVENT = GROUP.registerEvent("try.ultimate.initiated", SOURCE_FIELD, PLUGIN_FIELD)
-  val TRY_ULTIMATE_TOOLBOX_EVENT = GROUP.registerEvent("try.ultimate.toolbox.used", SOURCE_FIELD, PLUGIN_FIELD)
   val TRY_ULTIMATE_DOWNLOAD_ACTIVITY = GROUP.registerIdeActivity("try.ultimate.download", arrayOf(SOURCE_FIELD, PLUGIN_FIELD))
   val TRY_ULTIMATE_INSTALLATION_ACTIVITY = GROUP.registerIdeActivity("try.ultimate.installation", arrayOf(SOURCE_FIELD, PLUGIN_FIELD))
   val TRY_ULTIMATE_OPEN_ACTIVITY = GROUP.registerIdeActivity("try.ultimate.open", arrayOf(SOURCE_FIELD, PLUGIN_FIELD))
@@ -156,11 +155,6 @@ enum class FUSEventSource {
   @JvmOverloads
   fun logTryUltimate(project: Project? = null, pluginId: PluginId? = null) {
     PluginAdvertiserUsageCollector.TRY_ULTIMATE_EVENT.log(project, this, pluginId?.idString)
-  }
-
-  @JvmOverloads
-  fun logTryUltimateToolboxUsed(project: Project? = null, pluginId: PluginId? = null) {
-    PluginAdvertiserUsageCollector.TRY_ULTIMATE_TOOLBOX_EVENT.log(project, this, pluginId?.idString)
   }
 
   @JvmOverloads

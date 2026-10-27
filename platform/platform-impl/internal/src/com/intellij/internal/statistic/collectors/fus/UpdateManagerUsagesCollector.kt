@@ -10,13 +10,13 @@ import com.intellij.openapi.updateSettings.impl.ExternalUpdateManager
 internal class UpdateManagerUsagesCollector : ApplicationUsagesCollector() {
   private val GROUP: EventLogGroup = EventLogGroup("platform.installer", 5)
 
-  private val MANAGERS = listOf("Toolbox App", "Snap", "Flatpak", "Homebrew", "Other", "IDE")
+  private val MANAGERS = listOf("Snap", "Flatpak", "Homebrew", "Other", "IDE")
 
   private val UPDATE_MANAGER = GROUP.registerEvent("Update_Manager", EventFields.String("value", MANAGERS))
 
   override fun getMetrics(): Set<MetricEvent> = setOf(UPDATE_MANAGER.metric(
     when (val manager = ExternalUpdateManager.ACTUAL) {
-      ExternalUpdateManager.TOOLBOX, ExternalUpdateManager.SNAP, ExternalUpdateManager.FLATPAK, ExternalUpdateManager.BREW -> manager.toolName
+      ExternalUpdateManager.SNAP, ExternalUpdateManager.FLATPAK, ExternalUpdateManager.BREW -> manager.toolName
       ExternalUpdateManager.UNKNOWN -> "Other"
       null -> "IDE"
     }
