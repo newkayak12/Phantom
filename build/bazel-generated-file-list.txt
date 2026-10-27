@@ -322,7 +322,6 @@ java/java-impl-inspections
 java/java-impl-refactorings
 java/java-indexing-api
 java/java-indexing-impl
-java/java-promo
 java/java-psi-api
 java/java-psi-impl
 java/java-runtime
@@ -1090,7 +1089,6 @@ plugins/github/github-core
 plugins/github/github-git
 plugins/github/github-json
 plugins/github/github-tracker
-plugins/github/ultimate-promo
 plugins/gitlab/gitlab-core
 plugins/gitlab/gitlab-git
 plugins/gitlab/gitlab-yaml
@@ -1362,7 +1360,6 @@ plugins/kotlin/navigation/tests
 plugins/kotlin/onboarding
 plugins/kotlin/onboarding-gradle
 plugins/kotlin/onboarding-maven
-plugins/kotlin/onboarding-promoter
 plugins/kotlin/plugin
 plugins/kotlin/plugin-updater
 plugins/kotlin/plugin/common

@@ -1,6 +1,7 @@
 // Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.platform.feedback
 
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.platform.feedback.dialog.BlockBasedFeedbackDialog
@@ -60,6 +61,8 @@ interface ActionBasedFeedbackConfig : FeedbackSurveyConfig {
  */
 @RequiresBackgroundThread
 fun ActionBasedFeedbackConfig.isSuitableToShow(project: Project): Boolean {
+  // Phantom: feedback is submitted to JetBrains
+  if (!MarketplaceRequests.jetBrainsServicesEnabled) return false
   val commonConditionsForAllSurveys = if (Registry.`is`("platform.feedback.ignore.common.conditions.for.all.surveys", false)) {
     true
   }
