@@ -227,7 +227,8 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
   module("intellij.platform.coverage")
   module("intellij.platform.coverage.agent")
   module("intellij.xml.xmlbeans")
-  // phantom-idea: no first-run import wizard (imports from JetBrains IDEs and JetBrains Account) and no onboarding tours
+  // phantom-idea: no onboarding tours
+  module("intellij.ide.startup.importSettings")
   module("intellij.platform.customization.min")
   module("intellij.idea.customization.base")
   module("intellij.idea.customization.backend")
