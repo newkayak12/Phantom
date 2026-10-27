@@ -80,7 +80,7 @@
     <registryKey key="wsl.survey.ignore.audience.conditions" defaultValue="false"
                  description="Ignores the target IDE version and 'existing users only' checks for the WSL satisfaction survey, so it can be triggered on any build and profile for testing (the WSL-project and usage-duration conditions still apply)"/>
 
-    <registryKey key="csat.survey.enabled" defaultValue="true" description="Enables periodic CSAT survey"/>
+    <registryKey key="csat.survey.enabled" defaultValue="false" description="Enables periodic CSAT survey"/>
     <registryKey key="csat.survey.today" defaultValue="" description="ISO Formatted today date such as 2011-12-03"/>
     <registryKey key="csat.survey.user.created.date" defaultValue="" description="ISO Formatted date when user created such as 2011-12-03"/>
     <registryKey key="csat.survey.show.probability" defaultValue="" description="Override probability of survey, double value from 0 to 1"/>
