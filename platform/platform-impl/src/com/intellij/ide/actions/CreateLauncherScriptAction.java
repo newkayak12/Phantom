@@ -42,10 +42,7 @@ final class CreateLauncherScriptAction extends DumbAwareAction implements Action
 
   private static void showInstructions(@Nullable Project project) {
     String message;
-    if (ExternalUpdateManager.ACTUAL == ExternalUpdateManager.TOOLBOX) {
-      message = ApplicationBundle.message("cli.launcher.message.toolbox");
-    }
-    else if (ExternalUpdateManager.ACTUAL == ExternalUpdateManager.SNAP) {
+    if (ExternalUpdateManager.ACTUAL == ExternalUpdateManager.SNAP) {
       var name = ApplicationNamesInfo.getInstance().getScriptName();
       message = ApplicationBundle.message("cli.launcher.message.snap", name);
     }

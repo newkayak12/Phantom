@@ -148,15 +148,6 @@ class CopySourceRootPathProvider : DumbAwareCopyPathProvider() {
 }
 
 @ApiStatus.Internal
-class CopyTBXReferenceProvider : CopyPathProvider() {
-  override fun getQualifiedName(project: Project,
-                                elements: List<PsiElement>,
-                                editor: Editor?,
-                                dataContext: DataContext): String? =
-    CopyTBXReferenceAction.createJetBrainsLink(project, elements, editor)
-}
-
-@ApiStatus.Internal
 class CopyFileNameProvider : DumbAwareCopyPathProvider() {
   override fun getPathToElement(project: Project, virtualFile: VirtualFile?, editor: Editor?): String? = virtualFile?.name
 }
