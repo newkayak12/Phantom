@@ -68,14 +68,16 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
 
     // phantom-idea: no feature trainer ("Learn IDE Features" courses, Learn tool window), and no AI agent plumbing
     // (MCP server for external agents, Agent Client Protocol); nothing bundled depends on either.
-    // No performanceTesting either: JetBrains' scripted performance-test runner, nothing for users
+    // No performanceTesting either: JetBrains' scripted performance-test runner, nothing for users.
+    // No DevKit runtime (internal PSI viewer and usage-stats tools), no Eclipse project import, no JavaFX
+    // (its Scene Builder tab downloads a kit from JetBrains)
     productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS
       .removing("intellij.featuresTrainer")
       .removing("intellij.mcpserver")
       .removing("intellij.performanceTesting")
-      .removing("intellij.platform.acp.plugin") + sequenceOf(
-      "intellij.javaFX.community"
-    ) + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.platform.acp.plugin")
+      .removing("intellij.dev")
+      .removing("intellij.eclipse") + PHANTOM_BUNDLED_PLUGINS
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
@@ -225,9 +227,7 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
   module("intellij.platform.coverage")
   module("intellij.platform.coverage.agent")
   module("intellij.xml.xmlbeans")
-  module("intellij.platform.ide.newUiOnboarding")
-  module("intellij.platform.ide.newUsersOnboarding")
-  module("intellij.ide.startup.importSettings")
+  // phantom-idea: no first-run import wizard (imports from JetBrains IDEs and JetBrains Account) and no onboarding tours
   module("intellij.platform.customization.min")
   module("intellij.idea.customization.base")
   module("intellij.idea.customization.backend")
