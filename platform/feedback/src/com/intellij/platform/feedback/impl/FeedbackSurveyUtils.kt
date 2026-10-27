@@ -2,6 +2,7 @@
 package com.intellij.platform.feedback.impl
 
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.notification.NotificationAction
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
@@ -69,6 +70,8 @@ internal fun showNotification(feedbackSurveyType: FeedbackSurveyType<*>, project
 
 @RequiresBackgroundThread
 internal fun isSuitableToShow(feedbackSurveyConfig: NotificationBasedFeedbackSurveyConfig, project: Project): Boolean {
+  // Phantom: surveys are submitted to JetBrains
+  if (!MarketplaceRequests.jetBrainsServicesEnabled) return false
   val commonConditionsForAllSurveys = if (Registry.`is`("platform.feedback.ignore.common.conditions.for.all.surveys", false)) {
     true
   }

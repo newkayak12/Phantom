@@ -19,12 +19,6 @@ internal class IntelliJIdeaExternalResourceUrls : BaseJetBrainsExternalProductRe
   override val shortProductNameUsedInForms: String
     get() = "IDEA"
 
-  override val useInIdeGeneralFeedback: Boolean
-    get() = true
-
-  override val useInIdeEvaluationFeedback: Boolean
-    get() = true
-
   override val youTubeChannelUrl: Url
     get() = Urls.newFromEncoded("https://www.youtube.com/user/intellijideavideo")
 
