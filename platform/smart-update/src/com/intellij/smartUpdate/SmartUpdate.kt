@@ -1,10 +1,8 @@
 package com.intellij.smartUpdate
 
-import com.intellij.ide.actions.SettingsEntryPointAction.UpdateAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.RoamingType
@@ -25,8 +23,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import org.jetbrains.ide.ToolboxUpdateAction
-import org.jetbrains.ide.UpdateActionsListener
 import java.time.Duration
 import java.time.LocalTime
 import java.util.LinkedList
@@ -47,20 +43,8 @@ internal class SmartUpdate(val project: Project, private val coroutineScope: Cor
     fun property(id: String) = MutableProperty({ value(id) }, { map[id] = it })
   }
 
-  var restartRequested = false
   private var updateScheduled: Deferred<*>? = null
   private val options = Options()
-
-  init {
-    ApplicationManager.getApplication().messageBus.connect(this).subscribe(UpdateActionsListener.TOPIC, object : UpdateActionsListener {
-      override fun actionReceived(action: UpdateAction) {
-        if (restartRequested && action.isRestartRequired && action is ToolboxUpdateAction) {
-          restartRequested = false
-          restartIde(project) { action.perform() }
-        }
-      }
-    })
-  }
 
   override fun getState() = options
 

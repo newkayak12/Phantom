@@ -47,8 +47,7 @@ public class DefaultUpdateRequestParametersProvider implements UpdateRequestPara
     }
 
     if (ExternalUpdateManager.ACTUAL != null) {
-      var name = ExternalUpdateManager.ACTUAL == ExternalUpdateManager.TOOLBOX ? "Toolbox" : ExternalUpdateManager.ACTUAL.toolName;
-      parameters.put("manager", name);
+      parameters.put("manager", ExternalUpdateManager.ACTUAL.toolName);
     }
 
     var facade = LicensingFacade.getInstance();

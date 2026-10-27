@@ -39,15 +39,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.nio.file.Path
 import javax.swing.Icon
-
-private const val TOOLBOX_INSTALL_BASE_URL: String = "http://localhost:52829/install/IDEA-U"
-private const val TOOLBOX_ORIGIN: String = "https://toolbox.app"
 
 @Service(Service.Level.PROJECT)
 internal class UltimateInstallationService(
@@ -94,26 +87,8 @@ internal class UltimateInstallationService(
     }
   }
 
-  private suspend fun tryToInstall(suggestedIde: SuggestedIde, build: BuildInfo, pluginId: PluginId?): Boolean {
-    if (Registry.`is`("ide.try.ultimate.automatic.installation.use.toolbox")) {
-      val result = tryToInstallViaToolbox(build)
-      if (result) {
-        FUSEventSource.EDITOR.logTryUltimateToolboxUsed(project, pluginId)
-        return true
-      }
-    }
-
-    return tryToInstall(build, pluginId, suggestedIde)
-  }
-
-  private fun tryToInstallViaToolbox(buildInfo: BuildInfo): Boolean {
-    val build = buildInfo.number.components.joinToString(".")
-    val uri = URI.create("$TOOLBOX_INSTALL_BASE_URL/$build")
-    val request = HttpRequest.newBuilder().uri(uri).header("Origin", TOOLBOX_ORIGIN).build()
-    val resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
-
-    return resp.statusCode() == 200
-  }
+  private suspend fun tryToInstall(suggestedIde: SuggestedIde, build: BuildInfo, pluginId: PluginId?): Boolean =
+    tryToInstall(build, pluginId, suggestedIde)
 
   private suspend fun tryToInstall(buildInfo: BuildInfo, pluginId: PluginId? = null, suggestedIde: SuggestedIde): Boolean =
     reportSequentialProgress { reporter ->
