@@ -88,6 +88,11 @@ class EditorColorsManagerImpl @NonInjectable constructor(schemeManagerFactory: S
   private var state = State()
   private var themeIsCustomized = false
   private var isInitialConfigurationLoaded = false
+  // phantom-idea: a reload (on every dynamic plugin load/unload) first drops the bundled schemes and their editable copies, then
+  // re-adds them; readers on other threads (e.g. getSchemeForCurrentUITheme from a background tree update) keep seeing the
+  // schemes that existed before the reload until it completes, instead of logging "refers to unknown color scheme"
+  @Volatile
+  private var schemesBeforeReload: Map<String, EditorColorsScheme>? = null
   private val cachedDefaultScheme = CachedVersionedColorScheme { getScheme(EditorColorsScheme.getDefaultSchemeName()) }
   private val cachedDarculaScheme = CachedVersionedColorScheme { getScheme("Darcula") }
   private val cachedGlobalScheme = CachedVersionedColorScheme { activeVisibleScheme ?: getEditableDefaultScheme() }
@@ -204,7 +209,8 @@ class EditorColorsManagerImpl @NonInjectable constructor(schemeManagerFactory: S
   }
 
   private fun getOrCreateEditableCopy(initialScheme: AbstractColorsScheme, editableCopyName: String) {
-    var editableCopy = getScheme(editableCopyName) as AbstractColorsScheme?
+    // phantom-idea: not getScheme, which may return a pre-reload copy while the schemes are being reloaded
+    var editableCopy = schemeManager.findSchemeByName(editableCopyName) as AbstractColorsScheme?
     if (editableCopy == null) {
       editableCopy = initialScheme.clone() as AbstractColorsScheme
       editableCopy.name = editableCopyName
@@ -413,7 +419,7 @@ class EditorColorsManagerImpl @NonInjectable constructor(schemeManagerFactory: S
         base is BundledEditorColorScheme && base.resourcePath.removeSuffix(".xml") == path
       }
     }
-    return schemeManager.findSchemeByName(schemeName)
+    return schemeManager.findSchemeByName(schemeName) ?: schemesBeforeReload?.get(schemeName)
   }
 
   private fun getEditableCopy(scheme: EditorColorsScheme): EditorColorsScheme? {
@@ -603,14 +609,23 @@ class EditorColorsManagerImpl @NonInjectable constructor(schemeManagerFactory: S
       return scheme.settingsEqual(bundledScheme)
     }
 
+    override fun beforeReloaded(schemeManager: SchemeManager<EditorColorsScheme>) {
+      schemesBeforeReload = schemeManager.allSchemes.associateBy { it.name }
+    }
+
     override fun reloaded(schemeManager: SchemeManager<EditorColorsScheme>, schemes: Collection<EditorColorsScheme>) {
-      if (!isHeadlessMode) {
-        schemeManager.loadBundledSchemes(createLoadBundledSchemeRequests(additionalTextAttributes, checkId = false, schemeManager::findSchemeByName))
+      try {
+        if (!isHeadlessMode) {
+          schemeManager.loadBundledSchemes(createLoadBundledSchemeRequests(additionalTextAttributes, checkId = false, schemeManager::findSchemeByName))
+        }
+        initEditableDefaultSchemesCopies()
+        initEditableBundledSchemesCopies()
+        hideIntellijLightSchemeIfNeeded(state)
+        ApplicationManager.getApplication().getMessageBus().syncPublisher(EditorColorsManagerListener.TOPIC).schemesReloaded()
       }
-      initEditableDefaultSchemesCopies()
-      initEditableBundledSchemesCopies()
-      hideIntellijLightSchemeIfNeeded(state)
-      ApplicationManager.getApplication().getMessageBus().syncPublisher(EditorColorsManagerListener.TOPIC).schemesReloaded()
+      finally {
+        schemesBeforeReload = null
+      }
     }
   }
 
