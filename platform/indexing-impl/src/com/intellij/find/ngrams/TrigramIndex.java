@@ -90,7 +90,8 @@ public final class TrigramIndex extends ScalarIndexExtension<Integer> implements
   @Override
   @Internal
   public int shardlessVersion() {
-    return 4;
+    // 5: Phantom leaves out every text file in a library (TrigramIndexFilter)
+    return 5;
   }
 
   @Override

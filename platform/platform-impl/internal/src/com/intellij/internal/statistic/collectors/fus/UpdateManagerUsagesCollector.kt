@@ -17,7 +17,7 @@ internal class UpdateManagerUsagesCollector : ApplicationUsagesCollector() {
   override fun getMetrics(): Set<MetricEvent> = setOf(UPDATE_MANAGER.metric(
     when (val manager = ExternalUpdateManager.ACTUAL) {
       ExternalUpdateManager.SNAP, ExternalUpdateManager.FLATPAK, ExternalUpdateManager.BREW -> manager.toolName
-      ExternalUpdateManager.UNKNOWN -> "Other"
+      ExternalUpdateManager.UNKNOWN, ExternalUpdateManager.TOOLBOX -> "Other"
       null -> "IDE"
     }
   ))
