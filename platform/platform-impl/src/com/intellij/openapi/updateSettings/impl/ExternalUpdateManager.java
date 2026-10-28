@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 /// Represents a tool which manages IDE updates instead of a built-in update engine.
 public enum ExternalUpdateManager {
+  /// Never detected (Phantom has no Toolbox App integration); kept for the Android plugin, which compares against it
+  TOOLBOX("Toolbox App"),
   SNAP("Snap"),
   FLATPAK("Flatpak"),
   BREW("Homebrew"),
