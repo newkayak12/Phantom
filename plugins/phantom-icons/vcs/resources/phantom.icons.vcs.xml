@@ -1,9 +1,0 @@
-<idea-plugin package="dev.phantom.icons.vcs">
-  <dependencies>
-    <module name="intellij.platform.vcs.shared"/>
-  </dependencies>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <openapi.vcs.changes.ui.filePathIconProvider implementation="dev.phantom.icons.vcs.MaterialFilePathIconProvider"/>
-  </extensions>
-</idea-plugin>

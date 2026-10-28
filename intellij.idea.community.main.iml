@@ -137,10 +137,6 @@
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.sync" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.sync.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.icons" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.icons.core" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.icons.java" scope="RUNTIME" />
-    <orderEntry type="module" module-name="phantom.icons.vcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="phantom.theme" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.tracing.ide" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.notebooks.visualization" scope="RUNTIME" />
