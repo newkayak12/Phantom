@@ -1472,11 +1472,6 @@ plugins/performanceTesting/remote-driver.compose
 plugins/performanceTesting/remote-driver.jcef
 plugins/performanceTesting/scripts-ui
 plugins/performanceTesting/vcs
-plugins/phantom-icons
-plugins/phantom-icons/core
-plugins/phantom-icons/java
-plugins/phantom-icons/tests
-plugins/phantom-icons/vcs
 plugins/phantom-sync
 plugins/phantom-sync/core
 plugins/phantom-sync/tests
