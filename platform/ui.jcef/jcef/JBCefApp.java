@@ -21,6 +21,7 @@ import com.intellij.ui.JreHiDpiUtil;
 import com.intellij.ui.scale.DerivedScaleType;
 import com.intellij.ui.scale.ScaleContext;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.net.HttpConfigurable;
 import com.jetbrains.cef.JCefAppConfig;
 import com.jetbrains.cef.JCefVersionDetails;
 import org.cef.CefApp;
@@ -378,6 +379,13 @@ public final class JBCefApp {
    * @throws IllegalStateException when JCEF initialization is not possible in the current environment
    */
   public static @NotNull JBCefApp getInstance() {
+    if (!ourInitialized.get()) {
+      // phantom-idea: Holder's class initializer reads the proxy settings (SettingsHelper.loadArgs). The first
+      // HttpConfigurable creates ProxyMigrationService outside the non-cancellable section, which the service container
+      // reports as a service requested from <clinit> (a Markdown preview restored at startup opened JCEF first).
+      // Create it here, before the class initializer runs.
+      HttpConfigurable.getInstance();
+    }
     if (Holder.INSTANCE == null) {
       synchronized (Holder.class) {
         if (Holder.INSTANCE == null) {
