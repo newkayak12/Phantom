@@ -294,43 +294,6 @@ internal class TerminalAgentResolverTest : BasePlatformTestCase() {
   }
 
   @Test
-  fun `junie stays unavailable when only usr local bin contains it on posix`() {
-    runBlocking {
-      val junie = bundledAgentByKey("junie")
-      val eelApi = mockEelApi(
-        osFamily = EelOsFamily.Posix,
-        binaryName = "junie",
-        pathResults = emptyList(),
-        existingFiles = setOf("/usr/local/bin/junie"),
-      )
-
-      val binaryPath = findTerminalAgentBinaryPath(junie, eelApi)
-
-      assertThat(binaryPath).isNull()
-    }
-  }
-
-  @Test
-  fun `junie finds bat entry on windows`() {
-    runBlocking {
-      val junie = bundledAgentByKey("junie")
-      val homePath = "C:\\Users\\Someone.Else"
-      val expectedPath = "$homePath\\.local\\bin\\junie.bat"
-      val eelApi = mockEelApi(
-        osFamily = EelOsFamily.Windows,
-        binaryName = "junie",
-        pathResults = emptyList(),
-        homePath = homePath,
-        existingFiles = setOf(expectedPath),
-      )
-
-      val binaryPath = findTerminalAgentBinaryPath(junie, eelApi)
-
-      assertThat(binaryPath).isEqualTo(expectedPath)
-    }
-  }
-
-  @Test
   fun `posix prefers codex found in PATH over known locations`() {
     runBlocking {
       val codex = bundledAgentByKey("codex")

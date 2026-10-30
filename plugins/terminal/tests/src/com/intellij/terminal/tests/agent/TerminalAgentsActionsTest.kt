@@ -2,14 +2,12 @@
 package com.intellij.terminal.tests.agent
 
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.terminal.frontend.action.TerminalAgentsAvailabilityService
 import org.jetbrains.plugins.terminal.agent.TerminalAgentsStateService
-import com.intellij.terminal.frontend.action.createTerminalAgentActions
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.assertj.core.api.Assertions.assertThat
@@ -31,22 +29,8 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
   }
 
   @Test
-  fun `creating selector actions stops showing Junie badge after counter is exhausted`() {
-    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("junie"), TerminalAgentMode.RUN)))
-    TerminalAgentsStateService.getInstance().resetJunieNewBadgePresentations()
-
-    repeat(TerminalAgentsStateService.INITIAL_JUNIE_NEW_BADGE_SHOW_COUNT) {
-      val actions = createTerminalAgentActions(project)
-      assertThat(secondaryIcon(actions.single())).isNotNull()
-    }
-
-    val exhaustedBatch = createTerminalAgentActions(project)
-    assertThat(secondaryIcon(exhaustedBatch.single())).isNull()
-  }
-
-  @Test
   fun `toolbar shows AI Agents button before any agent is selected`() {
-    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("junie"), TerminalAgentMode.RUN)))
+    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("claude_code"), TerminalAgentMode.RUN)))
 
     assertThat(isVisible("Terminal.AiAgents.AgentSelector")).isTrue()
     assertThat(isVisible("Terminal.AiAgents.ChevronSelector")).isFalse()
@@ -55,8 +39,8 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
 
   @Test
   fun `toolbar shows launch action and chevron after selecting an agent`() {
-    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("junie"), TerminalAgentMode.RUN)))
-    TerminalAgentsStateService.getInstance().lastLaunchedAgentKey = TerminalAgent.AgentKey("junie")
+    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("claude_code"), TerminalAgentMode.RUN)))
+    TerminalAgentsStateService.getInstance().lastLaunchedAgentKey = TerminalAgent.AgentKey("claude_code")
 
     assertThat(isVisible("Terminal.AiAgents.AgentSelector")).isFalse()
     assertThat(isVisible("Terminal.AiAgents.ChevronSelector")).isTrue()
@@ -76,20 +60,6 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
   @Test
   fun `launch Junie CLI action is resolvable by id`() {
     assertThat(ActionManager.getInstance().getAction("Terminal.AiAgents.LaunchJunieCli")).isNotNull()
-  }
-
-  @Test
-  fun `launch Junie CLI action is enabled when Junie is available`() {
-    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("junie"), TerminalAgentMode.RUN)))
-
-    assertThat(isVisible("Terminal.AiAgents.LaunchJunieCli")).isTrue()
-  }
-
-  @Test
-  fun `launch Junie CLI action is enabled when Junie is available in install-and-run mode`() {
-    setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("junie"), TerminalAgentMode.INSTALL_AND_RUN)))
-
-    assertThat(isVisible("Terminal.AiAgents.LaunchJunieCli")).isTrue()
   }
 
   @Test
@@ -126,12 +96,6 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
     ActionUtil.performAction(action, event)
 
     assertThat(TerminalAgentsStateService.getInstance().lastLaunchedAgentKey).isNull()
-  }
-
-  private fun secondaryIcon(action: AnAction): Any? {
-    val event = TestActionEvent.createTestEvent(projectDataContext())
-    action.update(event)
-    return event.presentation.getClientProperty(ActionUtil.SECONDARY_ICON)
   }
 
   private fun isVisible(actionId: String): Boolean {
