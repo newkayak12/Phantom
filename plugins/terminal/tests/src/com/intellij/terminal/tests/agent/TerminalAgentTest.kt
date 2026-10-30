@@ -19,19 +19,14 @@ internal class TerminalAgentTest : BasePlatformTestCase() {
   fun `default provider returns built-in agent terminals in expected order`() {
     val terminalAgents = DefaultTerminalAgentProvider().getTerminalAgents()
 
-    assertThat(terminalAgents.map { it.agentKey.key }).containsExactly("junie", "claude_code", "codex")
+    assertThat(terminalAgents.map { it.agentKey.key }).containsExactly("claude_code", "codex")
   }
 
   @Test
   fun `default provider exposes bundled selector fields`() {
     val agentsByKey = DefaultTerminalAgentProvider().getTerminalAgents().associateBy { it.agentKey.key }
-    val junie = agentsByKey.getValue("junie")
     val codex = agentsByKey.getValue("codex")
     val claude = agentsByKey.getValue("claude_code")
-
-    assertThat(junie.installActionText).isEqualTo("Install Junie CLI")
-    assertThat(junie.secondaryText).isEqualTo("by JetBrains")
-    assertThat(junie.showsNewBadge).isTrue()
 
     assertThat(codex.installActionText).isNull()
     assertThat(codex.secondaryText).isNull()
@@ -46,10 +41,6 @@ internal class TerminalAgentTest : BasePlatformTestCase() {
     assertThat(claude.posixKnownLocationCandidates).containsExactly("\$HOME/.local/bin", "/usr/local/bin")
     assertThat(claude.windowsKnownLocationCandidates).containsExactly("\$HOME\\AppData\\Roaming\\npm", "\$HOME\\.local\\bin")
     assertThat(claude.windowsExecutableExtensions).containsExactly("exe", "bat", "cmd", "ps1")
-
-    assertThat(junie.posixKnownLocationCandidates).containsExactly("\$HOME/.local/bin")
-    assertThat(junie.windowsKnownLocationCandidates).containsExactly("\$HOME\\.local\\bin")
-    assertThat(junie.windowsExecutableExtensions).containsExactly("bat")
   }
 
   @Test
