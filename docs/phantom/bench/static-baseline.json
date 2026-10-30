@@ -1,0 +1,47 @@
+{
+ "kind": "static",
+ "version": "26.10.27",
+ "build": "262.261027",
+ "metrics": {
+  "bundle_mb": {
+   "median": 2393,
+   "min": 2393,
+   "max": 2393
+  },
+  "jars": {
+   "median": 891,
+   "min": 891,
+   "max": 891
+  },
+  "bundled_plugins": {
+   "median": 56,
+   "min": 56,
+   "max": 56
+  },
+  "applicationActivity": {
+   "median": 36,
+   "min": 36,
+   "max": 36
+  },
+  "postStartupActivity": {
+   "median": 193,
+   "min": 193,
+   "max": 193
+  },
+  "backgroundPostStartupActivity": {
+   "median": 104,
+   "min": 104,
+   "max": 104
+  },
+  "startupActivity": {
+   "median": 0,
+   "min": 0,
+   "max": 0
+  },
+  "preload_services": {
+   "median": 63,
+   "min": 63,
+   "max": 63
+  }
+ }
+}

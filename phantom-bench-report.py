@@ -4,6 +4,7 @@
   phantom-bench-report.py run <run-dir>        one run's raw files -> JSON on stdout
   phantom-bench-report.py show <run.json>...   a table of runs
   phantom-bench-report.py summary <label-dir>  run-*.json -> summary.json (median, min, max per metric)
+  phantom-bench-report.py static <App.app>     bundle size, jar and plugin counts, startup registrations -> JSON
   phantom-bench-report.py compare <baseline.json> <summary.json>
                                                exit 1 when a median is worse than the baseline's beyond its tolerance
 """
@@ -11,6 +12,7 @@ import json
 import re
 import statistics
 import sys
+import zipfile
 from pathlib import Path
 
 # idea.log: "2026-10-30 14:05:01,123 [   4512]   INFO - #c.i.o.p.DumbServiceImpl - exit dumb mode [fixture]";
@@ -142,11 +144,50 @@ TOLERANCE = {
 }
 
 
+STARTUP_EPS = ["applicationActivity", "postStartupActivity", "backgroundPostStartupActivity", "startupActivity"]
+
+
+def static(app):
+    """What the bundle registers to run at startup, counted from the descriptors without starting it."""
+    app = Path(app) / "Contents"
+    jars = [p for p in (app / "lib").rglob("*.jar")] + [p for p in (app / "plugins").rglob("*.jar")]
+    counts = dict.fromkeys(STARTUP_EPS, 0)
+    counts["preload_services"] = 0
+    tag = re.compile(r"<(" + "|".join(STARTUP_EPS) + r")\b")
+    for jar in jars:
+        try:
+            with zipfile.ZipFile(jar) as zf:
+                for name in zf.namelist():
+                    if name.endswith(".xml") and (name.startswith("META-INF/") or "/" not in name):
+                        text = zf.read(name).decode("utf-8", "replace")
+                        for m in tag.finditer(text):
+                            counts[m.group(1)] += 1
+                        counts["preload_services"] += len(re.findall(r'preload="(?:true|await)"', text))
+        except zipfile.BadZipFile:
+            continue
+    size = sum(p.stat().st_size for p in app.rglob("*") if p.is_file() and not p.is_symlink())
+    metrics = {
+        "bundle_mb": round(size / 2**20),
+        "jars": len(jars),
+        "bundled_plugins": sum(1 for p in (app / "plugins").iterdir() if p.is_dir()),
+        **counts,
+    }
+    product = json.loads((app / "Resources" / "product-info.json").read_text())
+    return {"kind": "static", "version": product["version"], "build": product["buildNumber"], "metrics": {k: {"median": v, "min": v, "max": v} for k, v in metrics.items()}}
+
+
+# Static counts may not grow at all; size may grow 2%.
+STATIC_TOLERANCE = {"bundle_mb": ("relative", 0.02), "jars": ("absolute", 0), "bundled_plugins": ("absolute", 0),
+                    "preload_services": ("absolute", 0), **{ep: ("absolute", 0) for ep in STARTUP_EPS}}
+
+
 def compare(baseline_path, summary_path):
-    baseline = json.loads(Path(baseline_path).read_text())["metrics"]
+    baseline_doc = json.loads(Path(baseline_path).read_text())
+    baseline = baseline_doc["metrics"]
     current = json.loads(Path(summary_path).read_text())["metrics"]
+    tolerance = STATIC_TOLERANCE if baseline_doc.get("kind") == "static" else TOLERANCE
     regressions = 0
-    for metric, (kind, allowed) in TOLERANCE.items():
+    for metric, (kind, allowed) in tolerance.items():
         if metric not in baseline or metric not in current:
             continue
         before, after = baseline[metric]["median"], current[metric]["median"]
@@ -166,6 +207,8 @@ if __name__ == "__main__":
         show(args)
     elif command == "summary":
         summary(args[0])
+    elif command == "static":
+        print(json.dumps(static(args[0]), indent=1))
     elif command == "compare":
         sys.exit(compare(args[0], args[1]))
     else:
