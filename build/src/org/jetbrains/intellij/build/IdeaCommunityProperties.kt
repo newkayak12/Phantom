@@ -69,14 +69,18 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     // (MCP server for external agents, Agent Client Protocol); nothing bundled depends on either.
     // No performanceTesting either: JetBrains' scripted performance-test runner, nothing for users.
     // No DevKit runtime (internal PSI viewer and usage-stats tools), no Eclipse project import, no JavaFX
-    // (its Scene Builder tab downloads a kit from JetBrains)
+    // (its Scene Builder tab downloads a kit from JetBrains).
+    // Bytecode Viewer, WebP and Modal Commit Interface are Phantom-plugins now (bytecode, webp, modal-commit).
     productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS
       .removing("intellij.featuresTrainer")
       .removing("intellij.mcpserver")
       .removing("intellij.performanceTesting")
       .removing("intellij.platform.acp.plugin")
       .removing("intellij.dev")
-      .removing("intellij.eclipse") + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.eclipse")
+      .removing("intellij.java.byteCodeViewer")
+      .removing("intellij.webp")
+      .removing("intellij.vcs.git.commit.modal") + PHANTOM_BUNDLED_PLUGINS
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
