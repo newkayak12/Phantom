@@ -3,9 +3,13 @@
 
   phantom-bench-report.py run <run-dir>        one run's raw files -> JSON on stdout
   phantom-bench-report.py show <run.json>...   a table of runs
+  phantom-bench-report.py summary <label-dir>  run-*.json -> summary.json (median, min, max per metric)
+  phantom-bench-report.py compare <baseline.json> <summary.json>
+                                               exit 1 when a median is worse than the baseline's beyond its tolerance
 """
 import json
 import re
+import statistics
 import sys
 from pathlib import Path
 
@@ -106,11 +110,63 @@ def show(paths):
             print(f"  {item['ms']:>7} ms  {item['section']:<24} {item['name']}")
 
 
+def summary(label_dir):
+    label_dir = Path(label_dir)
+    rows = [json.loads(p.read_text()) for p in sorted(label_dir.glob("run-*.json"))]
+    result = {"sha": rows[0]["sha"], "label": rows[0]["label"], "runs": len(rows), "metrics": {}}
+    for metric in METRICS:
+        values = [row[metric] for row in rows if row[metric] is not None]
+        if values:
+            result["metrics"][metric] = {"median": statistics.median(values), "min": min(values), "max": max(values)}
+    costs = {}
+    for row in rows:
+        for item in row["startup_top"]:
+            costs.setdefault((item["section"], item["name"]), []).append(item["ms"])
+    result["startup_top"] = sorted(
+        ({"section": section, "name": name, "ms": statistics.median(ms), "seen": len(ms)}
+         for (section, name), ms in costs.items()),
+        key=lambda item: item["ms"], reverse=True)[:20]
+    (label_dir / "summary.json").write_text(json.dumps(result, ensure_ascii=False, indent=1))
+    return result
+
+
+# Allowed worsening of a median before compare fails. Calibrated in docs/phantom/bench/README.md.
+TOLERANCE = {
+    "first_smart_mode_ms": ("relative", 0.10),
+    "indexing_settled_ms": ("relative", 0.10),
+    "footprint_mb": ("relative", 0.05),
+    "live_heap_mb": ("relative", 0.05),
+    "loaded_classes": ("relative", 0.05),
+    "freezes": ("absolute", 1),
+    "freeze_total_ms": ("absolute", 500),
+}
+
+
+def compare(baseline_path, summary_path):
+    baseline = json.loads(Path(baseline_path).read_text())["metrics"]
+    current = json.loads(Path(summary_path).read_text())["metrics"]
+    regressions = 0
+    for metric, (kind, allowed) in TOLERANCE.items():
+        if metric not in baseline or metric not in current:
+            continue
+        before, after = baseline[metric]["median"], current[metric]["median"]
+        limit = before * (1 + allowed) if kind == "relative" else before + allowed
+        worse = after > limit
+        regressions += worse
+        change = f"{(after - before) / before:+.1%}" if before else f"{after - before:+}"
+        print(f"{'REGRESSION' if worse else 'ok':<10} {metric:<22} {before:>10} -> {after:<10} {change}")
+    return 1 if regressions else 0
+
+
 if __name__ == "__main__":
     command, args = sys.argv[1], sys.argv[2:]
     if command == "run":
         print(json.dumps(run(args[0]), ensure_ascii=False, indent=1))
     elif command == "show":
         show(args)
+    elif command == "summary":
+        summary(args[0])
+    elif command == "compare":
+        sys.exit(compare(args[0], args[1]))
     else:
         sys.exit(f"unknown command: {command}")

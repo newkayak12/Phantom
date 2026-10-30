@@ -101,3 +101,5 @@ for i in $(seq 1 "$runs"); do
   python3 phantom-bench-report.py run "$out/run-$i" > "$out/run-$i.json"
 done
 python3 phantom-bench-report.py show "$out"/run-*.json
+python3 phantom-bench-report.py summary "$out"
+echo "summary: $out/summary.json"
