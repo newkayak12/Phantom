@@ -71,6 +71,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     // No DevKit runtime (internal PSI viewer and usage-stats tools), no Eclipse project import, no JavaFX
     // (its Scene Builder tab downloads a kit from JetBrains).
     // Bytecode Viewer, WebP and Modal Commit Interface are Phantom-plugins now (bytecode, webp, modal-commit).
+    // No GitLab integration (GitHub only); no Eclipse, Visual Studio or NetBeans keymaps (installable from Marketplace).
+    // No configurationScript: intellij.yaml project-configuration files; nothing bundled depends on it.
     productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS
       .removing("intellij.featuresTrainer")
       .removing("intellij.mcpserver")
@@ -80,7 +82,12 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.eclipse")
       .removing("intellij.java.byteCodeViewer")
       .removing("intellij.webp")
-      .removing("intellij.vcs.git.commit.modal") + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.vcs.git.commit.modal")
+      .removing("intellij.vcs.gitlab")
+      .removing("intellij.keymap.eclipse")
+      .removing("intellij.keymap.visualStudio")
+      .removing("intellij.keymap.netbeans")
+      .removing("intellij.configurationScript") + PHANTOM_BUNDLED_PLUGINS
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
