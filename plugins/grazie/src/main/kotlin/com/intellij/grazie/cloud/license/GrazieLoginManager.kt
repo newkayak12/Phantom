@@ -11,6 +11,7 @@ import com.intellij.grazie.icons.GrazieIcons
 import com.intellij.grazie.utils.catching
 import com.intellij.ide.Region
 import com.intellij.ide.RegionSettings
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -75,7 +76,11 @@ class GrazieLoginManager(coroutineScope: CoroutineScope) {
   private val initialized = AtomicBoolean(false)
 
   init {
-    if (!ApplicationManager.getApplication().isHeadlessEnvironment) {
+    // phantom-idea: no license, account or Grazie Cloud lookups unless -Dphantom.jetbrains.services=true; local checking stays
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) {
+      initialized.set(true)
+    }
+    else if (!ApplicationManager.getApplication().isHeadlessEnvironment) {
       coroutineScope.launch {
         val aiService = service<ProvisionedServiceRegistry>().getServiceById("ai")
         if (aiService == null) {
@@ -151,6 +156,7 @@ class GrazieLoginManager(coroutineScope: CoroutineScope) {
   private fun isChina() = RegionSettings.getRegion() == Region.CHINA
 
   private suspend fun computeLoginState(force: Boolean = false, skipCloudLogin: Boolean = false) {
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) return // phantom-idea: stays NoJba
     if (GrazieCloudConnector.hasAdditionalConnectors()) return
     val es = enterpriseState.first { it != null }!!
     if (es.isAIEnterpriseEnabled()) {
@@ -251,6 +257,7 @@ class GrazieLoginManager(coroutineScope: CoroutineScope) {
   }
 
   suspend fun invokeJbaLogin() {
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) return // phantom-idea: no JetBrains Account login
     // Just NoJba?
     val stateBefore = loginState.getAndUpdate { GrazieLoginState.WaitingForJba }
     when (performJbaLogin()) {
