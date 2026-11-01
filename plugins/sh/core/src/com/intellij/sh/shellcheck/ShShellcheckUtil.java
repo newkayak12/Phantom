@@ -66,10 +66,11 @@ public final class ShShellcheckUtil {
   private static final Key<Boolean> UPDATE_NOTIFICATION_SHOWN = Key.create("SHELLCHECK_UPDATE");
           static final @NlsSafe String SHELLCHECK = "shellcheck";
   private static final String SHELLCHECK_VERSION = "0.10.0";
-  private static final String SHELLCHECK_ARTIFACT_VERSION = SHELLCHECK_VERSION + "-1";
-  private static final String SHELLCHECK_ARCHIVE_EXTENSION = ".tar.gz";
-  private static final String SHELLCHECK_URL =
-    "https://cache-redirector.jetbrains.com/intellij-dependencies/org/jetbrains/intellij/deps/shellcheck/shellcheck/";
+  // phantom-idea: ShellCheck comes from its own GitHub releases, not the JetBrains repackaging on cache-redirector.jetbrains.com.
+  // Those are shellcheck-v<version>.<os>.<arch>.tar.xz holding shellcheck-v<version>/shellcheck, and for Windows (x86_64 only)
+  // shellcheck-v<version>.zip holding shellcheck.exe at its root.
+  private static final String SHELLCHECK_RELEASE = "v" + SHELLCHECK_VERSION;
+  private static final String SHELLCHECK_URL = "https://github.com/koalaman/shellcheck/releases/download/";
 
   public static void download(@NotNull Project project, @NotNull Runnable onSuccess, @NotNull Runnable onFailure) {
     download(project, onSuccess, onFailure, false);
@@ -117,7 +118,7 @@ public final class ShShellcheckUtil {
           return;
         }
 
-        String downloadName = SHELLCHECK + SHELLCHECK_ARCHIVE_EXTENSION;
+        String downloadName = SHELLCHECK + archiveExtension(eel.getPlatform()); // phantom-idea: .zip on Windows, .tar.xz elsewhere
         DownloadableFileService service = DownloadableFileService.getInstance();
         DownloadableFileDescription description = service.createFileDescription(url, downloadName);
         FileDownloader downloader = service.createDownloader(Collections.singletonList(description), downloadName);
@@ -307,27 +308,41 @@ public final class ShShellcheckUtil {
   }
 
   public static @NotNull String decompressShellcheck(Path tarPath, Path directory, @NotNull EelPlatform eelPlatform) throws IOException {
-    new Decompressor.Tar(tarPath).extract(directory);
+    // phantom-idea: the Windows release is a zip with shellcheck.exe at its root; the others are tar.xz with the binary
+    // under shellcheck-v<version>/. Only the binary is extracted, straight into the directory as before.
+    String bin = spellcheckBin(eelPlatform);
+    if (isWindows(eelPlatform)) {
+      new Decompressor.Zip(tarPath).filter(bin::equals).extract(directory);
+    }
+    else {
+      String prefix = "shellcheck-" + SHELLCHECK_RELEASE;
+      new Decompressor.Tar(tarPath).filter((prefix + "/" + bin)::equals).removePrefixPath(prefix).extract(directory);
+    }
 
     // cleaning up
     NioFiles.deleteRecursively(tarPath);
 
-    File shellcheck = new File(directory.toFile(), spellcheckBin(eelPlatform));
+    File shellcheck = new File(directory.toFile(), bin);
     return shellcheck.exists() ? shellcheck.getPath() : "";
+  }
+
+  // phantom-idea: archive names of the ShellCheck GitHub releases
+  private static @NotNull String archiveExtension(@NotNull EelPlatform platform) {
+    return isWindows(platform) ? ".zip" : ".tar.xz";
   }
 
   @VisibleForTesting
   public static @NlsSafe @Nullable String getShellcheckDistributionLink(@NotNull EelPlatform platform) {
-    String platformString = isMac(platform) ? "mac" : isWindows(platform) ? "windows" : isLinux(platform) ? "linux" : null;
+    // phantom-idea: GitHub release asset names, e.g. shellcheck-v0.10.0.darwin.aarch64.tar.xz, shellcheck-v0.10.0.zip
+    String platformString = isMac(platform) ? "darwin" : isWindows(platform) ? "windows" : isLinux(platform) ? "linux" : null;
     if (platformString == null) return null;
-    String arch = isArm64(platform) ? "arm64" : "amd64";
-    if (platformString.equals("windows") && arch.equals("arm64")) {
-      // Unsupported OS + Arch
-      return null;
+    String arch = isArm64(platform) ? "aarch64" : "x86_64";
+    String base = SHELLCHECK_URL + SHELLCHECK_RELEASE + "/shellcheck-" + SHELLCHECK_RELEASE;
+    if (platformString.equals("windows")) {
+      // Unsupported OS + Arch: there is only an x86_64 Windows build
+      return arch.equals("aarch64") ? null : base + archiveExtension(platform);
     }
-    return SHELLCHECK_URL +
-           SHELLCHECK_ARTIFACT_VERSION +
-           "/shellcheck-" + SHELLCHECK_ARTIFACT_VERSION + '-' + platformString + '-' + arch + SHELLCHECK_ARCHIVE_EXTENSION;
+    return base + '.' + platformString + '.' + arch + archiveExtension(platform);
   }
 
   @SuppressWarnings("SpellCheckingInspection")

@@ -31,6 +31,7 @@ open class BaseTestCase {
   @BeforeEach
   @Throws(Exception::class)
   fun setUpBaseCase() {
+    System.setProperty("phantom.jetbrains.services", "true") // phantom-idea: these tests use Grazie Cloud
     myFixture = createFixture()
     initCloudProcessing()
     installTestChecker(testRootDisposable)
@@ -51,6 +52,7 @@ open class BaseTestCase {
   fun tearDownBaseCase() {
     resetGrazieConfiguration()
     myFixture.tearDown()
+    System.clearProperty("phantom.jetbrains.services")
   }
 
   fun initCloudProcessing() {
