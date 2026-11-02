@@ -35,6 +35,8 @@ class JdkDownloaderIntegrationTest : BasePlatformTestCase() {
 
   @Test
   fun `test default model should have JBR`() {
+    // phantom-idea: only JetBrains' feed lists JBR; foojay's does not
+    if (!com.intellij.ide.plugins.marketplace.MarketplaceRequests.jetBrainsServicesEnabled) return
     lateinit var lastError: Throwable
     repeat(5) {
       val result = runCatching {
