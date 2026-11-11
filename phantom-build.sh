@@ -26,6 +26,23 @@ fi
 echo "$d.$n" > "$seq_file"
 phantom="PH-$d.$n"
 echo "Phantom IDEA $yy.$mm.$dd (build $phantom, platform 262.$d)"
+
+# Plugins bundled from Phantom-plugins in place of their IntelliJ originals (PHANTOM_PLUGINS_BUNDLED in
+# IdeaCommunityProperties.kt), built from the checkout next to this one or PHANTOM_PLUGINS_REPO, against the IntelliJ
+# Community build Phantom is forked from (so no installed Phantom is needed), and unpacked into out/phantom-plugins
+plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
+bundled_from_plugins=(toml yaml sh lombok decompiler coverage textmate markdown)
+[[ -f "$plugins_repo/settings.gradle.kts" ]] || { echo "no Phantom-plugins checkout at $plugins_repo (set PHANTOM_PLUGINS_REPO)"; exit 1; }
+echo "Phantom-plugins $(git -C "$plugins_repo" log -1 --format='%h %s' | cut -c1-80)"
+tasks=(); for p in "${bundled_from_plugins[@]}"; do tasks+=(":$p:buildPlugin"); done
+(cd "$plugins_repo" && ./gradlew --no-configuration-cache -q -PplatformFromRepository=true "${tasks[@]}")
+rm -rf "$root/out/phantom-plugins"; mkdir -p "$root/out/phantom-plugins"
+for p in "${bundled_from_plugins[@]}"; do
+  version="$(sed -nE 's/^version = "([^"]+)"/\1/p' "$plugins_repo/$p/build.gradle.kts")"
+  zip="$plugins_repo/$p/build/distributions/$p-$version.zip"
+  [[ -f "$zip" ]] || { echo "no $zip after the Phantom-plugins build"; exit 1; }
+  unzip -q "$zip" -d "$root/out/phantom-plugins"
+done
 nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 \
   -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" "$@"
 
