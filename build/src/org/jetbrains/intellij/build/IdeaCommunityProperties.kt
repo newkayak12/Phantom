@@ -14,13 +14,22 @@ import org.jetbrains.intellij.build.productLayout.CommunityModuleSets
 import org.jetbrains.intellij.build.productLayout.CommunityProductFragments
 import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
 import org.jetbrains.intellij.build.productLayout.productModules
+import java.nio.file.Files
 import java.nio.file.Path
 
 /** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "phantom.sync",
   "phantom.theme",
-  "intellij.lombok", // community plugin that only Ultimate bundled; Java projects need it
+)
+
+/**
+ * phantom-idea: plugins built in Phantom-plugins and bundled in place of their IntelliJ originals. They have dev.phantom.* ids
+ * and keep the IntelliJ ids as aliases and the IntelliJ content module names, so the plugins and modules depending on them
+ * resolve to these. phantom-build.sh unpacks them into out/phantom-plugins/<dir>; the originals are left out of the bundle.
+ */
+val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
+  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -87,7 +96,15 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.keymap.eclipse")
       .removing("intellij.keymap.visualStudio")
       .removing("intellij.keymap.netbeans")
-      .removing("intellij.configurationScript") + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.configurationScript")
+      // built in Phantom-plugins instead, see PHANTOM_PLUGINS_BUNDLED
+      .removing("intellij.toml")
+      .removing("intellij.yaml")
+      .removing("intellij.sh.plugin")
+      .removing("intellij.java.decompiler")
+      .removing("intellij.java.coverage")
+      .removing("intellij.textmate.plugin")
+      .removing("intellij.markdown") + PHANTOM_BUNDLED_PLUGINS
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
@@ -166,6 +183,15 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
   }
 
   protected open suspend fun bundleExternalPlugins(context: BuildContext, targetDirectory: Path) {}
+
+  // phantom-idea: a build without them would ship without YAML, Markdown and the rest, so a missing one fails the build
+  override suspend fun getAdditionalPluginPaths(context: BuildContext): List<Path> {
+    val root = context.paths.communityHomeDir.resolve("out/phantom-plugins")
+    val dirs = PHANTOM_PLUGINS_BUNDLED.map { root.resolve(it) }
+    val missing = dirs.filterNot { Files.isDirectory(it.resolve("lib")) }
+    check(missing.isEmpty()) { "Phantom-plugins builds missing (phantom-build.sh puts them in $root): $missing" }
+    return dirs
+  }
 
   override fun createWindowsCustomizer(projectHome: Path): WindowsDistributionCustomizer = ideaCommunityWindowsCustomizer(communityHomeDir)
 
