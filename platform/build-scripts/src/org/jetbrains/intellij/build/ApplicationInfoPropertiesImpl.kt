@@ -7,8 +7,11 @@ import org.jdom.Element
 import org.jdom.Namespace
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.intellij.build.impl.BuildUtils
+import org.jetbrains.intellij.build.impl.PHANTOM_VERSION_MAJOR_PROPERTY
+import org.jetbrains.intellij.build.impl.PHANTOM_VERSION_MINOR_PROPERTY
 import org.jetbrains.intellij.build.impl.SnapshotBuildNumber
 import org.jetbrains.intellij.build.impl.logging.reportBuildProblem
+import org.jetbrains.intellij.build.impl.phantomVersionProperty
 import org.jetbrains.jps.model.JpsProject
 import java.nio.file.Files
 import java.nio.file.Path
@@ -65,8 +68,11 @@ internal class ApplicationInfoPropertiesImpl(
     @Suppress("DEPRECATION")
     val applicationInfoOverrides = productProperties.applicationInfoOverride(project)
     val versionTag = root.getChild("version")!!
-    majorVersion = applicationInfoOverrides?.majorVersion ?: versionTag.getAttributeValue("major")!!
-    minorVersion = applicationInfoOverrides?.minorVersion ?: versionTag.getAttributeValue("minor") ?: "0"
+    // phantom-idea: phantom-build.sh passes the display version (the build date); the tracked XML keeps a placeholder
+    majorVersion = phantomVersionProperty(PHANTOM_VERSION_MAJOR_PROPERTY)
+                   ?: applicationInfoOverrides?.majorVersion ?: versionTag.getAttributeValue("major")!!
+    minorVersion = phantomVersionProperty(PHANTOM_VERSION_MINOR_PROPERTY)
+                   ?: applicationInfoOverrides?.minorVersion ?: versionTag.getAttributeValue("minor") ?: "0"
     microVersion = applicationInfoOverrides?.microVersion ?: versionTag.getAttributeValue("micro") ?: "0"
     patchVersion = applicationInfoOverrides?.patchVersion ?: versionTag.getAttributeValue("patch") ?: "0"
     fullVersionFormat = applicationInfoOverrides?.fullVersionFormat ?: versionTag.getAttributeValue("full") ?: "{0}.{1}"
@@ -168,6 +174,12 @@ internal fun computeAppInfoXml(appInfo: ApplicationInfoProperties, context: Buil
     patchedAppInfo = patchedAppInfo.replace("number=\"$platformBuild\"", "number=\"$phantom\" apiVersion=\"$platformBuild\"")
   }
 
+  // phantom-idea: the packaged copy carries the display version phantom-build.sh passed (already in appInfo), not the
+  // placeholder of the tracked XML
+  if (phantomVersionProperty(PHANTOM_VERSION_MAJOR_PROPERTY) != null || phantomVersionProperty(PHANTOM_VERSION_MINOR_PROPERTY) != null) {
+    patchedAppInfo = withPhantomVersion(appInfoXml = patchedAppInfo, major = appInfo.majorVersion, minor = appInfo.minorVersion)
+  }
+
   val isEapOverride = System.getProperty(BuildOptions.INTELLIJ_BUILD_OVERRIDE_APPLICATION_VERSION_IS_EAP)
   val suffixOverride = System.getProperty(BuildOptions.INTELLIJ_BUILD_OVERRIDE_APPLICATION_VERSION_SUFFIX)
 
@@ -251,6 +263,19 @@ private fun withAppInfoOverride(
   }
 
   return JDOMUtil.write(element)
+}
+
+/** phantom-idea: sets `major` and `minor` of the `<version>` element, leaving the rest of the text as it is */
+@VisibleForTesting
+internal fun withPhantomVersion(appInfoXml: String, major: String, minor: String): String {
+  val versionTag = checkNotNull(Regex("<version\\b[^>]*>").find(appInfoXml)) { "no <version> element in $appInfoXml" }
+  check(versionTag.value.contains(" major=\"") && versionTag.value.contains(" minor=\"")) {
+    "no major/minor attributes in ${versionTag.value}"
+  }
+  val patchedTag = versionTag.value
+    .replace(Regex(" major=\"[^\"]*\"")) { " major=\"$major\"" }
+    .replace(Regex(" minor=\"[^\"]*\"")) { " minor=\"$minor\"" }
+  return appInfoXml.replaceRange(versionTag.range, patchedTag)
 }
 
 //copy of ApplicationInfoImpl.shortenCompanyName
