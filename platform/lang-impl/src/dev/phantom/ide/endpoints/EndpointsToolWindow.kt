@@ -36,6 +36,7 @@ import com.intellij.util.Alarm
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.tree.TreeUtil
+import dev.phantom.ide.PhantomLangBundle
 import java.awt.BorderLayout
 import java.awt.datatransfer.StringSelection
 import java.awt.event.KeyAdapter
@@ -63,7 +64,8 @@ internal class EndpointsToolWindowFactory : ToolWindowFactory {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val panel = EndpointsPanel(project, toolWindow.disposable)
     toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, null, false))
-    toolWindow.setTitleActions(listOf(object : DumbAwareAction("Refresh", null, AllIcons.Actions.Refresh) {
+    toolWindow.setTitleActions(listOf(object : DumbAwareAction(
+      PhantomLangBundle.message("phantom.endpoints.action.refresh"), null, AllIcons.Actions.Refresh) {
       override fun getActionUpdateThread() = ActionUpdateThread.EDT
       override fun actionPerformed(e: AnActionEvent) = panel.refresh()
     }))
@@ -99,8 +101,8 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
     tree.showsRootHandles = true
     tree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
     tree.cellRenderer = Renderer()
-    tree.emptyText.text = "Finding endpoints…"
-    search.textEditor.emptyText.text = "Filter by method, path or handler"
+    tree.emptyText.text = PhantomLangBundle.message("phantom.endpoints.empty.finding")
+    search.textEditor.emptyText.text = PhantomLangBundle.message("phantom.endpoints.filter.empty.text")
     search.addDocumentListener(object : DocumentAdapter() {
       override fun textChanged(e: DocumentEvent) = rebuild()
     })
@@ -167,7 +169,7 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
           val row = EndpointRow(presentation.presentableText ?: "", methods, presentation.locationString ?: "", module) {
             typed.getNavigationElement(group, endpoint)
           }
-          byModule.getOrPut(module?.name ?: "Other sources") { ArrayList() } += row
+          byModule.getOrPut(module?.name ?: PhantomLangBundle.message("phantom.endpoints.group.other.sources")) { ArrayList() } += row
         }
       }
     }
@@ -187,7 +189,8 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
     }
     model.reload()
     TreeUtil.expandAll(tree)
-    tree.emptyText.text = if (groups.isEmpty()) "No HTTP endpoints in this project" else "No endpoints match the filter"
+    tree.emptyText.text = if (groups.isEmpty()) PhantomLangBundle.message("phantom.endpoints.empty.none")
+    else PhantomLangBundle.message("phantom.endpoints.empty.no.match")
   }
 
   private fun selected(): EndpointRow? = (tree.lastSelectedPathComponent as? DefaultMutableTreeNode)?.userObject as? EndpointRow
@@ -211,13 +214,19 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
       .submit(AppExecutorUtil.getAppExecutorService())
   }
 
-  private inner class GenerateRequestAction : DumbAwareAction("Generate HTTP Request", "Add a request for this endpoint to generated-requests.http", AllIcons.Actions.Execute) {
+  private inner class GenerateRequestAction : DumbAwareAction(
+    PhantomLangBundle.message("phantom.endpoints.action.generate.request.text"),
+    PhantomLangBundle.message("phantom.endpoints.action.generate.request.description"),
+    AllIcons.Actions.Execute,
+  ) {
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
     override fun update(e: AnActionEvent) { e.presentation.isEnabled = selected() != null }
     override fun actionPerformed(e: AnActionEvent) = generateRequest()
   }
 
-  private inner class CopyUrlAction : DumbAwareAction("Copy URL", null, AllIcons.Actions.Copy) {
+  private inner class CopyUrlAction : DumbAwareAction(
+    PhantomLangBundle.message("phantom.endpoints.action.copy.url"), null, AllIcons.Actions.Copy,
+  ) {
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
     override fun update(e: AnActionEvent) { e.presentation.isEnabled = selected() != null }
     override fun actionPerformed(e: AnActionEvent) {
@@ -225,7 +234,9 @@ internal class EndpointsPanel(private val project: Project, parent: Disposable) 
     }
   }
 
-  private inner class OpenAction : DumbAwareAction("Go to Handler", null, AllIcons.Actions.EditSource) {
+  private inner class OpenAction : DumbAwareAction(
+    PhantomLangBundle.message("phantom.endpoints.action.go.to.handler"), null, AllIcons.Actions.EditSource,
+  ) {
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
     override fun update(e: AnActionEvent) { e.presentation.isEnabled = selected() != null }
     override fun actionPerformed(e: AnActionEvent) { open() }
