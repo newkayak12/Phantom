@@ -37,7 +37,7 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 
 **줄인 것** ([FORK-DELTA §3.2, §3.3, §3.5](docs/phantom/FORK-DELTA.md))
 - 번들 모듈 14개(Learn, MCP 서버, ACP, 내부 개발자 도구, Eclipse 가져오기, GitLab, 추가 키맵 등)와 Android, Compose를 뺐다. 소스는 업스트림 병합을 위해 남긴다.
-- JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.
+- JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 피드백 양식, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.
 - 진단 파일은 기본으로 쓰지 않는다: OpenTelemetry 지표 CSV(4일에 약 116 MB), 인덱싱·스토리지 보고서.
 - 라이브러리 안 텍스트 파일을 Find in Files 인덱스에서 뺐다. 작성자 프로젝트에서 trigram 인덱스 369 MB → 84 MB, 전체 인덱스 1.2 GB → 916 MB.
 
@@ -52,7 +52,7 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 - Backup and Sync를 내 git 저장소로 한다. GitHub 로그인은 account.jetbrains.com 대신 `gh auth token`을 쓴다.
 - Download JDK 목록은 foojay Disco API에서 받는다. 힙과 파일 페이지 캐시 크기는 기기 RAM에 맞춰 정한다.
 
-**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일과 JBR·Git 설치 피드는 아직 JetBrains에서 받는다. 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정하고, Tips of the Day의 좋아요/싫어요 피드백은 플래그와 무관하게 JetBrains로 가며, 피드백 양식과 프레임워크 라이브러리 다운로드 도우미도 플래그 밖에 있다.
+**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일과 JBR·Git 설치 피드는 아직 JetBrains에서 받는다. 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정하고, 프레임워크 라이브러리 다운로드 도우미도 플래그 밖에 있다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `6e71ed80c4`) 아직 빌드하거나 테스트하지 않았다.
 
 ## 성능
 
@@ -113,7 +113,7 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생긴다. 빌드가 추적 중인 `IdeaApplicationInfo.xml`의 버전을 고쳐 쓰므로 커밋 전에 작업 트리를 확인한다.
+첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생긴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `048852ca23`)은 아직 빌드하거나 테스트하지 않았다.
 
 버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 IntelliJ Platform 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`. 서명, 릴리스, 벤치마크는 [BUILD.md](docs/phantom/BUILD.md)에 있다.
 

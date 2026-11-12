@@ -34,7 +34,7 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 
 **Trimmed** ([FORK-DELTA §3.2, §3.3, §3.5](docs/phantom/FORK-DELTA.md))
 - 14 bundled modules out (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …), plus Android and Compose; sources stay for upstream merges.
-- Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
+- Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
 - Diagnostic files off by default: OpenTelemetry metrics CSV (about 116 MB in 4 days), indexing and storage reports.
 - Library text files left out of the Find in Files index: trigram index 369 MB → 84 MB, all indexes 1.2 GB → 916 MB on the author's project.
 
@@ -49,7 +49,7 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 - Backup and Sync to your own git repository; GitHub login through `gh auth token` instead of account.jetbrains.com.
 - Download JDK lists JDKs from the foojay Disco API; heap and file page cache are sized to the machine's RAM.
 
-**What still talks to the network.** Browsing the Marketplace tab (plugins.jetbrains.com) works by design, and Phantom's own plugin repository is read from GitHub (`-Dphantom.plugins.official=false` drops it). Grazie language files and the JBR and Git install feeds still come from JetBrains. Known gaps, listed in [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md): usage statistics upload is governed by your consent setting, not by the flag; Tips of the Day like/dislike feedback is sent to JetBrains without the flag; the feedback forms and the framework library download assistant are not behind the flag either.
+**What still talks to the network.** Browsing the Marketplace tab (plugins.jetbrains.com) works by design, and Phantom's own plugin repository is read from GitHub (`-Dphantom.plugins.official=false` drops it). Grazie language files and the JBR and Git install feeds still come from JetBrains. Known gaps, listed in [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md): usage statistics upload is governed by your consent setting, not by the flag; the framework library download assistant is not behind the flag either. Feedback forms and Tips of the Day like/dislike no longer count as gaps: the forms send nothing unless the flag is set, and the like/dislike row is hidden by default. That change is in the source (commit `6e71ed80c4`) but has not been built or tested yet.
 
 ## Performance
 
@@ -110,7 +110,7 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`. The build rewrites the version in the tracked `IdeaApplicationInfo.xml`, so check the working tree before committing.
+The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `048852ca23`) has not been built or tested yet.
 
 Versions: display `YY.MM.DD`, build number `PH-<YYMMDD>.<N>`, and an internal platform build `262.<YYMMDD>` so plugins built for IntelliJ Platform 262 keep loading. Signing, releases and benchmarks: [BUILD.md](docs/phantom/BUILD.md).
 

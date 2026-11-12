@@ -8,7 +8,7 @@
 
 ## 1. 요약
 
-d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 103개다(병합 커밋 2개 포함).
+d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 103개다(병합 커밋 2개 포함). 이 절의 숫자(커밋 103개, 파일 수, 줄 수)는 `d2faebf601..be60914099` 기준이다. 6e71ed80c4, 048852ca23, a1313a347c, 5185f60295와 그 앞의 main 커밋 4개(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a), 문서 커밋 ff39526a22와 병합 2c0cfbd022가 들어오기 전 값이라 지금의 `d2faebf601..HEAD`와 다르다.
 
 ### 1.1 상태별
 
@@ -85,11 +85,11 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 
 ### 3.1 브랜딩과 버전
 
-제품 이름, 아이콘, 번들 ID, 설정 폴더, 버전 체계를 바꾼다. 표시 버전은 빌드 날짜(YY.MM.DD), 내부 플랫폼 빌드는 `262.<YYMMDD>`, Phantom 빌드 번호는 `PH-<YYMMDD>.<N>`이다.
+제품 이름, 아이콘, 번들 ID, 설정 폴더, 버전 체계를 바꾼다. 표시 버전은 빌드 날짜(YY.MM.DD), 내부 플랫폼 빌드는 `262.<YYMMDD>`, Phantom 빌드 번호는 `PH-<YYMMDD>.<N>`이다. 표시 버전은 추적 파일 `IdeaApplicationInfo.xml`에 적혀 있지 않다. 추적 파일은 자리표시자 `0` / `0.0`이고, `phantom-build.sh`가 `-Dphantom.version.major=<YY>`, `-Dphantom.version.minor=<MM>.<DD>`를 `installers.cmd`에 넘긴다(048852ca23, 코드만 바꿨고 빌드 전). 그래서 속성 없이 실행한 빌드와 소스에서 실행한 IDE는 0.0으로 보인다.
 
 | 파일:행 (HEAD) | 패치 | 커밋 |
 |---|---|---|
-| `community-resources/resources/idea/IdeaApplicationInfo.xml:2` | `<version major="26" minor="10.27"/>`. `phantom-build.sh:16`이 빌드할 때마다 sed로 날짜를 다시 쓴다 | fc05eddc04, bf2b90f700 |
+| `community-resources/resources/idea/IdeaApplicationInfo.xml:2` | `<version eap="false" major="0" minor="0.0"/>` 자리표시자와 `phantom-idea` 주석. 이전에는 `<version major="26" minor="10.27"/>`를 `phantom-build.sh`가 sed로 빌드마다 다시 썼다(fc05eddc04, bf2b90f700). 지금은 추적 파일을 고치지 않는다 | fc05eddc04, bf2b90f700, 048852ca23 |
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:3,5-8` | 회사 Phantom, 로고·아이콘 `phantom*.svg`, 이름 Phantom IDEA | 1e0d4353f7 |
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:10` | `<default-laf light="Phantom Light" dark="Phantom Dark"/>` | a91f9ef7e8 |
 | `build.txt:1` | `262.10968.SNAPSHOT` → `262.SNAPSHOT` | e8ef2fd569 |
@@ -98,16 +98,20 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:184` | 출력 폴더 `phantom-idea` | 1e0d4353f7 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:263-264` | Windows 이름 Phantom IDEA. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제 | 1e0d4353f7, d0eab60d1b |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:273,276,278,293` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom IDEA.app`, Linux 폴더 `phantom-idea` | 1e0d4353f7 |
-| `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:139-141` | 버전 major/minor가 빌드 브랜치와 같아야 한다는 검사를 "major가 비어 있지 않음"으로 완화 | e8ef2fd569 |
-| `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:164-169` | `phantom.build.number`가 있으면 `<build number>`를 Phantom 번호로 바꾸고 플랫폼 빌드를 `apiVersion`에 둔다 | ae2a766191 |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:145-147` | 버전 major/minor가 빌드 브랜치와 같아야 한다는 검사를 "major가 비어 있지 않음"으로 완화 | e8ef2fd569 |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:170-175` | `phantom.build.number`가 있으면 `<build number>`를 Phantom 번호로 바꾸고 플랫폼 빌드를 `apiVersion`에 둔다 | ae2a766191 |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:71-75` | `majorVersion`, `minorVersion`을 속성 `phantom.version.major/minor`에서 먼저 읽고 없으면 `applicationInfoOverride`, XML 순 | 048852ca23 |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:177-181`, `:268-280` (`withPhantomVersion`) | 패키지에 들어가는 XML 복사본의 `<version>`에 `major`, `minor`를 같은 값으로 씀(About 대화상자, 제목 등이 읽는 쪽). 속성이 하나라도 있을 때만 | 048852ca23 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:11,13-14` (신규) | `PHANTOM_BUILD_NUMBER_PROPERTY`, `phantomBuildNumber(context)` | ae2a766191 |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:16-24` | `PHANTOM_VERSION_MAJOR_PROPERTY`, `PHANTOM_VERSION_MINOR_PROPERTY`, `phantomVersionProperty(name)`(빈 문자열은 없는 것으로 봄) | 048852ca23 |
+| `platform/build-scripts/tests/testSrc/org/jetbrains/intellij/build/ApplicationInfoPropertiesTest.java:28-44` | `phantomVersion`, `phantomVersionWithoutVersionElement` 테스트(실행 전) | 048852ca23 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/MacDistributionBuilder.kt:571,597` | Info.plist의 `build`에 Phantom 번호 | ae2a766191 |
 | `platform/build-scripts/resources/mac/Contents/Info.plist:40` | 저작권 문구 "Based on the IntelliJ Platform" | ae2a766191 |
 | `plugins/ide-startup/importSettings/src/com/intellij/ide/startup/importSettings/data/SettingsService.kt:304` | 가져오기 마법사에 IC 아이콘 대신 제품 아이콘 | 5a12a1a666 |
 | `plugins/ide-startup/importSettings/src/com/intellij/ide/startup/importSettings/jb/JbImportServiceImpl.kt:310-312` | 설정이 `.../Phantom` 아래에 있으므로 옆의 `JetBrains` 폴더도 가져오기 대상으로 본다 | 048d85af98 |
 | `build/idea-community-images/**` (바이너리 10개), `community-resources/resources/phantom*.svg`, `phantom_logo*.png`, `community-resources/phantom-brand-src/` | 앱 아이콘, DMG 배경, Windows 설치 이미지. 원본 그림과 생성 스크립트 `compose.swift` | 1e0d4353f7, 5a12a1a666, 9ad40b0e37, c8cb99fb6f, d0eab60d1b |
 
-검증: 빌드한 `Phantom IDEA.app/Contents/Info.plist`의 `CFBundleIdentifier`가 `dev.phantom.idea`, `CFBundleVersion`이 `PH-…`인지 본다. 앱 안 `product-info.json`의 build가 `262.<YYMMDD>`인지 본다(빌드가 필요하다).
+검증: 빌드한 `Phantom IDEA.app/Contents/Info.plist`의 `CFBundleIdentifier`가 `dev.phantom.idea`, `CFBundleVersion`이 `PH-…`인지 본다. `product-info.json`의 `version`이 `YY.MM.DD`이고 About 대화상자도 같은 값인지, 그리고 빌드 뒤 `git status`에 `IdeaApplicationInfo.xml`이 없는지 본다(048852ca23, 빌드 전이라 확인하지 못했다). 앱 안 `product-info.json`의 build가 `262.<YYMMDD>`인지 본다(빌드가 필요하다).
 
 ### 3.2 번들 구성
 
@@ -179,6 +183,9 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `platform/platform-impl/src/com/intellij/platform/ide/bootstrap/StartupErrorReporter.java:196-197` | 시작 오류 대화상자의 Report 버튼(로그와 오류를 JetBrains로 전송) | 버튼 숨김. `ij.startup.error.handler.class`가 있으면 표시 | fdd9682290 |
 | `platform/feedback/src/com/intellij/platform/feedback/ActionBasedFeedbackConfig.kt:65` | 액션 기반 피드백 설문 | 표시 안 함 | 3676457781 |
 | `platform/feedback/src/com/intellij/platform/feedback/impl/FeedbackSurveyUtils.kt:74` | 알림 기반 설문 | 표시 안 함 | 3676457781 |
+| `platform/feedback/src/com/intellij/platform/feedback/impl/GeneralFeedbackSubmit.kt:123-126` (`submitFeedback`) | 모든 피드백 양식의 전송(forms-service.jetbrains.com 또는 스테이징)과 그 앞의 `RegionUrlMapper` 지역 매핑 조회 | 요청 없이 반환하고 `onDone`/`onError`도 부르지 않음(`NO_REQUEST`와 같은 계약). 코드만 바꿨고 빌드 전 | 6e71ed80c4 |
+| `platform/feedback/src/com/intellij/platform/feedback/localization/LocalizationFeedbackDialog.kt:132` | 지역화 피드백 대화상자의 감사 알림 | 알림을 띄우지 않음(보내지 않았으므로) | 6e71ed80c4 |
+| `plugins/ide-features-trainer/src/training/ui/OnboardingFeedbackForm.kt:279` | 온보딩 피드백 양식의 감사 알림(번들 밖 `featuresTrainer` 소속) | 알림을 띄우지 않음. 코드만 바꿨고 빌드 전 | 5185f60295 |
 | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/JdkList.kt:536` | JDK 목록 피드(download.jetbrains.com) | foojay Disco API(`FoojayJdkList.FEED_URL`, `FoojayJdkList.kt:48`). 레지스트리 `jdk.downloader.url`이 비어 있지 않으면 그 값이 먼저다(`JdkList.kt:530-533`) | be60914099 |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/cloud/DefaultGrazieCloudConnector.kt:22,44,46` | Grazie Cloud 연결, 약관 동의, API 클라이언트(api.jetbrains.ai) | false / null | 98673d9e9a |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/cloud/license/GrazieLoginManager.kt:80,159,260` | 라이선스·계정·클라우드 조회, JetBrains Account 로그인 | 초기화만 표시하고 조회 안 함 | 98673d9e9a |
@@ -193,7 +200,8 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `platform/statistics/src/com/intellij/internal/statistic/utils/PluginInfoDetector.kt:213-214` | 통계용 Marketplace ID 목록을 내려받지 않고 캐시만 씀 | d7c795f347 |
 | `platform/ml-impl/src/com/intellij/platform/ml/impl/logs/MLEventLoggerProvider.kt:43-44` | `isLoggingAlwaysActive()` → false (동의 없이 FUS 설정을 받던 경로) | d7c795f347 |
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:24` | `ITNReporter`(Report to JetBrains) 등록 삭제 | d7c795f347 |
-| `platform/platform-resources/src/META-INF/PlatformExtensions.xml:1383` | 레지스트리 `jdk.updater` 기본 false | d7c795f347 |
+| `platform/platform-resources/src/META-INF/PlatformExtensions.xml:1384` | 레지스트리 `jdk.updater` 기본 false | d7c795f347 |
+| `platform/tips-of-the-day/resources/intellij.platform.tips.xml:40-44`, `platform/tips-of-the-day/src/com/intellij/ide/util/TipPanel.java:139-140`, `platform/tips-of-the-day/src/com/intellij/ide/util/TipsFeedback.kt:75-76` | Tips of the Day 좋아요/싫어요: 레지스트리 `tips.of.the.day.feedback` 기본값 staging → nowhere, 그 값이면 `TipPanel`이 좋아요/싫어요 줄을 숨김(`isFeedbackSendingEnabled`). 기능 코드는 남김. 코드만 바꿨고 빌드 전 | 6e71ed80c4 |
 | `platform/util/resources/misc/registry.properties:2241` | `ide.show.plugin.suggestions.on.open=false` | d7c795f347 |
 | `plugins/gradle/plugin-resources/intellij.gradle.xml:219-221` | `gradle.compatibility.update.interval` 기본 0(호환성 피드 갱신 안 함) | d7c795f347 |
 | `idea/customization/base/src/IntelliJIdeaExternalResourceUrls.kt:22-42` | Help 메뉴의 버그 신고, 지원, 피드백, YouTube, 키맵 PDF, What's New, 다운로드 페이지 URL을 null로. 온라인 도움말은 남김 | 3676457781, fdd9682290 |
@@ -217,7 +225,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `platform/lang-impl/src/com/intellij/util/indexing/diagnostic/StorageDiagnosticData.kt:67-68, 84, 99` | 스토리지 진단 JSON과 OTel 게이지를 `intellij.storage.diagnostics.dump=true`일 때만 | 7568bf108c |
 | `platform/platform-impl/src/com/intellij/openapi/application/impl/NonBlockingReadActionImpl.java:126-127` | `idea.non-blocking-action.enable-monitoring` 기본 false | 3718f68ff4 |
 
-검증: `./tools/rg.cmd -n -e jetBrainsServicesEnabled -e phantom.jetbrains.services -g '*.kt' -g '*.java'`로 위 표의 호출 지점이 모두 나오는지 본다. 동작은 `-Dphantom.jetbrains.services=true`를 `.vmoptions`에 넣고 껐을 때와 비교한다. 관련 테스트: `./tests.cmd --module intellij.platform.lang.tests --test com.intellij.openapi.projectRoots.impl.jdkDownloader.FoojayJdkListTest`, `./tests.cmd --module intellij.terminal.tests --test 'com.intellij.terminal.tests.agent.*'`. Grazie 테스트는 `plugins/grazie/src/tests.pro/testSrc/com/intellij/grazie/pro/BaseTestCase.kt:34,55`에서 플래그를 켜고 끈다. 그 테스트 모듈은 `intellij.grazie.tests.pro`다(`plugins/grazie/src/tests.pro/intellij.grazie.tests.pro.iml:6`에 `testSrc` 소스 폴더). 실행은 하지 않았다.
+검증: `./tools/rg.cmd -n -e jetBrainsServicesEnabled -e phantom.jetbrains.services -g '*.kt' -g '*.java'`로 위 표의 호출 지점이 모두 나오는지 본다. 동작은 `-Dphantom.jetbrains.services=true`를 `.vmoptions`에 넣고 껐을 때와 비교한다. 관련 테스트: `./tests.cmd --module intellij.featuresTrainer.tests --test training.ui.FeedbackSubmissionGateTest`(6e71ed80c4, 5185f60295. 피드백 전송이 로컬 대역 서버에 닿지 않는지 본다. 요청 대기는 15초라 그보다 느린 지역 매핑 조회는 고장 난 게이트를 통과시킬 수 있다. 실행 전), `./tests.cmd --module intellij.platform.lang.tests --test com.intellij.openapi.projectRoots.impl.jdkDownloader.FoojayJdkListTest`, `./tests.cmd --module intellij.terminal.tests --test 'com.intellij.terminal.tests.agent.*'`. Grazie 테스트는 `plugins/grazie/src/tests.pro/testSrc/com/intellij/grazie/pro/BaseTestCase.kt:34,55`에서 플래그를 켜고 끈다. 그 테스트 모듈은 `intellij.grazie.tests.pro`다(`plugins/grazie/src/tests.pro/intellij.grazie.tests.pro.iml:6`에 `testSrc` 소스 폴더). 실행은 하지 않았다.
 
 ### 3.4 플러그인 저장소: GitHub 마켓플레이스
 
@@ -230,10 +238,10 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `platform/platform-impl/src/com/intellij/ide/plugins/PluginManagerMain.java:303-305` | 공식 Phantom 저장소 플러그인은 서드파티 경고 없이 설치 | c8f33b8a61 |
 | `platform/platform-impl/src/com/intellij/ide/plugins/PluginHostsConfigurable.java:300-302` | 저장소 입력을 `owner/repo`로 정규화 | c8f33b8a61 |
 | `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:678-679, 699` | 운영 빌드에서 설치할 수 없는 Marketplace 플러그인(상용 IDE 전용, 라이선스 플러그인 없이 유료)을 검색 결과에서 숨김 | c83c67511e |
-| `platform/platform-resources/src/META-INF/PlatformExtensions.xml:840-841, 845` | `PhantomPluginAdvisor` 시작 후 활동, 알림 그룹 `Phantom Plugins` | de02add11d |
+| `platform/platform-resources/src/META-INF/PlatformExtensions.xml:840-841, 845-846` | `PhantomPluginAdvisor` 시작 후 활동, 알림 그룹 `Phantom Plugins`(이름은 `bundle="messages.PhantomIdeBundle"`, `key="notification.group.phantom.plugins"`) | de02add11d, a1313a347c |
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:844` | New Project에 Spring Boot 항목(`SpringBootPluginNewProjectWizard`) | 53c0592476 |
-| `platform/platform-resources/src/META-INF/PlatformExtensions.xml:2081-2082` | 비공개 GitHub 저장소용 `GitHubPluginRepositoryAuthProvider` | 79d2dc6b96 |
-| `platform/platform-resources/src/idea/PlatformActions.xml:1806-1807` | 액션 `Phantom.SetGitHubPluginToken` | 79d2dc6b96 |
+| `platform/platform-resources/src/META-INF/PlatformExtensions.xml:2082-2083` | 비공개 GitHub 저장소용 `GitHubPluginRepositoryAuthProvider` | 79d2dc6b96 |
+| `platform/platform-resources/src/idea/PlatformActions.xml:1975-1978` | 액션 `Phantom.SetGitHubPluginToken`. 파일 끝의 자체 `<actions resource-bundle="messages.PhantomIdeBundle">` 블록(이전에는 :1806-1807의 일반 블록 안). 이름은 `PhantomIdeBundle.properties`의 `action.Phantom.SetGitHubPluginToken.text` | 79d2dc6b96, a1313a347c |
 
 새 코드는 `platform/platform-impl/src/dev/phantom/ide/plugins/`에 있다(5.1절). 검증: `./tests.cmd --module intellij.platform.tests --test com.intellij.ide.plugins.GitHubPluginRepositoryTest`.
 
@@ -259,7 +267,7 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:707` | 환영 화면 Learn 탭 삭제 | f736b95fd0 |
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:711` 직전 | `TechInsightsLabPromoter` 삭제 | 1e0d4353f7 |
 | `platform/editor-ui-api/src/com/intellij/ide/ui/UISettingsState.kt:147-148` | `differentiateProjects` 기본 false | f2e7052a14 |
-| `platform/platform-resources/src/META-INF/LangExtensions.xml:1556-1557` | `Endpoints` 툴 윈도우 등록(`dev.phantom.ide.endpoints.EndpointsToolWindowFactory`). 업스트림 확장점 `com.intellij.microservices.endpointsProvider`(`platform/lang-api/src/com/intellij/microservices/endpoints/EndpointsProvider.kt:102-103`) 제공자가 있을 때만 보인다 | 60881b3dfb, 53c0592476, ccc29997cb |
+| `platform/platform-resources/src/META-INF/LangExtensions.xml:1556-1557` | `Endpoints` 툴 윈도우 등록(`dev.phantom.ide.endpoints.EndpointsToolWindowFactory`). 업스트림 확장점 `com.intellij.microservices.endpointsProvider`(`platform/lang-api/src/com/intellij/microservices/endpoints/EndpointsProvider.kt:102-103`) 제공자가 있을 때만 보인다. 도구 창 제목은 코어가 `IdeBundle`에서만 읽으므로 키 `toolwindow.stripe.Endpoints`가 `platform/platform-api/resources/messages/IdeBundle.properties:2215`(`# phantom-idea` 아래)에 있고, 나머지 문구는 `PhantomLangBundle` | 60881b3dfb, 53c0592476, ccc29997cb, a1313a347c |
 
 ### 3.7 버그 수정
 
@@ -297,7 +305,7 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 |---|---|---|
 | `build/src/OpenSourceCommunityInstallersBuildTarget.kt:19, 32` | Windows zip 단계와 macOS에서의 Windows 설치 프로그램 빌드를 건너뛰지 않음 | 1191317a96 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42` | "운영 모드에서 macOS면 NSIS 건너뜀" 삭제 | d0eab60d1b |
-| `phantom-build.sh` (신규) | 날짜 버전 기록(`:16`), `installers.cmd` 실행(`:29-30`, aarch64), Windows x64 교차 빌드(`:42-52`), 중간 산출물 삭제 | fc05eddc04 외 4개 |
+| `phantom-build.sh` (신규) | 날짜로 구한 표시 버전·빌드 번호를 `installers.cmd`에 `-D`로 넘김(`:15`, `:45-46`, aarch64. 표시 버전은 추적 파일을 고치지 않고 `-Dphantom.version.major/minor`, 048852ca23, 빌드 전), Phantom-plugins 플러그인 빌드(`:29-44`, 9229667cc7), Windows x64 교차 빌드(`:58-68`), 중간 산출물 삭제 | fc05eddc04 외 4개, 048852ca23, 9229667cc7 |
 | `phantom-release.sh` (신규) | 빌드, DMG 검사, 태그 push, GitHub 릴리스(초안 후 공개) | ae2a766191 외 5개 |
 | `phantom-install.sh` (신규) | `/Applications/Phantom IDEA.app` 교체와 재시작, `--release`로 릴리스 DMG 설치 | a0c4e0d04a 외 5개 |
 | `phantom-sign.sh` (신규) | 로컬 인증서 "Phantom Local"로 재서명 | e71672a6ab |
@@ -329,8 +337,10 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `phantom.jetbrains.services` | `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:109`, `platform/platform-impl/src/com/intellij/platform/ide/bootstrap/StartupErrorReporter.java:197` | false | true면 3.3.1절의 JetBrains 호출을 모두 되살린다 |
 | `phantom.plugins.official` | `platform/platform-impl/src/com/intellij/ide/plugins/RepositoryHelper.java:77` | 미설정(켜짐) | `false`면 `newkayak12/Phantom-plugins` 저장소를 붙이지 않는다 |
 | `phantom.marketplace.showAll` | `platform/platform-impl/src/dev/phantom/ide/plugins/PhantomMarketplace.kt:20` | false | true면 설치할 수 없는 Marketplace 플러그인도 보인다. 소스 실행과 internal 모드도 같은 효과(`:21-23`) |
-| `phantom.github.oauth.client.id` | `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt:31` | 미설정. 내장 값 `PHANTOM_CLIENT_ID`(`:29`)가 빈 문자열이다 | GitHub 디바이스 플로 로그인에 쓸 OAuth 앱 client id. 없으면 `gh` CLI 로그인만 된다(`GHOAuthCredentialsUi.kt:55` 이하) |
-| `phantom.build.number` | 빌드 스크립트: `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:11,14`, `ApplicationInfoPropertiesImpl.kt:165`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:182` | 미설정 | 빌드 시 `PH-<YYMMDD>.<N>`. `phantom-build.sh:30,47`이 넘긴다. IDE 런타임이 읽는 값이 아니다 |
+| `phantom.github.oauth.client.id` | `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt:32` | 미설정. 내장 값 `PHANTOM_CLIENT_ID`(`:30`)가 빈 문자열이다 | GitHub 디바이스 플로 로그인에 쓸 OAuth 앱 client id. 없으면 `gh` CLI 로그인만 된다(`GHOAuthCredentialsUi.kt:55` 이하) |
+| `phantom.build.number` | 빌드 스크립트: `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:11,14`, `ApplicationInfoPropertiesImpl.kt:171`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:182` | 미설정 | 빌드 시 `PH-<YYMMDD>.<N>`. `phantom-build.sh:46,63`이 넘긴다. IDE 런타임이 읽는 값이 아니다 |
+| `phantom.version.major` | 이름 `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:21`, 읽는 곳 `ApplicationInfoPropertiesImpl.kt:72`, `:179` | 미설정 | 빌드 시 표시 버전의 major(빌드 날짜의 YY). 있으면 XML의 `major`보다 먼저 쓰고 패키지 안 `<version>`에도 쓴다. `phantom-build.sh:46,63`이 넘긴다. 없으면 XML 값(자리표시자 `0`). IDE 런타임이 읽는 값이 아니다(048852ca23, 빌드 전) |
+| `phantom.version.minor` | 이름 `PhantomBuildNumber.kt:22`, 읽는 곳 `ApplicationInfoPropertiesImpl.kt:74`, `:179` | 미설정 | 표시 버전의 minor(`<MM>.<DD>`). 위와 같다. 없으면 XML 값(자리표시자 `0.0`) |
 
 같은 접두어지만 시스템 프로퍼티가 아닌 것: `phantom.memory.auto.heap`, `phantom.memory.auto.page.cache`는 `PropertiesComponent` 키다(`platform/platform-impl/src/dev/phantom/ide/memory/PhantomMemorySizer.kt:64-65`). `PhantomMemorySizer`가 마지막으로 쓴 값을 기억해, 사용자가 직접 바꾼 값은 건드리지 않는다.
 
@@ -354,8 +364,9 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | 키 | 정의 위치 | 업스트림 → Phantom | 커밋 |
 |---|---|---|---|
 | `csat.survey.enabled` | `platform/feedback/resources/intellij.platform.feedback.xml:83` | true → false | 3676457781 |
-| `jdk.updater` | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:1383` | true → false | d7c795f347 |
-| `jdk.downloader.url` | `PlatformExtensions.xml:1385`, 읽는 곳 `JdkList.kt:530` | 변경 없음(빈 값). 값이 있으면 foojay보다 먼저 쓴다 | - |
+| `tips.of.the.day.feedback` | `platform/tips-of-the-day/resources/intellij.platform.tips.xml:41-44` | staging → nowhere (값: nowhere, staging, production). nowhere이면 `TipPanel`이 좋아요/싫어요 줄을 숨긴다 | 6e71ed80c4 |
+| `jdk.updater` | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:1384` | true → false | d7c795f347 |
+| `jdk.downloader.url` | `PlatformExtensions.xml:1386`, 읽는 곳 `JdkList.kt:530` | 변경 없음(빈 값). 값이 있으면 foojay보다 먼저 쓴다 | - |
 | `gradle.compatibility.update.interval` | `plugins/gradle/plugin-resources/intellij.gradle.xml:219-221` | 86400 → 0 | d7c795f347 |
 | `ide.show.plugin.suggestions.on.open` | `platform/util/resources/misc/registry.properties:2241` | true → false | d7c795f347 |
 | `copy.tbx.reference.enabled`, `ide.hide.toolbox.promo`, `ide.try.ultimate.automatic.installation.use.toolbox` | `registry.properties`에서 삭제 | 삭제 | 43b28af952 |
@@ -364,11 +375,11 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 
 | 이름 | 읽는 곳 | 기본값 | 효과 |
 |---|---|---|---|
-| `PHANTOM_WINDOWS` | `phantom-build.sh:42` | 1 | 0이면 DMG만 빌드하고 Windows 교차 빌드를 건너뛴다 |
-| `PHANTOM_BUILD_SEQ` | `phantom-build.sh:20-21`, `phantom-release.sh:16-19` | 미설정 | 그날 빌드 순번 N을 고정한다. 없으면 `out/phantom-build-seq`에서 계산 |
+| `PHANTOM_WINDOWS` | `phantom-build.sh:58` | 1 | 0이면 DMG만 빌드하고 Windows 교차 빌드를 건너뛴다 |
+| `PHANTOM_BUILD_SEQ` | `phantom-build.sh:19-20`, `phantom-release.sh:16-19` | 미설정 | 그날 빌드 순번 N을 고정한다. 없으면 `out/phantom-build-seq`에서 계산 |
 | `PHANTOM_FOOJAY_E2E` | `platform/lang-impl/testSources/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkListTest.kt:98` | 미설정 | `true`면 실제 JDK를 내려받는 E2E 테스트를 실행 |
 | `PHANTOM_FOOJAY_E2E_SDK` | 같은 파일 `:101` | 문자열 `temurin-21` | E2E 테스트가 받을 SDK 이름 |
-| `GH_TOKEN`, `GITHUB_TOKEN` | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:39-40` | 미설정 | 비공개 GitHub 플러그인 저장소 토큰. 순서는 비밀번호 저장소 → 이 변수 → `gh auth token` |
+| `GH_TOKEN`, `GITHUB_TOKEN` | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:40-41` | 미설정 | 비공개 GitHub 플러그인 저장소 토큰. 순서는 비밀번호 저장소 → 이 변수 → `gh auth token` |
 | `GH_TOKEN` | `phantom-install.sh:19` | `gh auth token` | `--release` 다운로드 토큰 |
 | `NOTES` | `phantom-release.sh:56` | 이전 태그 이후 커밋 | 릴리스 노트 |
 
@@ -383,12 +394,14 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `plugins/phantom-sync/` (모듈 `phantom.sync`, `phantom.sync.core`, `phantom.sync.tests`, ID `dev.phantom.sync`) | Backup and Sync를 사용자 git 저장소로. 업스트림 `intellij.settingsSync.core`의 `settingsSync.communicatorProvider` 확장 | 예 (`IdeaCommunityProperties.kt:21`) | `plugins/phantom-sync/tests/testSrc/dev/phantom/sync/GitRepoCommunicatorTest.kt` |
 | `plugins/phantom-theme/` (모듈 `phantom.theme`, ID `dev.phantom.theme`) | Phantom Dark/Light 테마와 편집기 색. 테마 JSON은 `tools/generate-themes.py`가 업스트림 Islands 테마에서 만든다 | 예 (`:22`), 기본 LAF(`IdeaApplicationInfo.xml:10`) | 없음 |
 | `platform/platform-impl/src/dev/phantom/ide/plugins/` (`GitHubPluginRepository.kt`, `GitHubTokens.kt`, `PhantomMarketplace.kt`, `PhantomPluginAdvisor.kt`, `PhantomPluginNewProjectWizard.kt`) | GitHub 플러그인 저장소, 토큰, Marketplace 필터, 라이브러리 기반 플러그인 제안, New Project의 Spring Boot 설치 안내 | 플랫폼 모듈 `intellij.platform.ide.impl` 안(항상 포함) | `platform/platform-tests/testSrc/com/intellij/ide/plugins/GitHubPluginRepositoryTest.kt`. `PhantomMarketplace`, `PhantomPluginAdvisor`, 위저드 전용 테스트는 없다 |
+| `platform/platform-impl/src/dev/phantom/ide/PhantomIdeBundle.kt`, `platform/platform-impl/resources/messages/PhantomIdeBundle.properties`, `platform/lang-impl/src/dev/phantom/ide/PhantomLangBundle.kt`, `platform/lang-impl/resources/messages/PhantomLangBundle.properties` (a1313a347c, 신규) | Phantom 플랫폼 코드의 문구 번들. `PhantomIdeBundle` 17개 키(토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름), `PhantomLangBundle` 11개 키(Endpoints). 업스트림 `.properties`를 덜 건드리려고 따로 두었고 이름이 모듈마다 다른 것은 platform-impl과 lang-impl이 코어 클래스 로더를 같이 쓰기 때문이다. 같은 커밋이 `IdeBundle.properties:2214-2215`와 `GithubBundle.properties:47` 이하(`# phantom-idea`)에 키 1개와 10개를 더했다 | 플랫폼(항상) | 없음 |
 | `platform/platform-impl/src/dev/phantom/ide/memory/PhantomMemorySizer.kt` | 기계별 힙·페이지 캐시 크기 | 플랫폼(항상) | `platform/platform-tests/testSrc/dev/phantom/ide/memory/MemoryPlanTest.kt` |
 | `platform/lang-impl/src/dev/phantom/ide/endpoints/` (`EndpointsToolWindow.kt`, `EndpointRequests.kt`) | Endpoints 툴 윈도우와 .http 요청 생성 | 플랫폼 `intellij.platform.lang.impl`(제공자 플러그인이 있을 때만 창이 보임) | `platform/lang-impl/testSources/dev/phantom/ide/endpoints/EndpointRequestsTest.kt` |
 | `platform/platform-resources/src/icons/phantom/springBoot.svg`, `springBoot_dark.svg` | New Project Spring Boot 아이콘 | 플랫폼 | - |
 | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt` | foojay JDK 목록 변환과 다운로드 해석. 업스트림 패키지에 있고 파일 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉽다 | 플랫폼 | `FoojayJdkListTest.kt`, `testData/jdkDownload/foojay-packages.json` |
-| `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt` | GitHub 디바이스 플로와 `gh` 토큰 | 업스트림 GitHub 플러그인 안 | 없음 |
-| `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt` | 빌드 번호 | 빌드 스크립트 | 없음 |
+| `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt` | GitHub 디바이스 플로와 `gh` 토큰(로그인 문구는 `GithubBundle`의 `phantom.*` 키 10개, a1313a347c) | 업스트림 GitHub 플러그인 안 | 없음 |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt` | 빌드 번호와 표시 버전 속성 이름(`:16-24`, 048852ca23) | 빌드 스크립트 | 표시 버전 쪽은 `ApplicationInfoPropertiesTest.java:28-44`(실행 전). 파일 자체의 전용 테스트는 없다 |
+| `plugins/ide-features-trainer/testSrc/training/ui/FeedbackSubmissionGateTest.kt` | 3.3.1절 `submitFeedback` 게이트 테스트(6e71ed80c4, 실행 전) | - | 자신(모듈 `intellij.featuresTrainer.tests`) |
 | `platform/lang-impl/testSources/com/intellij/util/indexing/FileTypeChangeRescanTest.kt` | 3.5절 재스캔 패치의 테스트 | - | 자신 |
 | 루트 스크립트 6개, `tools/phantom-runner-setup.sh`, `.github/workflows/phantom-release.yml` | 3.9, 3.10절 | - | 없음 |
 
@@ -422,8 +435,8 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | 21 | `intellij.idea.community.main.iml` (`:138-140` 추가, 프로모 1줄 삭제) | 같은 RUNTIME 의존 블록에서 충돌. iml은 원형을 지켜야 한다 |
 | 21 | `build/bazel-generated-file-list.txt` (`:1475-1478`) | 생성 파일. 아래 참고 |
 | 20 | `BUILD.bazel` (`:284-286`, `:473-475`) | 생성 파일. 아래 참고 |
-| 7 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml` (`:24, 707, 711 직전, 840-845, 1383, 2081-2082`) | 2000줄이 넘는 활발한 파일이라 여러 덩어리에서 문맥 충돌. 삭제한 등록(`ITNReporter`, Learn 탭, `TechInsightsLabPromoter`)을 업스트림이 고치면 되살아나지 않게 본다 |
-| 6 | `community-resources/resources/idea/IdeaApplicationInfo.xml` | 업스트림이 태그마다 `<version>`을 올리므로 `:2`에서 항상 충돌. `phantom-build.sh:16`이 빌드마다 다시 쓰므로 Phantom 값을 택한다. 업스트림이 새 요소를 더하면 받는다 |
+| 7 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml` (`:24, 707, 711 직전, 840-846, 1384, 2082-2083`) | 2000줄이 넘는 활발한 파일이라 여러 덩어리에서 문맥 충돌. 삭제한 등록(`ITNReporter`, Learn 탭, `TechInsightsLabPromoter`)을 업스트림이 고치면 되살아나지 않게 본다 |
+| 6 | `community-resources/resources/idea/IdeaApplicationInfo.xml` | 업스트림이 태그마다 `<version>`을 올리므로 `:2`에서 항상 충돌. 이 줄은 이제 자리표시자 `major="0" minor="0.0"`이고 표시 버전은 빌드 속성(`phantom.version.*`)이 정하므로, Phantom의 자리표시자 줄을 택한다(048852ca23). 업스트림이 새 요소를 더하면 받는다 |
 | 3 | `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt` | 함수 안 게이트(`:403, 572, 613, 935`)는 텍스트 충돌이 없어도 의미가 깨질 수 있다. 병합 뒤 새 JetBrains 호출 경로가 생겼는지 다시 찾는다 |
 | 2 | `ApplicationInfoPropertiesImpl.kt`, `VmOptionsGenerator.kt`, `RepositoryHelper.java`, `ExternalUpdateManager.java`, `UpdateManagerUsagesCollector.kt`, `IntelliJIdeaExternalResourceUrls.kt`, `registry.properties`, `PlatformActions.xml` | 작은 패치. 문맥 충돌 정도 |
 | 1 | `build.txt` | 업스트림 태그마다 바뀐다. `262.SNAPSHOT`을 유지한다 |
@@ -456,11 +469,11 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 
 | 위치 | README | HEAD |
 |---|---|---|
-| `README.md:113` | 산출물이 "Apple silicon only" | `phantom-build.sh:42-52`가 기본으로 Windows x64 `.exe`와 `.win.zip`도 만든다(`PHANTOM_WINDOWS=0`일 때만 빠짐). 릴리스 워크플로도 Windows 파일을 올린다(`phantom-release.yml:1-2`) |
+| `README.md:113` | 산출물이 "Apple silicon only" | `phantom-build.sh:58-68`이 기본으로 Windows x64 `.exe`와 `.win.zip`도 만든다(`PHANTOM_WINDOWS=0`일 때만 빠짐). 릴리스 워크플로도 Windows 파일을 올린다(`phantom-release.yml:1-2`) |
 | `README.md:40-54` | "Planned" 아래 표에 완료된 `phantom-sync`, 옮긴 플러그인, 존재하지 않는 `phantom-spring-runtime`(`:47`), `phantom-containers`(`:54`)가 상태 표시 없이 섞여 있다 | 이 리포의 Phantom 플러그인은 `phantom-sync`, `phantom-theme`뿐이다. `phantom-theme`은 표에 없다 |
 | `README.md:45` | Endpoints가 Phantom-plugins `spring`으로 옮겨졌다 | Endpoints 툴 윈도우는 코어 `platform/lang-impl/src/dev/phantom/ide/endpoints/`에 있다. 플러그인은 제공자만 등록한다(53c0592476) |
 | `README.md:31-38` | "Done" 목록 | 번들에서 뺀 14개 모듈(3.2절), `phantom.jetbrains.services` 게이트(3.3절), Toolbox 제거, GitHub 플러그인 저장소, foojay JDK 목록, `PhantomMemorySizer`, VM 옵션 변경, Lombok 번들, Phantom 테마 기본값이 빠져 있다 |
-| `README.md:136` | `phantom-build.sh`가 날짜를 찍는다 | 맞다. 다만 그 방법이 추적 파일 `IdeaApplicationInfo.xml`을 sed로 고치는 것이라(`phantom-build.sh:16`) 빌드 뒤 작업 트리가 더러워진다는 말이 없다 |
+| `README.md:136` | `phantom-build.sh`가 날짜를 찍는다 | 맞다. 다만 그 방법이 추적 파일 `IdeaApplicationInfo.xml`을 sed로 고치는 것이라(be60914099의 `phantom-build.sh:16`) 빌드 뒤 작업 트리가 더러워진다는 말이 없었다. 048852ca23 이후 빌드는 추적 파일을 고치지 않는다(빌드 전, 코드를 읽은 결론) |
 
 `docs/phantom/design/2026-10-16-roadmap.md`:
 
