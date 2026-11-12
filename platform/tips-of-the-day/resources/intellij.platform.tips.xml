@@ -37,9 +37,10 @@
     <statistics.counterUsagesCollector implementationClass="com.intellij.ide.TipsOfTheDayUsagesCollector"/>
     <statistics.validation.customValidationRule implementation="com.intellij.ide.TipsOfTheDayUsagesCollector$TipInfoValidationRule"/>
 
+    <!-- phantom-idea: like/dislike feedback goes to a JetBrains server, so the default sends it nowhere and TipPanel hides the buttons; set the key to staging or production (plus -Dphantom.jetbrains.services=true) to send it again -->
     <registryKey key="tips.of.the.day.feedback"
                  description="Where to send like/dislike feedback from Tips of the Day (nowhere, staging, production)."
-                 defaultValue="staging"
+                 defaultValue="nowhere"
                  restartRequired="false"/>
     <registryKey key="tips.of.the.day.show.group.label"
                  description="Whether to show group name of the tip in Tips of the Day dialog."
