@@ -4,7 +4,7 @@
 - 기준 커밋: be60914099
 - 작성일: 2026-11-12
 
-이 문서의 줄 번호는 위 커밋의 파일을 직접 열어 확인한 값이다. 읽지 않고 짐작한 내용은 "(추정)"으로 표시했다. 이 문서는 설명만 하며 개선 제안은 하지 않는다.
+이 문서의 줄 번호는 위 커밋의 파일을 직접 열어 확인한 값이다. 단 `phantom-build.sh`의 줄 번호는 048852ca23 이후의 HEAD에서 다시 열어 고쳤다(그 변경과 main의 다른 커밋으로 줄이 밀렸다). 읽지 않고 짐작한 내용은 "(추정)"으로 표시했다. 이 문서는 설명만 하며 개선 제안은 하지 않는다.
 
 ## 1. 한눈에 보기
 
@@ -28,7 +28,7 @@
 
 ## 2. 사전 준비
 
-- OS와 아키텍처: macOS Apple Silicon. README는 "Apple Silicon tested"라고 쓴다 (`README.md:102`). `phantom-build.sh:16`의 `sed -i ''`는 BSD sed 문법이어서 macOS에서만 동작한다. `phantom-release.yml:29`는 `[self-hosted, macOS, ARM64]` 러너를 요구한다.
+- OS와 아키텍처: macOS Apple Silicon. README는 "Apple Silicon tested"라고 쓴다 (`README.md:102`). 이전에 macOS 전용이던 근거(`sed -i ''`, BSD sed 문법)는 048852ca23이 그 줄을 지우면서 사라졌다. `phantom-build.sh`에 남은 `sed`는 `:40`의 `sed -nE`(플러그인 버전 읽기) 하나이고, macOS 전용 설정은 `-Dintellij.build.target.arch=aarch64` 고정(`:45`)이다. `phantom-release.yml:29`는 `[self-hosted, macOS, ARM64]` 러너를 요구한다.
 - 디스크와 메모리: 16 GB 이상 RAM(작성자는 48 GB 사용), 첫 빌드에 약 120 GB 여유 디스크 (`README.md:102`).
 - `android` 클론: 저장소 옆이 아니라 저장소 루트 안의 `android` 디렉터리에 `idea/262.10968.63` 태그를 받아 둔다 (`README.md:107-108`).
   `git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android`
@@ -44,29 +44,30 @@
 
 ### phantom-build.sh 단계
 
-1. `d=$(date +%y%m%d)`로 날짜를 구한다 (`phantom-build.sh:14`).
-2. 추적 파일 `community-resources/resources/idea/IdeaApplicationInfo.xml`의 `<version eap="false" major=".." minor=".."/>`를 `sed -i ''`로 제자리 수정한다. major는 YY, minor는 `MM.DD`이다 (`:15-16`). 작업 트리가 더러워진다.
-3. 일련번호 N을 정한다 (`:18-26`). `PHANTOM_BUILD_SEQ`가 있으면 그 값이다. 없으면 `out/phantom-build-seq`의 `<d>.<마지막 N>`을 읽어 같은 날이면 +1, 날짜가 다르면 1이다. 결정한 `d.N`을 같은 파일에 다시 쓴다.
-4. `phantom=PH-$d.$n`을 만들고 한 줄로 출력한다 (`:27-28`).
-5. macOS 빌드를 실행한다 (`:29-30`).
-   `nice -n 10 ./installers.cmd -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 -Dbuild.number=262.<d> -Dphantom.build.number=PH-<d>.<N> "$@"`
-6. `phantom-idea-<d>.<N>-aarch64.dmg`가 없으면 `exit 1` 한다 (`:34-35`).
-7. 정리한다 (`:36-40`). `.sit` 파일, 방금 만든 것이 아닌 이전 DMG, `out/phantom-idea/temp`, `artifacts/maven-artifacts`, `artifacts/jps`, `out/phantom-idea/dist.*`를 지운다.
-8. `PHANTOM_WINDOWS`가 `0`이 아니면 Windows를 이어서 빌드한다 (`:42-52`). Windows 빌드가 `out/phantom-idea`를 비우므로 DMG를 `out/`으로 옮겨 두고, `target.os=windows`, `target.arch=x64`로 `installers.cmd`를 다시 실행한 뒤 DMG를 되돌린다. 그다음 `.exe`와 `.win.zip`이 있는지 `ls`로 확인하고(없으면 `exit 1`) 같은 정리를 한 번 더 한다.
-9. 빌드 번호 `PH-<d>.<N>`을 `out/phantom-build-number`에 쓰고 `built <dmg>`를 출력한다 (`:53-54`). `set -euo pipefail` 상태이다 (`:12`).
+1. `d=$(date +%y%m%d)`로 날짜를 구하고 `yy`, `mm`, `dd`로 나눈다 (`phantom-build.sh:15`). `set -euo pipefail` 상태이다 (`:13`).
+2. 표시 버전은 파일에 쓰지 않는다. 048852ca23 전에는 추적 파일 `community-resources/resources/idea/IdeaApplicationInfo.xml`의 `<version>`을 `sed -i ''`로 고쳐 작업 트리가 더러워졌다. 지금은 YY와 `MM.DD`를 6, 9단계의 `installers.cmd` 인자 `-Dphantom.version.major=<YY>`, `-Dphantom.version.minor=<MM>.<DD>`로만 넘긴다 (`:46`, `:63`). 추적 파일에는 자리표시자 `major="0" minor="0.0"`이 남는다. 코드를 읽은 결론이고 빌드는 아직 하지 않았다.
+3. 일련번호 N을 정한다 (`:17-25`). `PHANTOM_BUILD_SEQ`가 있으면 그 값이다. 없으면 `out/phantom-build-seq`의 `<d>.<마지막 N>`을 읽어 같은 날이면 +1, 날짜가 다르면 1이다. 결정한 `d.N`을 같은 파일에 다시 쓴다.
+4. `phantom=PH-$d.$n`을 만들고 한 줄로 출력한다 (`:26-27`).
+5. Phantom-plugins의 플러그인을 빌드한다 (`:29-44`, 9229667cc7). 저장소 옆(또는 `PHANTOM_PLUGINS_REPO`)의 `Phantom-plugins` 체크아웃이 없으면 `exit 1` 한다 (`:34`). 그곳에서 `toml yaml sh lombok decompiler coverage textmate markdown`(`:33`)을 Gradle로 빌드하고(`:37`), 각 zip을 `out/phantom-plugins`에 푼다. zip이 없으면 `exit 1` 한다 (`:38-44`).
+6. macOS 빌드를 실행한다 (`:45-46`).
+   `nice -n 10 ./installers.cmd -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 -Dbuild.number=262.<d> -Dphantom.build.number=PH-<d>.<N> -Dphantom.version.major=<YY> -Dphantom.version.minor=<MM>.<DD> "$@"`
+7. `phantom-idea-<d>.<N>-aarch64.dmg`가 없으면 `exit 1` 한다 (`:49-51`).
+8. 정리한다 (`:52-56`). `.sit` 파일, 방금 만든 것이 아닌 이전 DMG, `out/phantom-idea/temp`, `artifacts/maven-artifacts`, `artifacts/jps`, `out/phantom-idea/dist.*`를 지운다.
+9. `PHANTOM_WINDOWS`가 `0`이 아니면 Windows를 이어서 빌드한다 (`:58-68`). Windows 빌드가 `out/phantom-idea`를 비우므로 DMG를 `out/`으로 옮겨 두고(`:61`), `target.os=windows`, `target.arch=x64`로 `installers.cmd`를 같은 `-D` 인자와 함께 다시 실행한 뒤(`:62-63`) DMG를 되돌린다(`:64`). 그다음 `.exe`와 `.win.zip`이 있는지 `ls`로 확인하고(없으면 `exit 1`, `:65-66`) 같은 정리를 한 번 더 한다(`:67`).
+10. 빌드 번호 `PH-<d>.<N>`을 `out/phantom-build-number`에 쓰고 `built <dmg>`를 출력한다 (`:69-70`).
 
 ### 버전 도장
 
 | 이름 | 값 | 찍히는 방식 |
 |---|---|---|
-| Phantom 빌드 번호 | `PH-<YYMMDD>.<N>` | `-Dphantom.build.number`. `PhantomBuildNumber.kt:11`이 속성 이름을 정의하고, `ApplicationInfoPropertiesImpl.kt:165-168`이 `number="IC-262.x"`를 `number="PH-.." apiVersion="IC-262.x"`로 바꾼다. `MacDistributionBuilder.kt:571,597`이 Info.plist의 build 값으로 쓴다 |
-| 표시 버전 | `<YY>.<MM>.<DD>` | `IdeaApplicationInfo.xml:2`를 위 2단계에서 다시 쓴다. 표시 버전과 플랫폼 빌드를 분리하는 코드 주석은 `ApplicationInfoPropertiesImpl.kt:139` |
-| 플랫폼 빌드 | `262.<YYMMDD>` | `-Dbuild.number`. 번들 플러그인의 since/until-build와 IDE의 `apiVersion`에 쓰이며 사용자에게 버전으로 보이지 않는다 (`phantom-build.sh:8-9`) |
+| Phantom 빌드 번호 | `PH-<YYMMDD>.<N>` | `-Dphantom.build.number`. `PhantomBuildNumber.kt:11`이 속성 이름을 정의하고, `ApplicationInfoPropertiesImpl.kt:171-174`가 `number="IC-262.x"`를 `number="PH-.." apiVersion="IC-262.x"`로 바꾼다. `MacDistributionBuilder.kt:571,597`이 Info.plist의 build 값으로 쓴다 |
+| 표시 버전 | `<YY>.<MM>.<DD>` | `-Dphantom.version.major=<YY>`, `-Dphantom.version.minor=<MM>.<DD>`(`phantom-build.sh:46`, `:63`). 이름은 `PhantomBuildNumber.kt:21-22`, `ApplicationInfoPropertiesImpl.kt:72-75`가 XML보다 먼저 읽어 `product-info.json`, Info.plist 등에 쓰고, `:177-181`(`withPhantomVersion`, `:268-280`)이 패키지 안 `<version>`에도 같은 값을 쓴다. 추적 파일 `IdeaApplicationInfo.xml:2`는 자리표시자 `0` / `0.0`이라 속성 없이 실행하면 0.0이 보인다(048852ca23, 빌드 전). 표시 버전과 플랫폼 빌드를 분리하는 코드 주석은 `ApplicationInfoPropertiesImpl.kt:145` |
+| 플랫폼 빌드 | `262.<YYMMDD>` | `-Dbuild.number`. 번들 플러그인의 since/until-build와 IDE의 `apiVersion`에 쓰이며 사용자에게 버전으로 보이지 않는다 (`phantom-build.sh:9-10`) |
 | 아티팩트 이름 | `phantom-idea-<d>.<N>` | `IdeaCommunityProperties.kt:181-182`가 `phantom.build.number`에서 `PH-`를 뗀 값을 쓴다. 속성이 없으면 플랫폼 빌드의 `262.` 뒤를 쓴다 |
 
 ### 대상 OS와 아키텍처
 
-- macOS는 `target.os=current`, `target.arch=aarch64` 고정이다 (`phantom-build.sh:29`). Windows는 `PHANTOM_WINDOWS`(기본 1)가 `0`이 아닐 때 `target.os=windows`, `target.arch=x64`로 빌드한다 (`:42,46`).
+- macOS는 `target.os=current`, `target.arch=aarch64` 고정이다 (`phantom-build.sh:45`). Windows는 `PHANTOM_WINDOWS`(기본 1)가 `0`이 아닐 때 `target.os=windows`, `target.arch=x64`로 빌드한다 (`:58,62`).
 - Linux 빌드를 부르는 스크립트는 없다. `ideaCommunityLinuxCustomizer`는 코드에 있다 (`IdeaCommunityProperties.kt:288-298`).
 - Windows 설치 파일을 macOS에서 만든다는 주석은 `OpenSourceCommunityInstallersBuildTarget.kt:32`와 `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42`에 있다.
 
@@ -80,7 +81,7 @@
 ### 산출물 위치와 정리 대상
 
 - `out/phantom-idea/artifacts/phantom-idea-<d>.<N>-aarch64.dmg`, `phantom-idea-<d>.<N>.exe`, `phantom-idea-<d>.<N>.win.zip`. 출력 디렉터리 이름 `phantom-idea`는 `IdeaCommunityProperties.kt:184`이다.
-- 지워지는 것: `.sit`, 이전 DMG, `out/phantom-idea/temp`, `maven-artifacts`, `jps`, `dist.*` (위 7, 8단계). 이전 `.exe`와 `.zip`을 지우는 줄은 없다. Windows 빌드가 `out/phantom-idea` 전체를 비운다고 `phantom-build.sh:43`이 설명한다.
+- 지워지는 것: `.sit`, 이전 DMG, `out/phantom-idea/temp`, `maven-artifacts`, `jps`, `dist.*` (위 8, 9단계). 이전 `.exe`와 `.zip`을 지우는 줄은 없다. Windows 빌드가 `out/phantom-idea` 전체를 비운다고 `phantom-build.sh:59`가 설명한다.
 - 남는 것: `out/phantom-build-seq`, `out/phantom-build-number`.
 
 ### 소요 시간
@@ -98,7 +99,7 @@ README는 첫 빌드가 약 2시간(Bazel이 모두 내려받고 컴파일), 이
 - 런타임 의존성: `intellij.idea.community.main.iml:138-140`이 `phantom.sync`, `phantom.sync.core`, `phantom.theme`을 RUNTIME 스코프로 참조한다.
 - 제품 콘텐츠 기술자: `intellijCommunityBaseFragment` (`:217-255`). 온보딩 투어 제거 주석은 `:240`이다.
 - 브랜딩 상수 (`IdeaCommunityProperties.kt`): 시스템 셀렉터 `PhantomIDEA` 고정 (`:176-178`), Mac `bundleIdentifier = "dev.phantom.idea"` (`:276`), 루트 디렉터리 `Phantom IDEA.app` (`:278`), URL 스킴 `phantom` (`:273`), Windows `fullName`과 설치 폴더 `Phantom IDEA` (`:263-264`), Linux 루트 `phantom-idea` (`:293`).
-- 브랜딩 파일 `community-resources/resources/idea/IdeaApplicationInfo.xml`: 버전 `:2`(빌드 스크립트가 다시 씀), 회사 `:3`, 빌드 번호 자리표시자 `IC-__BUILD__` `:4`, 로고 `/phantom_logo.png` `:5`, 아이콘 `/phantom.svg`와 `/phantom_16.svg` `:6`, EAP 아이콘 `:7`, 이름 `product="Phantom" fullname="Phantom IDEA" script="idea"` `:8`, 기본 LAF `Phantom Light`와 `Phantom Dark` `:10`, essential 플러그인 `:12-14`.
+- 브랜딩 파일 `community-resources/resources/idea/IdeaApplicationInfo.xml`: 버전 `:2`(자리표시자 `0` / `0.0`. 표시 버전은 빌드 스크립트가 `-Dphantom.version.*`로 넘긴다), 회사 `:3`, 빌드 번호 자리표시자 `IC-__BUILD__` `:4`, 로고 `/phantom_logo.png` `:5`, 아이콘 `/phantom.svg`와 `/phantom_16.svg` `:6`, EAP 아이콘 `:7`, 이름 `product="Phantom" fullname="Phantom IDEA" script="idea"` `:8`, 기본 LAF `Phantom Light`와 `Phantom Dark` `:10`, essential 플러그인 `:12-14`.
 - 아이콘과 로고 원본: `community-resources/resources/phantom*.svg`, `phantom_logo.png`. 생성 소스는 `community-resources/phantom-brand-src/compose.swift`이다. 이 스크립트를 부르는 빌드 스크립트는 읽은 범위에서 찾지 못했다.
 - Phantom 전용 플랫폼 패치: `VmOptionsGenerator.kt`의 Phantom 주석(`:26` 미사용 힙 반환, `:33` `-ea` 제거). 위치는 `platform/build-scripts/src/org/jetbrains/intellij/build/impl/VmOptionsGenerator.kt`. Windows 설치 파일을 macOS에서 만드는 패치는 `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42`의 주석이다.
 - Phantom 플러그인 소스: `plugins/phantom-sync`, `plugins/phantom-theme`.
@@ -210,6 +211,7 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
 
 ## 8. 테스트
 
+- 위 두 새 테스트 모듈 이름은 `.iml` 파일명에서 읽었고 실행하지 않았다(프로젝트를 아직 빌드하지 않음). 예시 명령: `./tests.cmd --module intellij.featuresTrainer.tests --test training.ui.FeedbackSubmissionGateTest`, `./tests.cmd --module intellij.platform.buildScripts.tests --test org.jetbrains.intellij.build.ApplicationInfoPropertiesTest`.
 - 실행 방식: `./tests.cmd --module <JPS 모듈> --test <FQN | 와일드카드 | FQN#메서드> [--debug]` (`tests.cmd:15-28`). 모듈과 패턴은 필수이고 추가 인자는 `TestingOptions` JVM 플래그로 전달된다. 저장소 지침(`AGENTS.md`)에 따라 단순 클래스 이름은 매칭되지 않으므로 FQN이 필요하다. `*.test.mjs`는 `node --test <file>`로 실행한다.
 - Phantom 관련 테스트 (각 파일의 `package` 줄과 클래스 선언을 열어 확인):
 
@@ -219,17 +221,19 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
 | `dev.phantom.ide.memory.MemoryPlanTest` | `platform/platform-tests/testSrc/dev/phantom/ide/memory/MemoryPlanTest.kt` | `intellij.platform.tests` |
 | `dev.phantom.ide.endpoints.EndpointRequestsTest` | `platform/lang-impl/testSources/dev/phantom/ide/endpoints/EndpointRequestsTest.kt` | `intellij.platform.lang.tests` |
 | `com.intellij.ide.plugins.GitHubPluginRepositoryTest` | `platform/platform-tests/testSrc/com/intellij/ide/plugins/GitHubPluginRepositoryTest.kt` | `intellij.platform.tests` |
+| `training.ui.FeedbackSubmissionGateTest` (6e71ed80c4, 5185f60295가 요청 대기를 15초로 늘림, 실행 전) | `plugins/ide-features-trainer/testSrc/training/ui/FeedbackSubmissionGateTest.kt` | `intellij.featuresTrainer.tests` (`plugins/ide-features-trainer/intellij.featuresTrainer.tests.iml`. `intellij.platform.feedback`에 직접 의존하는 유일한 테스트 모듈) |
+| `org.jetbrains.intellij.build.ApplicationInfoPropertiesTest` (048852ca23이 `phantomVersion`, `phantomVersionWithoutVersionElement`를 더함, 실행 전) | `platform/build-scripts/tests/testSrc/org/jetbrains/intellij/build/ApplicationInfoPropertiesTest.java` | `intellij.platform.buildScripts.tests` (`platform/build-scripts/tests/intellij.platform.buildScripts.tests.iml`) |
 
   마지막 항목은 패키지가 `com.intellij`이지만 커밋 이력(`53c0592476`, `79d2dc6b96`, `e67f21c7b5`)이 Phantom 플러그인 저장소 읽기 기능을 다룬다. 모듈 이름은 `.iml` 파일명과 `sourceFolder` 선언에서 읽은 것이고 실행해 보지는 않았다. 예시 명령:
   `./tests.cmd --module phantom.sync.tests --test dev.phantom.sync.GitRepoCommunicatorTest`
-- 빌드 스크립트(`phantom-*.sh`), `PhantomBuildNumber.kt`, `phantom-bench-report.py`, `plugins/phantom-theme`에 대한 테스트 파일은 찾지 못했다. 이름에 "phantom"과 "Test"가 들어간 파일과 `dev.phantom`을 포함한 테스트 소스를 검색한 결과이며 전수 조사는 아니다.
+- 빌드 스크립트(`phantom-*.sh`), `PhantomBuildNumber.kt`, `phantom-bench-report.py`, `plugins/phantom-theme`에 대한 테스트 파일은 찾지 못했다. 표시 버전을 `<version>`에 쓰는 `withPhantomVersion`만 048852ca23의 `ApplicationInfoPropertiesTest`가 다룬다. 이름에 "phantom"과 "Test"가 들어간 파일과 `dev.phantom`을 포함한 테스트 소스를 검색한 결과이며 전수 조사는 아니다.
 - CI에서 테스트를 돌리는 워크플로는 없다. `.github/workflows`에서 "phantom"을 포함하는 파일은 `phantom-release.yml` 하나이고 이 파일은 테스트를 호출하지 않는다.
 
 ## 9. 알려진 문제
 
 직접 코드를 열어 확인한 항목만 적는다. 설명만 하고 고치지 않는다.
 
-1. 빌드가 추적 파일을 수정하는데 릴리스는 그 변경을 커밋하지 않고 `HEAD`를 태그한다. `phantom-build.sh:16`이 추적 파일 `IdeaApplicationInfo.xml`(`git ls-files`로 추적 확인)을 고치고, `phantom-release.sh:61,64`는 변경을 커밋하지 않은 채 `HEAD`를 push하고 태그한다. 결과: 태그가 가리키는 커밋의 `IdeaApplicationInfo.xml` 버전(현재 `26.10.27`, `:2`)이 릴리스된 빌드의 표시 버전과 다를 수 있다. CI에서는 push(`:61`)만 생략되고 태그(`:64`)는 같다.
+1. **변경됨, 빌드 대기 (048852ca23).** 빌드가 추적 파일을 수정하는데 릴리스는 그 변경을 커밋하지 않고 `HEAD`를 태그하던 문제다. 048852ca23 전의 `phantom-build.sh:16`이 추적 파일 `IdeaApplicationInfo.xml`을 고쳤고 `phantom-release.sh:61,64`는 변경을 커밋하지 않은 채 `HEAD`를 push하고 태그해서, 태그 커밋의 XML 버전(당시 `26.10.27`)이 릴리스 표시 버전과 다를 수 있었다. 지금은 스크립트가 파일을 고치지 않고 `-Dphantom.version.major/minor`로 넘기며(`phantom-build.sh:46`, `:63`), 추적 파일은 자리표시자 `0` / `0.0`이다(`IdeaApplicationInfo.xml:2`). 코드를 읽은 결론이고 빌드와 테스트는 하지 않았다. 부작용: `installers.cmd`를 직접 실행하거나 IDE를 소스에서 실행하면 표시 버전이 0.0이다. 릴리스가 `HEAD`를 태그하는 방식(`phantom-release.sh:61,64`)과 CI에서 push(`:61`)만 생략되는 점은 그대로다.
 2. 런타임 baseline이 없다. `docs/phantom/bench/baseline.json`을 `docs/phantom/bench/README.md:10,32`가 참조하지만 파일이 없다. 결과: 런타임 `compare` 명령을 지금은 실행할 수 없고 `TOLERANCE`는 보정되지 않았다 (`docs/phantom/bench/README.md:39-40`).
 3. 경로가 하드코딩이다. `/Applications/Phantom IDEA.app`이 `phantom-install.sh:13`, `phantom-bench.sh:15`, `phantom-sign.sh:8`(기본값)에 있고, 사용자 설정 경로가 `phantom-bench.sh:16`, 기본 픽스처 `$HOME/projects/private/prototype-reservation-system`이 `phantom-bench.sh:22`에 있다. 결과: 다른 위치에 설치했거나 픽스처 프로젝트가 없는 머신에서는 `--fixture` 없이 벤치가 동작하지 않는다 (픽스처가 없을 때 `rsync` 실패는 코드상 그렇게 읽힌다, 추정).
 4. `phantom-sign.sh`가 인증서가 없어도 성공으로 끝난다. `phantom-sign.sh:14-17`이 메시지만 내고 `exit 0` 한다. 결과: `phantom-install.sh:60`은 계속 진행하여 ad-hoc 서명 앱이 설치되고 권한 재요청이 생기는데 호출자는 실패를 알지 못한다. 또 헤더 주석 `:6`은 "login keychain"이라 쓰지만 코드는 전용 키체인 `phantom-signing.keychain-db`만 조회하고(`:10-11,14`), 바로 위 주석 `:10`도 "its own keychain (not login)"이라 말한다. 결과: 주석만 읽으면 login 키체인에 인증서를 넣어도 된다고 오해할 수 있다.
