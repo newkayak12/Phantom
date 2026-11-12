@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
+import dev.phantom.ide.PhantomLangBundle
 
 /**
  * "Generate HTTP Request" in the Endpoints window: appends a request for the endpoint to the scratch file
@@ -78,7 +79,7 @@ object EndpointRequests {
     val file = ScratchFileService.getInstance().findFile(ScratchRootType.getInstance(), SCRATCH_NAME, ScratchFileService.Option.create_if_missing) ?: return
     val document = FileDocumentManager.getInstance().getDocument(file) ?: return
     var offset = 0
-    WriteCommandAction.runWriteCommandAction(project, "Generate HTTP Request", null, {
+    WriteCommandAction.runWriteCommandAction(project, PhantomLangBundle.message("phantom.endpoints.command.generate.request"), null, {
       val separator = if (document.textLength == 0 || document.text.endsWith("\n\n")) "" else if (document.text.endsWith("\n")) "\n" else "\n\n"
       offset = document.textLength + separator.length
       document.insertString(document.textLength, separator + text)
