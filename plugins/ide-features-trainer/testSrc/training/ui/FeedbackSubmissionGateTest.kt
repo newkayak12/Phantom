@@ -24,6 +24,8 @@ private const val URL_OVERRIDE_PROPERTY = "platform.feedback.test.submission.url
  * unless `-Dphantom.jetbrains.services=true`. The submission URL is pointed at a local server, so a broken gate
  * shows up as a request on that server or as a callback, instead of a call to forms-service.jetbrains.com.
  * The platform feedback module has no test root of its own; this module depends on it directly.
+ * Limit: without the gate the request is preceded by a region-mapping fetch that can be slow, so the wait for the
+ * request is long; a mapping fetch slower than that would still let a broken gate pass.
  */
 @TestApplication
 class FeedbackSubmissionGateTest {
@@ -62,7 +64,7 @@ class FeedbackSubmissionGateTest {
                      feedbackRequestType = type)
       assertFalse(callbackRan.await(2, TimeUnit.SECONDS), "a submission callback ran for $type, so the request was attempted")
     }
-    assertFalse(requestReceived.await(1, TimeUnit.SECONDS), "the feedback request reached the server")
+    assertFalse(requestReceived.await(15, TimeUnit.SECONDS), "the feedback request reached the server")
   }
 
   private fun overrideProperty(name: String, value: String?) {
