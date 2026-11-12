@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       notes:
-        description: Release notes (default: commits since the previous release)
+        description: "Release notes (default: commits since the previous release)"
         required: false
 
 permissions:
@@ -36,6 +36,23 @@ jobs:
           fetch-tags: true
           # the checkout stays between runs, so the build's caches stay warm
           clean: false
+
+      # phantom-build.sh bundles plugins built from the Phantom-plugins checkout next to this one. That repository is
+      # private and the job's token only reads this one, so the runner's own git credentials (the owner's SSH key)
+      # clone it; it stays between runs like this checkout and is reset to main each time.
+      - name: Phantom-plugins checkout
+        run: |
+          plugins="$GITHUB_WORKSPACE/../Phantom-plugins"
+          # github-newkayak: the SSH host alias for the owner's key, where ~/.ssh/config has one
+          host=github.com
+          [[ "$(ssh -G github-newkayak | awk '/^hostname /{print $2}')" == github.com ]] && host=github-newkayak
+          if [[ ! -d "$plugins/.git" ]]; then
+            git clone "git@$host:newkayak12/Phantom-plugins.git" "$plugins"
+          fi
+          git -C "$plugins" fetch origin main
+          git -C "$plugins" reset --hard origin/main
+          git -C "$plugins" clean -fdq
+          git -C "$plugins" log -1 --format='Phantom-plugins %h %s'
 
       - name: Build and release
         env:
