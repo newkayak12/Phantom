@@ -3,6 +3,7 @@ package org.jetbrains.intellij.build
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import org.jetbrains.intellij.build.BuildPaths.Companion.COMMUNITY_ROOT
 import org.jetbrains.intellij.build.impl.createBuildContext
@@ -10,6 +11,7 @@ import org.jetbrains.intellij.build.impl.qodana.QodanaProductProperties
 import org.jetbrains.intellij.build.io.copyDir
 import org.jetbrains.intellij.build.io.copyFileToDir
 import org.jetbrains.intellij.build.kotlin.KotlinBinaries
+import org.jetbrains.intellij.build.kotlin.KotlinPluginBuilder
 import org.jetbrains.intellij.build.productLayout.CommunityModuleSets
 import org.jetbrains.intellij.build.productLayout.CommunityProductFragments
 import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
@@ -106,7 +108,12 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.java.coverage")
       .removing("intellij.textmate.plugin")
       .removing("intellij.markdown")
-      .removing("intellij.mermaid") + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.mermaid")
+      .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
+    // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
+    // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
+    // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
+    productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
