@@ -57,7 +57,8 @@ if [[ -f "$exe" || -f "$zip" ]]; then
 fi
 
 kotlin="$(find out/phantom-idea/artifacts -path '*-plugins/*' -name 'Kotlin*.zip' | head -1)"
-[[ -n "$kotlin" ]] && unzip -l "$kotlin" | grep -q ' Kotlin/lib/kotlin-plugin.jar$' || { echo "no Kotlin plugin zip after the build"; exit 1; }
+# (unzip -Z1 with a name lists just that entry, failing without it; grep -q on a pipe would break it under pipefail)
+[[ -n "$kotlin" ]] && unzip -Z1 "$kotlin" Kotlin/lib/kotlin-plugin.jar >/dev/null || { echo "no Kotlin plugin zip after the build"; exit 1; }
 plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
 [[ -f "$plugins_repo/.phantom/marketplace.json" ]] || { echo "no Phantom-plugins checkout at $plugins_repo"; exit 1; }
 
@@ -81,7 +82,9 @@ gh release edit "$tag" -R "$repo" --draft=false
 # entry pointing at it (since this build: Kotlin is compiled against this exact platform)
 ktag="kotlin-262.$day"
 kzip="Kotlin-262.$day.zip"
-kversion="$(unzip -p "$kotlin" Kotlin/lib/kotlin-plugin.jar | bsdtar -xOf - META-INF/plugin.xml | sed -nE 's#.*<version>([^<]+)</version>.*#\1#p' | head -1)"
+kjar="$(mktemp)"; unzip -p "$kotlin" Kotlin/lib/kotlin-plugin.jar > "$kjar"
+kversion="$(unzip -p "$kjar" META-INF/plugin.xml | awk -F'[<>]' '$2 == "version" && !v { v = $3 } END { print v }')"
+rm -f "$kjar"
 [[ -n "$kversion" ]] || { echo "no version in the Kotlin plugin.xml"; exit 1; }
 prepo="$(git -C "$plugins_repo" remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
 git -C "$plugins_repo" fetch -q origin main
