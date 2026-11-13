@@ -33,15 +33,16 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 - "Report to JetBrains" error submission and the default IDE update feed (`-Didea.updates.url` brings it back).
 
 **Trimmed** ([FORK-DELTA §3.2, §3.3, §3.5](docs/phantom/FORK-DELTA.md))
-- 14 bundled modules out (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …), plus Android and Compose; sources stay for upstream merges.
+- 21 upstream plugins out of the bundle: 14 dropped (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …) and 7 replaced by Phantom-plugins builds (TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown), plus Android and Compose; sources stay for upstream merges.
 - Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
 - Diagnostic files off by default: OpenTelemetry metrics CSV (about 116 MB in 4 days), indexing and storage reports.
 - Library text files left out of the Find in Files index: trigram index 369 MB → 84 MB, all indexes 1.2 GB → 916 MB on the author's project.
 
-**Fixed** ([FORK-DELTA §3.5, §3.7](docs/phantom/FORK-DELTA.md))
+**Fixed** ([FORK-DELTA §3.5, §3.7, §3.12](docs/phantom/FORK-DELTA.md))
 - A bare file type change no longer rescans the whole project (the fix commit `46482b0bf1` names Atom Material Icons as the trigger on every start; the benchmark record marks that attribution as inferred).
 - A plugin update no longer re-checks every file on the next open (345k files, about 2.3 s and 20 s of CPU before).
 - The consent settings page no longer crashes for a non-JetBrains vendor; Gradle falls back to a supported registered JDK.
+- A plugin that keeps another plugin's id as an alias now replaces it: with a Phantom-plugins build and the IntelliJ original both installed, only the Phantom build loads, where the id conflict used to leave both out (commit `04dba66c3a`).
 
 **Added** ([FORK-DELTA §3.1, §3.4, §5.1](docs/phantom/FORK-DELTA.md))
 - Own identity: `Phantom IDEA.app`, bundle id `dev.phantom.idea`, URL scheme `phantom://`, settings folder `PhantomIDEA`, Phantom Dark/Light themes.
@@ -85,32 +86,34 @@ The IDE does not check for its own updates; install new releases the same way. O
 
 ## Plugins
 
-Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom IDEA build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins.
+Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom IDEA build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Eight of its plugins are built into the bundle in place of the IntelliJ plugins they replace; they keep the IntelliJ plugin ids as aliases, so plugins that depend on the originals still resolve.
 
-| Bundled in this repository | Installed on demand from Phantom-plugins |
-|---|---|
-| `phantom-sync`: Backup and Sync to your own git repository | `spring`: beans, injection navigation, autowiring checks |
-| `phantom-theme`: Phantom Dark and Light | `spring-boot`: `application.yml`/`.properties` completion and docs |
-| Lombok (upstream community plugin, newly bundled) | `jpa`: JPQL in `@Query`, derived query checks |
-| Endpoints tool window (core; plugins fill it) | `db`: JDBC data sources, SQL console, schema tree |
-| GitHub plugin repository support (core) | `http-client`: `.http` request files |
-| | `workspaces`, `tabs`, Phantom Icon Pack |
-| | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
+| Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
+|---|---|---|
+| `phantom-sync`: Backup and Sync to your own git repository | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate` | `spring`: beans, injection navigation, autowiring checks |
+| `phantom-theme`: Phantom Dark and Light | `decompiler`, `coverage` | `spring-boot`: `application.yml`/`.properties` completion and docs |
+| Endpoints tool window (core; plugins fill it) | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
+| GitHub plugin repository support (core) | | `db`: JDBC data sources, SQL console, schema tree |
+| | | `http-client`: `.http` request files |
+| | | `workspaces`, `tabs`, Phantom Icon Pack |
+| | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
 
 Planned, not built: Spring runtime (Actuator), Docker and Kubernetes, database migrations and more, designed in [docs/phantom/design/](docs/phantom/design/). Where the moved plugins used to live is listed in [FORK-DELTA §5](docs/phantom/FORK-DELTA.md).
 
 ## Build from source
 
-Needs macOS on Apple Silicon, 16 GB+ RAM and about 120 GB free disk for the first build.
+Needs macOS on Apple Silicon, 16 GB+ RAM, about 120 GB free disk for the first build, and read access to Phantom-plugins (a private repository, per the release workflow).
 
 ```bash
 git clone git@github.com:newkayak12/Phantom-IDEA.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
+# eight bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
+git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `048852ca23`) has not been built or tested yet.
+`phantom-build.sh` first builds those eight plugins with Phantom-plugins' Gradle wrapper and unpacks them into `out/phantom-plugins/`; it stops if the checkout or a plugin zip is missing. The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `048852ca23`) has not been built or tested yet.
 
 Versions: display `YY.MM.DD`, build number `PH-<YYMMDD>.<N>`, and an internal platform build `262.<YYMMDD>` so plugins built for IntelliJ Platform 262 keep loading. Signing, releases and benchmarks: [BUILD.md](docs/phantom/BUILD.md).
 
