@@ -26,10 +26,11 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
 /**
  * phantom-idea: plugins built in Phantom-plugins and bundled in place of their IntelliJ originals. They have dev.phantom.* ids
  * and keep the IntelliJ ids as aliases and the IntelliJ content module names, so the plugins and modules depending on them
- * resolve to these. phantom-build.sh unpacks them into out/phantom-plugins/<dir>; the originals are left out of the bundle.
+ * resolve to these. Mermaid is Phantom's own implementation (com.phantom.mermaid, no alias). phantom-build.sh unpacks them
+ * into out/phantom-plugins/<dir>; the originals are left out of the bundle.
  */
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
-  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown",
+  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -104,7 +105,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.java.decompiler")
       .removing("intellij.java.coverage")
       .removing("intellij.textmate.plugin")
-      .removing("intellij.markdown") + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.markdown")
+      .removing("intellij.mermaid") + PHANTOM_BUNDLED_PLUGINS
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
