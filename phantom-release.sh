@@ -56,7 +56,7 @@ if [[ -f "$exe" || -f "$zip" ]]; then
   assets+=("$exe" "$zip")
 fi
 
-kotlin="$(find out/phantom-idea/artifacts -path '*-plugins/*' -name 'Kotlin*.zip' | head -1)"
+kotlin="$(find out/phantom-idea/artifacts -path '*-plugins/*' -name 'Kotlin-*.zip' ! -name '*.blockmap.zip' | head -1)"
 # (unzip -Z1 with a name lists just that entry, failing without it; grep -q on a pipe would break it under pipefail)
 [[ -n "$kotlin" ]] && unzip -Z1 "$kotlin" Kotlin/lib/kotlin-plugin.jar >/dev/null || { echo "no Kotlin plugin zip after the build"; exit 1; }
 plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
