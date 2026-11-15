@@ -195,7 +195,9 @@ def stale_static_baseline(baseline_doc):
     is not seen."""
     m = re.fullmatch(r"\d+\.(\d\d)(\d\d)(\d\d)", str(baseline_doc.get("build", "")))
     if not m:
-        return f"cannot tell the build date of the baseline app from its build number {baseline_doc.get('build')!r}"
+        print(f"note: the baseline app's build number {baseline_doc.get('build')!r} carries no build date (not built by "
+              f"phantom-build.sh?), so its age against {BUNDLE_LIST} is not checked", file=sys.stderr)
+        return None
     built = f"20{m.group(1)}-{m.group(2)}-{m.group(3)}"
     try:
         changed = subprocess.run(["git", "log", "-1", "--format=%cs %h", "--", BUNDLE_LIST],

@@ -8,13 +8,16 @@
 # (that account must see the repository).
 # A running Phantom is asked to quit first (it saves its state); its open projects reopen on the next start.
 # The installed app is re-signed by phantom-sign.sh with PHANTOM_SIGN_OPTIONAL=1: on a machine without the
-# "Phantom Local" certificate it stays ad-hoc signed and a warning goes to stderr; the install does not fail.
+# "Phantom Local" certificate it stays ad-hoc signed and a warning goes to stderr; the install does not fail
+# (a certificate that is there but cannot be used, e.g. a wrong keychain password, still fails it).
 # Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom IDEA.app); it is also passed to
-# phantom-sign.sh.
+# phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. A running Phantom is quit by bundle id,
+# so with two copies running the other one may be the one that quits.
 set -euo pipefail
 cd "$(dirname "$0")"
 
 APP="${PHANTOM_APP:-/Applications/Phantom IDEA.app}"
+[[ "$APP" == /*.app ]] || { echo "error: PHANTOM_APP must be an absolute path ending in .app, got '$APP'" >&2; exit 1; }
 
 DMG=""
 case "${1:-}" in
