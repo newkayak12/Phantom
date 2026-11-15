@@ -16,6 +16,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.Messages
+import dev.phantom.ide.PhantomIdeBundle
 import org.jetbrains.annotations.ApiStatus
 
 /**
@@ -81,14 +82,14 @@ internal class GitHubPluginRepositoryAuthProvider : PluginRepositoryAuthProvider
   }
 }
 
-internal class SetGitHubPluginTokenAction : DumbAwareAction("Set GitHub Token for Plugin Repositories…") {
+internal class SetGitHubPluginTokenAction : DumbAwareAction() {
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
   override fun actionPerformed(e: AnActionEvent) {
     val token = Messages.showPasswordDialog(
       e.project,
-      "A token with read access to the repository's contents (classic: repo; fine-grained: Contents read-only).\nLeave empty to remove the stored token.",
-      "Private GitHub Plugin Repositories",
+      PhantomIdeBundle.message("phantom.plugins.token.dialog.message"),
+      PhantomIdeBundle.message("phantom.plugins.token.dialog.title"),
       null,
     ) ?: return
     GitHubTokens.store(token)
