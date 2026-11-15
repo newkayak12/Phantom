@@ -221,7 +221,7 @@ object GHAccountsUtil {
     }
     // phantom-idea: without an OAuth client id both OAUTH and UNDEFINED go straight to token login, no "Log In via GitHub / Use Token" prompt
     else if (!GHDeviceFlow.isBrowserLoginAvailable) {
-      request.loginWithToken(model, project, parentComponent)
+      if (promptTokenLogin(request, project, parentComponent)) request.loginWithToken(model, project, parentComponent)
     }
     else when (request.authType) {
       AuthorizationType.OAUTH -> request.loginWithOAuth(model, project, parentComponent)
@@ -293,6 +293,30 @@ private fun GHLoginRequest.loginWithOAuthOrToken(model: GHLoginModel, project: P
     Messages.YES -> loginWithOAuth(model, project, parentComponent)
     Messages.NO -> loginWithToken(model, project, parentComponent)
   }
+}
+
+// phantom-idea: the token-only stand-in for promptOAuthLogin, shown only when there is something to tell
+// (why a login is needed, or that the token will not be kept); otherwise the token dialog opens directly
+private fun promptTokenLogin(request: GHLoginRequest, project: Project?, parentComponent: Component?): Boolean {
+  val memoryOnly = PasswordSafe.instance.isMemoryOnly
+  val message = if (memoryOnly) {
+    HtmlBuilder()
+      .append(HtmlChunk.p().addText(CollaborationToolsBundle.message("accounts.error.password-not-saved")))
+      .append(HtmlChunk.br())
+      .append(HtmlChunk.p().addText(CollaborationToolsBundle.message("accounts.error.password-not-saved.solution")))
+      .toString()
+  }
+  else {
+    request.text ?: return true
+  }
+
+  val builder = MessageDialogBuilder
+    .okCancel(title = GithubBundle.message("login.to.github"), message = message)
+    .yesText(GithubBundle.message("button.use.token"))
+  if (memoryOnly) {
+    builder.asWarning()
+  }
+  return if (parentComponent != null) builder.ask(parentComponent) else builder.ask(project)
 }
 
 private fun promptOAuthLogin(request: GHLoginRequest, project: Project?, parentComponent: Component?): Int {
