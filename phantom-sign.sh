@@ -12,9 +12,10 @@
 # --setup makes the keychain (random password, no auto-lock), the password file (600, in a 700 folder) and the
 # certificate (RSA 2048, extended key usage codeSigning, 10 years) with /usr/bin/openssl and security only, without
 # any dialog; the private key exists outside the keychain only in a temporary folder that is removed on exit.
-# It is idempotent: with the certificate already there it says so and exits 0. It never overwrites or deletes an
-# existing keychain, certificate or password file (an existing password file is reused; an existing keychain without
-# its password file is an error). To remove it all: security delete-keychain <keychain>; rm <password file>.
+# It is idempotent: with the certificate already there it only re-applies codesign's access to the key and exits 0.
+# It never deletes or replaces an existing keychain, certificate or password file (an existing password file is
+# reused; an existing keychain without its password file is an error). Into an existing keychain that has no
+# "Phantom Local" certificate it adds one, and sets the key access list of that keychain for Apple's tools. To remove it all: security delete-keychain <keychain>; rm <password file>.
 # Without the certificate (or with its keychain but no password file) the app is not re-signed (it keeps its ad-hoc
 # signature) and the script fails: the reason goes to stderr and the exit code is 1. A password file that does not
 # unlock the keychain always fails with exit code 1.
@@ -44,7 +45,9 @@ if [[ "${1:-}" == --setup ]]; then
     exit 1
   fi
   if have_cert; then
-    echo "the '$ID' certificate is already in $KC; nothing to do"
+    # repairs a setup that was interrupted after the import: without this codesign would ask for access to the key
+    security set-key-partition-list -S apple-tool:,apple: -s -k "$(cat "$PASS")" "$KC" >/dev/null
+    echo "the '$ID' certificate is already in $KC; nothing to create (codesign's access to its key re-applied)"
     exit 0
   fi
   echo "creating a local signing certificate '$ID' (self-signed, no Apple account) in $KC, password in $PASS"
@@ -59,12 +62,13 @@ if [[ "${1:-}" == --setup ]]; then
   if [[ ! -e "$KC" ]]; then
     [[ -d "${KC:h}" ]] || mkdir -p "${KC:h}"
     security create-keychain -p "$pw" "$KC"
+    # no options: no auto-lock timeout and no lock on sleep (only for a keychain made here; an existing one keeps its settings)
+    security set-keychain-settings "$KC"
   fi
+  # security takes the keychain password only as an argument, so it is briefly visible in the process list
   security unlock-keychain -p "$pw" "$KC"
-  # no options: no auto-lock timeout and no lock on sleep
-  security set-keychain-settings "$KC"
   tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' EXIT
+  trap 'rm -rf "$tmp"' EXIT INT TERM HUP
   cat > "$tmp/req.cnf" <<EOF
 [req]
 distinguished_name = dn
@@ -80,14 +84,14 @@ subjectKeyIdentifier = hash
 EOF
   /usr/bin/openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 3650 -config "$tmp/req.cnf" \
     -keyout "$tmp/key.pem" -out "$tmp/cert.pem" 2>"$tmp/openssl.log" || { cat "$tmp/openssl.log" >&2; exit 1; }
-  export P12_PASS="$(/usr/bin/openssl rand -hex 16)"
+  p12_pass="$(/usr/bin/openssl rand -hex 16)"
   # 3DES/SHA-1 PKCS#12 is what security import reads (and what LibreSSL writes by default)
-  /usr/bin/openssl pkcs12 -export -name "$ID" -inkey "$tmp/key.pem" -in "$tmp/cert.pem" \
+  P12_PASS="$p12_pass" /usr/bin/openssl pkcs12 -export -name "$ID" -inkey "$tmp/key.pem" -in "$tmp/cert.pem" \
     -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 -passout env:P12_PASS -out "$tmp/id.p12"
-  security import "$tmp/id.p12" -k "$KC" -f pkcs12 -P "$P12_PASS" -T /usr/bin/codesign >/dev/null
+  security import "$tmp/id.p12" -k "$KC" -f pkcs12 -P "$p12_pass" -T /usr/bin/codesign >/dev/null
   # lets codesign use the key without asking for the keychain password
   security set-key-partition-list -S apple-tool:,apple: -s -k "$pw" "$KC" >/dev/null
-  have_cert
+  have_cert || { echo "error: the '$ID' certificate is not in $KC after the import" >&2; exit 1; }
   echo "created '$ID' ($(/usr/bin/openssl x509 -in "$tmp/cert.pem" -noout -fingerprint -sha1)), $(/usr/bin/openssl x509 -in "$tmp/cert.pem" -noout -enddate)"
   exit 0
 fi
