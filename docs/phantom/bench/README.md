@@ -21,7 +21,8 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
   reach smart mode, against 3.4 s in the 2026-10-17 benchmark; numbers from a loaded machine are not comparable.
 - The user's own Phantom may keep running: each bench run has its own config copy (without `.lock`), system and log
   directories. It still competes for CPU, so close it for a baseline.
-- Fixture: `~/projects/private/prototype-reservation-system`, copied once to `out/phantom-bench/work/fixture`
+- Fixture: `--fixture DIR`, else `$PHANTOM_BENCH_FIXTURE`, else `~/projects/private/prototype-reservation-system`;
+  copied once to `out/phantom-bench/work/fixture`
   without `mysql_data` and `build/`.
 
 ## Baselines

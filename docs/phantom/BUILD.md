@@ -121,15 +121,15 @@ README는 첫 빌드가 약 2시간, 이후 빌드는 "minutes"라고 쓴다 (`R
 ### phantom-sign.sh
 
 - 목적은 설치된 앱을 로컬 자체 서명 인증서 "Phantom Local"과 식별자 `dev.phantom.idea`로 다시 서명하는 것이다. ad-hoc 서명은 빌드마다 바뀌어 macOS가 개인정보 권한을 다시 묻기 때문이다 (`phantom-sign.sh:2-4`).
-- 인자가 없으면 앱 경로는 `/Applications/Phantom IDEA.app`이다 (`:8`).
+- 앱 경로는 첫 인자, 없으면 `PHANTOM_APP`, 둘 다 없으면 `/Applications/Phantom IDEA.app`이다 (`:13`).
 - 인증서는 전용 키체인 `$HOME/Library/Keychains/phantom-signing.keychain-db`(`:11`)에서 찾는다. 키체인과 비밀번호 파일 `$HOME/.config/phantom/signing-keychain.pass`(`:12`)가 둘 다 있으면 `security unlock-keychain`으로 연다 (`:13`). 비밀번호 파일의 내용은 이 문서에 적지 않는다.
-- 인증서가 없으면 이유를 stderr에 쓰고 종료 코드 1로 실패한다. `PHANTOM_SIGN_OPTIONAL=1`이면 stderr 경고 후 종료 코드 0이다 (`:18-26`). `phantom-install.sh`는 이 값을 켜고 부르므로 인증서가 없으면 ad-hoc 서명 앱이 설치되고 경고만 남는다 (9.4).
+- 인증서가 없으면 이유를 stderr에 쓰고 종료 코드 1로 실패한다. `PHANTOM_SIGN_OPTIONAL=1`이면 stderr 경고 후 종료 코드 0이다 (`:19-27`). `phantom-install.sh`는 이 값을 켜고 부르므로 인증서가 없으면 ad-hoc 서명 앱이 설치되고 경고만 남는다 (9.4).
 - 인증서가 있으면 `codesign --force --sign "Phantom Local" --identifier dev.phantom.idea "$APP"` 후 designated requirement를 출력한다 (`:18-19`).
 - 공증(notarization)과 Developer ID 서명은 어디에도 없다. Windows 파일은 서명하지 않는다 (`phantom-release.sh:7-9`).
 
 ### phantom-install.sh
 
-- 앱 경로는 `/Applications/Phantom IDEA.app`로 하드코딩이다 (`phantom-install.sh:13`).
+- 앱 경로는 `PHANTOM_APP`, 없으면 `/Applications/Phantom IDEA.app`이다 (`phantom-install.sh:17`). 같은 경로를 `phantom-sign.sh`에 넘긴다.
 - 모드 (`:16-37`): 인자 없음은 `./phantom-build.sh`를 실행한다. `--no-build`는 이미 빌드된 DMG를 쓴다. `--release [tag]`는 `origin`의 GitHub 릴리스(`latest` 또는 `tags/<tag>`)에서 `-aarch64.dmg`로 끝나는 에셋을 `curl`로 받아 `out/phantom-release-download/`에 둔다. 토큰은 `GH_TOKEN`, 없으면 `gh auth token`이다 (`:19`). `curl`을 쓰는 이유는 격리(quarantine) 플래그가 붙지 않아 공증되지 않은 앱을 Gatekeeper가 막지 않기 때문이다 (`:6-7`).
 - DMG 선택: 직접 받은 DMG가 없으면 `out/phantom-idea/artifacts/phantom-idea-*-aarch64.dmg` 중 `ls -t` 최신이다 (`:39`).
 - 실행 중이면: `osascript`로 `dev.phantom.idea`에 종료를 요청하고 최대 180초 기다린다. 그래도 떠 있으면 메시지를 출력하고 `exit 1` 한다 (`:43-51`).
@@ -181,8 +181,8 @@ README는 첫 빌드가 약 2시간, 이후 빌드는 "minutes"라고 쓴다 (`R
 python3 phantom-bench-report.py compare docs/phantom/bench/baseline.json out/phantom-bench/<sha>/base/summary.json
 ```
 
-- 옵션 기본값: `--runs 5`, `--label base`, `--settle 180`, `--vm-extra` 없음, `--fixture $HOME/projects/private/prototype-reservation-system` (`phantom-bench.sh:18-22`). 모르는 인자는 `exit 2` (`:30`).
-- 고정 경로: 앱 `/Applications/Phantom IDEA.app` (`:15`), 사용자 설정 `$HOME/Library/Application Support/Phantom/PhantomIDEA` (`:16`).
+- 옵션 기본값: `--runs 5`, `--label base`, `--settle 180`, `--vm-extra` 없음, `--fixture`는 `PHANTOM_BENCH_FIXTURE`, 없으면 `$HOME/projects/private/prototype-reservation-system` (`phantom-bench.sh:22-26`). 모르는 인자는 `exit 2` (`:30`).
+- 경로: 앱은 `PHANTOM_APP`, 없으면 `/Applications/Phantom IDEA.app` (`:19`). 사용자 설정은 `PHANTOM_CONFIG_DIR`, 없으면 `$HOME/Library/Application Support/Phantom/PhantomIDEA` (`:20`).
 - 출력 배치: `out/phantom-bench/<short-sha>/<label>/{warmup, run-N/, run-N.json, summary.json}`, 작업 디렉터리 `out/phantom-bench/work/{fixture, system-<label>}` (`:34-38`).
 - 픽스처는 한 번만 `rsync`로 복사하며 `mysql_data`와 `build/`는 제외한다 (`:41-44`).
 - 격리: 실행마다 사용자 설정을 임시 디렉터리로 복사하고(`.lock` 제외), `idea.properties`로 config, system, log 경로를 따로 지정한다 (`:55-59`). 사용자 IDE가 떠 있어도 건드리지 않지만 CPU를 두고 경쟁하므로 다른 Phantom이 떠 있으면 경고만 출력한다 (`:46-48`).
@@ -252,8 +252,8 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
 
 1. **변경됨, 빌드 대기 (048852ca23).** 빌드가 추적 파일을 수정하는데 릴리스는 그 변경을 커밋하지 않고 `HEAD`를 태그하던 문제다. 048852ca23 전의 `phantom-build.sh:16`이 추적 파일 `IdeaApplicationInfo.xml`을 고쳤고 `phantom-release.sh:61,64`는 변경을 커밋하지 않은 채 `HEAD`를 push하고 태그해서, 태그 커밋의 XML 버전(당시 `26.10.27`)이 릴리스 표시 버전과 다를 수 있었다. 지금은 스크립트가 파일을 고치지 않고 `-Dphantom.version.major/minor`로 넘기며(`phantom-build.sh:46`, `:63`), 추적 파일은 자리표시자 `0` / `0.0`이다(`IdeaApplicationInfo.xml:2`). 코드를 읽은 결론이고 빌드와 테스트는 하지 않았다. 부작용: `installers.cmd`를 직접 실행하거나 IDE를 소스에서 실행하면 표시 버전이 0.0이다. 릴리스가 `HEAD`를 태그하는 방식(`phantom-release.sh:61,64`)과 CI에서 push(`:61`)만 생략되는 점은 그대로다.
 2. 런타임 baseline이 없다. `docs/phantom/bench/baseline.json`을 `docs/phantom/bench/README.md:10,32`가 참조하지만 파일이 없다. 결과: 런타임 `compare` 명령을 지금은 실행할 수 없고 `TOLERANCE`는 보정되지 않았다 (`docs/phantom/bench/README.md:39-40`).
-3. 경로가 하드코딩이다. `/Applications/Phantom IDEA.app`이 `phantom-install.sh:13`, `phantom-bench.sh:15`, `phantom-sign.sh:8`(기본값)에 있고, 사용자 설정 경로가 `phantom-bench.sh:16`, 기본 픽스처 `$HOME/projects/private/prototype-reservation-system`이 `phantom-bench.sh:22`에 있다. 결과: 다른 위치에 설치했거나 픽스처 프로젝트가 없는 머신에서는 `--fixture` 없이 벤치가 동작하지 않는다 (픽스처가 없을 때 `rsync` 실패는 코드상 그렇게 읽힌다, 추정).
-4. 고침(커밋 A). 전에는 `phantom-sign.sh`가 인증서가 없어도 메시지만 내고 `exit 0` 해서 호출자가 서명 실패를 알 수 없었고, 헤더 주석은 "login keychain"이라고 잘못 적었다. 지금은 인증서가 없으면 이유를 stderr에 쓰고 종료 코드 1로 실패한다 (`phantom-sign.sh:18-26`). `PHANTOM_SIGN_OPTIONAL=1`이면 같은 상황을 stderr 경고와 종료 코드 0으로 끝낸다. 의도적으로 건너뛰기에 기대는 호출자는 `phantom-install.sh` 하나뿐이고(릴리스 DMG는 ad-hoc 서명이며 설치하는 머신에서 재서명한다는 `phantom-release.sh:10-11`, `phantom-release.yml:9-10` 주석), 이 스크립트가 서명 호출에 이 값을 명시적으로 켠다. 헤더 주석은 전용 키체인 `phantom-signing.keychain-db`만 본다고 고쳤다 (`phantom-sign.sh:6-10`). 확인: 인증서가 없는 임시 `HOME`에서 두 경로(종료 코드 1, `PHANTOM_SIGN_OPTIONAL=1`에서 0)를 실행했다. 실제 인증서로 서명하는 경로와 `phantom-install.sh` 전체는 실행하지 않았다.
+3. 고침(커밋 B). 전에는 앱 `/Applications/Phantom IDEA.app`(`phantom-install.sh`, `phantom-bench.sh`, `phantom-sign.sh` 기본값), 사용자 설정 경로(`phantom-bench.sh`), 기본 픽스처 `$HOME/projects/private/prototype-reservation-system`(`phantom-bench.sh`)이 코드에 고정되어 다른 위치에 설치한 머신에서는 바꿀 방법이 없었다. 지금은 환경변수로 바꾼다. 값이 없으면 기본값은 전과 같다: `PHANTOM_APP`(세 스크립트. `phantom-install.sh:17`, `phantom-bench.sh:19`, `phantom-sign.sh:13`에서 인자가 먼저), `PHANTOM_CONFIG_DIR`(`phantom-bench.sh:20`), `PHANTOM_BENCH_FIXTURE`(`phantom-bench.sh:26`, `--fixture`가 먼저). 각 스크립트 머리 주석에 적었다. 기본값은 이미 `$HOME`에서 만들어 사용자별 절대 경로는 없었다. 확인: 세 스크립트의 대입 줄을 변수 없이/있이 해석해 기본값과 재정의 값을 출력했다. 벤치 실행과 설치 전체는 실행하지 않았다. 픽스처 프로젝트가 없는 머신에서는 여전히 `--fixture`나 `PHANTOM_BENCH_FIXTURE`가 필요하다.
+4. 고침(커밋 A). 전에는 `phantom-sign.sh`가 인증서가 없어도 메시지만 내고 `exit 0` 해서 호출자가 서명 실패를 알 수 없었고, 헤더 주석은 "login keychain"이라고 잘못 적었다. 지금은 인증서가 없으면 이유를 stderr에 쓰고 종료 코드 1로 실패한다 (`phantom-sign.sh:19-27`). `PHANTOM_SIGN_OPTIONAL=1`이면 같은 상황을 stderr 경고와 종료 코드 0으로 끝낸다. 의도적으로 건너뛰기에 기대는 호출자는 `phantom-install.sh` 하나뿐이고(릴리스 DMG는 ad-hoc 서명이며 설치하는 머신에서 재서명한다는 `phantom-release.sh:10-11`, `phantom-release.yml:9-10` 주석), 이 스크립트가 서명 호출에 이 값을 명시적으로 켠다. 헤더 주석은 전용 키체인 `phantom-signing.keychain-db`만 본다고 고쳤다 (`phantom-sign.sh:7-11`). 확인: 인증서가 없는 임시 `HOME`에서 두 경로(종료 코드 1, `PHANTOM_SIGN_OPTIONAL=1`에서 0)를 실행했다. 실제 인증서로 서명하는 경로와 `phantom-install.sh` 전체는 실행하지 않았다.
 5. 건너뛰기 목록이 이름과 달리 항상 적용된다. 이는 upstream 동작이다(`git diff d2faebf601 HEAD -- build/src/OpenSourceCommunityInstallersBuildTarget.kt`에서 `:38`의 `OPTIONS.buildStepsToSkip + BUILD_STEPS_DISABLED_FOR_GITHUB_ACTIONS`는 바뀌지 않았다). 포크가 이 파일에서 바꾼 것은 목록에서 `WINDOWS_ZIP_STEP`을 뺀 것과 macOS에서 `WINDOWS_EXE_INSTALLER_STEP`을 건너뛰던 조건을 지운 것(Windows 설치 파일과 zip을 만들기 위해)뿐이다. `OpenSourceCommunityInstallersBuildTarget.kt:18-23`의 `BUILD_STEPS_DISABLED_FOR_GITHUB_ACTIONS`가 `:38`에서 조건 없이 `buildStepsToSkip`에 더해진다. 결과: 로컬 빌드에서도 `CROSS_PLATFORM_DISTRIBUTION_STEP`, `SOURCES_ARCHIVE_STEP`, `ARCHIVE_PLUGINS`가 항상 건너뛰어진다. 그 사이 `IdeaCommunityProperties.kt:58-59`는 `buildCrossPlatformDistribution = true`, `buildSourcesArchive = true`로 남아 있다.
 6. 벤치, 정적 게이트, 테스트가 CI와 빌드·릴리스 스크립트에 연결되어 있지 않다. `phantom-build.sh`, `phantom-release.sh`, `phantom-install.sh`, `phantom-release.yml`에서 `bench`, `tests.cmd`, `static`을 검색한 결과가 없고, `phantom-bench*`를 참조하는 파일은 `phantom-bench.sh`와 `phantom-bench-report.py` 자신뿐이다. 결과: 번들 크기나 시작 등록 수가 늘어도 릴리스 경로에서 자동으로 걸러지지 않는다.
 

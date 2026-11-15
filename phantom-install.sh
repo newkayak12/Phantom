@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Installs the latest Phantom IDEA build into /Applications and restarts it.
+# Installs the latest Phantom IDEA build into /Applications (or $PHANTOM_APP) and restarts it.
 #   ./phantom-install.sh            build with phantom-build.sh, then install
 #   ./phantom-install.sh --no-build install the DMG that is already built
 #   ./phantom-install.sh --release [v26.10.21.1]   install the newest GitHub release's DMG (or that tag's)
@@ -9,10 +9,12 @@
 # A running Phantom is asked to quit first (it saves its state); its open projects reopen on the next start.
 # The installed app is re-signed by phantom-sign.sh with PHANTOM_SIGN_OPTIONAL=1: on a machine without the
 # "Phantom Local" certificate it stays ad-hoc signed and a warning goes to stderr; the install does not fail.
+# Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom IDEA.app); it is also passed to
+# phantom-sign.sh.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP="/Applications/Phantom IDEA.app"
+APP="${PHANTOM_APP:-/Applications/Phantom IDEA.app}"
 
 DMG=""
 case "${1:-}" in
