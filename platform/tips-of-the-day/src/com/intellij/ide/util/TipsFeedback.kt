@@ -72,6 +72,9 @@ internal class TipsFeedback : SimplePersistentStateComponent<TipsFeedback.State>
     )
   }
 
+  // phantom-idea: TipPanel hides like/dislike when it would be sent nowhere (the Phantom default of tips.of.the.day.feedback)
+  fun isFeedbackSendingEnabled(): Boolean = getFeedbackRequestType() != FeedbackRequestType.NO_REQUEST
+
   private fun getFeedbackRequestType(): FeedbackRequestType {
     return when (Registry.stringValue("tips.of.the.day.feedback")) {
       "production" -> FeedbackRequestType.PRODUCTION_REQUEST

@@ -21,6 +21,7 @@ Read these first: [docs/phantom/README.md](docs/phantom/README.md) (index), [ARC
 Fork rules (details in DEVELOPMENT.md section 1):
 
 - Trim the bundle by configuration (`bundledPluginModules` in `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`); keep upstream sources, `.idea/modules.xml` entries and root module dependencies.
+- Plugins built in Phantom-plugins can replace IntelliJ plugins in the bundle: remove the original with `.removing(...)` and list the plugin directory in both `PHANTOM_PLUGINS_BUNDLED` (same file) and `bundled_from_plugins` in `phantom-build.sh`. `phantom-build.sh` builds them from a Phantom-plugins checkout next to this repository (`PHANTOM_PLUGINS_REPO` overrides) and stops without it (BUILD.md sections 2-3; DEVELOPMENT.md section 2 (c)).
 - Do not delete automatic calls to JetBrains servers by default; gate them behind `MarketplaceRequests.jetBrainsServicesEnabled` (system property `phantom.jetbrains.services`, default false).
 - Keep patches to upstream code minimal and mark each one with a `// phantom-idea:` comment (`<!-- phantom-idea: -->` in XML). Many existing patches lack the marker, so find the fork delta with `git diff d2faebf601 HEAD`, not by searching markers.
 - No startup activity unless needed, no EDT work or network on the startup path. New code goes in `dev.phantom.*` packages and `phantom.*` modules; new plugins belong in the separate Phantom-plugins repository by default.
