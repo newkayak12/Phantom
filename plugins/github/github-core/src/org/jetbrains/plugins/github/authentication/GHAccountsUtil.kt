@@ -89,7 +89,10 @@ object GHAccountsUtil {
   internal fun createAddAccountActionGroup(model: GHLoginModel, project: Project, parentComponent: JComponent, loginSource: GHLoginSource): ActionGroup {
     val group = DefaultActionGroup()
     val loginData = GHLoginData(loginSource)
-    group.add(createBrowserLoginAction(model, project, parentComponent, loginData))
+    // phantom-idea: no browser login entry while no OAuth client id is configured
+    if (GHDeviceFlow.isBrowserLoginAvailable) {
+      group.add(createBrowserLoginAction(model, project, parentComponent, loginData))
+    }
     group.add(createTokenLoginAction(model, project, parentComponent, loginData))
     group.add(Separator())
 
@@ -118,6 +121,11 @@ object GHAccountsUtil {
   fun loginViaBrowser(
     model: GHLoginModel, project: Project, parentComponent: JComponent?, loginData: GHLoginData
   ) {
+    // phantom-idea: fall back to token login while no OAuth client id is configured
+    if (!GHDeviceFlow.isBrowserLoginAvailable) {
+      loginViaToken(model, project, parentComponent, loginData)
+      return
+    }
     scopedDialog(project) {
       GHLoginDialog.OAuth(model, project, this, parentComponent, loginData).apply {
         setServer(GithubServerPath.DEFAULT_HOST, false)
@@ -209,6 +217,10 @@ object GHAccountsUtil {
   @ApiStatus.Internal
   fun login(model: GHLoginModel, request: GHLoginRequest, project: Project?, parentComponent: Component?) {
     if (request.server != GithubServerPath.DEFAULT_SERVER) {
+      request.loginWithToken(model, project, parentComponent)
+    }
+    // phantom-idea: without an OAuth client id both OAUTH and UNDEFINED go straight to token login, no "Log In via GitHub / Use Token" prompt
+    else if (!GHDeviceFlow.isBrowserLoginAvailable) {
       request.loginWithToken(model, project, parentComponent)
     }
     else when (request.authType) {
