@@ -13,7 +13,9 @@
 #   PHANTOM_APP            the app to measure (/Applications/Phantom IDEA.app)
 #   PHANTOM_CONFIG_DIR     the user config copied into each run ($HOME/Library/Application Support/Phantom/PhantomIDEA)
 #   PHANTOM_BENCH_FIXTURE  the project to open, unless --fixture is given ($HOME/projects/private/prototype-reservation-system)
+# A relative --fixture or PHANTOM_BENCH_FIXTURE is relative to the directory this script is called from.
 set -euo pipefail
+caller_dir="$PWD"
 cd "$(dirname "$0")"
 
 # PHANTOM_BENCH_APP measures another copy of the app (an unpacked DMG) and wins over PHANTOM_APP; PHANTOM_BENCH_PLUGINS
@@ -36,6 +38,8 @@ while (( $# )); do
     *) echo "unknown argument: $1"; exit 2 ;;
   esac
 done
+[[ "$fixture_src" == /* ]] || fixture_src="$caller_dir/$fixture_src"
+fixture_src="${fixture_src:A}"
 
 sha="$(git rev-parse --short HEAD)"
 out="$PWD/out/phantom-bench/$sha/$label"
@@ -44,9 +48,26 @@ fixture="$work/fixture"
 system="$work/system-$label"
 mkdir -p "$out" "$work"
 
-if [[ ! -d "$fixture" ]]; then
-  echo "copying the fixture project to $fixture"
+# The copy is kept between runs and labels, so every run opens the same project at the same path, the one the
+# system directories below were warmed on. fixture.source names the directory it was copied from: the same source
+# reuses the copy as it is; another one (or none recorded) replaces it, and the system directories warmed on the old
+# copy are removed with it, so each label warms again on the new one.
+source_file="$work/fixture.source"
+copied_from=""
+[[ -f "$source_file" ]] && copied_from="$(<"$source_file")"
+if [[ -d "$fixture" && "$copied_from" == "$fixture_src" ]]; then
+  echo "reusing the fixture copy in $fixture (copied from $fixture_src)"
+else
+  [[ -d "$fixture_src" ]] || { echo "error: the fixture project '$fixture_src' is not a directory" >&2; exit 1; }
+  if [[ "$copied_from" != "$fixture_src" && ( -d "$fixture" || -n "$(print -r -- "$work"/system-*(N))" ) ]]; then
+    echo "replacing the fixture copy in $fixture (copied from ${copied_from:-an unrecorded source}) with $fixture_src; any warmed system directories are removed too"
+    rm -rf "$work"/system-*(N)
+  else
+    echo "copying the fixture project $fixture_src to $fixture"
+  fi
+  rm -rf "$fixture" "$source_file"
   rsync -a --exclude mysql_data --exclude build/ "$fixture_src/" "$fixture/"
+  print -r -- "$fixture_src" > "$source_file"
 fi
 
 if pgrep -f "$APP/Contents/MacOS/idea" >/dev/null; then
