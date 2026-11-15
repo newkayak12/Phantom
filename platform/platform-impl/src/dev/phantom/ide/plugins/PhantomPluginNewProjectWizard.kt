@@ -14,6 +14,7 @@ import com.intellij.openapi.updateSettings.impl.pluginsAdvertisement.installAndE
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.util.ui.JBUI
+import dev.phantom.ide.PhantomIdeBundle
 import org.jetbrains.annotations.ApiStatus
 import javax.swing.Icon
 import javax.swing.JLabel
@@ -46,14 +47,16 @@ abstract class PhantomPluginNewProjectWizard(
       val status = JLabel()
       with(builder) {
         row {
-          text("$what It comes from the <b>$pluginName</b> plugin, which is not installed.")
+          text(PhantomIdeBundle.message("phantom.plugins.wizard.not.installed", what, pluginName))
         }
         row {
-          button("Install $pluginName") {
+          button(PhantomIdeBundle.message("phantom.plugins.wizard.install", pluginName)) {
             installAndEnable(null, setOf(PluginId.getId(pluginId)), showDialog = false, modalityState = ModalityState.any()) {
-              status.text = "Installed. Close this dialog and open New Project again to create the project."
+              status.text = PhantomIdeBundle.message("phantom.plugins.wizard.installed")
             }
-          }.validationOnApply { if (isMissing()) error("Install $pluginName to create this project.") else null }
+          }.validationOnApply {
+            if (isMissing()) error(PhantomIdeBundle.message("phantom.plugins.wizard.install.required", pluginName)) else null
+          }
         }
         row { cell(status).applyToComponent { foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND } }
       }
@@ -66,5 +69,5 @@ internal class SpringBootPluginNewProjectWizard : PhantomPluginNewProjectWizard(
   pluginName = "Phantom Spring Boot",
   name = "Spring Boot",
   icon = IconLoader.getIcon("/icons/phantom/springBoot.svg", SpringBootPluginNewProjectWizard::class.java.classLoader),
-  what = "Creates a Spring Boot project with Spring Initializr.",
+  what = PhantomIdeBundle.message("phantom.plugins.wizard.description.spring.boot"),
 )

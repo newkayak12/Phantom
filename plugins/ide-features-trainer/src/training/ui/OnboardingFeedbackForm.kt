@@ -3,6 +3,7 @@ package training.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.RecentProjectsManagerBase
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.internal.statistic.local.ActionsLocalSummary
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
@@ -274,7 +275,10 @@ fun showOnboardingLessonFeedbackForm(project: Project?,
     )
 
     submitFeedback(feedbackData, {}, {}, getFeedbackRequestType())
-    ThanksForFeedbackNotification().notify(project)
+    // phantom-idea: submitFeedback sends nothing while JetBrains services are off, so do not thank the user for sending it
+    if (MarketplaceRequests.jetBrainsServicesEnabled) {
+      ThanksForFeedbackNotification().notify(project)
+    }
   }
   StatisticBase.logOnboardingFeedbackDialogResult(
     place = getFeedbackEntryPlace(project),

@@ -12,3 +12,13 @@ const val PHANTOM_BUILD_NUMBER_PROPERTY: String = "phantom.build.number"
 
 fun phantomBuildNumber(context: BuildContext): String =
   System.getProperty(PHANTOM_BUILD_NUMBER_PROPERTY)?.takeIf { it.isNotBlank() } ?: context.fullBuildNumber
+
+/**
+ * phantom-idea: the display version `<YY>.<MM>.<DD>` (the build date), set by phantom-build.sh as
+ * `-Dphantom.version.major=<YY>` and `-Dphantom.version.minor=<MM>.<DD>`. They override `version/@major` and `@minor`
+ * of the tracked IdeaApplicationInfo.xml, which keeps a placeholder, so a build does not modify a tracked file.
+ */
+const val PHANTOM_VERSION_MAJOR_PROPERTY: String = "phantom.version.major"
+const val PHANTOM_VERSION_MINOR_PROPERTY: String = "phantom.version.minor"
+
+fun phantomVersionProperty(name: String): String? = System.getProperty(name)?.takeIf { it.isNotBlank() }
