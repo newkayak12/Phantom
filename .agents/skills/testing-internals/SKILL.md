@@ -65,7 +65,7 @@ Key components:
 
 1. **Check module dependencies** - Ensure test module has required dependencies in `.iml` file.
 
-2. **Verify BUILD.bazel is synced** - Run `./build/jpsModelToBazel.cmd` after changing `.iml` files.
+2. **Verify BUILD.bazel is synced** - Run `./build/jpsModelToBazelCommunityOnly.cmd` after changing `.iml` files (the only generator script in this repository; `./build/jpsModelToBazel.cmd` does not exist here). It has not been confirmed to run in this fork; see `docs/phantom/DEVELOPMENT.md` section 2 (c). <!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
 
 **Note:** Bazel incremental builds are always correct. Do not use `bazel clean` - it won't help.
 

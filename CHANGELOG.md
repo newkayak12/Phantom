@@ -62,9 +62,8 @@
 ### 문서
 - 탭 그룹 설계와 구현 계획을 추가했다 (a8ad9cfcd9).
 - 모든 프로젝트를 한 창에 두는 Workspaces 설계를 추가했다 (b9d9990ad8).
-- 개발 문서 체계를 만들었다. `docs/phantom/`에 문서 색인(`README.md`), `ARCHITECTURE.md`, `FORK-DELTA.md`, `BUILD.md`, `DEVELOPMENT.md`를 더하고 이 `CHANGELOG.md`를 만들었다. `README.md`를 개편하고 한국어판 `README.ko.md`를 더했으며, `AGENTS.md`의 이 포크에 없는 경로를 고치고 Phantom 규칙을 넣었다. 개편 전 README의 인덱싱 절은 `docs/phantom/2026-10-29-indexing-changes.md`로 옮겼다 (ff39526a22, PR #1 병합 2c0cfbd022).
-- 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2).
-- 문서가 기준으로 삼던 be60914099 뒤 main에 들어온 네 커밋(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서에 반영했다. 번들 구성(빼는 업스트림 모듈 21개, Phantom-plugins에서 빌드해 넣는 8개), Phantom-plugins 체크아웃이 필요한 빌드 절차와 릴리스 워크플로, 플러그인 별칭 대체(FORK-DELTA 3.12절), 밀린 `경로:줄`, 포크 델타 숫자(d2faebf601..64dc82b3f2)를 고치고 현행 문서의 기준 커밋을 64dc82b3f2로 바꿨다.
+- 개발 문서 체계를 만들었다. `docs/phantom/`에 문서 색인(`README.md`), `ARCHITECTURE.md`, `FORK-DELTA.md`, `BUILD.md`, `DEVELOPMENT.md`를 더하고 이 `CHANGELOG.md`를 만들었다. `README.md`를 개편하고 한국어판 `README.ko.md`를 더했으며, `AGENTS.md`의 이 포크에 없는 경로를 고치고 Phantom 규칙을 넣었다. 개편 전 README의 인덱싱 절은 `docs/phantom/2026-10-29-indexing-changes.md`로 옮겼다.
+- 없는 `./build/jpsModelToBazel.cmd`를 가리키던 안내를 이 리포의 유일한 생성기 `./build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(AGENTS.md와 같은 문구, 이 포크에서 도는지는 미확인). 대상: `.ai/guide.md`, `.ai/tool-permissions.json`, `.agents/skills`와 `.claude/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`. Kotlin `projectModelUpdater.kt`는 ultimate 루트가 있을 때만 그 경로를 부르므로 그대로 두었다.
 
 ## v26.10.25.1 (2026-10-25)
 

@@ -258,8 +258,10 @@ git add plugins/<plugin-name>/<new-module>/
 
 ### After any `.iml` change
 
+<!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
+
 ```bash
-./build/jpsModelToBazel.cmd
+./build/jpsModelToBazelCommunityOnly.cmd
 ```
 
 ### After any `.iml`, plugin XML, or module structure change
