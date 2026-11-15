@@ -1,7 +1,8 @@
 #!/bin/bash
 # Build Phantom IDEA (macOS on Apple silicon, Windows x64) with a date-based version.
 #   Phantom build number: PH-<YYMMDD>.<N>  (what the IDE, Info.plist and artifact names show; N counts the builds of that day)
-#   display version:      <YY>.<MM>.<DD>
+#   display version:      <YY>.<MM>.<DD>  (passed as -Dphantom.version.major/minor; the tracked IdeaApplicationInfo.xml keeps
+#                                        a placeholder, so a build leaves the working tree as it was)
 #   artifacts:            out/phantom-idea/artifacts/phantom-idea-<YYMMDD>.<N>-aarch64.dmg, and for Windows
 #                         phantom-idea-<YYMMDD>.<N>.exe (installer) and .win.zip (only the newest build is kept)
 # PHANTOM_WINDOWS=0 builds only the DMG. Windows is cross-built on this Mac: a second build of the same compiled output.
@@ -12,8 +13,6 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")"; pwd)"
 d="$(date +%y%m%d)"; yy="${d:0:2}"; mm="${d:2:2}"; dd="${d:4:2}"
-info="$root/community-resources/resources/idea/IdeaApplicationInfo.xml"
-sed -i '' -E "s#<version eap=\"false\" major=\"[0-9]+\" minor=\"[0-9.]+\"/>#<version eap=\"false\" major=\"$yy\" minor=\"$mm.$dd\"/>#" "$info"
 
 mkdir -p "$root/out"
 seq_file="$root/out/phantom-build-seq"
@@ -44,7 +43,7 @@ for p in "${bundled_from_plugins[@]}"; do
   unzip -q "$zip" -d "$root/out/phantom-plugins"
 done
 nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 \
-  -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" "$@"
+  -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" -Dphantom.version.major="$yy" -Dphantom.version.minor="$mm.$dd" "$@"
 
 # Keep out/ from growing by gigabytes per build: the .sit archives and temp are intermediates, older DMGs are superseded
 artifacts="$root/out/phantom-idea/artifacts"
@@ -61,7 +60,7 @@ if [[ "${PHANTOM_WINDOWS:-1}" != 0 ]]; then
   # waits outside it
   mv "$dmg"* "$root/out/"
   nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=windows -Dintellij.build.target.arch=x64 \
-    -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" "$@"
+    -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" -Dphantom.version.major="$yy" -Dphantom.version.minor="$mm.$dd" "$@"
   mv "$root/out/$(basename "$dmg")"* "$artifacts/"
   ls "$artifacts/phantom-idea-$d.$n".exe "$artifacts/phantom-idea-$d.$n".win.zip >/dev/null \
     || { echo "no Windows installer or zip for $d.$n after the build"; exit 1; }

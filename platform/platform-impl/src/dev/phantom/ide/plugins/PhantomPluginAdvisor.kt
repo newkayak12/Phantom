@@ -24,6 +24,7 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.openapi.updateSettings.impl.pluginsAdvertisement.installAndEnable
+import dev.phantom.ide.PhantomIdeBundle
 import org.jetbrains.annotations.ApiStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -83,8 +84,10 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
       fileNames.filterTo(HashSet()) { FilenameIndex.getVirtualFilesByName(it, GlobalSearchScope.projectScope(project)).isNotEmpty() }
     }
     val matches = candidates.mapNotNull { plugin ->
-      plugin.detect.firstOrNull { it in used }?.let { return@mapNotNull plugin to "uses $it" }
-      plugin.files.firstOrNull { it in present }?.let { plugin to "has $it" }
+      plugin.detect.firstOrNull { it in used }?.let {
+        return@mapNotNull plugin to PhantomIdeBundle.message("phantom.plugins.advisor.reason.uses", it)
+      }
+      plugin.files.firstOrNull { it in present }?.let { plugin to PhantomIdeBundle.message("phantom.plugins.advisor.reason.has", it) }
     }.distinctBy { it.first.id }
     if (matches.isEmpty()) return
     matches.forEach { (plugin, reason) -> suggested += plugin.id; LOG.info("Suggesting ${plugin.id}: the project $reason") }
@@ -93,15 +96,20 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
 
   /** One balloon for everything this project could use, with one Install for all of it. */
   private fun notify(matches: List<Pair<GitHubPluginRepository.Detect, String>>) {
-    val title = if (matches.size == 1) "${matches[0].first.name} is available" else "Plugins for this project are available"
-    val content = matches.joinToString("<br>") { (plugin, reason) -> "<b>${plugin.name}</b> — $reason" }
+    val title = if (matches.size == 1) PhantomIdeBundle.message("phantom.plugins.advisor.title.one", matches[0].first.name)
+    else PhantomIdeBundle.message("phantom.plugins.advisor.title.many")
+    val content = matches.joinToString("<br>") { (plugin, reason) ->
+      PhantomIdeBundle.message("phantom.plugins.advisor.entry", plugin.name, reason)
+    }
     val ids = matches.map { PluginId.getId(it.first.id) }.toSet()
     NotificationGroupManager.getInstance().getNotificationGroup("Phantom Plugins")
       .createNotification(title, content, NotificationType.INFORMATION)
-      .addAction(NotificationAction.createSimpleExpiring(if (ids.size == 1) "Install" else "Install all") {
+      .addAction(NotificationAction.createSimpleExpiring(
+        if (ids.size == 1) PhantomIdeBundle.message("phantom.plugins.advisor.install")
+        else PhantomIdeBundle.message("phantom.plugins.advisor.install.all")) {
         installAndEnable(project, ids, showDialog = true) {}
       })
-      .addAction(NotificationAction.createSimpleExpiring("Don't suggest") {
+      .addAction(NotificationAction.createSimpleExpiring(PhantomIdeBundle.message("phantom.plugins.advisor.dont.suggest")) {
         val properties = PropertiesComponent.getInstance(project)
         matches.forEach { properties.setValue(ignoreKey(it.first.id), true) }
       })

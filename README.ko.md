@@ -1,4 +1,4 @@
-<!-- synced-with: README.md @ be60914099+docs -->
+<!-- synced-with: README.md @ 64dc82b3f2+docs -->
 <p align="center">
   <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom IDEA" width="180">
 </p>
@@ -36,15 +36,16 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 - "Report to JetBrains" 오류 전송과 기본 IDE 업데이트 피드(`-Didea.updates.url`을 주면 되살아난다).
 
 **줄인 것** ([FORK-DELTA §3.2, §3.3, §3.5](docs/phantom/FORK-DELTA.md))
-- 번들 모듈 14개(Learn, MCP 서버, ACP, 내부 개발자 도구, Eclipse 가져오기, GitLab, 추가 키맵 등)와 Android, Compose를 뺐다. 소스는 업스트림 병합을 위해 남긴다.
-- JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.
+- 업스트림 번들 플러그인 21개를 뺐다. 14개는 그냥 뺐고(Learn, MCP 서버, ACP, 내부 개발자 도구, Eclipse 가져오기, GitLab, 추가 키맵 등), 7개는 Phantom-plugins에서 빌드한 판으로 바꿨다(TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown). Android와 Compose도 뺐다. 소스는 업스트림 병합을 위해 남긴다.
+- JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 피드백 양식, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.
 - 진단 파일은 기본으로 쓰지 않는다: OpenTelemetry 지표 CSV(4일에 약 116 MB), 인덱싱·스토리지 보고서.
 - 라이브러리 안 텍스트 파일을 Find in Files 인덱스에서 뺐다. 작성자 프로젝트에서 trigram 인덱스 369 MB → 84 MB, 전체 인덱스 1.2 GB → 916 MB.
 
-**고친 것** ([FORK-DELTA §3.5, §3.7](docs/phantom/FORK-DELTA.md))
+**고친 것** ([FORK-DELTA §3.5, §3.7, §3.12](docs/phantom/FORK-DELTA.md))
 - 아무것도 바꾸지 않는 파일 타입 변경 이벤트가 더는 프로젝트 전체를 다시 스캔하지 않는다(수정 커밋 `46482b0bf1`은 Atom Material Icons가 시작할 때마다 일으킨 것으로 적고, 벤치마크 기록은 이 귀속을 추정으로 표시한다).
 - 플러그인을 업데이트해도 다음에 열 때 모든 파일을 다시 검사하지 않는다(이전에는 345k 파일, 약 2.3 s, CPU 20 s).
 - 비 JetBrains 벤더에서 동의 설정 페이지가 깨지던 문제를 고쳤다. Gradle은 프로젝트 SDK로 돌 수 없으면 지원되는 등록 JDK로 실행한다.
+- 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체한다. Phantom-plugins 판과 IntelliJ 원본이 함께 설치되면 Phantom 판만 로드된다. 전에는 ID 충돌로 둘 다 빠졌다(커밋 `04dba66c3a`).
 
 **더한 것** ([FORK-DELTA §3.1, §3.4, §5.1](docs/phantom/FORK-DELTA.md))
 - 고유 정체성: `Phantom IDEA.app`, 번들 ID `dev.phantom.idea`, URL 스킴 `phantom://`, 설정 폴더 `PhantomIDEA`, Phantom Dark/Light 테마.
@@ -52,7 +53,7 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 - Backup and Sync를 내 git 저장소로 한다. GitHub 로그인은 account.jetbrains.com 대신 `gh auth token`을 쓴다.
 - Download JDK 목록은 foojay Disco API에서 받는다. 힙과 파일 페이지 캐시 크기는 기기 RAM에 맞춰 정한다.
 
-**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일과 JBR·Git 설치 피드는 아직 JetBrains에서 받는다. 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정하고, Tips of the Day의 좋아요/싫어요 피드백은 플래그와 무관하게 JetBrains로 가며, 피드백 양식과 프레임워크 라이브러리 다운로드 도우미도 플래그 밖에 있다.
+**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일과 JBR·Git 설치 피드는 아직 JetBrains에서 받는다. 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정하고, 프레임워크 라이브러리 다운로드 도우미도 플래그 밖에 있다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `6e71ed80c4`) 아직 빌드하거나 테스트하지 않았다.
 
 ## 성능
 
@@ -88,32 +89,34 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 
 ## 플러그인
 
-백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom IDEA 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다.
+백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom IDEA 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 그중 8개는 대체하는 IntelliJ 플러그인 대신 번들에 들어간다. IntelliJ 플러그인 ID를 별칭으로 가지므로 원본에 의존하는 플러그인도 그대로 해석된다.
 
-| 이 리포지토리에 번들 | Phantom-plugins에서 필요할 때 설치 |
-|---|---|
-| `phantom-sync`: 내 git 저장소로 Backup and Sync | `spring`: 빈, 주입 위치 이동, 자동 주입 검사 |
-| `phantom-theme`: Phantom Dark와 Light | `spring-boot`: `application.yml`/`.properties` 완성과 문서 |
-| Lombok(업스트림 커뮤니티 플러그인, 새로 번들) | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
-| Endpoints 도구 창(코어, 내용은 플러그인이 채움) | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
-| GitHub 플러그인 저장소 지원(코어) | `http-client`: `.http` 요청 파일 |
-| | `workspaces`, `tabs`, Phantom Icon Pack |
-| | `bytecode`, `webp`, `modal-commit`(번들에서 뺀 업스트림 플러그인을 대체) |
+| 번들, 이 리포지토리에서 빌드 | 번들, Phantom-plugins에서 빌드 | Phantom-plugins에서 필요할 때 설치 |
+|---|---|---|
+| `phantom-sync`: 내 git 저장소로 Backup and Sync | `toml`, `yaml`, `sh`(Shell Script), `markdown`, `textmate` | `spring`: 빈, 주입 위치 이동, 자동 주입 검사 |
+| `phantom-theme`: Phantom Dark와 Light | `decompiler`, `coverage` | `spring-boot`: `application.yml`/`.properties` 완성과 문서 |
+| Endpoints 도구 창(코어, 내용은 플러그인이 채움) | `lombok`(전에 번들하던 커뮤니티 Lombok 플러그인을 대체) | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
+| GitHub 플러그인 저장소 지원(코어) | | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
+| | | `http-client`: `.http` 요청 파일 |
+| | | `workspaces`, `tabs`, Phantom Icon Pack |
+| | | `bytecode`, `webp`, `modal-commit`(번들에서 뺀 업스트림 플러그인을 대체) |
 
 계획만 있고 아직 만들지 않은 것: Spring 런타임(Actuator), Docker와 Kubernetes, 데이터베이스 마이그레이션 등. 설계는 [docs/phantom/design/](docs/phantom/design/)에 있다. 옮긴 플러그인이 이 리포지토리 어디에 있었는지는 [FORK-DELTA §5](docs/phantom/FORK-DELTA.md)에 있다.
 
 ## 소스에서 빌드
 
-Apple Silicon macOS, 16 GB 이상 RAM, 첫 빌드용 여유 디스크 약 120 GB가 필요하다.
+Apple Silicon macOS, 16 GB 이상 RAM, 첫 빌드용 여유 디스크 약 120 GB, 그리고 Phantom-plugins 읽기 권한(릴리스 워크플로에 따르면 비공개 리포지토리)이 필요하다.
 
 ```bash
 git clone git@github.com:newkayak12/Phantom-IDEA.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
+# eight bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
+git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생긴다. 빌드가 추적 중인 `IdeaApplicationInfo.xml`의 버전을 고쳐 쓰므로 커밋 전에 작업 트리를 확인한다.
+`phantom-build.sh`는 먼저 그 8개 플러그인을 Phantom-plugins의 Gradle 래퍼로 빌드해 `out/phantom-plugins/`에 푼다. 체크아웃이나 플러그인 zip이 없으면 멈춘다. 첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생긴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `048852ca23`)은 아직 빌드하거나 테스트하지 않았다.
 
 버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 IntelliJ Platform 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`. 서명, 릴리스, 벤치마크는 [BUILD.md](docs/phantom/BUILD.md)에 있다.
 
