@@ -133,7 +133,7 @@
 
 ## 5. 알려진 문제 모음
 
-여러 문서에 흩어진 열린 문제를 한 표로 모았다. 새로 찾은 항목은 넣지 않았다. 상세는 "문서" 열을 본다. 2, 4, 5, 12번은 6e71ed80c4, 5185f60295, 048852ca23, a1313a347c에서 코드를 바꿨지만 아직 빌드하거나 테스트하지 않았으므로 "해결"이 아니라 "변경됨, 빌드 대기"로 표시한다. 빌드와 테스트로 확인되면 행을 지우거나 상태를 고친다. 번호는 다시 매기지 않는다.
+여러 문서에 흩어진 열린 문제를 한 표로 모았다. 처음 모을 때는 고치지 않았고, 이후 고친 항목은 문제 칸을 "고침:"으로 시작한다. 새로 찾은 항목은 넣지 않았다. 상세는 "문서" 열을 본다.
 
 | # | 문제 | 위치 | 문서 |
 |---|---|---|---|
@@ -144,8 +144,8 @@
 | 5 | **변경됨, 빌드 대기 (048852ca23)**: 빌드가 추적 파일 버전을 고치고 릴리스는 커밋 없이 `HEAD`를 태그하던 것을, 표시 버전을 `-Dphantom.version.*`로 넘기고 추적 XML은 자리표시자로 두는 방식으로 바꿈. 빌드가 파일을 안 고치므로 태그 커밋과 릴리스 버전의 어긋남 원인이 사라진다는 것은 코드를 읽은 결론이다. 부작용: 소스 실행과 `installers.cmd` 직접 실행은 버전 0.0 | `phantom-build.sh:15`, `:46`, `:63`, `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:72-75`, `:177-181`, `community-resources/resources/idea/IdeaApplicationInfo.xml:2`, `phantom-release.sh:61`, `:64` | BUILD 9.1, ARCHITECTURE 문제 5 |
 | 6 | 런타임 벤치 기준선 파일이 없어 `compare` 불가, 허용 오차 미보정 | `docs/phantom/bench/README.md:10`, `:32`, `:39-40` | BUILD 9.2, FORK-DELTA 3.10 |
 | 7 | 앱·설정·픽스처 경로 하드코딩 | `phantom-install.sh:13`, `phantom-bench.sh:15-16`, `:22`, `phantom-sign.sh:8` | BUILD 9.3 |
-| 8 | 인증서가 없어도 `phantom-sign.sh`가 성공 종료. 헤더 주석은 login 키체인이라고 잘못 적음 | `phantom-sign.sh:6`, `:10`, `:14-17` | BUILD 9.4 |
-| 9 | GitHub Actions용 건너뛰기 목록이 로컬 빌드에도 항상 적용(upstream 동작) | `build/src/OpenSourceCommunityInstallersBuildTarget.kt:18-23`, `:38`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:67-68` | BUILD 9.5 |
+| 8 | 고침: 인증서가 없으면 `phantom-sign.sh`가 stderr 메시지와 종료 코드 1로 실패. `PHANTOM_SIGN_OPTIONAL=1`이면 경고 후 0이고 `phantom-install.sh`가 이 값을 켬. 헤더 주석의 키체인도 바로잡음. 실제 인증서로 서명하는 경로는 실행하지 않음 | `phantom-sign.sh:6-10`, `:18-26`, `phantom-install.sh` 서명 호출 | BUILD 9.4 |
+| 9 | GitHub Actions용 건너뛰기 목록이 로컬 빌드에도 항상 적용(upstream 동작) | `build/src/OpenSourceCommunityInstallersBuildTarget.kt:18-23`, `:38`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:58-59` | BUILD 9.5 |
 | 10 | 테스트·벤치·정적 게이트가 CI와 빌드·릴리스 스크립트에 연결되지 않음 | `.github/workflows/phantom-release.yml` | BUILD 9.6 |
 | 11 | FUS 업로드 주소는 외부 jar 안에 있어 확인 못 함. 전송은 게이트가 아니라 사용자 동의로 결정 | `platform/statistics/uploader/src/com/intellij/internal/statistic/eventLog/connection/EventLogSettingsClient.kt:96-98` | ARCHITECTURE 6절 열린 질문 (a) |
 | 12 | **변경됨, 빌드 대기 (6e71ed80c4, 5185f60295)**: 게이트 밖 피드백 전송(대화상자 경로)과 지역 URL 매핑을 `submitFeedback` 맨 앞 게이트로 막음. 5185f60295가 `OnboardingFeedbackForm.kt:279`의 감사 알림도 같은 조건으로 건너뛰게 함. 테스트의 요청 대기 시간은 15초라 그보다 느린 지역 매핑 조회는 고장 난 게이트를 통과시킬 수 있음 | `platform/feedback/src/com/intellij/platform/feedback/impl/GeneralFeedbackSubmit.kt:116-126`, `:135`, `platform/platform-impl/src/com/intellij/ide/RegionUrlMapper.java:42` | ARCHITECTURE 6절 (b) |

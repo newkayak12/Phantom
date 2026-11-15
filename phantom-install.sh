@@ -7,6 +7,8 @@
 # app, which is not notarized. The repository is private: the token is $GH_TOKEN, else the one gh is logged in with
 # (that account must see the repository).
 # A running Phantom is asked to quit first (it saves its state); its open projects reopen on the next start.
+# The installed app is re-signed by phantom-sign.sh with PHANTOM_SIGN_OPTIONAL=1: on a machine without the
+# "Phantom Local" certificate it stays ad-hoc signed and a warning goes to stderr; the install does not fail.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -57,7 +59,8 @@ rm -rf "$APP.new"
 ditto "$mnt/Phantom IDEA.app" "$APP.new"
 rm -rf "$APP"
 mv "$APP.new" "$APP"
-./phantom-sign.sh "$APP"
+# without the "Phantom Local" certificate the app stays ad-hoc signed: phantom-sign.sh warns on stderr, the install goes on
+PHANTOM_SIGN_OPTIONAL=1 ./phantom-sign.sh "$APP"
 echo "installed $(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Contents/Info.plist") from $DMG ($(stat -f %Sm "$DMG"))"
 
 if $was_running; then
