@@ -19,7 +19,7 @@ object OpenSourceCommunityInstallersBuildTarget {
     // phantom-idea: the Windows zip is released next to the installer
     BuildOptions.CROSS_PLATFORM_DISTRIBUTION_STEP,
     BuildOptions.SOURCES_ARCHIVE_STEP,
-    BuildOptions.ARCHIVE_PLUGINS,
+    // phantom-idea: plugins are archived: Kotlin, which is not bundled, is released as a zip
   )
 
   val OPTIONS: BuildOptions = BuildOptions().apply {

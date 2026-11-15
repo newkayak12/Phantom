@@ -697,6 +697,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
         val model = it.toPluginUiModel()
 
         if (hideUninstallable && !PhantomMarketplace.isInstallable(it.isPaid, it.nearestUpdate?.compatible != false)) return@mapNotNull null
+        if (hideUninstallable && PhantomMarketplace.isJetBrainsPlugin(it.organization)) return@mapNotNull null
         if (it.externalUpdateId != null) return@mapNotNull model
         val nearestUpdate = it.nearestUpdate
         if (nearestUpdate == null) return@mapNotNull null

@@ -3,6 +3,7 @@ package org.jetbrains.intellij.build
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import org.jetbrains.intellij.build.BuildPaths.Companion.COMMUNITY_ROOT
 import org.jetbrains.intellij.build.impl.createBuildContext
@@ -10,6 +11,7 @@ import org.jetbrains.intellij.build.impl.qodana.QodanaProductProperties
 import org.jetbrains.intellij.build.io.copyDir
 import org.jetbrains.intellij.build.io.copyFileToDir
 import org.jetbrains.intellij.build.kotlin.KotlinBinaries
+import org.jetbrains.intellij.build.kotlin.KotlinPluginBuilder
 import org.jetbrains.intellij.build.productLayout.CommunityModuleSets
 import org.jetbrains.intellij.build.productLayout.CommunityProductFragments
 import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
@@ -26,10 +28,12 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
 /**
  * phantom-idea: plugins built in Phantom-plugins and bundled in place of their IntelliJ originals. They have dev.phantom.* ids
  * and keep the IntelliJ ids as aliases and the IntelliJ content module names, so the plugins and modules depending on them
- * resolve to these. phantom-build.sh unpacks them into out/phantom-plugins/<dir>; the originals are left out of the bundle.
+ * resolve to these. Mermaid is Phantom's own implementation (com.phantom.mermaid, no alias). phantom-build.sh unpacks them
+ * into out/phantom-plugins/<dir>; the originals are left out of the bundle.
  */
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
-  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown",
+  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
+  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grazie", "terminal", "github",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -104,7 +108,21 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.java.decompiler")
       .removing("intellij.java.coverage")
       .removing("intellij.textmate.plugin")
-      .removing("intellij.markdown") + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.markdown")
+      .removing("intellij.mermaid")
+      .removing("intellij.copyright")
+      .removing("intellij.editorconfig.plugin")
+      .removing("intellij.html.tools")
+      .removing("intellij.testng")
+      .removing("intellij.java.i18n")
+      .removing("intellij.grazie")
+      .removing("intellij.terminal")
+      .removing("intellij.vcs.github")
+      .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
+    // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
+    // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
+    // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
+    productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
