@@ -382,6 +382,7 @@ abstract class JdkInstallerBase {
 
       val actualHashCode =
         runCatching { com.google.common.io.Files.asByteSource(downloadFile.toFile()).hash(Hashing.sha256()).toString() }.getOrNull()
+      // phantom-idea: checks the vendor's SHA-256 for a foojay item (sha256 above), the feed's otherwise
       if (!actualHashCode.equals(sha256, ignoreCase = true)) {
         JdkDownloaderLogger.logFailed(JdkDownloaderLogger.DownloadFailure.ChecksumMismatch)
         throw RuntimeException("Failed to verify SHA-256 checksum for ${item.fullPresentationText}\n\n" +

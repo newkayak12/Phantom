@@ -21,6 +21,7 @@ import com.intellij.ui.JreHiDpiUtil;
 import com.intellij.ui.scale.DerivedScaleType;
 import com.intellij.ui.scale.ScaleContext;
 import com.intellij.util.ArrayUtil;
+// phantom-idea: import for reading the proxy settings before the Holder class initializer (see getInstance)
 import com.intellij.util.net.HttpConfigurable;
 import com.jetbrains.cef.JCefAppConfig;
 import com.jetbrains.cef.JCefVersionDetails;

@@ -42,6 +42,7 @@ final class CreateLauncherScriptAction extends DumbAwareAction implements Action
 
   private static void showInstructions(@Nullable Project project) {
     String message;
+    // phantom-idea: removed the Toolbox App branch (Toolbox App integration dropped)
     if (ExternalUpdateManager.ACTUAL == ExternalUpdateManager.SNAP) {
       var name = ApplicationNamesInfo.getInstance().getScriptName();
       message = ApplicationBundle.message("cli.launcher.message.snap", name);

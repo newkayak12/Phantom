@@ -1765,6 +1765,7 @@
     <action id="CopyPathWithLineNumber" class="com.intellij.ide.actions.CopyFileWithLineNumberPathProvider"/>
     <action id="CopyContentRootPath" class="com.intellij.ide.actions.CopyContentRootPathProvider"/>
     <action id="CopySourceRootPath" class="com.intellij.ide.actions.CopySourceRootPathProvider"/>
+    <!-- phantom-idea: removed the CopyTBXReference action (Toolbox App integration dropped) -->
 
     <group id="CopyReferencePopupGroup" class="com.intellij.ide.actions.CopyReferencePopup" popup="true">
       <group id="CopyFileReference">
@@ -1776,6 +1777,7 @@
         <reference ref="CopySourceRootPath"/>
       </group>
       <separator/>
+      <!-- phantom-idea: CopyExternalReferenceGroup is left empty; its only entry was CopyTBXReference -->
       <group id="CopyExternalReferenceGroup"/>
       <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyPaths"/>
       <add-to-group group-id="EditorTabPopupMenu" anchor="after" relative-to-action="CopyPaths"/>

@@ -3,6 +3,7 @@ package com.intellij.openapi.editor.colors
 
 import com.intellij.configurationStore.schemeManager.SchemeManagerFactoryBase
 import com.intellij.ide.ui.UISettings
+// phantom-idea: imports for the scheme reload test added below
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.impl.AbstractColorsScheme
 import com.intellij.openapi.editor.colors.impl.AdditionalTextAttributesEP
@@ -20,6 +21,7 @@ import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import kotlin.io.path.readText
+// phantom-idea: imports for the scheme reload test added below
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 

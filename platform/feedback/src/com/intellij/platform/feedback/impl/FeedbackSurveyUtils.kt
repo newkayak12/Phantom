@@ -2,6 +2,7 @@
 package com.intellij.platform.feedback.impl
 
 import com.intellij.ide.BrowserUtil
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.notification.NotificationAction
 import com.intellij.openapi.application.ApplicationInfo

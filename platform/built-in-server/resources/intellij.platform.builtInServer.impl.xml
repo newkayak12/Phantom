@@ -43,6 +43,7 @@
     <extensionPoint qualifiedName="org.jetbrains.jsonRpcDomain" beanClass="org.jetbrains.io.jsonRpc.JsonRpcDomainBean" dynamic="true">
       <with attribute="implementation" implements="java.lang.Object"/>
     </extensionPoint>
+    <!-- phantom-idea: removed the toolboxServiceHandler extension point (Toolbox App integration dropped) -->
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -58,6 +59,7 @@
     <httpRequestHandler implementation="org.jetbrains.ide.InstallPluginService"/>
     <httpRequestHandler implementation="org.jetbrains.ide.UploadLogsService"/>
 
+    <!-- phantom-idea: removed the Toolbox App REST service, launcher, notification handlers and settings action (Toolbox App integration dropped) -->
     <httpRequestHandler implementation="org.jetbrains.builtInWebServer.liveReload.WebServerPageConnectionService$WebServerPageRequestHandler"/>
 
     <jbProtocolCommand implementation="org.jetbrains.ide.OpenSettingsJbProtocolService"/>

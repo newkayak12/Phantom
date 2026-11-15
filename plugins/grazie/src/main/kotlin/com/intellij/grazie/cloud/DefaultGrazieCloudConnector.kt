@@ -7,6 +7,7 @@ import com.intellij.grazie.cloud.license.GrazieLoginState
 import com.intellij.grazie.cloud.license.ensureTermsOfServiceShown
 import com.intellij.grazie.cloud.license.notifyOnLicensingError
 import com.intellij.grazie.utils.runBlockingModalProcess
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.debug
@@ -41,6 +42,7 @@ class DefaultGrazieCloudConnector : GrazieCloudConnector {
 
   override fun isCloudEnabledByDefault(): Boolean = false
 
+  // phantom-idea: Grazie Cloud (api.jetbrains.ai) and its terms dialog only with -Dphantom.jetbrains.services=true
   override fun askUserConsentForCloud(): Boolean = MarketplaceRequests.jetBrainsServicesEnabled && ensureTermsOfServiceShown()
 
   override fun api(): SuspendableAPIGatewayClient? = if (MarketplaceRequests.jetBrainsServicesEnabled) GrazieCloudConfig.api() else null

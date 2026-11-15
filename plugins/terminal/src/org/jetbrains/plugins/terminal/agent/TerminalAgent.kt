@@ -150,3 +150,4 @@ private object CodexTerminalAgent : BundledTerminalAgent(
   ),
   icon = TerminalIcons.Agents.Codex,
 )
+// phantom-idea: removed JunieTerminalAgent (JetBrains' agent, installed from junie.jetbrains.com)

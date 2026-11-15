@@ -3,6 +3,7 @@ package org.jetbrains.intellij.build
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+// phantom-idea: added import for pluginModulesToPublish below (Kotlin is published as a zip, not bundled)
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import org.jetbrains.intellij.build.BuildPaths.Companion.COMMUNITY_ROOT
@@ -306,6 +307,7 @@ inline fun ideaCommunityWindowsCustomizer(
 ): WindowsDistributionCustomizer = windowsCustomizer(projectHome) {
   fileAssociations = listOf("java", "gradle", "groovy", "kt", "kts", "pom")
 
+  // phantom-idea: Windows product and install folder name Phantom IDEA (rebrand); the JetBrains uninstall feedback page (uninstallFeedbackUrl) is removed
   fullName { "Phantom IDEA" }
   installDirNameHandler { "Phantom IDEA" }
 
@@ -316,6 +318,7 @@ inline fun ideaCommunityMacCustomizer(
   projectHome: Path,
   configure: MacCustomizerBuilder.() -> Unit = {}
 ): MacDistributionCustomizer = macCustomizer(projectHome) {
+  // phantom-idea: macOS URL scheme phantom, bundle id dev.phantom.idea and "Phantom IDEA.app" instead of IntelliJ IDEA OSS (rebrand)
   urlSchemes = listOf("phantom")
   associateIpr = true
   fileAssociations = FileAssociation.from("java", "groovy", "kt", "kts")
@@ -336,6 +339,7 @@ inline fun ideaCommunityLinuxCustomizer(
   configure: LinuxCustomizerBuilder.() -> Unit = {}
 ): LinuxDistributionCustomizer = linuxCustomizer(projectHome) {
 
+  // phantom-idea: Linux root folder phantom-idea instead of idea-oss (rebrand)
   rootDirectoryName { _, _ -> "phantom-idea" }
 
   executableFilePatterns { base, _, _, _, _ ->

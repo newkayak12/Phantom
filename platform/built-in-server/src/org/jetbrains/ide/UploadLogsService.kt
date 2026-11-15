@@ -7,6 +7,7 @@ import com.intellij.ide.actions.COLLECT_LOGS_NOTIFICATION_GROUP
 import com.intellij.ide.actions.ReportFeedbackService
 import com.intellij.ide.logsUploader.LogPacker
 import com.intellij.ide.logsUploader.LogUploader
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -83,6 +84,7 @@ internal class UploadLogsService : RestService() {
     return null
   }
 
+  // phantom-idea: trusted only with -Dphantom.jetbrains.services=true, so pages cannot make the IDE upload its logs to JetBrains
   override fun isHostTrusted(request: FullHttpRequest, urlDecoder: QueryStringDecoder): Boolean =
     MarketplaceRequests.jetBrainsServicesEnabled && isHostInPredefinedHosts(request, trustedPredefinedHosts, propertyKeyForTrustedHosts)
 }

@@ -2,6 +2,7 @@
 package com.intellij.platform.feedback.impl
 
 import com.intellij.ide.RegionUrlMapper
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
