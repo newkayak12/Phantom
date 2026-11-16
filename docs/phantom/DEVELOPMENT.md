@@ -130,7 +130,7 @@
 - 접두어: 한 플러그인·도구에 한정되면 `phantom-spring:`, `phantom-install:`, `Phantom bench:`, `HTTP client:`, `Workspaces:`처럼 대상 이름을 붙인다(히스토리에서 읽은 관례). 플랫폼 전반 변경은 접두어 없이 쓴다.
 - 본문: 메커니즘(무엇을 어디서 막거나 바꿨는지), 이유, 되살리는 플래그(`-Dphantom.jetbrains.services=true` 등), 측정값이 있으면 숫자. be60914099 본문이 전형이다.
 - 업스트림 커밋 규칙은 쓰지 않는다: `.agents/skills/commits/SKILL.md`는 JetBrains 형식(YouTrack 티켓, SafePush 검증)을 요구하지만 이 포크 히스토리는 그 형식을 쓰지 않는다.
-- CHANGELOG: `CHANGELOG.md:7-13`의 규칙대로 같은 커밋에서 `미배포` 아래 고정 카테고리에 한 줄을 더하고, 해시는 다음 커밋에서 채운다. 릴리스 태그가 생기면 `미배포` 항목을 그 버전 아래로 옮긴다.
+- CHANGELOG: `CHANGELOG.md:7-14`의 규칙대로 같은 커밋에서 `미배포` 아래 고정 카테고리에 한 줄을 더하고, 끝의 괄호에 넣는 커밋 해시와 PR 번호(`(해시, PR #N)`, PR 없이 main에 넣은 커밋은 해시만)는 다음 커밋에서 채운다. 릴리스 태그가 생기면 `미배포` 항목을 그 버전 아래로 옮긴다.
 - 문서: 패치 지점이 바뀌면 FORK-DELTA의 해당 표를, 빌드 스크립트가 바뀌면 BUILD.md를 고친다. 유지 규칙은 [README.md](README.md) "문서 유지 규칙".
 
 ## 5. 알려진 문제 모음
@@ -159,7 +159,7 @@
 | 18 | API 덤프 파일 재생성 명령 미확인 | `platform/built-in-server/api-dump-unreviewed.txt` | FORK-DELTA 6.1 |
 | 19 | 게이트를 켜고 끄는 Grazie 테스트의 모듈은 `intellij.grazie.tests.pro`(`plugins/grazie/src/tests.pro/intellij.grazie.tests.pro.iml`의 `testSrc`). 실행은 하지 않음 | `plugins/grazie/src/tests.pro/testSrc/com/intellij/grazie/pro/BaseTestCase.kt:34`, `:55` | FORK-DELTA 3.3 |
 | 20 | 일부 고침(ea745003d1): Phantom 파일인 FoojayJdkList 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉬움. 저작권 줄은 그대로이고, 바로 아래에 포크가 더한 파일이라는 `// phantom-idea:` 줄이 생겼다(`:2`) | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt:1-2` | FORK-DELTA 5.1 |
-| 21 | phantom-icons의 ID가 삭제 직전 플러그인 기술자는 `dev.phantom.icons`, 1570329708 본문과 CHANGELOG는 `dev.phantom.iconpack` | `CHANGELOG.md:57` | FORK-DELTA 5.2 |
+| 21 | phantom-icons의 ID가 삭제 직전 플러그인 기술자는 `dev.phantom.icons`, 1570329708 본문과 CHANGELOG는 `dev.phantom.iconpack` | `CHANGELOG.md:58` | FORK-DELTA 5.2 |
 | 22 | 기준 커밋 README의 "Done/Planned" 표, "Apple silicon only" 등이 HEAD와 어긋남 | `git show be60914099:README.md` 31-54, 113, 136행 | FORK-DELTA 7절 |
 | 23 | 로드맵 S1–S5 "완료"는 이동 전 상태. 본문은 그대로 두고 머리에 상태 메모만 더함 | `docs/phantom/design/2026-10-16-roadmap.md:38-42` | FORK-DELTA 7절 |
 | 24 | Grazie 언어 파일(LanguageTool, Hunspell), JBR 런타임 선택 피드, Git 설치 목록 피드가 게이트 없이 JetBrains에서 받음. 호출 시점(UI 조작 때만인지)은 확인하지 못함 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/GraziePlugin.kt:20`, `:25`, `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/RuntimeChooserJbr.kt:43`, `plugins/git4idea/backend/src/config/GitDownloadAndInstall.kt:20`. 주의: ed67704350부터 번들의 Grazie는 Phantom-plugins 빌드라 위 `plugins/grazie` 줄은 배포 앱의 동작을 말해 주지 않을 수 있다. 그 판이 이 리포의 소스로 빌드되는지는 확인하지 못했다(Phantom-plugins를 볼 수 없었음) | ARCHITECTURE 6절 |
