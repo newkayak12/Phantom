@@ -12,7 +12,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP="/Applications/Phantom IDEA.app"
+# PHANTOM_BENCH_APP measures another copy of the app (an unpacked DMG); PHANTOM_BENCH_PLUGINS lists plugin zips unpacked
+# into each run's config copy (Kotlin, which a release does not bundle)
+APP="${PHANTOM_BENCH_APP:-/Applications/Phantom IDEA.app}"
 USER_CONFIG="$HOME/Library/Application Support/Phantom/PhantomIDEA"
 
 runs=5
@@ -55,6 +57,7 @@ run_once() {
   local config; config="$(mktemp -d)"
   # .lock belongs to the user's running IDE; copying it makes the bench instance refuse to start
   rsync -a --exclude .lock "$USER_CONFIG/" "$config/"
+  for zip in ${=PHANTOM_BENCH_PLUGINS:-}; do unzip -qo "$zip" -d "$config/plugins"; done
 
   print -l "idea.config.path=$config" "idea.system.path=$system" "idea.log.path=$dir/log" > "$dir/idea.properties"
   {
