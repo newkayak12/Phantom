@@ -21,7 +21,7 @@
       serviceImplementation="com.intellij.openapi.editor.impl.EditorThreadingImpl"
     />
 
-    <!-- Phantom: no "Report to JetBrains" for Phantom's errors -->
+    <!-- phantom-idea: no "Report to JetBrains" for Phantom's errors -->
     <applicationService serviceInterface="com.intellij.openapi.diagnostic.UnhandledReportSinkService"
                         serviceImplementation="com.intellij.diagnostic.UnhandledReportSinkServiceImpl"/>
 

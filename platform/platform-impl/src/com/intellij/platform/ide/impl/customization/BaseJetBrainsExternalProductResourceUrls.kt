@@ -109,7 +109,7 @@ abstract class BaseJetBrainsExternalProductResourceUrls : ExternalProductResourc
   open val useInIdeEvaluationFeedback: Boolean
     get() = false
 
-  // Phantom: no JetBrains update feed (it would only send the machine id); `-Didea.updates.url` sets one
+  // phantom-idea: no JetBrains update feed (it would only send the machine id); `-Didea.updates.url` sets one
   override val updateMetadataUrl: Url?
     get() = System.getProperty("idea.updates.url")
       ?.let { Urls.newFromEncoded(it) }

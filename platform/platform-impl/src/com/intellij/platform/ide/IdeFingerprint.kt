@@ -74,7 +74,7 @@ private fun computeIdeFingerprint(debugHelperToken: Int): IdeFingerprint {
 
   // the loadedPlugins list is sorted
   val loadedPlugins = PluginManagerCore.loadedPlugins
-  // Phantom: only plugins that can change what or how files are indexed count, so updating, adding or removing any other
+  // phantom-idea: only plugins that can change what or how files are indexed count, so updating, adding or removing any other
   // plugin keeps the fingerprint and the next project open skips the full scan of every file
   val indexingPlugins = loadedPlugins.filter { it.isBundled || affectsIndexing(it) }
   hasher.putInt(indexingPlugins.size)

@@ -40,7 +40,7 @@ class MLEventLoggerProvider : StatisticsEventLoggerProvider(
   }
 
   override fun isLoggingAlwaysActive(): Boolean {
-    // Phantom: no AI analytics, and an always-active logger downloads JetBrains' FUS configuration without consent
+    // phantom-idea: no AI analytics, and an always-active logger downloads JetBrains' FUS configuration without consent
     return false // was: necessary for JCP AI analytics, otherwise the events from this logger are not forwarded to [statistic.eventLog.externalListenerProvider]
     // also take a look at [com.intellij.ml.llm.core.statistics.fus.jcp.JcpEventsInterceptor]
   }
