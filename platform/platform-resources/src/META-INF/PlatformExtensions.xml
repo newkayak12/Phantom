@@ -2059,8 +2059,10 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <registryKey key="ide.idle.memory.cleaner.enabled"
                  defaultValue="true"
                  description="Actively return memory to OS when the IDE becomes idle"/>
+    <!-- phantom-idea: 5 minutes instead of 5 seconds. The cleanup is a full GC pausing the IDE for up to a second; after 5 s it
+         ran on every switch to another app and paused the IDE as the user came back -->
     <registryKey key="ide.idle.memory.cleaner.delay"
-                 defaultValue="5000"
+                 defaultValue="300000"
                  description="A delay in milliseconds between the IDE becoming idle and the memory cleaning being performed"/>
     <registryKey key="ide.idle.memory.cleaner.enabled.page.cache.release"
                  defaultValue="false"
