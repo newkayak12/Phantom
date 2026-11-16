@@ -1,24 +1,24 @@
 # Phantom IDEA 포크 델타
 
 - 목적: Phantom IDEA가 업스트림 intellij-community와 어디서 어떻게 다른지 적는다. 이 포크를 안전하게 고치고 새 업스트림 태그를 병합할 때 본다.
-- 기준 커밋: 64dc82b3f2 (업스트림 기준 d2faebf601 = idea/262.10968.63)
-- 작성일: 2026-11-12
+- 기준 커밋: cea749cfb6 (업스트림 기준 d2faebf601 = idea/262.10968.63)
+- 작성일: 2026-11-16
 
-이 문서는 `git diff d2faebf601 HEAD`(HEAD = 64dc82b3f2)에서 만들었다. 커밋 메시지는 이유를 찾을 때만 썼다. `path:line`은 모두 HEAD에서 파일을 열어 확인한 위치다. 직접 읽지 않고 미루어 짐작한 내용은 "(추정)"으로 표시한다.
+이 문서는 `git diff d2faebf601 HEAD`(HEAD = cea749cfb6)에서 만들었다. 커밋 메시지는 이유를 찾을 때만 썼다. `path:line`은 HEAD에서 파일을 열어 확인한 위치다. 단 cea749cfb6에서 다시 연 것은 루트 스크립트(`phantom-sign.sh` 제외), `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `OpenSourceCommunityInstallersBuildTarget.kt`, `MarketplaceRequests.kt`의 Marketplace 필터 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, cea749cfb6이 표식 주석을 더한 78개 파일(2절)에서는 몇 줄 밀렸을 수 있다. 직접 읽지 않고 미루어 짐작한 내용은 "(추정)"으로 표시한다.
 
 ## 1. 요약
 
-d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 114개다(병합 커밋 3개 포함). 이 절의 숫자(커밋 수, 파일 수, 줄 수)는 모두 `d2faebf601..64dc82b3f2`(기준 커밋) 기준이다. 그 뒤의 문서 커밋은 `docs/`와 루트 문서의 줄 수만 바꾼다.
+d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 136개다(병합 커밋 6개 포함). 이 절의 숫자(커밋 수, 파일 수, 줄 수)는 모두 `d2faebf601..cea749cfb6`(기준 커밋) 기준이다. 그 뒤의 문서 커밋은 `docs/`와 루트 문서의 줄 수만 바꾼다.
 
 ### 1.1 상태별
 
 | 구분 | 이름 변경 감지 끔 (`--no-renames`) | 기본 (이름 변경 감지) |
 |---|---|---|
 | 추가(A) | 100 | 98 |
-| 수정(M) | 120 | 120 |
+| 수정(M) | 135 | 135 |
 | 삭제(D) | 35 | 33 |
 | 이름 변경(R) | - | 2 |
-| 합계 | 255 파일, +15982 / -3060 | 253 파일, +15923 / -3001 |
+| 합계 | 270 파일, +16541 / -3080 | 268 파일, +16482 / -3021 |
 
 이름 변경 2건(`java/java-promo/BUILD.bazel` → `plugins/phantom-sync/core/BUILD.bazel`, `plugins/kotlin/onboarding-promoter/intellij.kotlin.onboarding.promoter.iml` → `plugins/phantom-sync/core/phantom.sync.core.iml`)은 git이 내용 유사도로 짝지은 결과다. 실제로는 삭제와 추가다. 아래 표는 `--no-renames` 기준이다.
 
@@ -26,26 +26,29 @@ d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋�
 
 | 디렉터리 | 추가 | 수정 | 삭제 | 줄 +/- |
 |---|---|---|---|---|
+| `.agents/` | 0 | 5 | 0 | +13 / -7 |
+| `.ai/` | 0 | 2 | 0 | +2 / -2 |
+| `.claude/` | 0 | 5 | 0 | +13 / -7 |
 | `.github/` | 1 | 0 | 4 | +61 / -144 |
 | `.idea/` | 0 | 1 | 0 | +4 / -3 |
-| 루트 파일 | 9 | 4 | 0 | +1061 / -13 |
-| `build/` | 0 | 14 | 0 | +77 / -30 (이미지 10개는 바이너리) |
+| 루트 파일 | 9 | 4 | 0 | +1310 / -13 |
+| `build/` | 0 | 16 | 0 | +104 / -33 (이미지 10개는 바이너리) |
 | `community-resources/` | 10 | 1 | 0 | +156 / -6 |
-| `docs/` | 31 | 0 | 0 | +7345 / -0 |
-| `idea/` | 0 | 1 | 0 | +19 / -12 |
-| `java/` | 0 | 1 | 10 | +0 / -677 |
-| `platform/` | 23 | 71 | 7 | +4652 / -1252 |
-| `plugins/` | 25 | 27 | 14 | +2570 / -923 |
+| `docs/` | 31 | 0 | 0 | +7460 / -0 |
+| `idea/` | 0 | 1 | 0 | +20 / -12 |
+| `java/` | 0 | 1 | 10 | +1 / -677 |
+| `platform/` | 23 | 71 | 7 | +4749 / -1252 |
+| `plugins/` | 25 | 28 | 14 | +2611 / -924 |
 | `tools/` | 1 | 0 | 0 | +37 / -0 |
 
-루트 파일은 추가 9개(`README.md`, `README.ko.md`, `CHANGELOG.md`, `phantom-build.sh`, `phantom-install.sh`, `phantom-release.sh`, `phantom-sign.sh`, `phantom-bench.sh`, `phantom-bench-report.py`)와 수정 4개(`AGENTS.md`, `BUILD.bazel`, `build.txt`, `intellij.idea.community.main.iml`)다. `docs/`는 전부 Phantom 문서이고 코드에 영향이 없다. 코드 델타는 `platform/`과 `plugins/`에 몰려 있다.
+루트 파일은 추가 9개(`README.md`, `README.ko.md`, `CHANGELOG.md`, `phantom-build.sh`, `phantom-install.sh`, `phantom-release.sh`, `phantom-sign.sh`, `phantom-bench.sh`, `phantom-bench-report.py`)와 수정 4개(`AGENTS.md`, `BUILD.bazel`, `build.txt`, `intellij.idea.community.main.iml`)다. `.agents/`, `.ai/`, `.claude/`의 수정 12개는 63340df469의 안내 문구 수정이다. `docs/`는 전부 Phantom 문서이고 코드에 영향이 없다. 코드 델타는 `platform/`과 `plugins/`에 몰려 있다. 64dc82b3f2 뒤 늘어난 줄 대부분은 cea749cfb6의 표식 주석 137줄, Kotlin 게시(9433fdbe0f), 스크립트 수정이다.
 
 ### 1.3 숫자를 다시 만드는 명령
 
 ```bash
-git rev-list --count d2faebf601..HEAD                  # 포크 커밋 수 (114, HEAD = 64dc82b3f2)
-git diff --shortstat d2faebf601 HEAD                   # 253 files changed, 15923 insertions(+), 3001 deletions(-)
-git diff --no-renames --shortstat d2faebf601 HEAD      # 255 files changed, 15982 insertions(+), 3060 deletions(-)
+git rev-list --count d2faebf601..HEAD                  # 포크 커밋 수 (136, 병합 6, HEAD = cea749cfb6)
+git diff --shortstat d2faebf601 HEAD                   # 268 files changed, 16482 insertions(+), 3021 deletions(-)
+git diff --no-renames --shortstat d2faebf601 HEAD      # 270 files changed, 16541 insertions(+), 3080 deletions(-)
 git diff --no-renames --name-status d2faebf601 HEAD | cut -c1 | sort | uniq -c
 # 디렉터리별 A/M/D
 git diff --no-renames --name-status d2faebf601 HEAD \
@@ -61,12 +64,12 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 
 | 규칙 | 내용 | 근거 |
 |---|---|---|
-| 번들은 설정으로 줄이고 소스는 남긴다 | 플러그인을 빼도 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 둔다. 번들 목록에서만 뺀다. 예: `intellij.keymap.eclipse`는 번들에서 빠졌지만 `intellij.idea.community.main.iml:143`에 남아 있다. | `IdeaCommunityProperties.kt:85-107`. e2a4ffa4ee 본문 "the sources stay for upstream merges". |
+| 번들은 설정으로 줄이고 소스는 남긴다 | 플러그인을 빼도 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 둔다. 번들 목록에서만 뺀다. 예: `intellij.keymap.eclipse`는 번들에서 빠졌지만 `intellij.idea.community.main.iml:143`에 남아 있다. | `IdeaCommunityProperties.kt:90-122`. e2a4ffa4ee 본문 "the sources stay for upstream merges". |
 | JetBrains 서비스는 옵트인 플래그 뒤에 둔다 | 자동으로 JetBrains 서버를 부르는 코드는 지우지 않고 `MarketplaceRequests.jetBrainsServicesEnabled`(시스템 프로퍼티 `phantom.jetbrains.services`, 기본 false)로 막는다. | `MarketplaceRequests.kt:108-109`. d7c795f347, fdd9682290, 98673d9e9a, be60914099. |
 | 진단 파일은 기본으로 끈다 | 업스트림의 진단 프로퍼티 기본값을 바꾸거나 새 프로퍼티로 막는다. 켜는 방법은 프로퍼티로 남긴다. | 53aa9e1ec7, 7568bf108c, 3718f68ff4. 4.2절. |
-| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`(XML은 `<!-- phantom-idea: -->`)를 단다. 단, 바이너리를 뺀 수정 파일 109개 중 49개에는 두 표식이 모두 없고, 그중 36개는 'phantom'이라는 글자 자체가 없다(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 120개 중 NUL 바이트가 없는 텍스트 109개를 HEAD(64dc82b3f2) 내용에서 검사). 대부분 줄 삭제만 한 파일이다(Toolbox 제거, 프로모 등록 삭제, 테스트 정리). 표식 검색만으로는 델타를 다 찾지 못하므로 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n -e 'phantom-idea:' -e 'Phantom:'`로 확인한다. |
+| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`(XML은 `<!-- phantom-idea: -->`)를 단다. cea749cfb6 뒤의 상태(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 그중 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만 있다. cea749cfb6 전에는 24개만 표식이 다 있었고, 이 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n -e 'phantom-idea:' -e 'Phantom:'`로 확인한다. cea749cfb6 |
 | Phantom 코드는 자기 패키지에 둔다 | 새 코드는 `dev.phantom.*` 패키지, 새 모듈은 `phantom.*` 이름을 쓴다. 예외는 업스트림 패키지 안에 넣은 `FoojayJdkList.kt`, `GHDeviceFlow.kt`, `PhantomBuildNumber.kt`다. | c06e071a51(모듈 이름 `intellij.phantom.*` → `phantom.*`). |
-| IntelliJ 플러그인을 Phantom-plugins 판으로 바꿔 번들할 수 있다 | 원본은 `.removing`으로 빼고, Phantom-plugins가 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 두고 빌드한 판을 `PHANTOM_PLUGINS_BUNDLED`로 넣는다. 원본과 함께 설치돼도 대체판만 로드된다(3.12절). | 9229667cc7, 04dba66c3a. 3.2절. |
+| IntelliJ 플러그인을 Phantom-plugins 판으로 바꿔 번들할 수 있다 | 원본은 `.removing`으로 빼고, Phantom-plugins가 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 두고 빌드한 판을 `PHANTOM_PLUGINS_BUNDLED`로 넣는다. 원본과 함께 설치돼도 대체판만 로드된다(3.12절). 바꾼 뒤에는 이 리포의 원본 소스와 그 안의 포크 패치가 번들에 들어가지 않을 수 있다(3.2절 끝의 주의). | 9229667cc7, 04dba66c3a, a464f46719, ed67704350. 3.2절. |
 | 플러그인은 트리 안에서 만들고 밖으로 옮긴다 | 트리 안에서 만들어 번들한 뒤, 같은 플러그인 ID로 `newkayak12/Phantom-plugins`에 옮기고 번들 목록, 루트 모듈, Bazel 파일 목록, 프로젝트 모듈에서 뺀다. 설계 문서는 남긴다. | 5.2절. 8983487a29, b68d97332e, 1570329708 본문. |
 
 ### 2.1 업스트림 코드를 실제로 지운 곳
@@ -94,11 +97,11 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:3,5-8` | 회사 Phantom, 로고·아이콘 `phantom*.svg`, 이름 Phantom IDEA | 1e0d4353f7 |
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:10` | `<default-laf light="Phantom Light" dark="Phantom Dark"/>` | a91f9ef7e8 |
 | `build.txt:1` | `262.10968.SNAPSHOT` → `262.SNAPSHOT` | e8ef2fd569 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:203` | 설정 폴더 선택자를 `PhantomIDEA`로 고정 | fc05eddc04 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:206-208` | 산출물 이름 `phantom-idea-<…>`. `phantom.build.number`가 있으면 그 값을 쓴다 | ae2a766191 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:210` | 출력 폴더 `phantom-idea` | 1e0d4353f7 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:289-290` | Windows 이름 Phantom IDEA. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제 | 1e0d4353f7, d0eab60d1b |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:299,302,304,319` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom IDEA.app`, Linux 폴더 `phantom-idea` | 1e0d4353f7 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:222` | 설정 폴더 선택자를 `PhantomIDEA`로 고정 | fc05eddc04 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:225-227` | 산출물 이름 `phantom-idea-<…>`. `phantom.build.number`가 있으면 그 값을 쓴다 | ae2a766191 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:229` | 출력 폴더 `phantom-idea` | 1e0d4353f7 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:308-310` | Windows 이름 Phantom IDEA. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제(표식 `:308`) | 1e0d4353f7, d0eab60d1b |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:320,323,325,341` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom IDEA.app`, Linux 폴더 `phantom-idea`(표식 `:319`, `:340`) | 1e0d4353f7 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:145-147` | 버전 major/minor가 빌드 브랜치와 같아야 한다는 검사를 "major가 비어 있지 않음"으로 완화 | e8ef2fd569 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:170-175` | `phantom.build.number`가 있으면 `<build number>`를 Phantom 번호로 바꾸고 플랫폼 빌드를 `apiVersion`에 둔다 | ae2a766191 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:71-75` | `majorVersion`, `minorVersion`을 속성 `phantom.version.major/minor`에서 먼저 읽고 없으면 `applicationInfoOverride`, XML 순 | 048852ca23 |
@@ -116,84 +119,101 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 
 ### 3.2 번들 구성
 
-번들 플러그인 목록은 `IdeaCommunityProperties.kt:85-107` 한 식으로 만든다. 업스트림 `IDEA_BUNDLED_PLUGINS`(`platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:14-58`, 이 목록은 `DEFAULT_BUNDLED_PLUGINS` = `platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/ProductModulesLayout.kt:23-39`를 포함한다)에서 `.removing(...)`으로 빼고 `PHANTOM_BUNDLED_PLUGINS`를 더한다. `.removing`의 정의는 이 리포에서 찾지 못했다. 외부 라이브러리 확장 함수로 보인다(추정). 이와 별도로 Phantom-plugins에서 빌드한 플러그인 8개가 모듈 목록이 아니라 빌드된 플러그인 디렉터리로 들어간다(`PHANTOM_PLUGINS_BUNDLED`, 아래 표).
+번들 플러그인 목록은 `IdeaCommunityProperties.kt:90-122` 한 식으로 만든다. 업스트림 `IDEA_BUNDLED_PLUGINS`(`platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:14-58`, 이 목록은 `DEFAULT_BUNDLED_PLUGINS` = `platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/ProductModulesLayout.kt:23-39`를 포함한다)에서 `.removing(...)`으로 빼고 `PHANTOM_BUNDLED_PLUGINS`를 더한다. `.removing`의 정의는 이 리포에서 찾지 못했다. 외부 라이브러리 확장 함수로 보인다(추정). 이와 별도로 Phantom-plugins에서 빌드한 플러그인 17개가 모듈 목록이 아니라 빌드된 플러그인 디렉터리로 들어간다(`PHANTOM_PLUGINS_BUNDLED`, 아래 표).
 
-빼는 모듈 21개 (`IdeaCommunityProperties.kt`, HEAD 행). 앞의 14개는 그냥 빼고, 뒤의 7개(행 100의 주석 아래)는 Phantom-plugins 판이 대신 들어간다:
+빼는 모듈 31개 (`IdeaCommunityProperties.kt`, HEAD 행). 앞의 14개는 그냥 빼고, 다음 16개(행 105의 주석 아래)는 Phantom-plugins 판이 대신 들어가며, 마지막 Kotlin은 번들 밖 zip으로 게시한다. 셈: `./tools/rg.cmd -c '\.removing\(' build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`는 33인데, 그중 2개(`:241-242`)는 `AndroidStudioProperties`의 것이다:
 
-| 행 | 모듈 | 업스트림 정의 위치 | 커밋 | 이유 (행 77-84, 100 주석·커밋 본문) |
+| 행 | 모듈 | 업스트림 정의 위치 | 커밋 | 이유 (행 82-89, 105, 123-125 주석·커밋 본문) |
 |---|---|---|---|---|
-| 86 | `intellij.featuresTrainer` | `BaseIdeaProperties.kt:51` | b561ac8fd5 (처음 f736b95fd0) | Learn 과정과 Learn 창 |
-| 87 | `intellij.mcpserver` | `BaseIdeaProperties.kt:48` | b561ac8fd5 | 외부 에이전트용 MCP 서버. 의존하는 번들 없음, -11 MB |
-| 88 | `intellij.performanceTesting` | `BaseIdeaProperties.kt:57` | 3718f68ff4 | JetBrains 성능 테스트 러너 |
-| 89 | `intellij.platform.acp.plugin` | `ProductModulesLayout.kt:37` | 770810693c (처음 b561ac8fd5) | Agent Client Protocol |
-| 90 | `intellij.dev` | `ProductModulesLayout.kt:24` | 770810693c | DevKit 런타임(내부 PSI 뷰어, 통계 도구) |
-| 91 | `intellij.eclipse` | `BaseIdeaProperties.kt:44` | e2a4ffa4ee (처음 770810693c) | Eclipse 프로젝트 가져오기 |
-| 92 | `intellij.java.byteCodeViewer` | `BaseIdeaProperties.kt:41` | e2a4ffa4ee | Phantom-plugins의 `bytecode`로 대체(필요할 때 설치) |
-| 93 | `intellij.webp` | `BaseIdeaProperties.kt:49` | e2a4ffa4ee | Phantom-plugins의 `webp`로 대체(필요할 때 설치) |
-| 94 | `intellij.vcs.git.commit.modal` | `BaseIdeaProperties.kt:32` | 7c43a36532 (처음 e2a4ffa4ee) | Phantom-plugins의 `modal-commit`으로 대체(필요할 때 설치) |
-| 95 | `intellij.vcs.gitlab` | `BaseIdeaProperties.kt:34` | 7c43a36532 | GitHub만 쓴다 |
-| 96 | `intellij.keymap.eclipse` | `BaseIdeaProperties.kt:54` | 7c43a36532 | Marketplace에서 설치 가능 |
-| 97 | `intellij.keymap.visualStudio` | `BaseIdeaProperties.kt:55` | 7c43a36532 | 같음 |
-| 98 | `intellij.keymap.netbeans` | `BaseIdeaProperties.kt:56` | 7c43a36532 | 같음 |
-| 99 | `intellij.configurationScript` | `BaseIdeaProperties.kt:22` | 7c43a36532 | 의존하는 번들 없음 |
-| 101 | `intellij.toml` | `BaseIdeaProperties.kt:52` | 9229667cc7 | Phantom-plugins `toml`을 번들 |
-| 102 | `intellij.yaml` | `BaseIdeaProperties.kt:24` | 9229667cc7 | Phantom-plugins `yaml`을 번들 |
-| 103 | `intellij.sh.plugin` | `BaseIdeaProperties.kt:45` | 9229667cc7 | Phantom-plugins `sh`를 번들 |
-| 104 | `intellij.java.decompiler` | `BaseIdeaProperties.kt:43` | 9229667cc7 | Phantom-plugins `decompiler`를 번들 |
-| 105 | `intellij.java.coverage` | `BaseIdeaProperties.kt:42` | 9229667cc7 | Phantom-plugins `coverage`를 번들 |
-| 106 | `intellij.textmate.plugin` | `BaseIdeaProperties.kt:20` | 9229667cc7 | Phantom-plugins `textmate`를 번들 |
-| 107 | `intellij.markdown` | `BaseIdeaProperties.kt:46` | 9229667cc7 | Phantom-plugins `markdown`을 번들 |
+| 91 | `intellij.featuresTrainer` | `BaseIdeaProperties.kt:52` | b561ac8fd5 (처음 f736b95fd0) | Learn 과정과 Learn 창 |
+| 92 | `intellij.mcpserver` | `BaseIdeaProperties.kt:49` | b561ac8fd5 | 외부 에이전트용 MCP 서버. 의존하는 번들 없음, -11 MB |
+| 93 | `intellij.performanceTesting` | `BaseIdeaProperties.kt:58` | 3718f68ff4 | JetBrains 성능 테스트 러너 |
+| 94 | `intellij.platform.acp.plugin` | `ProductModulesLayout.kt:37` | 770810693c (처음 b561ac8fd5) | Agent Client Protocol |
+| 95 | `intellij.dev` | `ProductModulesLayout.kt:24` | 770810693c | DevKit 런타임(내부 PSI 뷰어, 통계 도구) |
+| 96 | `intellij.eclipse` | `BaseIdeaProperties.kt:45` | e2a4ffa4ee (처음 770810693c) | Eclipse 프로젝트 가져오기 |
+| 97 | `intellij.java.byteCodeViewer` | `BaseIdeaProperties.kt:42` | e2a4ffa4ee | Phantom-plugins의 `bytecode`로 대체(필요할 때 설치) |
+| 98 | `intellij.webp` | `BaseIdeaProperties.kt:50` | e2a4ffa4ee | Phantom-plugins의 `webp`로 대체(필요할 때 설치) |
+| 99 | `intellij.vcs.git.commit.modal` | `BaseIdeaProperties.kt:33` | 7c43a36532 (처음 e2a4ffa4ee) | Phantom-plugins의 `modal-commit`으로 대체(필요할 때 설치) |
+| 100 | `intellij.vcs.gitlab` | `BaseIdeaProperties.kt:35` | 7c43a36532 | GitHub만 쓴다 |
+| 101 | `intellij.keymap.eclipse` | `BaseIdeaProperties.kt:55` | 7c43a36532 | Marketplace에서 설치 가능 |
+| 102 | `intellij.keymap.visualStudio` | `BaseIdeaProperties.kt:56` | 7c43a36532 | 같음 |
+| 103 | `intellij.keymap.netbeans` | `BaseIdeaProperties.kt:57` | 7c43a36532 | 같음 |
+| 104 | `intellij.configurationScript` | `BaseIdeaProperties.kt:22` | 7c43a36532 | 의존하는 번들 없음 |
+| 106 | `intellij.toml` | `BaseIdeaProperties.kt:53` | 9229667cc7 | Phantom-plugins `toml`을 번들 |
+| 107 | `intellij.yaml` | `BaseIdeaProperties.kt:24` | 9229667cc7 | Phantom-plugins `yaml`을 번들 |
+| 108 | `intellij.sh.plugin` | `BaseIdeaProperties.kt:46` | 9229667cc7 | Phantom-plugins `sh`를 번들 |
+| 109 | `intellij.java.decompiler` | `BaseIdeaProperties.kt:44` | 9229667cc7 | Phantom-plugins `decompiler`를 번들 |
+| 110 | `intellij.java.coverage` | `BaseIdeaProperties.kt:43` | 9229667cc7 | Phantom-plugins `coverage`를 번들 |
+| 111 | `intellij.textmate.plugin` | `BaseIdeaProperties.kt:20` | 9229667cc7 | Phantom-plugins `textmate`를 번들 |
+| 112 | `intellij.markdown` | `BaseIdeaProperties.kt:47` | 9229667cc7 | Phantom-plugins `markdown`을 번들 |
+| 113 | `intellij.mermaid` | `BaseIdeaProperties.kt:48` | a464f46719 | Phantom-plugins `mermaid`(Phantom 자체 구현 `com.phantom.mermaid`, 별칭 없음)를 번들 |
+| 114 | `intellij.copyright` | `BaseIdeaProperties.kt:17` | ed67704350 | Phantom-plugins `copyright`를 번들 |
+| 115 | `intellij.editorconfig.plugin` | `BaseIdeaProperties.kt:21` | ed67704350 | Phantom-plugins `editorconfig`를 번들 |
+| 116 | `intellij.html.tools` | `BaseIdeaProperties.kt:25` | ed67704350 | Phantom-plugins `htmltools`를 번들 |
+| 117 | `intellij.testng` | `BaseIdeaProperties.kt:40` | ed67704350 | Phantom-plugins `testng`을 번들 |
+| 118 | `intellij.java.i18n` | `BaseIdeaProperties.kt:41` | ed67704350 | Phantom-plugins `java-i18n`을 번들 |
+| 119 | `intellij.grazie` | `BaseIdeaProperties.kt:51` | ed67704350 | Phantom-plugins `grazie`를 번들 |
+| 120 | `intellij.terminal` | `BaseIdeaProperties.kt:19` | ed67704350 | Phantom-plugins `terminal`을 번들 |
+| 121 | `intellij.vcs.github` | `BaseIdeaProperties.kt:34` | ed67704350 | Phantom-plugins `github`를 번들 |
+| 122 | `KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE`(`kotlin.plugin`) | `BaseIdeaProperties.kt:54` | 9433fdbe0f | 381 MB이고 Java만 쓰는 프로젝트는 쓰지 않음. `pluginModulesToPublish`(`:126`)로 zip을 만들고 릴리스가 Phantom plugins 저장소에 게시한다(아래) |
 
-뒤 7개와 Phantom-plugins 디렉터리의 짝은 이름과 9229667cc7 제목("Toml, YAML, Shell Script, Lombok, Decompiler, Coverage, TextMate and Markdown")으로 맞춘 것이다. 코드에 짝을 적은 곳은 없다.
+행 106-121과 Phantom-plugins 디렉터리의 짝은 이름과 커밋 제목(9229667cc7 "Toml, YAML, Shell Script, Lombok, Decompiler, Coverage, TextMate and Markdown", a464f46719 "Phantom Mermaid bundled in place of JetBrains Mermaid", ed67704350 "Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal and GitHub")으로 맞춘 것이다. 코드에 짝을 적은 곳은 없다.
 
 `.removing`이 아닌 방식으로 뺀 것:
 
 | 위치 | 뺀 것 | 커밋 |
 |---|---|---|
-| `IdeaCommunityProperties.kt:85` | 업스트림이 더하던 `+ sequenceOf("intellij.javaFX.community")` 자체를 지움(JavaFX Scene Builder가 JetBrains에서 키트를 받음) | 770810693c |
-| `IdeaCommunityProperties.kt:114` | `pluginLayouts`에서 `CommunityRepositoryModules.androidPlugin(allPlatforms = true)` 삭제 | 1e0d4353f7 |
-| `IdeaCommunityProperties.kt:110` | `buildAllCompatiblePlugins = false`(번들 밖 플러그인 저장소 빌드 안 함) | 1e0d4353f7 |
-| `IdeaCommunityProperties.kt:266` | 제품 콘텐츠에서 `intellij.platform.ide.newUiOnboarding`, `intellij.platform.ide.newUsersOnboarding` 삭제. 같은 커밋에서 뺀 `intellij.ide.startup.importSettings`는 a3e497f72d가 되살림(`:267`) | 770810693c, a3e497f72d |
-| `IdeaCommunityProperties.kt:21-24` (`PHANTOM_BUNDLED_PLUGINS`) | f736b95fd0이 더한 `intellij.lombok` 줄 삭제. Phantom-plugins `lombok`이 대신 들어간다 | 9229667cc7 |
-| `BaseIdeaProperties.kt` (행 29 뒤, 57 뒤) | `intellij.android.gradle.declarative.lang.ide`, `intellij.compose.ide.plugin` 줄 삭제. `intellij.android.gradle.dsl`(`:29`)은 Gradle 분석 때문에 남김 | 1e0d4353f7 |
+| `IdeaCommunityProperties.kt:90` | 업스트림이 더하던 `+ sequenceOf("intellij.javaFX.community")` 자체를 지움(JavaFX Scene Builder가 JetBrains에서 키트를 받음) | 770810693c |
+| `IdeaCommunityProperties.kt:133` | `pluginLayouts`에서 `CommunityRepositoryModules.androidPlugin(allPlatforms = true)` 삭제 | 1e0d4353f7 |
+| `IdeaCommunityProperties.kt:129` | `buildAllCompatiblePlugins = false`(번들 밖 플러그인 저장소 빌드 안 함) | 1e0d4353f7 |
+| `IdeaCommunityProperties.kt:285` | 제품 콘텐츠에서 `intellij.platform.ide.newUiOnboarding`, `intellij.platform.ide.newUsersOnboarding` 삭제. 같은 커밋에서 뺀 `intellij.ide.startup.importSettings`는 a3e497f72d가 되살림(`:286`) | 770810693c, a3e497f72d |
+| `IdeaCommunityProperties.kt:24-27` (`PHANTOM_BUNDLED_PLUGINS`) | f736b95fd0이 더한 `intellij.lombok` 줄 삭제. Phantom-plugins `lombok`이 대신 들어간다 | 9229667cc7 |
+| `BaseIdeaProperties.kt:29`, `:59` (표식 줄) | `intellij.android.gradle.declarative.lang.ide`, `intellij.compose.ide.plugin` 줄 삭제. `intellij.android.gradle.dsl`(`:30`)은 Gradle 분석 때문에 남김 | 1e0d4353f7 |
 | `java/plugin/resources/META-INF/plugin.xml:111` 뒤, `plugins/github/github-core/resources/META-INF/plugin.xml:20` 뒤, `plugins/ide-features-trainer/res/META-INF/plugin.xml:24` 뒤 | 프로모 콘텐츠 모듈 등록 삭제(`intellij.java.promo`, `intellij.vcs.github.ultimatePromo`, `intellij.kotlin.onboarding.promoter`) | 1e0d4353f7 |
 
-더하는 모듈 (`PHANTOM_BUNDLED_PLUGINS`, `IdeaCommunityProperties.kt:20-24`):
+더하는 모듈 (`PHANTOM_BUNDLED_PLUGINS`, `IdeaCommunityProperties.kt:23-27`):
 
 | 행 | 모듈 | 플러그인 ID | 커밋 |
 |---|---|---|---|
-| 22 | `phantom.sync` | `dev.phantom.sync` | 5f1819d799 |
-| 23 | `phantom.theme` | `dev.phantom.theme` | eb50867a56, 이름 변경 c06e071a51 |
+| 25 | `phantom.sync` | `dev.phantom.sync` | 5f1819d799 |
+| 26 | `phantom.theme` | `dev.phantom.theme` | eb50867a56, 이름 변경 c06e071a51 |
 
 f736b95fd0부터 같은 목록에 있던 `intellij.lombok`(업스트림 커뮤니티 플러그인, Ultimate만 번들하던 것)은 9229667cc7이 지웠다.
 
-Phantom-plugins에서 빌드해 넣는 플러그인 (`PHANTOM_PLUGINS_BUNDLED`, `IdeaCommunityProperties.kt:26-33`, 9229667cc7):
+Phantom-plugins에서 빌드해 넣는 플러그인 17개 (`PHANTOM_PLUGINS_BUNDLED`, `IdeaCommunityProperties.kt:29-38`, 9229667cc7, a464f46719, ed67704350):
 
-| 디렉터리 (`:32`) | 대체하는 것 |
+| 디렉터리 (`:36-37`) | 대체하는 것 |
 |---|---|
-| `toml`, `yaml`, `sh`, `decompiler`, `coverage`, `textmate`, `markdown` | 위 표 행 101-107의 업스트림 모듈 |
+| `toml`, `yaml`, `sh`, `decompiler`, `coverage`, `textmate`, `markdown` | 위 표 행 106-112의 업스트림 모듈 |
+| `mermaid` | 행 113 `intellij.mermaid`(Phantom 자체 구현, 별칭 없음) |
+| `copyright`, `editorconfig`, `htmltools`, `testng`, `java-i18n`, `grazie`, `terminal`, `github` | 행 114-121의 업스트림 모듈 |
 | `lombok` | 지운 `intellij.lombok` |
 
 | 파일:행 | 내용 | 커밋 |
 |---|---|---|
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:26-30` | 주석: Phantom-plugins 판은 `dev.phantom.*` ID를 쓰고 IntelliJ ID를 별칭으로, IntelliJ 콘텐츠 모듈 이름을 그대로 가져, 원본에 의존하는 플러그인과 모듈이 이것들로 해석된다. 값은 모듈 이름이 아니라 `out/phantom-plugins/<dir>`의 디렉터리 이름 | 9229667cc7 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:187-194` | `getAdditionalPluginPaths()` 재정의(업스트림 기본은 빈 목록, `platform/build-scripts/src/org/jetbrains/intellij/build/ProductProperties.kt:405`). `out/phantom-plugins/<dir>`를 돌려주고, `lib/`가 없는 것이 하나라도 있으면 `check`로 실패(:191-192). 빌드는 이 디렉터리를 `plugins/<dir>`로 복사한다(`platform/build-scripts/src/org/jetbrains/intellij/build/impl/DistributionJARsBuilder.kt:551`, :560) | 9229667cc7 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:17` | `import java.nio.file.Files` | 9229667cc7 |
-| `phantom-build.sh:29-44` | 같은 목록(`:33`)을 Phantom-plugins 체크아웃에서 빌드해 `out/phantom-plugins`에 푼다(3.9절, BUILD.md 3절) | 9229667cc7 |
-| `platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:68` | `CE_CLASS_VERSIONS`(:60)의 커버리지 런타임 jar 경로 `plugins/java-coverage/lib/java-coverage-rt.jar` → `plugins/coverage/lib/java-coverage-rt.jar`(Phantom Code Coverage가 들어가는 경로). 클래스 버전 1.8 규칙은 그대로 | a199380d7d |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:29-34` | 주석: Phantom-plugins 판은 `dev.phantom.*` ID를 쓰고 IntelliJ ID를 별칭으로, IntelliJ 콘텐츠 모듈 이름을 그대로 가져, 원본에 의존하는 플러그인과 모듈이 이것들로 해석된다. Mermaid는 Phantom 자체 구현(`com.phantom.mermaid`, 별칭 없음). 값은 모듈 이름이 아니라 `out/phantom-plugins/<dir>`의 디렉터리 이름 | 9229667cc7, a464f46719 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:206-213` | `getAdditionalPluginPaths()` 재정의(업스트림 기본은 빈 목록, `platform/build-scripts/src/org/jetbrains/intellij/build/ProductProperties.kt:405`). `out/phantom-plugins/<dir>`를 돌려주고, `lib/`가 없는 것이 하나라도 있으면 `check`로 실패(:210-211). 빌드는 이 디렉터리를 `plugins/<dir>`로 복사한다(`platform/build-scripts/src/org/jetbrains/intellij/build/impl/DistributionJARsBuilder.kt:551`, :560) | 9229667cc7 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:20` | `import java.nio.file.Files` | 9229667cc7 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:6-7`, `:15`, `:122-126` | Kotlin을 번들에서 빼고(`:122`) `productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)`(`:126`)로 zip을 만든다. 주석 `:123-125`: 381 MB이고 Java만 쓰는 프로젝트는 쓰지 않으며, 빌드가 `artifacts/<제품 코드>-plugins`에 zip을 만들고 `phantom-release.sh`가 릴리스마다 Phantom plugins 저장소에 게시하며, 그 저장소가 Kotlin이나 Gradle Kotlin DSL 스크립트를 쓰는 프로젝트에 제안한다. import `persistentSetOf`(`:7`), `KotlinPluginBuilder`(`:15`) | 9433fdbe0f |
+| `build/src/OpenSourceCommunityInstallersBuildTarget.kt:23` | 건너뛰는 단계 목록에서 `ARCHIVE_PLUGINS`를 빼 플러그인 zip을 만든다(Kotlin zip이 나오게) | 80b3e36e3d |
+| `phantom-build.sh:29-44` | 같은 목록(`:33`, 17개)을 Phantom-plugins 체크아웃에서 빌드해 `out/phantom-plugins`에 푼다(3.9절, BUILD.md 3절) | 9229667cc7, a464f46719, ed67704350 |
+| `phantom-release.sh:59-63`, `:81-122` | Kotlin zip 확인과 게시: Phantom-plugins 체크아웃의 릴리스 `kotlin-262.<YYMMDD>`, `.phantom/marketplace.json`의 `org.jetbrains.kotlin` 항목(BUILD.md 6장) | 9433fdbe0f, a9c5f07bd5, b5ba0196ab |
+| `platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:71` | `CE_CLASS_VERSIONS`(:62)의 커버리지 런타임 jar 경로 `plugins/java-coverage/lib/java-coverage-rt.jar` → `plugins/coverage/lib/java-coverage-rt.jar`(Phantom Code Coverage가 들어가는 경로). 클래스 버전 1.8 규칙은 그대로 | a199380d7d |
 
 새 모듈을 번들하려면 네 곳을 함께 고친다. 이 순서는 phantom 플러그인 추가 커밋(5f1819d799 등)이 매번 같이 바꾼 파일에서 읽은 것이다.
 
 | 파일:행 | 내용 |
 |---|---|
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:20-24` | 번들 목록 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:23-27` | 번들 목록 |
 | `intellij.idea.community.main.iml:138-140` | 루트 모듈의 RUNTIME 의존 |
 | `.idea/modules.xml:359-362` | 프로젝트 모듈 등록 |
 | `BUILD.bazel:284-286, 473-475`, `build/bazel-generated-file-list.txt:1475-1478` | Bazel 타깃 (생성 파일, 6절) |
 
-Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 아니라 `PHANTOM_PLUGINS_BUNDLED`(`IdeaCommunityProperties.kt:31-33`)와 `phantom-build.sh:33`의 `bundled_from_plugins`를 같이 고친다. 두 목록은 서로를 주석으로 가리킬 뿐 코드로 묶여 있지 않다. 원본이 `IDEA_BUNDLED_PLUGINS`에 있으면 `.removing` 한 줄도 더한다(9229667cc7이 바꾼 파일).
+Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 아니라 `PHANTOM_PLUGINS_BUNDLED`(`IdeaCommunityProperties.kt:35-38`)와 `phantom-build.sh:33`의 `bundled_from_plugins`를 같이 고친다. 두 목록은 서로를 주석으로 가리킬 뿐 코드로 묶여 있지 않다. 원본이 `IDEA_BUNDLED_PLUGINS`에 있으면 `.removing` 한 줄도 더한다(9229667cc7이 바꾼 파일).
 
-검증: 빌드한 앱의 `Contents/plugins/` 목록에 위 21개 모듈의 플러그인이 없고 `phantom-sync`, `phantom-theme`과 `toml`, `yaml`, `sh`, `lombok`, `decompiler`, `coverage`, `textmate`, `markdown`이 있는지 본다. `python3 phantom-bench-report.py static "/Applications/Phantom IDEA.app"`가 번들 플러그인 수와 크기를 `docs/phantom/bench/static-baseline.json`과 비교한다(4b3ffd9498). 9229667cc7 이후 빌드한 앱은 이 문서를 쓰며 열어 보지 않았다.
+주의(소스와 배포 앱): Phantom-plugins 판으로 바꾼 16개의 원본 소스는 이 리포에 남아 있고, 그중 여러 곳에 포크 패치가 있다(`plugins/github`의 `gh`·디바이스 플로 로그인과 `GithubBundle` 문구, `plugins/grazie`의 Grazie Cloud 게이트, `plugins/terminal`의 Junie 삭제, `plugins/yaml`의 "Try Ultimate"·OpenAPI/OpenRewrite 제안 삭제, `plugins/sh`의 ShellCheck 다운로드 경로. 3.3절). 번들은 이제 이 소스가 아니라 Phantom-plugins가 빌드한 `out/phantom-plugins/<dir>`를 쓴다. 따라서 이 리포의 `plugins/<이름>`을 고쳐도 Phantom-plugins가 이 리포의 소스로 빌드하지 않는 한 배포 앱은 바뀌지 않고, 위 패치들이 배포 앱에 들어 있는지도 그 빌드에 달렸다. 이 문서를 쓸 때 Phantom-plugins 저장소를 볼 수 없어서 어느 쪽인지 확인하지 못했다. Kotlin은 다르다: 이 리포의 빌드가 `plugins/kotlin` 소스로 zip을 만든다.
+
+검증: 빌드한 앱의 `Contents/plugins/` 목록에 위 31개 모듈의 플러그인이 없고 `phantom-sync`, `phantom-theme`과 `PHANTOM_PLUGINS_BUNDLED`의 17개 디렉터리가 있는지 본다. `out/phantom-idea/artifacts/*-plugins/`에 `Kotlin-*.zip`이 있는지 본다. `python3 phantom-bench-report.py static "/Applications/Phantom IDEA.app"`가 번들 플러그인 수와 크기를 `docs/phantom/bench/static-baseline.json`과 비교한다(4b3ffd9498). 9229667cc7 이후 빌드한 앱은 이 문서를 쓰며 열어 보지 않았다(v26.11.13.1 릴리스 앱 포함).
 
 ### 3.3 JetBrains 네트워크 호출과 텔레메트리
 
@@ -266,7 +286,8 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `platform/platform-impl/src/com/intellij/ide/plugins/RepositoryHelper.java:150-162` | `owner/repo` 형식 저장소를 `GitHubPluginRepository.load`로 읽음 | c8f33b8a61, 79d2dc6b96 |
 | `platform/platform-impl/src/com/intellij/ide/plugins/PluginManagerMain.java:303-305` | 공식 Phantom 저장소 플러그인은 서드파티 경고 없이 설치 | c8f33b8a61 |
 | `platform/platform-impl/src/com/intellij/ide/plugins/PluginHostsConfigurable.java:300-302` | 저장소 입력을 `owner/repo`로 정규화 | c8f33b8a61 |
-| `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:678-679, 699` | 운영 빌드에서 설치할 수 없는 Marketplace 플러그인(상용 IDE 전용, 라이선스 플러그인 없이 유료)을 검색 결과에서 숨김 | c83c67511e |
+| `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:686, 707` | 운영 빌드에서 설치할 수 없는 Marketplace 플러그인(상용 IDE 전용, 라이선스 플러그인 없이 유료)을 검색 결과에서 숨김 | c83c67511e |
+| `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:708`, `platform/platform-impl/src/dev/phantom/ide/plugins/PhantomMarketplace.kt:29` (`isJetBrainsPlugin`) | JetBrains가 게시한 플러그인(조직 이름이 `JetBrains`로 시작)도 목록에서 숨김. Phantom이 유지하는 것은 번들이나 Phantom 플러그인 저장소에 자체 판이 있다. 위와 같은 조건(소스 실행, internal 모드, `-Dphantom.marketplace.showAll=true`이면 모두 보임) | a464f46719 |
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:840-841, 845-846` | `PhantomPluginAdvisor` 시작 후 활동, 알림 그룹 `Phantom Plugins`(이름은 `bundle="messages.PhantomIdeBundle"`, `key="notification.group.phantom.plugins"`) | de02add11d, a1313a347c |
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:844` | New Project에 Spring Boot 항목(`SpringBootPluginNewProjectWizard`) | 53c0592476 |
 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml:2082-2083` | 비공개 GitHub 저장소용 `GitHubPluginRepositoryAuthProvider` | 79d2dc6b96 |
@@ -332,11 +353,12 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 
 | 파일:행 | 패치 | 커밋 |
 |---|---|---|
-| `build/src/OpenSourceCommunityInstallersBuildTarget.kt:19, 32` | Windows zip 단계와 macOS에서의 Windows 설치 프로그램 빌드를 건너뛰지 않음 | 1191317a96 |
+| `build/src/OpenSourceCommunityInstallersBuildTarget.kt:20, 33` | Windows zip 단계와 macOS에서의 Windows 설치 프로그램 빌드를 건너뛰지 않음 | 1191317a96 |
+| `build/src/OpenSourceCommunityInstallersBuildTarget.kt:23` | 플러그인 zip 단계(`ARCHIVE_PLUGINS`)를 건너뛰지 않음(Kotlin zip) | 80b3e36e3d |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42` | "운영 모드에서 macOS면 NSIS 건너뜀" 삭제 | d0eab60d1b |
-| `phantom-build.sh` (신규) | 날짜로 구한 표시 버전·빌드 번호를 `installers.cmd`에 `-D`로 넘김(`:15`, `:45-46`, aarch64. 표시 버전은 추적 파일을 고치지 않고 `-Dphantom.version.major/minor`, 048852ca23, 빌드 전), Phantom-plugins 체크아웃(`$root/../Phantom-plugins` 또는 `PHANTOM_PLUGINS_REPO`, `:32`)에서 플러그인 8개(`:33`)를 `./gradlew --no-configuration-cache -q -PplatformFromRepository=true :<dir>:buildPlugin`으로 빌드해 `out/phantom-plugins`에 풂(`:29-44`, 체크아웃이나 zip이 없으면 `exit 1`, `:34`, `:42`, 9229667cc7), Windows x64 교차 빌드(`:58-68`), 중간 산출물 삭제 | fc05eddc04 외 4개, 048852ca23, 9229667cc7 |
-| `phantom-release.sh` (신규) | 빌드, DMG 검사, 태그 push, GitHub 릴리스(초안 후 공개) | ae2a766191 외 5개 |
-| `phantom-install.sh` (신규) | `/Applications/Phantom IDEA.app` 교체와 재시작, `--release`로 릴리스 DMG 설치 | a0c4e0d04a 외 5개 |
+| `phantom-build.sh` (신규) | 날짜로 구한 표시 버전·빌드 번호를 `installers.cmd`에 `-D`로 넘김(`:15`, `:45-46`, aarch64. 표시 버전은 추적 파일을 고치지 않고 `-Dphantom.version.major/minor`, 048852ca23, 빌드 전. v26.11.13.1의 태그 커밋에는 7fe0ab9436이 손으로 쓴 `26` / `11.13`이 추적 파일에 있었다), Phantom-plugins 체크아웃(`$root/../Phantom-plugins` 또는 `PHANTOM_PLUGINS_REPO`, `:32`)에서 플러그인 17개(`:33`)를 `./gradlew --no-configuration-cache -q -PplatformFromRepository=true :<dir>:buildPlugin`으로 빌드해 `out/phantom-plugins`에 풂(`:29-44`, 체크아웃이나 zip이 없으면 `exit 1`, `:34`, `:42`, 9229667cc7), Windows x64 교차 빌드(`:58-68`), 중간 산출물 삭제 | fc05eddc04 외 4개, 048852ca23, 9229667cc7 |
+| `phantom-release.sh` (신규) | 빌드, DMG 검사, 태그 push, GitHub 릴리스(초안 후 공개). Kotlin zip 확인(`:59-63`)과 Phantom-plugins 저장소에 Kotlin 릴리스·`marketplace.json` 게시(`:81-122`). `origin`이 SSH 호스트 별칭이어도 저장소 이름을 뽑음(`:76`) | ae2a766191 외 5개, 9433fdbe0f, a9c5f07bd5, b5ba0196ab |
+| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom IDEA.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:52-70`) | a0c4e0d04a 외 5개, 45d41fe813, fb76f6ff29, c7fe81b393 |
 | `phantom-sign.sh` (신규) | 로컬 인증서 "Phantom Local"로 재서명 | e71672a6ab |
 | `.github/workflows/phantom-release.yml` (신규) | 셀프 호스티드 러너에서 수동 실행 릴리스. `notes` 입력 설명을 따옴표로 감싸 올바른 YAML로 고침(`:17`). 빌드 전에 Phantom-plugins를 `$GITHUB_WORKSPACE/../Phantom-plugins`에 클론하거나 `origin/main`으로 맞추는 단계(`:40-55`, 러너의 SSH 키 사용) | ae2a766191, 25be81d8e6, d0eab60d1b, 60ea243e02 |
 | `tools/phantom-runner-setup.sh` (신규) | 셀프 호스티드 러너 등록 | ae2a766191 |
@@ -347,8 +369,8 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 
 | 파일 | 내용 | 커밋 |
 |---|---|---|
-| `phantom-bench.sh` | 설치된 앱을 격리된 설정으로 N회 실행해 지표 수집 | 38efaf66bf, 6767ffc6e1 |
-| `phantom-bench-report.py` | `run`/`summary`/`compare`/`static`. compare는 시간 10%, 메모리·클래스 5%, 프리즈 1건 악화를 실패로 본다(6767ffc6e1 본문) | 38efaf66bf, 6767ffc6e1, 4b3ffd9498 |
+| `phantom-bench.sh` | 설치된 앱을 격리된 설정으로 N회 실행해 지표 수집. 픽스처 복사본은 `out/phantom-bench/work/fixture.source`에 원본을 적어 같은 원본이면 다시 쓰고 다르면 바꾸며(예열한 `work/system-*`도 지움), 상대 경로 픽스처는 부른 폴더 기준(`:18`, `:39-40`, `:49-69`) | 38efaf66bf, 6767ffc6e1, 45d41fe813, 90cd80f4bb |
+| `phantom-bench-report.py` | `run`/`summary`/`compare`/`static`. compare는 시간 10%, 메모리·클래스 5%, 프리즈 1건 악화를 실패로 본다(6767ffc6e1 본문). static baseline이 번들 목록보다 낡았으면 종료 코드 2(`stale_static_baseline`, `:192-220`). git 기록이 없을 때, baseline 빌드 번호에 날짜가 없을 때, 얕은 클론일 때는 안내만 쓰고 건너뜀 | 38efaf66bf, 6767ffc6e1, 4b3ffd9498, f503c195d4, fb76f6ff29, 57071d1393 |
 | `docs/phantom/bench/README.md`, `docs/phantom/bench/static-baseline.json` | 사용법과 정적 기준선 | 4b3ffd9498 |
 
 `docs/phantom/bench/README.md:10`은 `docs/phantom/bench/baseline.json`을 쓰지만 이 파일은 HEAD에 없다. 런타임 기준선은 아직 만들지 않았다(4b3ffd9498 본문).
@@ -369,7 +391,7 @@ Phantom-plugins 판 IntelliJ 플러그인(예 `dev.phantom.toml`, 별칭 `org.to
 | `platform/core-api/resources/messages/CoreBundle.properties:73-74` | `plugin.loading.error.short.replaced=Replaced by {0}`, `plugin.loading.error.long.replaced` | 04dba66c3a |
 | `platform/platform-tests/testSrc/com/intellij/ide/plugins/PluginInitializationSelectPluginsToLoadTest.kt:444-510` | 업스트림 테스트 `plugin main ID conflicts with another plugin alias`(둘 다 제외를 기대)를 `plugin keeping another plugin's ID as an alias replaces it`(:446)로 바꾸고, 대체판이 원본 콘텐츠 모듈을 가진 경우(:465), 대체판을 끄면 원본이 로드되는 경우(:484), essential 원본은 대체되지 않는 경우(:498) 3개를 더함 | 04dba66c3a |
 
-동작(코드와 테스트 기대값에서 읽음, 테스트는 이 문서를 쓰며 실행하지 않았다): 원본은 사유 "Replaced by <대체판 이름>"으로 빠지고, 원본 ID로 찾으면 대체판이 나온다(`resolvePluginId`, 테스트 :446). 비활성 플러그인은 충돌 해석 전에 걸러지므로 대체판을 끄면 원본이 로드된다. 원본이 essential이면 업스트림처럼 ID 충돌로 처리되어 대체판이 `PluginDeclaresConflictingId`로 빠진다. 번들 자체에는 원본 7개가 없으므로(3.2절) 이 경로는 사용자가 원본을 따로 설치했을 때 쓰인다(추정).
+동작(코드와 테스트 기대값에서 읽음, 테스트는 이 문서를 쓰며 실행하지 않았다): 원본은 사유 "Replaced by <대체판 이름>"으로 빠지고, 원본 ID로 찾으면 대체판이 나온다(`resolvePluginId`, 테스트 :446). 비활성 플러그인은 충돌 해석 전에 걸러지므로 대체판을 끄면 원본이 로드된다. 원본이 essential이면 업스트림처럼 ID 충돌로 처리되어 대체판이 `PluginDeclaresConflictingId`로 빠진다. 번들 자체에는 대체된 원본 16개가 없으므로(3.2절) 이 경로는 사용자가 원본을 따로 설치했을 때 쓰인다(추정).
 
 검증: `./tests.cmd --module intellij.platform.tests --test com.intellij.ide.plugins.PluginInitializationSelectPluginsToLoadTest`(모듈은 `platform/platform-tests/intellij.platform.tests.iml`의 `testSrc`).
 
@@ -381,7 +403,7 @@ Phantom-plugins 판 IntelliJ 플러그인(예 `dev.phantom.toml`, 별칭 `org.to
 |---|---|---|---|
 | `phantom.jetbrains.services` | `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:109`, `platform/platform-impl/src/com/intellij/platform/ide/bootstrap/StartupErrorReporter.java:197` | false | true면 3.3.1절의 JetBrains 호출을 모두 되살린다 |
 | `phantom.plugins.official` | `platform/platform-impl/src/com/intellij/ide/plugins/RepositoryHelper.java:77` | 미설정(켜짐) | `false`면 `newkayak12/Phantom-plugins` 저장소를 붙이지 않는다 |
-| `phantom.marketplace.showAll` | `platform/platform-impl/src/dev/phantom/ide/plugins/PhantomMarketplace.kt:20` | false | true면 설치할 수 없는 Marketplace 플러그인도 보인다. 소스 실행과 internal 모드도 같은 효과(`:21-23`) |
+| `phantom.marketplace.showAll` | `platform/platform-impl/src/dev/phantom/ide/plugins/PhantomMarketplace.kt:20` | false | true면 설치할 수 없는 Marketplace 플러그인과 JetBrains가 게시한 플러그인(a464f46719)도 보인다. 소스 실행과 internal 모드도 같은 효과(`:21-23`) |
 | `phantom.github.oauth.client.id` | `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt:32` | 미설정. 내장 값 `PHANTOM_CLIENT_ID`(`:30`)가 빈 문자열이다 | GitHub 디바이스 플로 로그인에 쓸 OAuth 앱 client id. 없으면 `gh` CLI 로그인만 된다(`GHOAuthCredentialsUi.kt:55` 이하) |
 | `phantom.build.number` | 빌드 스크립트: `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:11,14`, `ApplicationInfoPropertiesImpl.kt:171`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:208` | 미설정 | 빌드 시 `PH-<YYMMDD>.<N>`. `phantom-build.sh:46,63`이 넘긴다. IDE 런타임이 읽는 값이 아니다 |
 | `phantom.version.major` | 이름 `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:21`, 읽는 곳 `ApplicationInfoPropertiesImpl.kt:72`, `:179` | 미설정 | 빌드 시 표시 버전의 major(빌드 날짜의 YY). 있으면 XML의 `major`보다 먼저 쓰고 패키지 안 `<version>`에도 쓴다. `phantom-build.sh:46,63`이 넘긴다. 없으면 XML 값(자리표시자 `0`). IDE 런타임이 읽는 값이 아니다(048852ca23, 빌드 전) |
@@ -421,13 +443,16 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | 이름 | 읽는 곳 | 기본값 | 효과 |
 |---|---|---|---|
 | `PHANTOM_WINDOWS` | `phantom-build.sh:58` | 1 | 0이면 DMG만 빌드하고 Windows 교차 빌드를 건너뛴다 |
-| `PHANTOM_BUILD_SEQ` | `phantom-build.sh:19-20`, `phantom-release.sh:16-19` | 미설정 | 그날 빌드 순번 N을 고정한다. 없으면 `out/phantom-build-seq`에서 계산 |
-| `PHANTOM_PLUGINS_REPO` | `phantom-build.sh:32` | `$root/../Phantom-plugins`(이 체크아웃 옆) | 번들할 플러그인 8개를 빌드할 Phantom-plugins 체크아웃. `settings.gradle.kts`가 없으면 빌드가 멈춘다(`:34`). 9229667cc7 |
+| `PHANTOM_BUILD_SEQ` | `phantom-build.sh:19-20`, `phantom-release.sh:19-22` | 미설정 | 그날 빌드 순번 N을 고정한다. 없으면 `out/phantom-build-seq`에서 계산 |
+| `PHANTOM_PLUGINS_REPO` | `phantom-build.sh:32`, `phantom-release.sh:62` | `$root/../Phantom-plugins`(이 체크아웃 옆) | 번들할 플러그인 17개를 빌드할 Phantom-plugins 체크아웃. `settings.gradle.kts`가 없으면 빌드가 멈춘다(`phantom-build.sh:34`). 릴리스는 같은 체크아웃에 Kotlin을 게시하며 `.phantom/marketplace.json`이 없으면 멈춘다(`phantom-release.sh:63`). 9229667cc7, 9433fdbe0f |
+| `PHANTOM_APP` | `phantom-install.sh:22`, `phantom-bench.sh:21`, `phantom-sign.sh`(인자가 먼저) | `/Applications/Phantom IDEA.app` | 설치·측정·서명할 앱. 설치는 `.app`으로 끝나는 절대 경로만 받고(`phantom-install.sh:23`) 그 경로에서 실행 중인 Phantom만 끈다. 45d41fe813, fb76f6ff29, c7fe81b393 |
+| `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE` | `phantom-bench.sh:22`, `:28` | `$HOME/Library/Application Support/Phantom/PhantomIDEA`, `$HOME/projects/private/prototype-reservation-system` | 벤치에 복사할 사용자 설정, 열 프로젝트(`--fixture`가 먼저, 상대 경로는 부른 폴더 기준). 45d41fe813, 90cd80f4bb |
+| `PHANTOM_SIGN_SETUP`, `PHANTOM_SIGN_OPTIONAL` | `phantom-sign.sh`, `phantom-install.sh:81` | 설치에서는 `1`, `1` | 인증서가 없을 때 먼저 만들지, 서명 실패를 경고로 끝낼지(BUILD.md 5장). bf98d32b40, 41d3251766 |
 | `PHANTOM_FOOJAY_E2E` | `platform/lang-impl/testSources/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkListTest.kt:98` | 미설정 | `true`면 실제 JDK를 내려받는 E2E 테스트를 실행 |
 | `PHANTOM_FOOJAY_E2E_SDK` | 같은 파일 `:101` | 문자열 `temurin-21` | E2E 테스트가 받을 SDK 이름 |
 | `GH_TOKEN`, `GITHUB_TOKEN` | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:40-41` | 미설정 | 비공개 GitHub 플러그인 저장소 토큰. 순서는 비밀번호 저장소 → 이 변수 → `gh auth token` |
-| `GH_TOKEN` | `phantom-install.sh:19` | `gh auth token` | `--release` 다운로드 토큰 |
-| `NOTES` | `phantom-release.sh:56` | 이전 태그 이후 커밋 | 릴리스 노트 |
+| `GH_TOKEN` | `phantom-install.sh:29` | `gh auth token` | `--release` 다운로드 토큰 |
+| `NOTES` | `phantom-release.sh:65-68` | 이전 태그 이후 커밋 | 릴리스 노트 |
 
 ## 5. 이 리포에 남아 있는 Phantom 고유 코드
 
@@ -437,15 +462,15 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 
 | 위치 | 무엇 | 번들 | 테스트 |
 |---|---|---|---|
-| `plugins/phantom-sync/` (모듈 `phantom.sync`, `phantom.sync.core`, `phantom.sync.tests`, ID `dev.phantom.sync`) | Backup and Sync를 사용자 git 저장소로. 업스트림 `intellij.settingsSync.core`의 `settingsSync.communicatorProvider` 확장 | 예 (`IdeaCommunityProperties.kt:22`) | `plugins/phantom-sync/tests/testSrc/dev/phantom/sync/GitRepoCommunicatorTest.kt` |
-| `plugins/phantom-theme/` (모듈 `phantom.theme`, ID `dev.phantom.theme`) | Phantom Dark/Light 테마와 편집기 색. 테마 JSON은 `tools/generate-themes.py`가 업스트림 Islands 테마에서 만든다 | 예 (`:23`), 기본 LAF(`IdeaApplicationInfo.xml:10`) | 없음 |
+| `plugins/phantom-sync/` (모듈 `phantom.sync`, `phantom.sync.core`, `phantom.sync.tests`, ID `dev.phantom.sync`) | Backup and Sync를 사용자 git 저장소로. 업스트림 `intellij.settingsSync.core`의 `settingsSync.communicatorProvider` 확장 | 예 (`IdeaCommunityProperties.kt:25`) | `plugins/phantom-sync/tests/testSrc/dev/phantom/sync/GitRepoCommunicatorTest.kt` |
+| `plugins/phantom-theme/` (모듈 `phantom.theme`, ID `dev.phantom.theme`) | Phantom Dark/Light 테마와 편집기 색. 테마 JSON은 `tools/generate-themes.py`가 업스트림 Islands 테마에서 만든다 | 예 (`:26`), 기본 LAF(`IdeaApplicationInfo.xml:10`) | 없음 |
 | `platform/platform-impl/src/dev/phantom/ide/plugins/` (`GitHubPluginRepository.kt`, `GitHubTokens.kt`, `PhantomMarketplace.kt`, `PhantomPluginAdvisor.kt`, `PhantomPluginNewProjectWizard.kt`) | GitHub 플러그인 저장소, 토큰, Marketplace 필터, 라이브러리 기반 플러그인 제안, New Project의 Spring Boot 설치 안내 | 플랫폼 모듈 `intellij.platform.ide.impl` 안(항상 포함) | `platform/platform-tests/testSrc/com/intellij/ide/plugins/GitHubPluginRepositoryTest.kt`. `PhantomMarketplace`, `PhantomPluginAdvisor`, 위저드 전용 테스트는 없다 |
 | `platform/platform-impl/src/dev/phantom/ide/PhantomIdeBundle.kt`, `platform/platform-impl/resources/messages/PhantomIdeBundle.properties`, `platform/lang-impl/src/dev/phantom/ide/PhantomLangBundle.kt`, `platform/lang-impl/resources/messages/PhantomLangBundle.properties` (a1313a347c, 신규) | Phantom 플랫폼 코드의 문구 번들. `PhantomIdeBundle` 17개 키(토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름), `PhantomLangBundle` 11개 키(Endpoints). 업스트림 `.properties`를 덜 건드리려고 따로 두었고 이름이 모듈마다 다른 것은 platform-impl과 lang-impl이 코어 클래스 로더를 같이 쓰기 때문이다. 같은 커밋이 `IdeBundle.properties:2214-2215`와 `GithubBundle.properties:47` 이하(`# phantom-idea`)에 키 1개와 10개를 더했다 | 플랫폼(항상) | 없음 |
 | `platform/platform-impl/src/dev/phantom/ide/memory/PhantomMemorySizer.kt` | 기계별 힙·페이지 캐시 크기 | 플랫폼(항상) | `platform/platform-tests/testSrc/dev/phantom/ide/memory/MemoryPlanTest.kt` |
 | `platform/lang-impl/src/dev/phantom/ide/endpoints/` (`EndpointsToolWindow.kt`, `EndpointRequests.kt`) | Endpoints 툴 윈도우와 .http 요청 생성 | 플랫폼 `intellij.platform.lang.impl`(제공자 플러그인이 있을 때만 창이 보임) | `platform/lang-impl/testSources/dev/phantom/ide/endpoints/EndpointRequestsTest.kt` |
 | `platform/platform-resources/src/icons/phantom/springBoot.svg`, `springBoot_dark.svg` | New Project Spring Boot 아이콘 | 플랫폼 | - |
-| `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt` | foojay JDK 목록 변환과 다운로드 해석. 업스트림 패키지에 있고 파일 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉽다 | 플랫폼 | `FoojayJdkListTest.kt`, `testData/jdkDownload/foojay-packages.json` |
-| `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt` | GitHub 디바이스 플로와 `gh` 토큰(로그인 문구는 `GithubBundle`의 `phantom.*` 키 10개, a1313a347c) | 업스트림 GitHub 플러그인 안 | 없음 |
+| `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt` | foojay JDK 목록 변환과 다운로드 해석. 업스트림 패키지에 있고 파일 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉽다. cea749cfb6이 그 아래 `:2`에 포크가 더한 파일이라는 `// phantom-idea:` 줄을 넣었다 | 플랫폼 | `FoojayJdkListTest.kt`, `testData/jdkDownload/foojay-packages.json` |
+| `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt` | GitHub 디바이스 플로와 `gh` 토큰(로그인 문구는 `GithubBundle`의 `phantom.*` 키 10개, a1313a347c) | 업스트림 GitHub 플러그인 소스 안. ed67704350부터 번들의 GitHub 플러그인은 Phantom-plugins 빌드라 이 코드가 배포 앱에 있는지는 미확인(3.2절 끝) | 없음 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt` | 빌드 번호와 표시 버전 속성 이름(`:16-24`, 048852ca23) | 빌드 스크립트 | 표시 버전 쪽은 `ApplicationInfoPropertiesTest.java:28-44`(실행 전). 파일 자체의 전용 테스트는 없다 |
 | `plugins/ide-features-trainer/testSrc/training/ui/FeedbackSubmissionGateTest.kt` | 3.3.1절 `submitFeedback` 게이트 테스트(6e71ed80c4, 실행 전) | - | 자신(모듈 `intellij.featuresTrainer.tests`) |
 | `platform/lang-impl/testSources/com/intellij/util/indexing/FileTypeChangeRescanTest.kt` | 3.5절 재스캔 패치의 테스트 | - | 자신 |
@@ -468,26 +493,29 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 
 업스트림 플러그인 3개는 소스를 이 리포에 남긴 채 번들에서 빼고 Phantom-plugins 판으로 대체했다(e2a4ffa4ee 본문 기준, 이 리포에서 확인할 수 없음): `intellij.java.byteCodeViewer` → `bytecode`(`dev.phantom.bytecode`), `intellij.webp` → `webp`(`dev.phantom.webp`), `intellij.vcs.git.commit.modal` → `modal-commit`(`dev.phantom.modalcommit`). 이 셋은 필요할 때 설치한다.
 
-9229667cc7부터 업스트림 플러그인 7개(TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown)와 Lombok은 Phantom-plugins에서 빌드한 판(`toml`, `yaml`, `sh`, `decompiler`, `coverage`, `textmate`, `markdown`, `lombok`)을 번들에 넣는다(3.2절). 원본 소스는 이 리포에 그대로 있다(`plugins/toml/`, `plugins/yaml/`, `plugins/sh/`, `plugins/java-decompiler/`, `plugins/coverage/`, `plugins/textmate/`, `plugins/markdown/`, `plugins/lombok/`). Phantom-plugins 판의 ID는 `dev.phantom.*`이고 원본 ID를 별칭으로 둔다는 것은 9229667cc7 본문과 `IdeaCommunityProperties.kt:26-30` 주석의 설명이고, 이 리포에서 확인한 ID는 04dba66c3a 본문의 `dev.phantom.toml`뿐이다.
+9229667cc7부터 업스트림 플러그인 7개(TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown)와 Lombok은 Phantom-plugins에서 빌드한 판(`toml`, `yaml`, `sh`, `decompiler`, `coverage`, `textmate`, `markdown`, `lombok`)을 번들에 넣는다(3.2절). a464f46719부터 JetBrains Mermaid 대신 Phantom Mermaid(`mermaid`), ed67704350부터 Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub도 Phantom-plugins 판(`copyright`, `editorconfig`, `htmltools`, `testng`, `java-i18n`, `grazie`, `terminal`, `github`)을 넣어 모두 17개다. 원본 소스는 이 리포에 그대로 있다(`plugins/toml/`, `plugins/yaml/`, `plugins/sh/`, `plugins/java-decompiler/`, `plugins/coverage/`, `plugins/textmate/`, `plugins/markdown/`, `plugins/lombok/`, `plugins/github/`, `plugins/grazie/`, `plugins/terminal/` 등). 그 소스를 고쳐도 배포 앱이 바뀌는지는 Phantom-plugins가 무엇으로 빌드하는지에 달렸고 확인하지 못했다(3.2절 끝). Phantom-plugins 판의 ID는 `dev.phantom.*`이고 원본 ID를 별칭으로 둔다는 것은 9229667cc7, ed67704350 본문과 `IdeaCommunityProperties.kt:29-34` 주석의 설명이고, 이 리포에서 확인한 ID는 04dba66c3a 본문의 `dev.phantom.toml`뿐이다.
+
+Kotlin(`kotlin.plugin`)은 9433fdbe0f부터 번들하지 않는다. 이 리포의 빌드가 `plugins/kotlin` 소스로 zip을 만들고 `phantom-release.sh`가 Phantom-plugins 저장소의 릴리스 `kotlin-262.<YYMMDD>`와 `.phantom/marketplace.json` 항목(`org.jetbrains.kotlin`, `since` 그 플랫폼 빌드)으로 게시한다. 그 저장소가 Kotlin이나 Gradle Kotlin DSL 스크립트를 쓰는 프로젝트에 설치를 제안한다(커밋 본문, 이 리포에서 확인할 수 없음).
 
 옮긴 플러그인의 설계 문서는 `docs/phantom/design/`에 남아 있다.
 
 ## 6. 충돌 위험이 큰 업스트림 파일
 
-수정 빈도는 `git log --format= --name-only d2faebf601..HEAD | sort | uniq -c | sort -rn`(HEAD = 64dc82b3f2)으로 셌다. 아래는 업스트림에 원래 있던 파일만 골랐다.
+수정 빈도는 `git log --format= --name-only d2faebf601..HEAD | sort | uniq -c | sort -rn`(HEAD = cea749cfb6)으로 셌다. 아래는 업스트림에 원래 있던 파일만 골랐다. 표식 주석만 더한 cea749cfb6도 한 번으로 센다.
 
 | 커밋 수 | 파일 | 예상 충돌 |
 |---|---|---|
-| 29 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` | 업스트림이 `bundledPluginModules` 식(`:85-107`)과 커스터마이저를 바꾸면 같은 블록에서 충돌한다. Phantom 쪽 식을 유지하고, 새 `IDEA_BUNDLED_PLUGINS` 항목마다 뺄지 정한다. 빠진 ID가 업스트림에서 이름이 바뀌면 `.removing`이 조용히 효과를 잃을 수 있다(추정). Phantom-plugins 판으로 바꾼 7개는 원본이 다시 들어오면 같은 ID와 모듈을 두 번 차지한다(9229667cc7 본문) |
+| 33 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` | 업스트림이 `bundledPluginModules` 식(`:90-122`)과 커스터마이저를 바꾸면 같은 블록에서 충돌한다. Phantom 쪽 식을 유지하고, 새 `IDEA_BUNDLED_PLUGINS` 항목마다 뺄지 정한다. 빠진 ID가 업스트림에서 이름이 바뀌면 `.removing`이 조용히 효과를 잃을 수 있다(추정). Phantom-plugins 판으로 바꾼 16개는 원본이 다시 들어오면 같은 ID와 모듈을 두 번 차지한다(9229667cc7 본문). 업스트림이 Kotlin 레이아웃이나 `pluginModulesToPublish`를 바꾸면 Kotlin zip 게시(`:122-126`)도 다시 본다 |
 | 22 | `.idea/modules.xml` (`:359-362` 추가, 프로모 3개 삭제) | 업스트림 모듈 추가 줄과 인접 충돌. IDE가 직렬화하는 파일이라 정렬·공백을 바꾸지 않고 손으로 합친다 |
 | 21 | `intellij.idea.community.main.iml` (`:138-140` 추가, 프로모 1줄 삭제) | 같은 RUNTIME 의존 블록에서 충돌. iml은 원형을 지켜야 한다 |
 | 21 | `build/bazel-generated-file-list.txt` (`:1475-1478`) | 생성 파일. 아래 참고 |
 | 20 | `BUILD.bazel` (`:284-286`, `:473-475`) | 생성 파일. 아래 참고 |
-| 8 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml` (`:24, 707, 711 직전, 840-846, 1384, 2082-2083`) | 2000줄이 넘는 활발한 파일이라 여러 덩어리에서 문맥 충돌. 삭제한 등록(`ITNReporter`, Learn 탭, `TechInsightsLabPromoter`)을 업스트림이 고치면 되살아나지 않게 본다 |
-| 7 | `community-resources/resources/idea/IdeaApplicationInfo.xml` | 업스트림이 태그마다 `<version>`을 올리므로 `:2`에서 항상 충돌. 이 줄은 이제 자리표시자 `major="0" minor="0.0"`이고 표시 버전은 빌드 속성(`phantom.version.*`)이 정하므로, Phantom의 자리표시자 줄을 택한다(048852ca23). 업스트림이 새 요소를 더하면 받는다 |
-| 3 | `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt` | 함수 안 게이트(`:403, 572, 613, 935`)는 텍스트 충돌이 없어도 의미가 깨질 수 있다. 병합 뒤 새 JetBrains 호출 경로가 생겼는지 다시 찾는다 |
-| 3 | `ApplicationInfoPropertiesImpl.kt`, `PlatformActions.xml` | 작은 패치. 문맥 충돌 정도 |
-| 2 | `VmOptionsGenerator.kt`, `RepositoryHelper.java`, `ExternalUpdateManager.java`, `UpdateManagerUsagesCollector.kt`, `IntelliJIdeaExternalResourceUrls.kt`, `registry.properties`, `BaseIdeaProperties.kt` | 작은 패치. 문맥 충돌 정도. `BaseIdeaProperties.kt`는 업스트림이 `CE_CLASS_VERSIONS`의 커버리지 줄(`:68`)을 바꾸면 Phantom 경로(`plugins/coverage/...`)를 유지한다 |
+| 9 | `platform/platform-resources/src/META-INF/PlatformExtensions.xml` (64dc82b3f2 기준 `:24, 707, 711 직전, 840-846, 1384, 2082-2083`) | 2000줄이 넘는 활발한 파일이라 여러 덩어리에서 문맥 충돌. 삭제한 등록(`ITNReporter`, Learn 탭, `TechInsightsLabPromoter`)을 업스트림이 고치면 되살아나지 않게 본다 |
+| 8 | `community-resources/resources/idea/IdeaApplicationInfo.xml` | 업스트림이 태그마다 `<version>`을 올리므로 `:2`에서 항상 충돌. 이 줄은 이제 자리표시자 `major="0" minor="0.0"`이고 표시 버전은 빌드 속성(`phantom.version.*`)이 정하므로, Phantom의 자리표시자 줄을 택한다(048852ca23). 업스트림이 새 요소를 더하면 받는다 |
+| 5 | `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt` | 함수 안 게이트(64dc82b3f2 기준 `:403, 572, 613, 935`)는 텍스트 충돌이 없어도 의미가 깨질 수 있다. 병합 뒤 새 JetBrains 호출 경로가 생겼는지 다시 찾는다. Marketplace 목록 필터(`:707-708`)는 a464f46719가 한 줄 더했다 |
+| 4 | `ApplicationInfoPropertiesImpl.kt`, `PlatformActions.xml` | 작은 패치. 문맥 충돌 정도 |
+| 3 | `RepositoryHelper.java`, `ExternalUpdateManager.java`, `UpdateManagerUsagesCollector.kt`, `IntelliJIdeaExternalResourceUrls.kt`, `registry.properties`, `BaseIdeaProperties.kt` | 작은 패치. 문맥 충돌 정도. `BaseIdeaProperties.kt`는 업스트림이 `CE_CLASS_VERSIONS`의 커버리지 줄(`:71`)을 바꾸면 Phantom 경로(`plugins/coverage/...`)를 유지한다 |
+| 2 | `VmOptionsGenerator.kt` | 작은 패치. 문맥 충돌 정도 |
 | 1 | `build.txt` | 업스트림 태그마다 바뀐다. `262.SNAPSHOT`을 유지한다 |
 
 한 번만 고쳤지만 깊게 고친 파일:
@@ -522,7 +550,7 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `README.md:113` | 산출물이 "Apple silicon only" | `phantom-build.sh:58-68`이 기본으로 Windows x64 `.exe`와 `.win.zip`도 만든다(`PHANTOM_WINDOWS=0`일 때만 빠짐). 릴리스 워크플로도 Windows 파일을 올린다(`phantom-release.yml:1-2`) |
 | `README.md:40-54` | "Planned" 아래 표에 완료된 `phantom-sync`, 옮긴 플러그인, 존재하지 않는 `phantom-spring-runtime`(`:47`), `phantom-containers`(`:54`)가 상태 표시 없이 섞여 있다 | 이 리포의 Phantom 플러그인은 `phantom-sync`, `phantom-theme`뿐이다. `phantom-theme`은 표에 없다 |
 | `README.md:45` | Endpoints가 Phantom-plugins `spring`으로 옮겨졌다 | Endpoints 툴 윈도우는 코어 `platform/lang-impl/src/dev/phantom/ide/endpoints/`에 있다. 플러그인은 제공자만 등록한다(53c0592476) |
-| `README.md:31-38` | "Done" 목록 | 번들에서 뺀 14개 모듈(be60914099 기준. 지금은 21개, 3.2절), `phantom.jetbrains.services` 게이트(3.3절), Toolbox 제거, GitHub 플러그인 저장소, foojay JDK 목록, `PhantomMemorySizer`, VM 옵션 변경, Lombok 번들, Phantom 테마 기본값이 빠져 있다 |
+| `README.md:31-38` | "Done" 목록 | 번들에서 뺀 14개 모듈(be60914099 기준. 지금은 31개, 3.2절), `phantom.jetbrains.services` 게이트(3.3절), Toolbox 제거, GitHub 플러그인 저장소, foojay JDK 목록, `PhantomMemorySizer`, VM 옵션 변경, Lombok 번들, Phantom 테마 기본값이 빠져 있다 |
 | `README.md:136` | `phantom-build.sh`가 날짜를 찍는다 | 맞다. 다만 그 방법이 추적 파일 `IdeaApplicationInfo.xml`을 sed로 고치는 것이라(be60914099의 `phantom-build.sh:16`) 빌드 뒤 작업 트리가 더러워진다는 말이 없었다. 048852ca23 이후 빌드는 추적 파일을 고치지 않는다(빌드 전, 코드를 읽은 결론) |
 
 `docs/phantom/design/2026-10-16-roadmap.md`:

@@ -18,7 +18,10 @@ also checks the baseline's age: when the baseline app's build date (from its bui
 than the last commit to the bundle list `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`, it prints
 `STALE BASELINE` on stderr and exits 2 if nothing regressed (1 still wins). Plugins removed from the bundle after the
 baseline was taken could otherwise come back without failing the gate. The check compares days, so a bundle change
-made on the baseline build's own day is not seen; outside a git checkout it is skipped with a note.
+made on the baseline build's own day is not seen. It is skipped with a note on stderr outside a git checkout, when the
+baseline's build number carries no date (`262.SNAPSHOT`, an app not built by `phantom-build.sh`), and in a shallow
+clone, where the oldest fetched commit would look like the last change to the bundle list (`git fetch --unshallow`
+to check). A comment-only commit to the bundle list counts as a change too.
 
 ## Conditions
 
@@ -26,15 +29,18 @@ made on the baseline build's own day is not seen; outside a git checkout it is s
   reach smart mode, against 3.4 s in the 2026-10-17 benchmark; numbers from a loaded machine are not comparable.
 - The user's own Phantom may keep running: each bench run has its own config copy (without `.lock`), system and log
   directories. It still competes for CPU, so close it for a baseline.
-- Fixture: `--fixture DIR`, else `$PHANTOM_BENCH_FIXTURE`, else `~/projects/private/prototype-reservation-system`;
-  copied once to `out/phantom-bench/work/fixture`
-  without `mysql_data` and `build/`.
+- Fixture: `--fixture DIR`, else `$PHANTOM_BENCH_FIXTURE`, else `~/projects/private/prototype-reservation-system`.
+  A relative path is relative to the directory the script is called from (not the repository root it changes to).
+  It is copied to `out/phantom-bench/work/fixture` without `mysql_data` and `build/`, and
+  `out/phantom-bench/work/fixture.source` records where the copy came from. The copy is kept between runs and labels:
+  the same source reuses it; another source (or a copy with no record) replaces it and removes the system directories
+  warmed on the old copy (`work/system-*`), so every label warms again. Each case prints one line.
 
 ## Baselines
 
 | File | From | Status |
 |---|---|---|
-| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to ed67704350); `compare` exits 2 until it is regenerated |
+| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to ed67704350, then the comment-only cea749cfb6); since 9433fdbe0f Kotlin is no longer bundled, so the regenerated counts are expected to drop (not measured); `compare` exits 2 until it is regenerated |
 | `baseline.json` | — | not yet: needs a quiet machine; then calibrate the tolerances below |
 
 Regenerating `static-baseline.json` needs an app built from the current sources (the counts come from the built

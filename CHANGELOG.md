@@ -12,10 +12,42 @@
 - 항목은 고정 카테고리(브랜딩·버전 / 번들 구성 / JetBrains 서버 통신 / 성능·인덱싱 / 기능(Phantom 플러그인) / 빌드·배포·서명 / 벤치마크 / 버그 수정 / 문서)로 나누고 빈 카테고리는 생략한다.
 - 해시는 커밋 후에야 알 수 있으므로, 같은 커밋에 해시를 쓸 수 없으면 다음 커밋에서 채운다.
 
-## 미배포 (v26.10.25.1 이후)
+## 미배포 (v26.11.13.1 이후)
+
+### JetBrains 서버 통신
+- 피드백 양식이 JetBrains로 보내던 것과 Tips of the Day 좋아요/싫어요를 막았다. 모든 피드백 양식이 거치는 `submitFeedback`(`GeneralFeedbackSubmit.kt`)이 `-Dphantom.jetbrains.services=true`가 아니면 요청도 지역 URL 매핑 조회도 없이 바로 돌아온다(콜백도 부르지 않으므로 블록 기반 대화상자는 감사 알림을 띄우지 않고, `LocalizationFeedbackDialog`는 알림을 건너뛴다). 레지스트리 `tips.of.the.day.feedback`의 기본값을 staging에서 nowhere로 바꾸고, 그 값이면 `TipPanel`이 좋아요/싫어요 줄을 숨긴다. 테스트 `training.ui.FeedbackSubmissionGateTest`(모듈 `intellij.featuresTrainer.tests`)를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). 이 커밋은 번들 밖 `featuresTrainer`의 `OnboardingFeedbackForm`이 띄우는 감사 알림을 건드리지 않았다 (6e71ed80c4).
+- `OnboardingFeedbackForm`(번들 밖 `featuresTrainer` 소속)이 보내지 않았는데 감사 알림을 띄우던 것을, 다른 호출자와 같은 게이트 조건(`OnboardingFeedbackForm.kt:279`)으로 건너뛰게 했다. `FeedbackSubmissionGateTest`가 요청을 기다리는 시간도 1초에서 15초로 늘렸다(게이트가 없으면 요청 앞에 느린 지역 매핑 조회가 끼어들 수 있다). 한계: 그보다 느린 매핑 조회는 고장 난 게이트를 통과시킬 수 있다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다 (5185f60295).
+
+### 기능(Phantom 플러그인)
+- Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c).
+
+### 빌드·배포·서명
+- `phantom-build.sh`가 추적 파일 `IdeaApplicationInfo.xml`을 더는 고쳐 쓰지 않는다. 표시 버전(빌드 날짜의 YY와 MM.DD)을 macOS와 Windows `installers.cmd` 실행에 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, `ApplicationInfoPropertiesImpl`이 XML보다 먼저 읽어 `product-info.json`, Info.plist, Windows 설치 파일, 패키지에 넣는 `<version>`에 반영한다. 추적 XML에는 자리표시자 `0` / `0.0`이 남아서 소스에서 IDE를 실행하거나 `installers.cmd`를 직접 실행하면 버전 0.0으로 보인다. 빌드 뒤 작업 트리가 더러워지던 것과 릴리스 태그 커밋의 버전이 릴리스 버전과 다를 수 있던 것이 이 변경으로 사라진다. `ApplicationInfoPropertiesTest`에 테스트 2개를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). PR #2 병합(fe53ddfed4)으로 main에 들어오면서 7fe0ab9436이 쓴 `26` / `11.13`도 이 자리표시자로 바뀌었다 (048852ca23).
+- `phantom-sign.sh`가 "Phantom Local" 인증서를 찾지 못하면 이유를 stderr에 쓰고 종료 코드 1로 실패한다(전에는 `exit 0`). `PHANTOM_SIGN_OPTIONAL=1`이면 경고만 쓰고 0으로 끝나며, `phantom-install.sh`가 이 값을 켜서 인증서 없는 머신에서도 설치는 ad-hoc 서명으로 끝난다. 헤더 주석이 login 키체인이라고 잘못 적던 것을 전용 키체인 `phantom-signing.keychain-db`로 고쳤다. (bf98d32b40)
+- `phantom-install.sh`, `phantom-sign.sh`, `phantom-bench.sh`의 앱·설정·픽스처 경로를 환경변수로 바꿀 수 있다: `PHANTOM_APP`(세 스크립트, `phantom-sign.sh`는 인자가 먼저), `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`(벤치, `--fixture`가 먼저). 기본값은 전과 같다. (45d41fe813)
+- 로컬 서명 인증서를 저장소 스크립트로 만든다. `./phantom-sign.sh --setup`이 macOS 기본 도구(`/usr/bin/openssl`, `security`)만으로 전용 키체인, 비밀번호 파일, 자체 서명 코드 서명 인증서 "Phantom Local"(Apple 인증서 아님, 10년)을 대화상자 없이 만들고, 이미 있으면 아무것도 바꾸지 않는다. `phantom-install.sh`는 인증서가 없으면 서명 전에 이를 실행한다(`PHANTOM_SIGN_SETUP=0`이면 건너뜀, 실패하면 전처럼 ad-hoc 서명). 서명은 `codesign --keychain`으로 전용 키체인을 가리켜 키체인 검색 목록과 신뢰 설정을 바꾸지 않는다. 기존 키체인·인증서로 서명한 결과(designated requirement)는 전과 같다 (41d3251766).
+- `phantom-sign.sh --setup`이 가져오기와 키 접근 목록 설정 사이에서 멈춘 설치(codesign이 쓸 수 없는 인증서가 남고 다시 실행하면 할 일이 없다고 하던 것)를 다시 실행할 때 접근 목록을 다시 건다. 자동 잠금 설정은 이번 실행이 만든 키체인에만 걸고, .p12 비밀번호를 환경변수로 내보내지 않으며, 임시 키 폴더를 INT, TERM, HUP에서도 지운다 (e2b8093e21).
+- `phantom-install.sh`가 `PHANTOM_APP`을 지우고 바꾸므로 `.app`으로 끝나는 절대 경로가 아니면 거부한다 (fb76f6ff29).
+- `phantom-install.sh`가 실행 중인 Phantom을 끌 때 번들 ID(`tell application id "dev.phantom.idea"`)가 아니라 `PHANTOM_APP` 경로에서 실행 중인 프로세스(`pgrep -f "$APP/Contents/MacOS/idea"`)의 프로세스 ID로 종료를 요청한다(`osascript -l JavaScript`의 `NSRunningApplication.terminate`, Quit 메뉴와 같은 Apple 이벤트라 IDE가 상태를 저장한다). 전에는 두 복사본이 떠 있으면 다른 쪽이 꺼지고 교체할 쪽은 180초 대기 끝에 실패할 수 있었다. 기다리기와 재시작(`open "$APP"`)은 전처럼 그 경로 기준이다. 같은 번들 ID의 스테이 오픈 애플릿 두 개로 확인했고 실제 Phantom 두 개로는 실행하지 않았다 (c7fe81b393).
+
+### 벤치마크
+- 정적 게이트 `compare`가 baseline 앱의 빌드 날짜(빌드 번호 `262.<YYMMDD>`)보다 번들 목록 `IdeaCommunityProperties.kt`의 마지막 커밋이 늦으면 stderr에 `STALE BASELINE`을 쓰고, 회귀가 없어도 종료 코드 2로 끝난다. 지금의 `static-baseline.json`(26.10.27)은 이 검사에 걸린다. 빌드된 앱이 있어야 다시 만들 수 있어 파일은 그대로 두고, 재생성 명령을 `docs/phantom/bench/README.md`에 적었다 (f503c195d4).
+- baseline 앱의 빌드 번호에 날짜가 없으면(`262.SNAPSHOT` 등) 낡았다고 판정하지 않고 stderr에 안내만 쓰고 나이 검사를 건너뛴다(git 기록이 없을 때와 같다) (fb76f6ff29).
+- 픽스처 복사본 `out/phantom-bench/work/fixture`를 어디서 복사했는지 `out/phantom-bench/work/fixture.source`에 적는다. 같은 원본이면 복사본을 그대로 다시 쓰고, 다른 원본이거나 기록이 없으면 복사본을 바꾸며 그 위에서 예열한 `work/system-*`도 지운다. 전에는 다른 `--fixture`나 `PHANTOM_BENCH_FIXTURE`가 조용히 무시됐다. 상대 경로 픽스처는 저장소 루트가 아니라 스크립트를 부른 폴더 기준이고, 없는 픽스처 폴더는 복사 전에 실패한다 (90cd80f4bb).
+- 얕은(shallow) git 클론에서는 정적 baseline의 나이 검사를 건너뛰고 stderr에 안내(`git fetch --unshallow`)를 쓴다. 얕은 클론에서는 가장 오래 받은 커밋이 번들 목록의 마지막 변경으로 보여 모든 baseline이 `STALE`(종료 코드 2)로 나왔다 (57071d1393).
+
+### 문서
+- 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2).
+- 문서가 기준으로 삼던 be60914099 뒤 main에 들어온 네 커밋(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서에 반영했다. 번들 구성(빼는 업스트림 모듈 21개, Phantom-plugins에서 빌드해 넣는 8개), Phantom-plugins 체크아웃이 필요한 빌드 절차와 릴리스 워크플로, 플러그인 별칭 대체(FORK-DELTA 3.12절), 밀린 `경로:줄`, 포크 델타 숫자(d2faebf601..64dc82b3f2)를 고치고 현행 문서의 기준 커밋을 64dc82b3f2로 바꿨다. 숫자는 그때 값이고 지금은 아래 항목의 값이다 (d65bc7d02d).
+- 없는 `./build/jpsModelToBazel.cmd`를 가리키던 안내를 이 리포의 유일한 생성기 `./build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(AGENTS.md와 같은 문구, 이 포크에서 도는지는 미확인). 대상: `.ai/guide.md`, `.ai/tool-permissions.json`, `.agents/skills`와 `.claude/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`. Kotlin `projectModelUpdater.kt`는 ultimate 루트가 있을 때만 그 경로를 부르므로 그대로 두었다. (63340df469)
+- 표식 주석 `// phantom-idea:`(XML은 `<!-- phantom-idea: -->`)이 없던 포크 수정 덩어리 전부에 주석을 달았다. 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했고 지운 줄은 없다(동작 변화 없음). 이로써 주석을 달 수 있는 수정 업스트림 파일 101개 모두 수정 덩어리마다 표식이 있다(그중 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만). 고정 카테고리 중 맞는 것이 없어 문서에 적었다 (cea749cfb6).
+- PR #2 뒤 main에 들어온 소유자 커밋 7개(a464f46719, 9433fdbe0f, ed67704350, 80b3e36e3d, 7fe0ab9436, a9c5f07bd5, b5ba0196ab)와 이 브랜치의 수정(fb76f6ff29, 90cd80f4bb, c7fe81b393, 57071d1393, cea749cfb6)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서와 `docs/phantom/bench/README.md`에 반영했다. 번들 구성(`.removing` 31개: 그냥 빼는 14개, Phantom-plugins 판으로 바꾸는 16개, Kotlin), Phantom-plugins에서 빌드해 넣는 17개, Kotlin zip 게시, Phantom-plugins로 옮긴 플러그인의 이 리포 소스를 고쳐도 배포 앱이 바뀌는지 확인하지 못했다는 점, 표식 통계, 스크립트 `경로:줄`, 포크 델타 숫자(d2faebf601..cea749cfb6)를 고치고 현행 문서의 기준 커밋을 cea749cfb6으로 바꿨다. 이 CHANGELOG에서는 v26.11.13.1 태그(b5ba0196ab)에 들어간 미배포 항목을 그 버전 절로 옮기고, 빠져 있던 해시를 채웠다.
+
+## v26.11.13.1 (2026-11-13)
 
 ### 브랜딩·버전
 - 버전을 26.10.27로 올렸다 (`IdeaApplicationInfo.xml`) (bf2b90f700).
+- 버전을 26.11.13으로 올렸다 (`IdeaApplicationInfo.xml`). 이 값은 태그 커밋 b5ba0196ab에는 있지만 지금 HEAD에는 없다. 뒤에 병합된 PR #2(fe53ddfed4)가 048852ca23의 자리표시자 `0` / `0.0`으로 되돌렸고, 그 뒤로 표시 버전은 빌드 날짜에서 `-Dphantom.version.*`로 들어간다 (7fe0ab9436).
 
 ### 번들 구성
 - 개발자 도구 런타임(`intellij.dev`), Eclipse 가져오기, JavaFX 커뮤니티, 첫 실행 가져오기 마법사, 신규 사용자 온보딩 투어를 번들 목록에서 제외했다. 소스는 유지한다 (770810693c).
@@ -26,6 +58,9 @@
 - Bytecode Viewer, WebP, Modal Commit Interface를 번들 목록에서 제외하고 Phantom-plugins의 `dev.phantom.bytecode`, `dev.phantom.webp`, `dev.phantom.modalcommit`으로 옮겼다. 소스는 upstream 병합을 위해 유지한다 (e2a4ffa4ee).
 - GitLab, Eclipse/Visual Studio/NetBeans 키맵, `configurationScript`를 번들에서 제외했다. Android Gradle DSL 모델은 Gradle 버전 카탈로그 대체 경로와 Dependency Analyzer가 쓰므로 유지한다 (7c43a36532).
 - Toml, YAML, Shell Script, Lombok, Decompiler, Coverage, TextMate, Markdown을 IntelliJ 원본 대신 Phantom-plugins가 만든 판(`dev.phantom.*` ID, IntelliJ ID는 별칭으로, IntelliJ 콘텐츠 모듈 이름은 그대로 유지)으로 번들한다. 둘을 함께 넣으면 같은 ID와 모듈을 두 번 차지하기 때문이다. 원본 7개는 `.removing`으로 빼고, 따로 넣던 `intellij.lombok`은 `PHANTOM_BUNDLED_PLUGINS`에서 지웠으며, 새 목록 `PHANTOM_PLUGINS_BUNDLED`의 디렉터리를 `getAdditionalPluginPaths()`로 넣는다. `phantom-build.sh`가 Phantom-plugins 체크아웃(저장소 옆, 또는 `PHANTOM_PLUGINS_REPO`)에서 이 플러그인들을 IntelliJ Community 대상으로(`-PplatformFromRepository=true`) 빌드해 `out/phantom-plugins`에 풀고, 체크아웃이나 플러그인 하나라도 없으면 빌드가 실패한다 (9229667cc7).
+- Marketplace 목록이 JetBrains가 게시한 플러그인(조직 이름이 `JetBrains`로 시작)을 보여 주지 않는다. Phantom이 유지하는 것은 번들이나 Phantom 플러그인 저장소에 자체 판이 있기 때문이다. 소스 실행, internal 모드, `-Dphantom.marketplace.showAll=true`이면 전처럼 모두 보인다. JetBrains Mermaid(`intellij.mermaid`)를 번들에서 빼고 Phantom-plugins의 Phantom Mermaid(디렉터리 `mermaid`, Phantom 자체 구현 `com.phantom.mermaid`, IntelliJ ID 별칭 없음)를 넣는다 (a464f46719).
+- Kotlin 플러그인을 번들하지 않는다(381 MB, Java만 쓰는 프로젝트는 쓰지 않음). `.removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)`로 빼고 `pluginModulesToPublish`에 넣어 빌드가 zip으로 만든다. `phantom-release.sh`가 릴리스마다 그 zip을 Phantom plugins 저장소(이 저장소 옆 Phantom-plugins 체크아웃, 또는 `PHANTOM_PLUGINS_REPO`)의 릴리스 `kotlin-262.<YYMMDD>`로 올리고 `.phantom/marketplace.json`의 `org.jetbrains.kotlin` 항목이 그것을 가리키게 한다(그 플랫폼 빌드부터). 그 저장소는 Kotlin(`kotlin-stdlib`)이나 Gradle Kotlin DSL 스크립트를 쓰는 프로젝트에 Kotlin을 제안한다. 같은 커밋에서 릴리스 스크립트가 `origin`이 SSH 호스트 별칭(`git@<별칭>:`)일 때도 저장소 이름을 바르게 뽑게 했다 (9433fdbe0f).
+- Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub도 IntelliJ 원본(`intellij.copyright`, `intellij.editorconfig.plugin`, `intellij.html.tools`, `intellij.testng`, `intellij.java.i18n`, `intellij.grazie`, `intellij.terminal`, `intellij.vcs.github`) 대신 Phantom-plugins가 만든 판(Phantom Copyright 등, `dev.phantom.*` ID, IntelliJ ID는 별칭, IntelliJ 콘텐츠 모듈 이름 유지)으로 번들한다. `PHANTOM_PLUGINS_BUNDLED`와 `phantom-build.sh`의 `bundled_from_plugins`가 17개가 됐다. 이 리포의 `plugins/github`, `plugins/grazie`, `plugins/terminal` 등에 있는 포크 패치가 그 판에 들어 있는지는 이 리포에서 확인할 수 없다 (ed67704350).
 
 ### JetBrains 서버 통신
 - Toolbox App 연동(REST 서비스, 업데이트 알림, 종료 핸들러, 업데이트 설정의 Toolbox 홍보, Try Ultimate via Toolbox, Copy Toolbox Reference 액션)을 코드에서 삭제했다 (43b28af952).
@@ -33,8 +68,6 @@
 - Help 메뉴의 JetBrains 링크(버그 신고, 지원, 피드백, YouTube, 키맵 PDF, What's New, 다운로드 페이지)를 제거했다. 시작 오류 대화상자의 "Report"는 `-Dphantom.jetbrains.services=true`일 때만 보인다. 터미널 AI 에이전트에서 Junie를 뺐고(Claude Code와 Codex는 유지), 내장 서버의 `/api/logs`는 같은 플래그 없이는 모든 요청을 거부한다 (fdd9682290).
 - Grazie Cloud, JetBrains Account 로그인, 완성 통계 전송의 JetBrains 호출은 `-Dphantom.jetbrains.services=true`일 때만 켠다. Package Search 클라이언트는 플래그 없이 항상 꺼져 있고 모든 요청이 IOException으로 실패한다. ShellCheck 0.10.0은 GitHub 릴리스에서 받는다. Grazie 언어 파일 다운로드는 JetBrains에 남아 있다 (98673d9e9a).
 - Download JDK 목록을 JetBrains 피드 대신 foojay Disco API에서 만든다(Temurin, Zulu, Microsoft, Semeru, GraalVM CE). JetBrains 피드는 `-Dphantom.jetbrains.services=true`일 때만 쓴다. registry `jdk.downloader.url`은 JetBrains 피드를 되살리지 않고, 값이 있으면 그 URL로 목록을 대체한다. JBR와 Git 설치 피드는 JetBrains에 남아 있다 (be60914099).
-- 피드백 양식이 JetBrains로 보내던 것과 Tips of the Day 좋아요/싫어요를 막았다. 모든 피드백 양식이 거치는 `submitFeedback`(`GeneralFeedbackSubmit.kt`)이 `-Dphantom.jetbrains.services=true`가 아니면 요청도 지역 URL 매핑 조회도 없이 바로 돌아온다(콜백도 부르지 않으므로 블록 기반 대화상자는 감사 알림을 띄우지 않고, `LocalizationFeedbackDialog`는 알림을 건너뛴다). 레지스트리 `tips.of.the.day.feedback`의 기본값을 staging에서 nowhere로 바꾸고, 그 값이면 `TipPanel`이 좋아요/싫어요 줄을 숨긴다. 테스트 `training.ui.FeedbackSubmissionGateTest`(모듈 `intellij.featuresTrainer.tests`)를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). 이 커밋은 번들 밖 `featuresTrainer`의 `OnboardingFeedbackForm`이 띄우는 감사 알림을 건드리지 않았다 (6e71ed80c4).
-- `OnboardingFeedbackForm`(번들 밖 `featuresTrainer` 소속)이 보내지 않았는데 감사 알림을 띄우던 것을, 다른 호출자와 같은 게이트 조건(`OnboardingFeedbackForm.kt:279`)으로 건너뛰게 했다. `FeedbackSubmissionGateTest`가 요청을 기다리는 시간도 1초에서 15초로 늘렸다(게이트가 없으면 요청 앞에 느린 지역 매핑 조회가 끼어들 수 있다). 한계: 그보다 느린 매핑 조회는 고장 난 게이트를 통과시킬 수 있다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다 (5185f60295).
 
 ### 성능·인덱싱
 - trigram 인덱스에서 라이브러리 안의 모든 텍스트 파일(Kotlin 소스, XML, properties 등)을 제외했다. 작성자의 프로젝트에서 trigram 인덱스가 369 MB에서 84 MB로, 전체 인덱스가 1.2 GB에서 916 MB로 줄었다. 같은 커밋에서 `ExternalUpdateManager.TOOLBOX`를 다시 두어 Android 플러그인 컴파일 실패를 고쳤다 (0a5ca64795).
@@ -44,15 +77,12 @@
 - 에디터 탭 그룹 플러그인 `phantom-tabs`를 번들로 추가하고, 이를 위해 `TabInfo.labelLeadingComponent`와 `isLabelCollapsed`를 플랫폼에 넣었다. 리뷰 수정과 테스트 안정화가 이어졌고, 이후 Phantom-plugins로 옮겨졌다 (f5778de337, 49b1b9e145, b02cc88cfe, 54a048eb13).
 - 열린 모든 프로젝트를 한 창에 묶는 `phantom-workspaces`를 번들로 추가했다. 처음에는 macOS 기본 창 탭을 병합했고, 이후 프로젝트 탭 스트립과 겹쳐 쌓은 프로젝트 창으로 바꿨다. 리뷰 수정과 병합 커밋이 포함되고, 이후 Phantom-plugins로 옮겨졌다 (2a4c13ce66, d13dfa273f, aab0c0bb57, 4ca7ef3e8e).
 
-- Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기) (a1313a347c).
-
 ### 빌드·배포·서명
-- `phantom-build.sh`가 추적 파일 `IdeaApplicationInfo.xml`을 더는 고쳐 쓰지 않는다. 표시 버전(빌드 날짜의 YY와 MM.DD)을 macOS와 Windows `installers.cmd` 실행에 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, `ApplicationInfoPropertiesImpl`이 XML보다 먼저 읽어 `product-info.json`, Info.plist, Windows 설치 파일, 패키지에 넣는 `<version>`에 반영한다. 추적 XML에는 자리표시자 `0` / `0.0`이 남아서 소스에서 IDE를 실행하거나 `installers.cmd`를 직접 실행하면 버전 0.0으로 보인다. 빌드 뒤 작업 트리가 더러워지던 것과 릴리스 태그 커밋의 버전이 릴리스 버전과 다를 수 있던 것이 이 변경으로 사라진다. `ApplicationInfoPropertiesTest`에 테스트 2개를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기) (048852ca23).
 - 커버리지 런타임 jar의 클래스 버전 규칙(`CE_CLASS_VERSIONS`, `BaseIdeaProperties.kt`)의 경로를 `plugins/java-coverage/lib/java-coverage-rt.jar`에서 `plugins/coverage/lib/java-coverage-rt.jar`(Phantom Code Coverage가 Phantom-plugins에서 번들되는 경로)로 바꿨다 (a199380d7d).
 - 릴리스 워크플로가 올바른 YAML이 되게 고쳤다(`notes` 입력 설명의 따옴표 없는 `: ` 때문에 GitHub가 거부했다). `phantom-build.sh`가 저장소 옆의 Phantom-plugins가 필요하므로 러너가 자기 SSH 키로 그것을 클론한다(작업 토큰은 읽을 수 없다). 체크아웃은 실행 사이에 남고 매번 `origin/main`으로 맞춘다 (60ea243e02).
-- `phantom-sign.sh`가 "Phantom Local" 인증서를 찾지 못하면 이유를 stderr에 쓰고 종료 코드 1로 실패한다(전에는 `exit 0`). `PHANTOM_SIGN_OPTIONAL=1`이면 경고만 쓰고 0으로 끝나며, `phantom-install.sh`가 이 값을 켜서 인증서 없는 머신에서도 설치는 ad-hoc 서명으로 끝난다. 헤더 주석이 login 키체인이라고 잘못 적던 것을 전용 키체인 `phantom-signing.keychain-db`로 고쳤다. (2aa424a169)
-- `phantom-install.sh`, `phantom-sign.sh`, `phantom-bench.sh`의 앱·설정·픽스처 경로를 환경변수로 바꿀 수 있다: `PHANTOM_APP`(세 스크립트, `phantom-sign.sh`는 인자가 먼저), `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`(벤치, `--fixture`가 먼저). 기본값은 전과 같다. (256d3b35c3)
-- 로컬 서명 인증서를 저장소 스크립트로 만든다. `./phantom-sign.sh --setup`이 macOS 기본 도구(`/usr/bin/openssl`, `security`)만으로 전용 키체인, 비밀번호 파일, 자체 서명 코드 서명 인증서 "Phantom Local"(Apple 인증서 아님, 10년)을 대화상자 없이 만들고, 이미 있으면 아무것도 바꾸지 않는다. `phantom-install.sh`는 인증서가 없으면 서명 전에 이를 실행한다(`PHANTOM_SIGN_SETUP=0`이면 건너뜀, 실패하면 전처럼 ad-hoc 서명). 서명은 `codesign --keychain`으로 전용 키체인을 가리켜 키체인 검색 목록과 신뢰 설정을 바꾸지 않는다. 기존 키체인·인증서로 서명한 결과(designated requirement)는 전과 같다.
+- 설치 파일 빌드가 플러그인을 zip으로도 만든다. `OpenSourceCommunityInstallersBuildTarget.kt`의 항상 건너뛰는 단계 목록에서 `ARCHIVE_PLUGINS`를 뺐다. 번들하지 않는 Kotlin이 `out/phantom-idea/artifacts/<제품 코드>-plugins/`에 zip으로 나오게 하려는 것이다 (80b3e36e3d).
+- `phantom-release.sh`의 Kotlin zip 확인이 `pipefail`에서도 맞게 동작하게 고쳤다. `unzip -l | grep -q` 대신 `unzip -Z1 <zip> Kotlin/lib/kotlin-plugin.jar`로 항목을 확인하고, 버전은 jar를 임시 파일로 꺼내 `plugin.xml`에서 읽는다 (a9c5f07bd5).
+- `phantom-release.sh`가 Kotlin zip을 찾을 때 `*.blockmap.zip`을 빼고 `Kotlin-*.zip`만 고른다 (b5ba0196ab).
 
 ### 버그 수정
 - 다른 플러그인의 ID를 별칭으로 가진 플러그인(예: `dev.phantom.toml`, 별칭 `org.toml.lang`)과 그 원본이 함께 설치되면 ID 충돌로 둘 다 제외되던 것을, 대체하는 쪽만 로드하고 대체된 쪽은 "대체됨"으로 표시하며 그 의존 플러그인은 대체한 쪽으로 해석하도록 고쳤다. 대체한 쪽을 끄면 원본이 다시 로드된다. essential 플러그인은 대체되지 않는다. 새 비적재 사유 `PluginIsReplacedByAnotherPlugin`("Replaced by …")을 더했고, `PluginInitializationSelectPluginsToLoadTest`에서 둘 다 제외를 기대하던 테스트 1개를 바꾸고 3개를 더했다 (04dba66c3a).
@@ -63,15 +93,11 @@
 - `phantom-bench.sh`와 `phantom-bench-report.py`를 추가했다. 설치된 앱을 고정 프로젝트 복사본에서 격리 실행하고 플랫폼 자체 보고서로 지표를 뽑는다 (38efaf66bf).
 - N회 실행의 중앙값/최소/최대 요약과 baseline 대비 회귀 검사(`compare`)를 추가했다. 시간은 10%, 메모리와 클래스 수는 5%, 멈춤 1회 이상 나빠지면 실패한다 (6767ffc6e1).
 - 앱을 띄우지 않고 번들 크기, jar 수, 번들 플러그인, 사전 로드 서비스, 시작 활동 등록 수를 세는 `static` 게이트를 추가했다. baseline은 설치된 26.10.27이다 (4b3ffd9498).
-- 정적 게이트 `compare`가 baseline 앱의 빌드 날짜(빌드 번호 `262.<YYMMDD>`)보다 번들 목록 `IdeaCommunityProperties.kt`의 마지막 커밋이 늦으면 stderr에 `STALE BASELINE`을 쓰고, 회귀가 없어도 종료 코드 2로 끝난다. 지금의 `static-baseline.json`(26.10.27)은 이 검사에 걸린다. 빌드된 앱이 있어야 다시 만들 수 있어 파일은 그대로 두고, 재생성 명령을 `docs/phantom/bench/README.md`에 적었다.
 
 ### 문서
 - 탭 그룹 설계와 구현 계획을 추가했다 (a8ad9cfcd9).
 - 모든 프로젝트를 한 창에 두는 Workspaces 설계를 추가했다 (b9d9990ad8).
 - 개발 문서 체계를 만들었다. `docs/phantom/`에 문서 색인(`README.md`), `ARCHITECTURE.md`, `FORK-DELTA.md`, `BUILD.md`, `DEVELOPMENT.md`를 더하고 이 `CHANGELOG.md`를 만들었다. `README.md`를 개편하고 한국어판 `README.ko.md`를 더했으며, `AGENTS.md`의 이 포크에 없는 경로를 고치고 Phantom 규칙을 넣었다. 개편 전 README의 인덱싱 절은 `docs/phantom/2026-10-29-indexing-changes.md`로 옮겼다 (ff39526a22, PR #1 병합 2c0cfbd022).
-- 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2).
-- 문서가 기준으로 삼던 be60914099 뒤 main에 들어온 네 커밋(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서에 반영했다. 번들 구성(빼는 업스트림 모듈 21개, Phantom-plugins에서 빌드해 넣는 8개), Phantom-plugins 체크아웃이 필요한 빌드 절차와 릴리스 워크플로, 플러그인 별칭 대체(FORK-DELTA 3.12절), 밀린 `경로:줄`, 포크 델타 숫자(d2faebf601..64dc82b3f2)를 고치고 현행 문서의 기준 커밋을 64dc82b3f2로 바꿨다.
-- 없는 `./build/jpsModelToBazel.cmd`를 가리키던 안내를 이 리포의 유일한 생성기 `./build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(AGENTS.md와 같은 문구, 이 포크에서 도는지는 미확인). 대상: `.ai/guide.md`, `.ai/tool-permissions.json`, `.agents/skills`와 `.claude/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`. Kotlin `projectModelUpdater.kt`는 ultimate 루트가 있을 때만 그 경로를 부르므로 그대로 두었다. (303c4a933a)
 
 ## v26.10.25.1 (2026-10-25)
 
