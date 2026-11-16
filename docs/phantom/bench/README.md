@@ -40,7 +40,7 @@ to check). A comment-only commit to the bundle list counts as a change too.
 
 | File | From | Status |
 |---|---|---|
-| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to ed67704350, then the comment-only cea749cfb6); since 9433fdbe0f Kotlin is no longer bundled, so the regenerated counts are expected to drop (not measured); `compare` exits 2 until it is regenerated |
+| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to ed67704350, then the comment-only ea745003d1); since 9433fdbe0f Kotlin is no longer bundled, so the regenerated counts are expected to drop (not measured); `compare` exits 2 until it is regenerated |
 | `baseline.json` | — | not yet: needs a quiet machine; then calibrate the tolerances below |
 
 Regenerating `static-baseline.json` needs an app built from the current sources (the counts come from the built

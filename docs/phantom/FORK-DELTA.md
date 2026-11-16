@@ -1,14 +1,14 @@
 # Phantom IDEA 포크 델타
 
 - 목적: Phantom IDEA가 업스트림 intellij-community와 어디서 어떻게 다른지 적는다. 이 포크를 안전하게 고치고 새 업스트림 태그를 병합할 때 본다.
-- 기준 커밋: cea749cfb6 (업스트림 기준 d2faebf601 = idea/262.10968.63)
+- 기준 커밋: ea745003d1 (업스트림 기준 d2faebf601 = idea/262.10968.63)
 - 작성일: 2026-11-16
 
-이 문서는 `git diff d2faebf601 HEAD`(HEAD = cea749cfb6)에서 만들었다. 커밋 메시지는 이유를 찾을 때만 썼다. `path:line`은 HEAD에서 파일을 열어 확인한 위치다. 단 cea749cfb6에서 다시 연 것은 루트 스크립트(`phantom-sign.sh` 제외), `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `OpenSourceCommunityInstallersBuildTarget.kt`, `MarketplaceRequests.kt`의 Marketplace 필터 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, cea749cfb6이 표식 주석을 더한 78개 파일(2절)에서는 몇 줄 밀렸을 수 있다. 직접 읽지 않고 미루어 짐작한 내용은 "(추정)"으로 표시한다.
+이 문서는 `git diff d2faebf601 HEAD`(HEAD = ea745003d1)에서 만들었다. 커밋 메시지는 이유를 찾을 때만 썼다. `path:line`은 HEAD에서 파일을 열어 확인한 위치다. 단 ea745003d1에서 다시 연 것은 루트 스크립트(`phantom-sign.sh` 제외), `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `OpenSourceCommunityInstallersBuildTarget.kt`, `MarketplaceRequests.kt`의 Marketplace 필터 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, ea745003d1이 표식 주석을 더한 78개 파일(2절)에서는 몇 줄 밀렸을 수 있다. 직접 읽지 않고 미루어 짐작한 내용은 "(추정)"으로 표시한다.
 
 ## 1. 요약
 
-d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 136개다(병합 커밋 6개 포함). 이 절의 숫자(커밋 수, 파일 수, 줄 수)는 모두 `d2faebf601..cea749cfb6`(기준 커밋) 기준이다. 그 뒤의 문서 커밋은 `docs/`와 루트 문서의 줄 수만 바꾼다.
+d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 136개다(병합 커밋 6개 포함). 이 절의 숫자(커밋 수, 파일 수, 줄 수)는 모두 `d2faebf601..ea745003d1`(기준 커밋) 기준이다. 그 뒤의 문서 커밋은 `docs/`와 루트 문서의 줄 수만 바꾼다.
 
 ### 1.1 상태별
 
@@ -41,12 +41,12 @@ d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋�
 | `plugins/` | 25 | 28 | 14 | +2611 / -924 |
 | `tools/` | 1 | 0 | 0 | +37 / -0 |
 
-루트 파일은 추가 9개(`README.md`, `README.ko.md`, `CHANGELOG.md`, `phantom-build.sh`, `phantom-install.sh`, `phantom-release.sh`, `phantom-sign.sh`, `phantom-bench.sh`, `phantom-bench-report.py`)와 수정 4개(`AGENTS.md`, `BUILD.bazel`, `build.txt`, `intellij.idea.community.main.iml`)다. `.agents/`, `.ai/`, `.claude/`의 수정 12개는 63340df469의 안내 문구 수정이다. `docs/`는 전부 Phantom 문서이고 코드에 영향이 없다. 코드 델타는 `platform/`과 `plugins/`에 몰려 있다. 64dc82b3f2 뒤 늘어난 줄 대부분은 cea749cfb6의 표식 주석 137줄, Kotlin 게시(9433fdbe0f), 스크립트 수정이다.
+루트 파일은 추가 9개(`README.md`, `README.ko.md`, `CHANGELOG.md`, `phantom-build.sh`, `phantom-install.sh`, `phantom-release.sh`, `phantom-sign.sh`, `phantom-bench.sh`, `phantom-bench-report.py`)와 수정 4개(`AGENTS.md`, `BUILD.bazel`, `build.txt`, `intellij.idea.community.main.iml`)다. `.agents/`, `.ai/`, `.claude/`의 수정 12개는 303c4a933a의 안내 문구 수정이다. `docs/`는 전부 Phantom 문서이고 코드에 영향이 없다. 코드 델타는 `platform/`과 `plugins/`에 몰려 있다. 64dc82b3f2 뒤 늘어난 줄 대부분은 ea745003d1의 표식 주석 137줄, Kotlin 게시(9433fdbe0f), 스크립트 수정이다.
 
 ### 1.3 숫자를 다시 만드는 명령
 
 ```bash
-git rev-list --count d2faebf601..HEAD                  # 포크 커밋 수 (136, 병합 6, HEAD = cea749cfb6)
+git rev-list --count d2faebf601..HEAD                  # 포크 커밋 수 (136, 병합 6, HEAD = ea745003d1)
 git diff --shortstat d2faebf601 HEAD                   # 268 files changed, 16482 insertions(+), 3021 deletions(-)
 git diff --no-renames --shortstat d2faebf601 HEAD      # 270 files changed, 16541 insertions(+), 3080 deletions(-)
 git diff --no-renames --name-status d2faebf601 HEAD | cut -c1 | sort | uniq -c
@@ -67,7 +67,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | 번들은 설정으로 줄이고 소스는 남긴다 | 플러그인을 빼도 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 둔다. 번들 목록에서만 뺀다. 예: `intellij.keymap.eclipse`는 번들에서 빠졌지만 `intellij.idea.community.main.iml:143`에 남아 있다. | `IdeaCommunityProperties.kt:90-122`. e2a4ffa4ee 본문 "the sources stay for upstream merges". |
 | JetBrains 서비스는 옵트인 플래그 뒤에 둔다 | 자동으로 JetBrains 서버를 부르는 코드는 지우지 않고 `MarketplaceRequests.jetBrainsServicesEnabled`(시스템 프로퍼티 `phantom.jetbrains.services`, 기본 false)로 막는다. | `MarketplaceRequests.kt:108-109`. d7c795f347, fdd9682290, 98673d9e9a, be60914099. |
 | 진단 파일은 기본으로 끈다 | 업스트림의 진단 프로퍼티 기본값을 바꾸거나 새 프로퍼티로 막는다. 켜는 방법은 프로퍼티로 남긴다. | 53aa9e1ec7, 7568bf108c, 3718f68ff4. 4.2절. |
-| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`(XML은 `<!-- phantom-idea: -->`)를 단다. cea749cfb6 뒤의 상태(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 그중 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만 있다. cea749cfb6 전에는 24개만 표식이 다 있었고, 이 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n -e 'phantom-idea:' -e 'Phantom:'`로 확인한다. cea749cfb6 |
+| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`(XML은 `<!-- phantom-idea: -->`)를 단다. ea745003d1 뒤의 상태(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 그중 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만 있다. ea745003d1 전에는 24개만 표식이 다 있었고, 이 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n -e 'phantom-idea:' -e 'Phantom:'`로 확인한다. ea745003d1 |
 | Phantom 코드는 자기 패키지에 둔다 | 새 코드는 `dev.phantom.*` 패키지, 새 모듈은 `phantom.*` 이름을 쓴다. 예외는 업스트림 패키지 안에 넣은 `FoojayJdkList.kt`, `GHDeviceFlow.kt`, `PhantomBuildNumber.kt`다. | c06e071a51(모듈 이름 `intellij.phantom.*` → `phantom.*`). |
 | IntelliJ 플러그인을 Phantom-plugins 판으로 바꿔 번들할 수 있다 | 원본은 `.removing`으로 빼고, Phantom-plugins가 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 두고 빌드한 판을 `PHANTOM_PLUGINS_BUNDLED`로 넣는다. 원본과 함께 설치돼도 대체판만 로드된다(3.12절). 바꾼 뒤에는 이 리포의 원본 소스와 그 안의 포크 패치가 번들에 들어가지 않을 수 있다(3.2절 끝의 주의). | 9229667cc7, 04dba66c3a, a464f46719, ed67704350. 3.2절. |
 | 플러그인은 트리 안에서 만들고 밖으로 옮긴다 | 트리 안에서 만들어 번들한 뒤, 같은 플러그인 ID로 `newkayak12/Phantom-plugins`에 옮기고 번들 목록, 루트 모듈, Bazel 파일 목록, 프로젝트 모듈에서 뺀다. 설계 문서는 남긴다. | 5.2절. 8983487a29, b68d97332e, 1570329708 본문. |
@@ -358,7 +358,7 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42` | "운영 모드에서 macOS면 NSIS 건너뜀" 삭제 | d0eab60d1b |
 | `phantom-build.sh` (신규) | 날짜로 구한 표시 버전·빌드 번호를 `installers.cmd`에 `-D`로 넘김(`:15`, `:45-46`, aarch64. 표시 버전은 추적 파일을 고치지 않고 `-Dphantom.version.major/minor`, 048852ca23, 빌드 전. v26.11.13.1의 태그 커밋에는 7fe0ab9436이 손으로 쓴 `26` / `11.13`이 추적 파일에 있었다), Phantom-plugins 체크아웃(`$root/../Phantom-plugins` 또는 `PHANTOM_PLUGINS_REPO`, `:32`)에서 플러그인 17개(`:33`)를 `./gradlew --no-configuration-cache -q -PplatformFromRepository=true :<dir>:buildPlugin`으로 빌드해 `out/phantom-plugins`에 풂(`:29-44`, 체크아웃이나 zip이 없으면 `exit 1`, `:34`, `:42`, 9229667cc7), Windows x64 교차 빌드(`:58-68`), 중간 산출물 삭제 | fc05eddc04 외 4개, 048852ca23, 9229667cc7 |
 | `phantom-release.sh` (신규) | 빌드, DMG 검사, 태그 push, GitHub 릴리스(초안 후 공개). Kotlin zip 확인(`:59-63`)과 Phantom-plugins 저장소에 Kotlin 릴리스·`marketplace.json` 게시(`:81-122`). `origin`이 SSH 호스트 별칭이어도 저장소 이름을 뽑음(`:76`) | ae2a766191 외 5개, 9433fdbe0f, a9c5f07bd5, b5ba0196ab |
-| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom IDEA.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:52-70`) | a0c4e0d04a 외 5개, 45d41fe813, fb76f6ff29, c7fe81b393 |
+| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom IDEA.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:52-70`) | a0c4e0d04a 외 5개, 256d3b35c3, b5a1bc773a, eff1276d6a |
 | `phantom-sign.sh` (신규) | 로컬 인증서 "Phantom Local"로 재서명 | e71672a6ab |
 | `.github/workflows/phantom-release.yml` (신규) | 셀프 호스티드 러너에서 수동 실행 릴리스. `notes` 입력 설명을 따옴표로 감싸 올바른 YAML로 고침(`:17`). 빌드 전에 Phantom-plugins를 `$GITHUB_WORKSPACE/../Phantom-plugins`에 클론하거나 `origin/main`으로 맞추는 단계(`:40-55`, 러너의 SSH 키 사용) | ae2a766191, 25be81d8e6, d0eab60d1b, 60ea243e02 |
 | `tools/phantom-runner-setup.sh` (신규) | 셀프 호스티드 러너 등록 | ae2a766191 |
@@ -369,8 +369,8 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 
 | 파일 | 내용 | 커밋 |
 |---|---|---|
-| `phantom-bench.sh` | 설치된 앱을 격리된 설정으로 N회 실행해 지표 수집. 픽스처 복사본은 `out/phantom-bench/work/fixture.source`에 원본을 적어 같은 원본이면 다시 쓰고 다르면 바꾸며(예열한 `work/system-*`도 지움), 상대 경로 픽스처는 부른 폴더 기준(`:18`, `:39-40`, `:49-69`) | 38efaf66bf, 6767ffc6e1, 45d41fe813, 90cd80f4bb |
-| `phantom-bench-report.py` | `run`/`summary`/`compare`/`static`. compare는 시간 10%, 메모리·클래스 5%, 프리즈 1건 악화를 실패로 본다(6767ffc6e1 본문). static baseline이 번들 목록보다 낡았으면 종료 코드 2(`stale_static_baseline`, `:192-220`). git 기록이 없을 때, baseline 빌드 번호에 날짜가 없을 때, 얕은 클론일 때는 안내만 쓰고 건너뜀 | 38efaf66bf, 6767ffc6e1, 4b3ffd9498, f503c195d4, fb76f6ff29, 57071d1393 |
+| `phantom-bench.sh` | 설치된 앱을 격리된 설정으로 N회 실행해 지표 수집. 픽스처 복사본은 `out/phantom-bench/work/fixture.source`에 원본을 적어 같은 원본이면 다시 쓰고 다르면 바꾸며(예열한 `work/system-*`도 지움), 상대 경로 픽스처는 부른 폴더 기준(`:18`, `:39-40`, `:49-69`) | 38efaf66bf, 6767ffc6e1, 256d3b35c3, ecf939da71 |
+| `phantom-bench-report.py` | `run`/`summary`/`compare`/`static`. compare는 시간 10%, 메모리·클래스 5%, 프리즈 1건 악화를 실패로 본다(6767ffc6e1 본문). static baseline이 번들 목록보다 낡았으면 종료 코드 2(`stale_static_baseline`, `:192-220`). git 기록이 없을 때, baseline 빌드 번호에 날짜가 없을 때, 얕은 클론일 때는 안내만 쓰고 건너뜀 | 38efaf66bf, 6767ffc6e1, 4b3ffd9498, e29d855fff, b5a1bc773a, aadcfe0bc7 |
 | `docs/phantom/bench/README.md`, `docs/phantom/bench/static-baseline.json` | 사용법과 정적 기준선 | 4b3ffd9498 |
 
 `docs/phantom/bench/README.md:10`은 `docs/phantom/bench/baseline.json`을 쓰지만 이 파일은 HEAD에 없다. 런타임 기준선은 아직 만들지 않았다(4b3ffd9498 본문).
@@ -445,9 +445,9 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `PHANTOM_WINDOWS` | `phantom-build.sh:58` | 1 | 0이면 DMG만 빌드하고 Windows 교차 빌드를 건너뛴다 |
 | `PHANTOM_BUILD_SEQ` | `phantom-build.sh:19-20`, `phantom-release.sh:19-22` | 미설정 | 그날 빌드 순번 N을 고정한다. 없으면 `out/phantom-build-seq`에서 계산 |
 | `PHANTOM_PLUGINS_REPO` | `phantom-build.sh:32`, `phantom-release.sh:62` | `$root/../Phantom-plugins`(이 체크아웃 옆) | 번들할 플러그인 17개를 빌드할 Phantom-plugins 체크아웃. `settings.gradle.kts`가 없으면 빌드가 멈춘다(`phantom-build.sh:34`). 릴리스는 같은 체크아웃에 Kotlin을 게시하며 `.phantom/marketplace.json`이 없으면 멈춘다(`phantom-release.sh:63`). 9229667cc7, 9433fdbe0f |
-| `PHANTOM_APP` | `phantom-install.sh:22`, `phantom-bench.sh:21`, `phantom-sign.sh`(인자가 먼저) | `/Applications/Phantom IDEA.app` | 설치·측정·서명할 앱. 설치는 `.app`으로 끝나는 절대 경로만 받고(`phantom-install.sh:23`) 그 경로에서 실행 중인 Phantom만 끈다. 45d41fe813, fb76f6ff29, c7fe81b393 |
-| `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE` | `phantom-bench.sh:22`, `:28` | `$HOME/Library/Application Support/Phantom/PhantomIDEA`, `$HOME/projects/private/prototype-reservation-system` | 벤치에 복사할 사용자 설정, 열 프로젝트(`--fixture`가 먼저, 상대 경로는 부른 폴더 기준). 45d41fe813, 90cd80f4bb |
-| `PHANTOM_SIGN_SETUP`, `PHANTOM_SIGN_OPTIONAL` | `phantom-sign.sh`, `phantom-install.sh:81` | 설치에서는 `1`, `1` | 인증서가 없을 때 먼저 만들지, 서명 실패를 경고로 끝낼지(BUILD.md 5장). bf98d32b40, 41d3251766 |
+| `PHANTOM_APP` | `phantom-install.sh:22`, `phantom-bench.sh:21`, `phantom-sign.sh`(인자가 먼저) | `/Applications/Phantom IDEA.app` | 설치·측정·서명할 앱. 설치는 `.app`으로 끝나는 절대 경로만 받고(`phantom-install.sh:23`) 그 경로에서 실행 중인 Phantom만 끈다. 256d3b35c3, b5a1bc773a, eff1276d6a |
+| `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE` | `phantom-bench.sh:22`, `:28` | `$HOME/Library/Application Support/Phantom/PhantomIDEA`, `$HOME/projects/private/prototype-reservation-system` | 벤치에 복사할 사용자 설정, 열 프로젝트(`--fixture`가 먼저, 상대 경로는 부른 폴더 기준). 256d3b35c3, ecf939da71 |
+| `PHANTOM_SIGN_SETUP`, `PHANTOM_SIGN_OPTIONAL` | `phantom-sign.sh`, `phantom-install.sh:81` | 설치에서는 `1`, `1` | 인증서가 없을 때 먼저 만들지, 서명 실패를 경고로 끝낼지(BUILD.md 5장). 2aa424a169, 9e69bba61f |
 | `PHANTOM_FOOJAY_E2E` | `platform/lang-impl/testSources/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkListTest.kt:98` | 미설정 | `true`면 실제 JDK를 내려받는 E2E 테스트를 실행 |
 | `PHANTOM_FOOJAY_E2E_SDK` | 같은 파일 `:101` | 문자열 `temurin-21` | E2E 테스트가 받을 SDK 이름 |
 | `GH_TOKEN`, `GITHUB_TOKEN` | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:40-41` | 미설정 | 비공개 GitHub 플러그인 저장소 토큰. 순서는 비밀번호 저장소 → 이 변수 → `gh auth token` |
@@ -469,7 +469,7 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `platform/platform-impl/src/dev/phantom/ide/memory/PhantomMemorySizer.kt` | 기계별 힙·페이지 캐시 크기 | 플랫폼(항상) | `platform/platform-tests/testSrc/dev/phantom/ide/memory/MemoryPlanTest.kt` |
 | `platform/lang-impl/src/dev/phantom/ide/endpoints/` (`EndpointsToolWindow.kt`, `EndpointRequests.kt`) | Endpoints 툴 윈도우와 .http 요청 생성 | 플랫폼 `intellij.platform.lang.impl`(제공자 플러그인이 있을 때만 창이 보임) | `platform/lang-impl/testSources/dev/phantom/ide/endpoints/EndpointRequestsTest.kt` |
 | `platform/platform-resources/src/icons/phantom/springBoot.svg`, `springBoot_dark.svg` | New Project Spring Boot 아이콘 | 플랫폼 | - |
-| `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt` | foojay JDK 목록 변환과 다운로드 해석. 업스트림 패키지에 있고 파일 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉽다. cea749cfb6이 그 아래 `:2`에 포크가 더한 파일이라는 `// phantom-idea:` 줄을 넣었다 | 플랫폼 | `FoojayJdkListTest.kt`, `testData/jdkDownload/foojay-packages.json` |
+| `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt` | foojay JDK 목록 변환과 다운로드 해석. 업스트림 패키지에 있고 파일 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉽다. ea745003d1이 그 아래 `:2`에 포크가 더한 파일이라는 `// phantom-idea:` 줄을 넣었다 | 플랫폼 | `FoojayJdkListTest.kt`, `testData/jdkDownload/foojay-packages.json` |
 | `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt` | GitHub 디바이스 플로와 `gh` 토큰(로그인 문구는 `GithubBundle`의 `phantom.*` 키 10개, a1313a347c) | 업스트림 GitHub 플러그인 소스 안. ed67704350부터 번들의 GitHub 플러그인은 Phantom-plugins 빌드라 이 코드가 배포 앱에 있는지는 미확인(3.2절 끝) | 없음 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt` | 빌드 번호와 표시 버전 속성 이름(`:16-24`, 048852ca23) | 빌드 스크립트 | 표시 버전 쪽은 `ApplicationInfoPropertiesTest.java:28-44`(실행 전). 파일 자체의 전용 테스트는 없다 |
 | `plugins/ide-features-trainer/testSrc/training/ui/FeedbackSubmissionGateTest.kt` | 3.3.1절 `submitFeedback` 게이트 테스트(6e71ed80c4, 실행 전) | - | 자신(모듈 `intellij.featuresTrainer.tests`) |
@@ -501,7 +501,7 @@ Kotlin(`kotlin.plugin`)은 9433fdbe0f부터 번들하지 않는다. 이 리포�
 
 ## 6. 충돌 위험이 큰 업스트림 파일
 
-수정 빈도는 `git log --format= --name-only d2faebf601..HEAD | sort | uniq -c | sort -rn`(HEAD = cea749cfb6)으로 셌다. 아래는 업스트림에 원래 있던 파일만 골랐다. 표식 주석만 더한 cea749cfb6도 한 번으로 센다.
+수정 빈도는 `git log --format= --name-only d2faebf601..HEAD | sort | uniq -c | sort -rn`(HEAD = ea745003d1)으로 셌다. 아래는 업스트림에 원래 있던 파일만 골랐다. 표식 주석만 더한 ea745003d1도 한 번으로 센다.
 
 | 커밋 수 | 파일 | 예상 충돌 |
 |---|---|---|

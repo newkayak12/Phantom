@@ -1,4 +1,4 @@
-<!-- synced-with: README.md @ cea749cfb6+docs -->
+<!-- synced-with: README.md @ ea745003d1+docs -->
 <p align="center">
   <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom IDEA" width="180">
 </p>

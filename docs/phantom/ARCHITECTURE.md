@@ -1,14 +1,14 @@
 # Phantom IDEA 아키텍처
 
 목적: 큰 트리에서 길을 찾고 프로그램을 안전하게 고치기 위한 구조·흐름 지도. 패치 지점 전체 목록은 [FORK-DELTA.md](FORK-DELTA.md), 빌드·서명·릴리스·벤치 명령은 [BUILD.md](BUILD.md)가 맡는다.
-기준 커밋: cea749cfb6
+기준 커밋: ea745003d1
 작성일: 2026-11-16
 
-표기: `경로:줄`은 기준 커밋에서 직접 연 위치다. 단 cea749cfb6에서 다시 연 것은 루트 스크립트(`phantom-sign.sh` 제외), `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, Marketplace 필터 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, cea749cfb6이 표식 주석을 더한 78개 파일(FORK-DELTA 2절)에서는 몇 줄 밀렸을 수 있다. "(추정)"은 읽은 사실에서 끌어낸 결론, "(미확인)"은 이번에 열어 보지 못한 내용이다.
+표기: `경로:줄`은 기준 커밋에서 직접 연 위치다. 단 ea745003d1에서 다시 연 것은 루트 스크립트(`phantom-sign.sh` 제외), `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, Marketplace 필터 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, ea745003d1이 표식 주석을 더한 78개 파일(FORK-DELTA 2절)에서는 몇 줄 밀렸을 수 있다. "(추정)"은 읽은 사실에서 끌어낸 결론, "(미확인)"은 이번에 열어 보지 못한 내용이다.
 
 ## 1. 이 프로그램이 무엇인가
 
-- JetBrains intellij-community 모노레포를 태그 `idea/262.10968.63`에서 가져온 개인 포크다(README.md:138). 첫 커밋 d2faebf601이 업스트림 트리이고, 그 뒤 136개 커밋(병합 6개 포함)이 Phantom 변경이다. d2faebf601..cea749cfb6 차이는 268개 파일(+16482/-3021)이다. 두 숫자는 기준 커밋 cea749cfb6까지 센 값이다(FORK-DELTA 1절과 같은 명령).
+- JetBrains intellij-community 모노레포를 태그 `idea/262.10968.63`에서 가져온 개인 포크다(README.md:138). 첫 커밋 d2faebf601이 업스트림 트리이고, 그 뒤 136개 커밋(병합 6개 포함)이 Phantom 변경이다. d2faebf601..ea745003d1 차이는 268개 파일(+16482/-3021)이다. 두 숫자는 기준 커밋 ea745003d1까지 센 값이다(FORK-DELTA 1절과 같은 명령).
 - 저장소 루트가 곧 community 루트다. `community/` 디렉터리는 없다. 업스트림 문서의 `community/...`는 `./...`로 읽는다.
 - 구성은 업스트림과 같다. IntelliJ Platform(`platform/`) 위에 IDEA Community 제품(`build/src/.../IdeaCommunityProperties.kt`)이 번들 플러그인 목록과 콘텐츠 모듈을 얹는다.
 - Phantom이 구조 수준에서 바꾸는 것은 다섯 가지다. (1) 브랜딩과 빌드 번호 체계, (2) 번들 구성: 업스트림 번들 플러그인 31개를 빼고(Kotlin은 번들 대신 릴리스마다 zip으로 Phantom-plugins 저장소에 게시), 이 저장소의 Phantom 플러그인 2개와 Phantom-plugins에서 빌드한 플러그인 17개(뺀 원본 16개와 Lombok의 대체판)를 넣음, (3) JetBrains 서버 호출을 하나의 시스템 속성 게이트 뒤로 숨김, (4) `dev.phantom.*` 패키지로 플랫폼 기능(GitHub 플러그인 저장소, 메모리 자동 조정, Endpoints 도구 창)을 추가함, (5) 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체하도록 플러그인 ID 충돌 해석을 고침(04dba66c3a, 4절).
@@ -16,7 +16,7 @@
 
 ## 2. 디렉터리 지도
 
-파일 수는 `git ls-files <dir> | wc -l`(이전 기준 커밋 64dc82b3f2, 전체 274,335개). "Phantom 변경"은 `git diff --name-status d2faebf601 64dc82b3f2`(이름 변경 감지 기본값, 이름 변경은 새 경로 쪽에서 셈)에서 바뀐 파일 수다. 이 표는 다시 세지 않았다. cea749cfb6까지의 디렉터리별 변경 수는 FORK-DELTA 1.2절에 있다.
+파일 수는 `git ls-files <dir> | wc -l`(이전 기준 커밋 64dc82b3f2, 전체 274,335개). "Phantom 변경"은 `git diff --name-status d2faebf601 64dc82b3f2`(이름 변경 감지 기본값, 이름 변경은 새 경로 쪽에서 셈)에서 바뀐 파일 수다. 이 표는 다시 세지 않았다. ea745003d1까지의 디렉터리별 변경 수는 FORK-DELTA 1.2절에 있다.
 
 | 디렉터리 | 내용 | 파일 수 | Phantom 변경 |
 |---|---|---|---|
