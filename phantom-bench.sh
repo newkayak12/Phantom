@@ -16,7 +16,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP="${PHANTOM_APP:-/Applications/Phantom IDEA.app}"
+# PHANTOM_BENCH_APP measures another copy of the app (an unpacked DMG) and wins over PHANTOM_APP; PHANTOM_BENCH_PLUGINS
+# lists plugin zips unpacked into each run's config copy (Kotlin, which a release does not bundle)
+APP="${PHANTOM_BENCH_APP:-${PHANTOM_APP:-/Applications/Phantom IDEA.app}}"
 USER_CONFIG="${PHANTOM_CONFIG_DIR:-$HOME/Library/Application Support/Phantom/PhantomIDEA}"
 
 runs=5
