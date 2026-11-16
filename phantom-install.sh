@@ -50,7 +50,16 @@ esac
 [[ -n "$DMG" ]] || { echo "no DMG in out/phantom-idea/artifacts"; exit 1; }
 
 was_running=false
-pids=($(pgrep -f "$APP/Contents/MacOS/idea" || true))
+# pgrep -f takes a regular expression and matches anywhere in the command line, so each hit is kept only when its
+# command line really starts with this app's executable (a copy under another folder, or a path with ( ) in it)
+phantom_pids() {
+  local exe="$APP/Contents/MacOS/idea" pid
+  for pid in $(pgrep -x idea || true); do
+    [[ "$(ps -o command= -p "$pid" 2>/dev/null)" == "$exe"* ]] && print -r -- "$pid"
+  done
+  return 0
+}
+pids=($(phantom_pids))
 if (( ${#pids} )); then
   was_running=true
   # A quit Apple event, as from the Quit menu item, so the IDE saves its state; sent to these processes only.
@@ -62,8 +71,8 @@ if (( ${#pids} )); then
       if (!app.isNil()) app.terminate
     }' "$pid" || true
   done
-  for _ in {1..180}; do pgrep -f "$APP/Contents/MacOS/idea" > /dev/null || break; sleep 1; done
-  if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
+  for _ in {1..180}; do [[ -n "$(phantom_pids)" ]] || break; sleep 1; done
+  if [[ -n "$(phantom_pids)" ]]; then
     echo "Phantom is still running (a dialog may be asking something); close it and run again"
     exit 1
   fi
@@ -90,6 +99,6 @@ if $was_running; then
     # the user's own temp dir, not the one of whatever shell ran this script (it may be a sandbox that is gone later)
     TMPDIR="$(getconf DARWIN_USER_TEMP_DIR)" open "$APP"
     sleep 3
-    pgrep -f "$APP/Contents/MacOS/idea" > /dev/null && break
+    [[ -n "$(phantom_pids)" ]] && break
   done
 fi

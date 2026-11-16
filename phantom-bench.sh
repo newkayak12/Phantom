@@ -47,6 +47,10 @@ work="$PWD/out/phantom-bench/work"
 fixture="$work/fixture"
 system="$work/system-$label"
 mkdir -p "$out" "$work"
+# the copy below deletes and rewrites $work/fixture, so the source may not be, hold, or lie inside the work folder
+if [[ "$fixture_src" == "${work:A}" || "$fixture_src" == "${work:A}"/* || "${work:A}" == "$fixture_src"/* ]]; then
+  echo "error: the fixture project '$fixture_src' overlaps the bench work folder $work" >&2; exit 1
+fi
 
 # The copy is kept between runs and labels, so every run opens the same project at the same path, the one the
 # system directories below were warmed on. fixture.source names the directory it was copied from: the same source
