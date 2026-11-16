@@ -17,7 +17,7 @@ internal class StartUpMeasurementService : RestService() {
 
   override fun isOriginAllowed(request: HttpRequest): OriginCheckResult {
     // phantom-idea: JetBrains' ij-perf pages may read the local start-up report only with -Dphantom.jetbrains.services=true;
-    // otherwise only the default origin check applies (local origins)
+    // otherwise only the default origin check applies (local origins pass, any other origin asks the user to trust the host)
     if (!MarketplaceRequests.jetBrainsServicesEnabled) return super.isOriginAllowed(request)
     return when (request.origin) {
       "https://ij-perf.jetbrains.com", "https://ij-perf.labs.jb.gg" -> OriginCheckResult.ALLOW
