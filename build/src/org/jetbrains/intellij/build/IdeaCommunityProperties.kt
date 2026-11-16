@@ -33,7 +33,7 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
  */
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
   "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
-  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grazie", "terminal", "github",
+  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grazie", "terminal", "github", "junit", "properties",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -118,6 +118,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.grazie")
       .removing("intellij.terminal")
       .removing("intellij.vcs.github")
+      .removing("intellij.junit")
+      .removing("intellij.properties")
       .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
     // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
     // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin

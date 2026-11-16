@@ -30,7 +30,7 @@ echo "Phantom IDEA $yy.$mm.$dd (build $phantom, platform 262.$d)"
 # IdeaCommunityProperties.kt), built from the checkout next to this one or PHANTOM_PLUGINS_REPO, against the IntelliJ
 # Community build Phantom is forked from (so no installed Phantom is needed), and unpacked into out/phantom-plugins
 plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
-bundled_from_plugins=(toml yaml sh lombok decompiler coverage textmate markdown mermaid copyright editorconfig htmltools testng java-i18n grazie terminal github)
+bundled_from_plugins=(toml yaml sh lombok decompiler coverage textmate markdown mermaid copyright editorconfig htmltools testng java-i18n grazie terminal github junit properties)
 [[ -f "$plugins_repo/settings.gradle.kts" ]] || { echo "no Phantom-plugins checkout at $plugins_repo (set PHANTOM_PLUGINS_REPO)"; exit 1; }
 echo "Phantom-plugins $(git -C "$plugins_repo" log -1 --format='%h %s' | cut -c1-80)"
 tasks=(); for p in "${bundled_from_plugins[@]}"; do tasks+=(":$p:buildPlugin"); done
