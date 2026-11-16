@@ -219,7 +219,7 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 
 #### 3.3.1 `phantom.jetbrains.services`로 막은 호출
 
-게이트는 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:108-109`의 `jetBrainsServicesEnabled`(`Boolean.getBoolean("phantom.jetbrains.services")`) 하나다. `StartupErrorReporter`만 IDE가 뜨기 전이라 같은 프로퍼티를 직접 읽는다.
+게이트는 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:108-109`의 `jetBrainsServicesEnabled`(`Boolean.getBoolean("phantom.jetbrains.services")`) 하나다. 같은 프로퍼티를 직접 읽는 곳은 둘이다: `StartupErrorReporter`는 IDE가 뜨기 전이라서, `LibrariesDownloadAssistant`는 모듈(`intellij.platform.ide.core`)이 `MarketplaceRequests`를 볼 수 없어서다.
 
 | 파일:행 | 막는 호출 | 꺼졌을 때 | 커밋 |
 |---|---|---|---|
@@ -236,6 +236,7 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 | `platform/feedback/src/com/intellij/platform/feedback/localization/LocalizationFeedbackDialog.kt:132` | 지역화 피드백 대화상자의 감사 알림 | 알림을 띄우지 않음(보내지 않았으므로) | 6e71ed80c4 |
 | `plugins/ide-features-trainer/src/training/ui/OnboardingFeedbackForm.kt:279` | 온보딩 피드백 양식의 감사 알림(번들 밖 `featuresTrainer` 소속) | 알림을 띄우지 않음. 코드만 바꿨고 빌드 전 | 5185f60295 |
 | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/JdkList.kt:536` | JDK 목록 피드(download.jetbrains.com) | foojay Disco API(`FoojayJdkList.FEED_URL`, `FoojayJdkList.kt:48`). 레지스트리 `jdk.downloader.url`이 비어 있지 않으면 그 값이 먼저다(`JdkList.kt:530-533`) | be60914099 |
+| `platform/ide-core/src/com/intellij/facet/frameworks/LibrariesDownloadAssistant.java:47-50` (`getDownloadServiceVersions`, 프로퍼티 직접 읽음) | 프레임워크 라이브러리 버전 목록(`www.jetbrains.com/idea/download-assistant.xml`, `frameworks.jetbrains.com`, 주소는 `LibrariesDownloadConnectionService.java:6-7`). New Project 마법사의 Groovy SDK 콤보, `LibraryOptionsPanel`이 화면을 열 때 받던 것 | null 반환, 호출자(`:35-44`)가 번들 목록(`localUrls`, 예 `groovy.sdk.xml`)을 씀. 코드만 바꿨고 빌드 전 | HASH_LIB |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/cloud/DefaultGrazieCloudConnector.kt:22,44,46` | Grazie Cloud 연결, 약관 동의, API 클라이언트(api.jetbrains.ai) | false / null | 98673d9e9a |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/cloud/license/GrazieLoginManager.kt:80,159,260` | 라이선스·계정·클라우드 조회, JetBrains Account 로그인 | 초기화만 표시하고 조회 안 함 | 98673d9e9a |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/utils/Utils.kt:79` | Grazie Cloud 홍보 | false | 98673d9e9a |
