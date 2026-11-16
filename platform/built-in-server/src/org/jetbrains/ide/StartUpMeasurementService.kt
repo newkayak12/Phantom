@@ -2,6 +2,8 @@
 package org.jetbrains.ide
 
 import com.intellij.diagnostic.StartUpPerformanceService
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.util.io.origin
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandlerContext
@@ -14,6 +16,9 @@ internal class StartUpMeasurementService : RestService() {
   override fun getServiceName() = "startUpMeasurement"
 
   override fun isOriginAllowed(request: HttpRequest): OriginCheckResult {
+    // phantom-idea: JetBrains' ij-perf pages may read the local start-up report only with -Dphantom.jetbrains.services=true;
+    // otherwise only the default origin check applies (local origins)
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) return super.isOriginAllowed(request)
     return when (request.origin) {
       "https://ij-perf.jetbrains.com", "https://ij-perf.labs.jb.gg" -> OriginCheckResult.ALLOW
       else -> super.isOriginAllowed(request)

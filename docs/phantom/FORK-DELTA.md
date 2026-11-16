@@ -229,6 +229,7 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 | `…/MarketplaceRequests.kt:935` | `schedulePluginIdsUpdate` (30초 뒤 ID 목록 갱신) | 예약 안 함 | d7c795f347 |
 | `platform/platform-impl/update-checker/src/com/intellij/openapi/updateSettings/impl/UpdateChecker.kt:343` | 플러그인 업데이트 확인에서 JetBrains Marketplace 백엔드 | Marketplace 백엔드를 빼고 사용자 저장소만 본다 | d7c795f347 |
 | `platform/built-in-server/src/org/jetbrains/ide/UploadLogsService.kt:38,87` | 내장 서버 `/api/logs`(지원 페이지가 IDE 로그 업로드를 요청) | FORBID | fdd9682290 |
+| `platform/built-in-server/src/org/jetbrains/ide/StartUpMeasurementService.kt:19-21` | 내장 서버 `/api/startUpMeasurement`를 JetBrains ij-perf 페이지(`ij-perf.jetbrains.com`, `ij-perf.labs.jb.gg`)가 읽는 것(외부 전송이 아니라 수신) | 기본 origin 검사(로컬 origin만 허용). 코드만 바꿨고 빌드 전 | HASH_PERF |
 | `platform/platform-impl/src/com/intellij/platform/ide/bootstrap/StartupErrorReporter.java:196-197` | 시작 오류 대화상자의 Report 버튼(로그와 오류를 JetBrains로 전송) | 버튼 숨김. `ij.startup.error.handler.class`가 있으면 표시 | fdd9682290 |
 | `platform/feedback/src/com/intellij/platform/feedback/ActionBasedFeedbackConfig.kt:65` | 액션 기반 피드백 설문 | 표시 안 함 | 3676457781 |
 | `platform/feedback/src/com/intellij/platform/feedback/impl/FeedbackSurveyUtils.kt:74` | 알림 기반 설문 | 표시 안 함 | 3676457781 |
