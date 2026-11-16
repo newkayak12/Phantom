@@ -13,8 +13,9 @@
 # PHANTOM_SIGN_SETUP=0 in the environment, the app stays ad-hoc signed and a warning goes to stderr; the install does
 # not fail (a certificate that is there but cannot be used, e.g. a wrong keychain password, still fails it).
 # Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom IDEA.app); it is also passed to
-# phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. A running Phantom is quit by bundle id,
-# so with two copies running the other one may be the one that quits.
+# phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. Only a Phantom running from that path is
+# asked to quit (by process id, not bundle id, so another copy running elsewhere is left alone), and it is restarted
+# from that path.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -49,9 +50,18 @@ esac
 [[ -n "$DMG" ]] || { echo "no DMG in out/phantom-idea/artifacts"; exit 1; }
 
 was_running=false
-if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
+pids=($(pgrep -f "$APP/Contents/MacOS/idea" || true))
+if (( ${#pids} )); then
   was_running=true
-  osascript -e 'tell application id "dev.phantom.idea" to quit' || true
+  # A quit Apple event, as from the Quit menu item, so the IDE saves its state; sent to these processes only.
+  # By bundle id (dev.phantom.idea) it would go to any running copy, which need not be the one at $APP.
+  for pid in $pids; do
+    osascript -l JavaScript -e 'function run(argv) {
+      ObjC.import("AppKit")
+      const app = $.NSRunningApplication.runningApplicationWithProcessIdentifier(Number(argv[0]))
+      if (!app.isNil()) app.terminate
+    }' "$pid" || true
+  done
   for _ in {1..180}; do pgrep -f "$APP/Contents/MacOS/idea" > /dev/null || break; sleep 1; done
   if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
     echo "Phantom is still running (a dialog may be asking something); close it and run again"
