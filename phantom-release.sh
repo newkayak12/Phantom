@@ -103,10 +103,11 @@ import json, os, sys
 path = sys.argv[1]
 data = json.load(open(path))
 entry = {
-  "id": "org.jetbrains.kotlin", "name": "Kotlin", "version": os.environ["KVERSION"], "source": "kotlin",
+  "id": "org.jetbrains.kotlin", "name": "Phantom Kotlin", "version": os.environ["KVERSION"],
   "description": "Kotlin language support: editing, inspections, refactorings, debugging and Gradle Kotlin DSL scripts. "
-                 "The IntelliJ Kotlin plugin (Apache 2.0) built with Phantom; not bundled, since Java-only projects never use it.",
-  "vendor": "JetBrains", "category": "Languages", "since": os.environ["SINCE"], "until": "262.*",
+                 "IntelliJ's Kotlin plugin (Apache 2.0) built with each Phantom release; not bundled, since Java-only "
+                 "projects never use it. org.jetbrains.kotlin stays its id, so plugins depending on Kotlin keep working.",
+  "vendor": "Phantom", "category": "Languages", "since": os.environ["SINCE"], "until": "262.*",
   "depends": ["com.intellij.modules.java"], "download": os.environ["DOWNLOAD"],
   "detect": ["org.jetbrains.kotlin:kotlin-stdlib"], "detectFiles": ["build.gradle.kts", "settings.gradle.kts"],
 }
