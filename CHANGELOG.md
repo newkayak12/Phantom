@@ -95,7 +95,7 @@
 - 다른 플러그인의 ID를 별칭으로 가진 플러그인(예: `dev.phantom.toml`, 별칭 `org.toml.lang`)과 그 원본이 함께 설치되면 ID 충돌로 둘 다 제외되던 것을, 대체하는 쪽만 로드하고 대체된 쪽은 "대체됨"으로 표시하며 그 의존 플러그인은 대체한 쪽으로 해석하도록 고쳤다. 대체한 쪽을 끄면 원본이 다시 로드된다. essential 플러그인은 대체되지 않는다. 새 비적재 사유 `PluginIsReplacedByAnotherPlugin`("Replaced by …")을 더했고, `PluginInitializationSelectPluginsToLoadTest`에서 둘 다 제외를 기대하던 테스트 1개를 바꾸고 3개를 더했다 (04dba66c3a).
 - 동적 플러그인 로드 중 에디터 색상 스킴을 다시 읽는 동안 `Theme Phantom Dark refers to unknown color scheme` SEVERE 로그가 나던 것을, 리로드 전 스킴의 스냅샷으로 대체해 고쳤다 (d86195e55c).
 - JCEF를 먼저 열 때(시작 시 복원된 Markdown 미리보기) `JBCefApp$Holder <clinit> requests ProxyMigrationService` IDE 오류가 나던 것을, `HttpConfigurable`을 Holder 초기화 전에 만들도록 고쳤다. upstream 코드의 문제다 (e1204fc098).
-- GitHub 브라우저 로그인 client id가 비어 있는 동안 "Log In via GitHub" 진입점(계정 추가 메뉴, 클론 대화상자, Pull Request 선택기)을 숨기고 토큰 로그인만 보여 준다. 설정되어 있으면 이전과 같다
+- GitHub 브라우저 로그인 client id가 비어 있는 동안 "Log In via GitHub" 진입점(계정 추가 메뉴, 클론 대화상자, Pull Request 선택기)을 숨기고 토큰 로그인만 보여 준다. 설정되어 있으면 이전과 같다 (e7a14e669c, ee57e6b053, PR #3).
 
 ### 벤치마크
 - `phantom-bench.sh`와 `phantom-bench-report.py`를 추가했다. 설치된 앱을 고정 프로젝트 복사본에서 격리 실행하고 플랫폼 자체 보고서로 지표를 뽑는다 (38efaf66bf).
