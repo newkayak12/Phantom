@@ -130,6 +130,12 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
     productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
 
+    // phantom-idea: class data sharing. The JVM archives the loaded classes into $IDE_CACHE_DIR/<base><build>.jsa on the
+    // first exit after an install or update (about 25 s, about 370 MB) and maps it on later starts: "app initialization"
+    // 0.8-2.9 s instead of 2.3-3.9 s and the first smart mode 5-9 s instead of 14-19 s (phantom-bench.sh, Kotlin fixture).
+    // It replaces -Djava.system.class.loader=PathClassLoader, which the dynamic archive does not support.
+    enableCds = true
+
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
     productLayout.pluginLayouts = CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS + persistentListOf(
