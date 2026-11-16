@@ -492,7 +492,7 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `plugins/phantom-http/` | `dev.phantom.http` | 83d8ab6e82 | cab0fa60d7 (디렉터리), ac3007c625 (번들·모듈 목록) |
 | `plugins/phantom-workspaces/` | `dev.phantom.workspaces` | 2a4c13ce66 | 8983487a29 |
 | `plugins/phantom-tabs/` | `dev.phantom.tabs` | 49b1b9e145 | b68d97332e (플랫폼 훅 f5778de337, b02cc88cfe도 되돌림) |
-| `plugins/phantom-icons/` | `dev.phantom.icons` (1570329708 본문은 새 ID를 `dev.phantom.iconpack`으로 적음) | d7310f9556 | 1570329708 |
+| `plugins/phantom-icons/` | `dev.phantom.icons`. 같은 날 Phantom-plugins로 간 Icon Pack은 다른 ID `dev.phantom.iconpack`이다(1570329708 본문에만 근거하고 Phantom-plugins는 읽지 못해 확인 못 함). 즉 ID가 바뀐 이동이다 | d7310f9556 | 1570329708 |
 
 업스트림 플러그인 3개는 소스를 이 리포에 남긴 채 번들에서 빼고 Phantom-plugins 판으로 대체했다(e2a4ffa4ee 본문 기준, 이 리포에서 확인할 수 없음): `intellij.java.byteCodeViewer` → `bytecode`(`dev.phantom.bytecode`), `intellij.webp` → `webp`(`dev.phantom.webp`), `intellij.vcs.git.commit.modal` → `modal-commit`(`dev.phantom.modalcommit`). 이 셋은 필요할 때 설치한다.
 

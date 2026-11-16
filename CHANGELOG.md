@@ -50,6 +50,7 @@
 
 ## v26.11.13.1 (2026-11-13)
 - 옛 표식 `// Phantom:`을 `phantom-idea:`로 통일했다(`//` 20줄, KDoc `*` 3줄, XML `<!--` 1줄, `#` 형식은 없었다). 22개 파일의 표식 주석 24줄만 바꿨고 코드는 건드리지 않았다. 이전 항목(ea745003d1)과 DEVELOPMENT 5절 16번이 적은 "21개 파일의 33개 덩어리"와 숫자가 달라 `Phantom:` 주석을 직접 세어 다시 적었고, 차이의 이유는 확인하지 못했다. 코드가 아니라 주석이라 빌드와 테스트는 하지 않았다 (ee343c00f6).
+- 알려진 문제 21, 22, 23번(DEVELOPMENT 5절)을 문서로 정리했다. 21번: phantom-icons는 모순이 아니라 ID가 둘임을 위 `phantom-icons` 항목과 FORK-DELTA 5.2절에 적었다. 22번: 현재 `README.md`와 `README.ko.md`에 어긋나는 곳이 없어 옛 커밋(be60914099) 기록으로 닫았다. 23번: 로드맵 머리의 상태 메모에서 확인하지 못한 "같은 플러그인 ID"를 빼고, 옮긴 커밋과 로드맵 밖에서 옮긴 플러그인(workspaces, tabs, icons)을 더했다. 문서만 바꿨다 (HASH).
 
 ### 브랜딩·버전
 - 버전을 26.10.27로 올렸다 (`IdeaApplicationInfo.xml`) (bf2b90f700).
@@ -60,7 +61,7 @@
 - 첫 실행 설정 가져오기 마법사를 번들에 되돌렸다. 온보딩 투어만 계속 제외한다 (a3e497f72d).
 - `phantom-workspaces`를 번들에서 빼고 Phantom-plugins 저장소의 workspaces 플러그인으로 옮겼다. 플러그인 id `dev.phantom.workspaces`와 Advanced Setting id는 그대로다 (8983487a29).
 - `phantom-tabs`를 번들에서 빼고 Phantom-plugins 저장소의 tabs 플러그인으로 옮겼다. 공개 플랫폼 API만 쓰도록 바꿔서, 이 플러그인을 위해 넣었던 `TabInfo.labelLeadingComponent` / `isLabelCollapsed` 등 플랫폼 변경을 upstream 상태로 되돌렸다 (b68d97332e).
-- `phantom-icons`를 번들에서 빼고 Phantom-plugins 저장소의 Phantom Icon Pack(`dev.phantom.iconpack`)으로 옮겼다. 같이 번들하면 같은 아이콘을 두 번 패치하기 때문이다 (1570329708).
+- `phantom-icons`를 번들에서 빼고 Phantom-plugins 저장소의 Phantom Icon Pack으로 옮겼다. 같이 번들하면 같은 아이콘을 두 번 패치하기 때문이다. ID가 둘이다: 이 리포의 옛 플러그인은 `dev.phantom.icons`(삭제 직전 `plugins/phantom-icons/resources/META-INF/plugin.xml`, `git show 1570329708^:plugins/phantom-icons/resources/META-INF/plugin.xml`로 확인)이고, Phantom-plugins의 Icon Pack은 `dev.phantom.iconpack`이다. 후자는 이 커밋 메시지("Phantom Icon Pack, dev.phantom.iconpack, icons 0.3.0")에만 근거하고 Phantom-plugins 저장소는 읽지 못해 확인하지 못했다. 둘은 서로 다른 ID라 옛 플러그인의 설정이 이어진다고 보면 안 된다 (1570329708).
 - Bytecode Viewer, WebP, Modal Commit Interface를 번들 목록에서 제외하고 Phantom-plugins의 `dev.phantom.bytecode`, `dev.phantom.webp`, `dev.phantom.modalcommit`으로 옮겼다. 소스는 upstream 병합을 위해 유지한다 (e2a4ffa4ee).
 - GitLab, Eclipse/Visual Studio/NetBeans 키맵, `configurationScript`를 번들에서 제외했다. Android Gradle DSL 모델은 Gradle 버전 카탈로그 대체 경로와 Dependency Analyzer가 쓰므로 유지한다 (7c43a36532).
 - Toml, YAML, Shell Script, Lombok, Decompiler, Coverage, TextMate, Markdown을 IntelliJ 원본 대신 Phantom-plugins가 만든 판(`dev.phantom.*` ID, IntelliJ ID는 별칭으로, IntelliJ 콘텐츠 모듈 이름은 그대로 유지)으로 번들한다. 둘을 함께 넣으면 같은 ID와 모듈을 두 번 차지하기 때문이다. 원본 7개는 `.removing`으로 빼고, 따로 넣던 `intellij.lombok`은 `PHANTOM_BUNDLED_PLUGINS`에서 지웠으며, 새 목록 `PHANTOM_PLUGINS_BUNDLED`의 디렉터리를 `getAdditionalPluginPaths()`로 넣는다. `phantom-build.sh`가 Phantom-plugins 체크아웃(저장소 옆, 또는 `PHANTOM_PLUGINS_REPO`)에서 이 플러그인들을 IntelliJ Community 대상으로(`-PplatformFromRepository=true`) 빌드해 `out/phantom-plugins`에 풀고, 체크아웃이나 플러그인 하나라도 없으면 빌드가 실패한다 (9229667cc7).
