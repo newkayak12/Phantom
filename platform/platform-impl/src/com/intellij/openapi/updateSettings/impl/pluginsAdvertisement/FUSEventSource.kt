@@ -71,6 +71,7 @@ internal object PluginAdvertiserUsageCollector : CounterUsagesCollector() {
     PLUGIN_FIELD
   )
 
+  // phantom-idea: removed TRY_ULTIMATE_TOOLBOX_EVENT (Try Ultimate through Toolbox App dropped)
   val TRY_ULTIMATE_EVENT = GROUP.registerEvent("try.ultimate.initiated", SOURCE_FIELD, PLUGIN_FIELD)
   val TRY_ULTIMATE_DOWNLOAD_ACTIVITY = GROUP.registerIdeActivity("try.ultimate.download", arrayOf(SOURCE_FIELD, PLUGIN_FIELD))
   val TRY_ULTIMATE_INSTALLATION_ACTIVITY = GROUP.registerIdeActivity("try.ultimate.installation", arrayOf(SOURCE_FIELD, PLUGIN_FIELD))
@@ -157,6 +158,7 @@ enum class FUSEventSource {
     PluginAdvertiserUsageCollector.TRY_ULTIMATE_EVENT.log(project, this, pluginId?.idString)
   }
 
+  // phantom-idea: removed logTryUltimateToolboxUsed (Try Ultimate through Toolbox App dropped)
   @JvmOverloads
   fun logTryUltimateDownloadStarted(project: Project? = null, pluginId: PluginId? = null): StructuredIdeActivity {
     return PluginAdvertiserUsageCollector.TRY_ULTIMATE_DOWNLOAD_ACTIVITY.started(project) {

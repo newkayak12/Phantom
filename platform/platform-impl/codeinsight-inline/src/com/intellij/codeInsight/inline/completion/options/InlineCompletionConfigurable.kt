@@ -61,6 +61,7 @@ class InlineCompletionConfigurable : BoundCompositeConfigurable<UnnamedConfigura
       data class PluginInfo(val name: @Nls String, val action: HyperlinkEventAction, val suffix: @Nls String = "")
 
       val plugins = buildList {
+        // phantom-idea: removed the JetBrains AI Assistant entry; the hint lists only a bundled Full Line plugin
         val fullLinePlugin = PluginManager.getPlugins().firstOrNull {
           it.isBundled && it.name.lowercase().contains("full line")
         }

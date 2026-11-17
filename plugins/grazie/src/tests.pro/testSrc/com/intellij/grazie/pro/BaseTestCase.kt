@@ -52,6 +52,7 @@ open class BaseTestCase {
   fun tearDownBaseCase() {
     resetGrazieConfiguration()
     myFixture.tearDown()
+    // phantom-idea: clears the property set in the setup above
     System.clearProperty("phantom.jetbrains.services")
   }
 

@@ -4,6 +4,7 @@
 package com.intellij.openapi.projectRoots.impl.jdkDownloader
 
 import com.intellij.diagnostic.LoadingState
+// phantom-idea: import for the jetBrainsServicesEnabled check (the foojay list unless JetBrains services are on)
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.impl.ApplicationInfoImpl

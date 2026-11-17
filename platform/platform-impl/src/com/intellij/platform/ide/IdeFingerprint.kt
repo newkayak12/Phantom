@@ -5,6 +5,7 @@ import com.dynatrace.hash4j.hashing.HashStream64
 import com.dynatrace.hash4j.hashing.Hashing
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl
+// phantom-idea: imports for affectsIndexing below
 import com.intellij.ide.plugins.PluginMainDescriptor
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.yieldAllDescriptors
@@ -112,6 +113,7 @@ private fun computeIdeFingerprint(debugHelperToken: Int): IdeFingerprint {
   return fingerprint
 }
 
+// phantom-idea: only plugins that can change indexing count for the fingerprint (and are logged), so updating any other plugin does not trigger a full scan
 /**
  * Extension point name parts that can change which files are indexed or what their indexed data is: indexes and stubs,
  * file types, languages (parsers, word scanners), decompilers, roots and excludes, file property pushers.

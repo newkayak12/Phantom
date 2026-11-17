@@ -7,6 +7,7 @@ import org.jdom.Element
 import org.jdom.Namespace
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.intellij.build.impl.BuildUtils
+// phantom-idea: imports for the Phantom display version (phantom.version.major/minor) below
 import org.jetbrains.intellij.build.impl.PHANTOM_VERSION_MAJOR_PROPERTY
 import org.jetbrains.intellij.build.impl.PHANTOM_VERSION_MINOR_PROPERTY
 import org.jetbrains.intellij.build.impl.SnapshotBuildNumber

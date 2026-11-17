@@ -1,8 +1,8 @@
 # Phantom IDEA 문서 안내
 
 - 목적: Phantom IDEA 문서가 무엇이 있고, 어떤 순서로 읽고, 어느 것이 지금도 맞는지 알려 준다.
-- 기준 커밋: 64dc82b3f2
-- 작성일: 2026-11-12
+- 기준 커밋: ea745003d1
+- 작성일: 2026-11-16
 
 Phantom IDEA는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
 
@@ -27,7 +27,7 @@ Phantom IDEA는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개�
 | `docs/phantom/DEVELOPMENT.md` | 작업별 방법, 검증, 커밋 규칙, 알려진 문제 모음 | 현행 문서 | 유효 |
 | `docs/phantom/BUILD.md` | 빌드, 서명, 설치, 릴리스, 벤치, 테스트 | 현행 문서 | 유효 |
 | `docs/phantom/bench/README.md` | 벤치 도구 사용법, 기준선, 허용 오차 | 현행 문서 | 유효. 가리키는 런타임 기준선 `docs/phantom/bench/baseline.json`은 없음 |
-| `docs/phantom/bench/static-baseline.json` | 정적 게이트 기준선(26.10.27) | 측정 기록 | 유효(게이트 입력) |
+| `docs/phantom/bench/static-baseline.json` | 정적 게이트 기준선(26.10.27) | 측정 기록 | 게이트 입력이지만 낡음: 그 뒤 번들 목록이 바뀌어(Kotlin 제외 포함) `compare`가 종료 코드 2. 재생성 방법은 `docs/phantom/bench/README.md` |
 | `docs/phantom/2026-10-16-feature-matrix.md` | Ultimate 기능 대비 Phantom 계획 표 | 설계 기록 | 작성 시점 기준. 플러그인 위치는 FORK-DELTA 5절로 다시 본다 |
 | `docs/phantom/2026-10-29-indexing-changes.md` | trigram 인덱스·인덱싱 지문 변경과 측정값(기준 커밋 판 README의 Indexing 절을 옮김) | 측정 기록 | 당시 측정값. 패치 위치는 FORK-DELTA 3.5절 |
 | `docs/phantom/design/2026-10-16-roadmap.md` | 설계 14건의 우선순위와 S1–S5 진행 | 계획 기록 | 머리의 2026-11-12 상태 메모 참고. S1–S5는 Phantom-plugins로 이동 |

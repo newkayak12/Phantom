@@ -199,13 +199,21 @@ def stale_static_baseline(baseline_doc):
               f"phantom-build.sh?), so its age against {BUNDLE_LIST} is not checked", file=sys.stderr)
         return None
     built = f"20{m.group(1)}-{m.group(2)}-{m.group(3)}"
+    repo = Path(__file__).resolve().parent
     try:
+        shallow = subprocess.run(["git", "rev-parse", "--is-shallow-repository"], cwd=repo, capture_output=True,
+                                 text=True, check=True).stdout.strip() == "true"
         changed = subprocess.run(["git", "log", "-1", "--format=%cs %h", "--", BUNDLE_LIST],
-                                 cwd=Path(__file__).resolve().parent, capture_output=True, text=True,
-                                 check=True).stdout.split()
+                                 cwd=repo, capture_output=True, text=True, check=True).stdout.split()
     except (OSError, subprocess.CalledProcessError):
         print(f"note: no git history here, so the static baseline's age against {BUNDLE_LIST} is not checked",
               file=sys.stderr)
+        return None
+    # In a shallow clone the oldest fetched commit stands for all history before it, so git log names it as the last
+    # change to the bundle list and every baseline looks stale.
+    if shallow:
+        print(f"note: this is a shallow git clone, so the last change to {BUNDLE_LIST} is not known and the static "
+              f"baseline's age is not checked (git fetch --unshallow to check it)", file=sys.stderr)
         return None
     if changed and changed[0] > built:
         return f"its app was built {built}, but {BUNDLE_LIST} last changed {changed[0]} ({changed[1]})"
