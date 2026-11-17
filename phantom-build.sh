@@ -3,8 +3,8 @@
 #   Phantom build number: PH-<YYMMDD>.<N>  (what the IDE, Info.plist and artifact names show; N counts the builds of that day)
 #   display version:      <YY>.<MM>.<DD>  (passed as -Dphantom.version.major/minor; the tracked IdeaApplicationInfo.xml keeps
 #                                        a placeholder, so a build leaves the working tree as it was)
-#   artifacts:            out/phantom-idea/artifacts/phantom-idea-<YYMMDD>.<N>-aarch64.dmg, and for Windows
-#                         phantom-idea-<YYMMDD>.<N>.exe (installer) and .win.zip (only the newest build is kept)
+#   artifacts:            out/phantom-idea/artifacts/phantom-<YYMMDD>.<N>-aarch64.dmg, and for Windows
+#                         phantom-<YYMMDD>.<N>.exe (installer) and .win.zip (only the newest build is kept)
 # PHANTOM_WINDOWS=0 builds only the DMG. Windows is cross-built on this Mac: a second build of the same compiled output.
 #   platform build:       262.<YYMMDD>  (internal: bundled plugins' since/until-build and the IDE's apiVersion, so plugins
 #                                        built for IntelliJ Platform 262 keep loading; never shown as Phantom's version)
@@ -47,10 +47,10 @@ nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=current -Dintellij.
 
 # Keep out/ from growing by gigabytes per build: the .sit archives and temp are intermediates, older DMGs are superseded
 artifacts="$root/out/phantom-idea/artifacts"
-dmg="$artifacts/phantom-idea-$d.$n-aarch64.dmg"
+dmg="$artifacts/phantom-$d.$n-aarch64.dmg"
 [[ -f "$dmg" ]] || { echo "no $dmg after the build"; exit 1; }
-rm -f "$artifacts"/phantom-idea-*.sit "$artifacts"/phantom-idea-*.sit.*
-find "$artifacts" -maxdepth 1 -name 'phantom-idea-*.dmg*' ! -name "phantom-idea-$d.$n-aarch64.dmg*" -delete
+rm -f "$artifacts"/phantom-*.sit "$artifacts"/phantom-*.sit.*
+find "$artifacts" -maxdepth 1 -name 'phantom-*.dmg*' ! -name "phantom-$d.$n-aarch64.dmg*" -delete
 rm -rf "$root/out/phantom-idea/temp"
 # maven-artifacts (platform libraries for publishing), jps and the dist.* trees are rebuilt every time and not shipped
 rm -rf "$artifacts/maven-artifacts" "$artifacts/jps" "$root"/out/phantom-idea/dist.*
@@ -62,7 +62,7 @@ if [[ "${PHANTOM_WINDOWS:-1}" != 0 ]]; then
   nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=windows -Dintellij.build.target.arch=x64 \
     -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" -Dphantom.version.major="$yy" -Dphantom.version.minor="$mm.$dd" "$@"
   mv "$root/out/$(basename "$dmg")"* "$artifacts/"
-  ls "$artifacts/phantom-idea-$d.$n".exe "$artifacts/phantom-idea-$d.$n".win.zip >/dev/null \
+  ls "$artifacts/phantom-$d.$n".exe "$artifacts/phantom-$d.$n".win.zip >/dev/null \
     || { echo "no Windows installer or zip for $d.$n after the build"; exit 1; }
   rm -rf "$root/out/phantom-idea/temp" "$artifacts/maven-artifacts" "$artifacts/jps" "$root"/out/phantom-idea/dist.*
 fi

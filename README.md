@@ -76,8 +76,8 @@ Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom/releases),
 
 | Platform | File |
 |---|---|
-| macOS, Apple Silicon | `phantom-idea-<YYMMDD>.<N>-aarch64.dmg` |
-| Windows x64 | `phantom-idea-<YYMMDD>.<N>.exe` (installer) or `.win.zip` |
+| macOS, Apple Silicon | `phantom-<YYMMDD>.<N>-aarch64.dmg` |
+| Windows x64 | `phantom-<YYMMDD>.<N>.exe` (installer) or `.win.zip` |
 
 > [!WARNING]
 > Builds are not signed by a recognized authority. The macOS app is ad-hoc signed and not notarized, so Gatekeeper blocks a DMG downloaded in a browser. The Windows files are unsigned, so Windows may warn about an unknown publisher.

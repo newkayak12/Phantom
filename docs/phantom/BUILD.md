@@ -60,7 +60,7 @@
    - 플러그인마다 `<p>/build.gradle.kts`의 `version = "..."` 줄에서 버전을 읽고(`:40`), `<p>/build/distributions/<p>-<version>.zip`이 없으면 `no <zip> after the Phantom-plugins build`를 출력하고 `exit 1` 한다 (`:41-42`). 있으면 `unzip -q`로 `out/phantom-plugins`에 푼다 (`:43`). 빌드는 푼 결과가 `out/phantom-plugins/<p>/lib`에 있다고 보고, 없으면 `IdeaCommunityProperties.kt:210-211`의 `check`로 실패한다. zip 안의 최상위 디렉터리가 `<p>`라는 점은 이 두 코드가 전제할 뿐 이 리포에서 확인할 수 없다(추정).
 6. macOS 빌드를 실행한다 (`:45-46`).
    `nice -n 10 ./installers.cmd -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 -Dbuild.number=262.<d> -Dphantom.build.number=PH-<d>.<N> -Dphantom.version.major=<YY> -Dphantom.version.minor=<MM>.<DD> "$@"`
-7. `phantom-idea-<d>.<N>-aarch64.dmg`가 없으면 `exit 1` 한다 (`:49-51`).
+7. `phantom-<d>.<N>-aarch64.dmg`가 없으면 `exit 1` 한다 (`:49-51`).
 8. 정리한다 (`:52-56`). `.sit` 파일, 방금 만든 것이 아닌 이전 DMG, `out/phantom-idea/temp`, `artifacts/maven-artifacts`, `artifacts/jps`, `out/phantom-idea/dist.*`를 지운다.
 9. `PHANTOM_WINDOWS`가 `0`이 아니면 Windows를 이어서 빌드한다 (`:58-68`). Windows 빌드가 `out/phantom-idea`를 비우므로 DMG를 `out/`으로 옮겨 두고(`:61`), `target.os=windows`, `target.arch=x64`로 `installers.cmd`를 같은 `-D` 인자와 함께 다시 실행한 뒤(`:62-63`) DMG를 되돌린다(`:64`). 그다음 `.exe`와 `.win.zip`이 있는지 `ls`로 확인하고(없으면 `exit 1`, `:65-66`) 같은 정리를 한 번 더 한다(`:67`).
 10. 빌드 번호 `PH-<d>.<N>`을 `out/phantom-build-number`에 쓰고 `built <dmg>`를 출력한다 (`:69-70`).
@@ -72,7 +72,7 @@
 | Phantom 빌드 번호 | `PH-<YYMMDD>.<N>` | `-Dphantom.build.number`. `PhantomBuildNumber.kt:11`이 속성 이름을 정의하고, `ApplicationInfoPropertiesImpl.kt:171-174`가 `number="IC-262.x"`를 `number="PH-.." apiVersion="IC-262.x"`로 바꾼다. `MacDistributionBuilder.kt:571,597`이 Info.plist의 build 값으로 쓴다 |
 | 표시 버전 | `<YY>.<MM>.<DD>` | `-Dphantom.version.major=<YY>`, `-Dphantom.version.minor=<MM>.<DD>`(`phantom-build.sh:46`, `:63`). 이름은 `PhantomBuildNumber.kt:21-22`, `ApplicationInfoPropertiesImpl.kt:72-75`가 XML보다 먼저 읽어 `product-info.json`, Info.plist 등에 쓰고, `:177-181`(`withPhantomVersion`, `:268-280`)이 패키지 안 `<version>`에도 같은 값을 쓴다. 추적 파일 `IdeaApplicationInfo.xml:2`는 자리표시자 `0` / `0.0`이라 속성 없이 실행하면 0.0이 보인다(048852ca23, 빌드 전). 표시 버전과 플랫폼 빌드를 분리하는 코드 주석은 `ApplicationInfoPropertiesImpl.kt:145` |
 | 플랫폼 빌드 | `262.<YYMMDD>` | `-Dbuild.number`. 번들 플러그인의 since/until-build와 IDE의 `apiVersion`에 쓰이며 사용자에게 버전으로 보이지 않는다 (`phantom-build.sh:9-10`) |
-| 아티팩트 이름 | `phantom-idea-<d>.<N>` | `IdeaCommunityProperties.kt:226-227`이 `phantom.build.number`에서 `PH-`를 뗀 값을 쓴다. 속성이 없으면 플랫폼 빌드의 `262.` 뒤를 쓴다 |
+| 아티팩트 이름 | `phantom-<d>.<N>` | `IdeaCommunityProperties.kt:226-227`이 `phantom.build.number`에서 `PH-`를 뗀 값을 쓴다. 속성이 없으면 플랫폼 빌드의 `262.` 뒤를 쓴다 |
 
 ### 대상 OS와 아키텍처
 
@@ -89,7 +89,7 @@
 
 ### 산출물 위치와 정리 대상
 
-- `out/phantom-idea/artifacts/phantom-idea-<d>.<N>-aarch64.dmg`, `phantom-idea-<d>.<N>.exe`, `phantom-idea-<d>.<N>.win.zip`. 출력 디렉터리 이름 `phantom-idea`는 `IdeaCommunityProperties.kt:229`이다. Kotlin 플러그인 zip은 `out/phantom-idea/artifacts/<제품 코드>-plugins/` 아래에 생긴다(위 빌드 옵션). `phantom-build.sh`의 정리 단계는 이 폴더를 지우지 않는다.
+- `out/phantom-idea/artifacts/phantom-idea-<d>.<N>-aarch64.dmg`, `phantom-<d>.<N>.exe`, `phantom-<d>.<N>.win.zip`. 출력 디렉터리 이름 `phantom-idea`는 `IdeaCommunityProperties.kt:229`이다. Kotlin 플러그인 zip은 `out/phantom-idea/artifacts/<제품 코드>-plugins/` 아래에 생긴다(위 빌드 옵션). `phantom-build.sh`의 정리 단계는 이 폴더를 지우지 않는다.
 - 지워지는 것: `.sit`, 이전 DMG, `out/phantom-idea/temp`, `maven-artifacts`, `jps`, `dist.*` (위 8, 9단계). 이전 `.exe`와 `.zip`을 지우는 줄은 없다. Windows 빌드가 `out/phantom-idea` 전체를 비운다고 `phantom-build.sh:59`가 설명한다.
 - 남는 것: `out/phantom-build-seq`, `out/phantom-build-number`, `out/phantom-plugins/`(다음 빌드가 지우고 다시 만든다, `phantom-build.sh:38`).
 
@@ -143,7 +143,7 @@ README는 첫 빌드가 약 2시간, 이후 빌드는 "minutes"라고 쓴다 (`R
 
 - 앱 경로는 `PHANTOM_APP`, 없으면 `/Applications/Phantom.app`이다 (`phantom-install.sh:22`). 그 앱을 지우고 바꾸므로 `.app`으로 끝나는 절대 경로가 아니면 오류로 끝난다 (`:23`, b5a1bc773a). 같은 경로를 `phantom-sign.sh`에 넘긴다.
 - 모드 (`:25-47`): 인자 없음은 `./phantom-build.sh`를 실행한다. `--no-build`는 이미 빌드된 DMG를 쓴다. `--release [tag]`는 `origin`의 GitHub 릴리스(`latest` 또는 `tags/<tag>`)에서 `-aarch64.dmg`로 끝나는 에셋을 `curl`로 받아 `out/phantom-release-download/`에 둔다. 토큰은 `GH_TOKEN`, 없으면 `gh auth token`이다 (`:29`). `curl`을 쓰는 이유는 격리(quarantine) 플래그가 붙지 않아 공증되지 않은 앱을 Gatekeeper가 막지 않기 때문이다 (`:6-7`).
-- DMG 선택: 직접 받은 DMG가 없으면 `out/phantom-idea/artifacts/phantom-idea-*-aarch64.dmg` 중 `ls -t` 최신이다 (`:49`).
+- DMG 선택: 직접 받은 DMG가 없으면 `out/phantom-idea/artifacts/phantom-*-aarch64.dmg` 중 `ls -t` 최신이다 (`:49`).
 - 실행 중이면 (`:52-70`, eff1276d6a): `pgrep -x phantom`/`pgrep -x idea` 결과 중 명령줄이 `$APP/Contents/MacOS/phantom`(이름 변경 전 `idea`)으로 시작하는 것만 골라 `PHANTOM_APP` 경로에서 실행 중인 프로세스만 찾아(`:53`), 각 프로세스 ID에 `osascript -l JavaScript`의 `NSRunningApplication.terminate`로 종료를 요청한다(`:58-64`). Quit 메뉴와 같은 종료 Apple 이벤트라 IDE가 상태를 저장하고, 강제 종료는 하지 않는다. 번들 ID(`dev.phantom.idea`)로 보내지 않으므로 다른 경로에서 실행 중인 복사본은 건드리지 않는다. 같은 경로 기준으로 최대 180초 기다리고, 그래도 떠 있으면 메시지를 출력하고 `exit 1` 한다 (`:65-69`). 확인: 같은 번들 ID의 스테이 오픈 애플릿 두 개로 실행했고(커밋 본문), 실제 Phantom 두 개로는 실행하지 않았다.
 - 설치: DMG를 읽기 전용으로 마운트하고(`:73`), `$APP.new`로 `ditto` 한 뒤 기존 앱을 지우고 교체한다 (`:75-78`). `EXIT` trap이 마운트를 해제한다 (`:74`). 그다음 `PHANTOM_SIGN_SETUP`(기본 `1`)과 `PHANTOM_SIGN_OPTIONAL=1`로 `./phantom-sign.sh "$APP"`를 실행하고(인증서가 없으면 먼저 만든다) `CFBundleVersion`을 출력한다 (`:79-82`).
 - 재시작: 설치 전에 실행 중이었다면 `/`로 이동해 최대 5회 `open "$APP"`으로 같은 경로의 앱을 띄운다 (`:84-95`).
