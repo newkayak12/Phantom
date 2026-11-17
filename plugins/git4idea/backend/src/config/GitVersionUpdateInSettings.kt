@@ -3,6 +3,8 @@ package git4idea.config
 
 import com.intellij.ide.IdleTracker
 import com.intellij.ide.actions.SettingsEntryPointAction
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
@@ -84,6 +86,9 @@ internal class GitVersionUpdateSettingsEntryProvider : SettingsEntryPointAction.
 
 internal class GitNewVersionCheckerStarter(private val project: Project) : VcsListener {
   override fun directoryMappingChanged() {
+    // phantom-idea: the idle check (Windows only) downloads download.jetbrains.com/jdk/feed/v1/gits.json.xz to offer a Git update;
+    // it does not start unless -Dphantom.jetbrains.services=true. "Download and Install" on a missing Git still works.
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) return
     if (afterIdleCheckRegistryValue >= 0) {
       project.service<GitNewVersionChecker>().restart()
     }

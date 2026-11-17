@@ -102,7 +102,7 @@ private val objectMapper: ObjectMapper by lazy {
 class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginInfoProvider {
   companion object {
     /**
-     * Phantom: the IDE does not call JetBrains' plugin servers on its own (broken-plugin list, plugin id lists,
+     * phantom-idea: the IDE does not call JetBrains' plugin servers on its own (broken-plugin list, plugin id lists,
      * feature suggestions). Browsing the Marketplace tab still works; `-Dphantom.jetbrains.services=true` turns the rest back on.
      */
     @JvmStatic

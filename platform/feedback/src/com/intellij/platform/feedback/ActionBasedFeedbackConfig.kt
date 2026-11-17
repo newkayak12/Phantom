@@ -62,7 +62,7 @@ interface ActionBasedFeedbackConfig : FeedbackSurveyConfig {
  */
 @RequiresBackgroundThread
 fun ActionBasedFeedbackConfig.isSuitableToShow(project: Project): Boolean {
-  // Phantom: feedback is submitted to JetBrains
+  // phantom-idea: feedback is submitted to JetBrains
   if (!MarketplaceRequests.jetBrainsServicesEnabled) return false
   val commonConditionsForAllSurveys = if (Registry.`is`("platform.feedback.ignore.common.conditions.for.all.surveys", false)) {
     true

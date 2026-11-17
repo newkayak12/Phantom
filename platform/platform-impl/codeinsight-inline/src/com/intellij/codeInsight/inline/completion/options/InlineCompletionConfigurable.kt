@@ -53,7 +53,7 @@ class InlineCompletionConfigurable : BoundCompositeConfigurable<UnnamedConfigura
   }
 
   private fun Panel.noCompletionPlugins() {
-    // Phantom: no "JetBrains AI Assistant" ad; the hint only points to a bundled Full Line plugin
+    // phantom-idea: no "JetBrains AI Assistant" ad; the hint only points to a bundled Full Line plugin
     if (PluginManager.getPlugins().none { it.isBundled && it.name.lowercase().contains("full line") }) return
     row {
       icon(AllIcons.General.BalloonInformation).align(AlignY.TOP)
