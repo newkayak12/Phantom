@@ -34,6 +34,7 @@
 - Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c, PR #2).
 
 ### 빌드·배포·서명
+- Codecov 업로더 서명 키 변경에 대응한 공식 Action v7.1.1로 갱신했다. 서명 검증은 유지한다 (PR #9).
 - SonarQube Cloud가 `sonar.sources`를 무시하는 분석 모드에서도 포크 소스만 검사하도록 포함 패턴을 명시했다. 실제 첫 분석이 업스트림 전체를 읽다가 메모리 부족으로 실패한 데 따른 수정이다 (PR #9).
 - 이슈·PR 라벨 추가와 라벨 동기화, 병합 후 연결 이슈 종료를 자동화했다. Node 품질 도구의 LCOV 생성 및 SonarQube·Codecov 연결을 추가했으며 외부 서비스 자격 증명이 없으면 미실행으로 표시한다 (PR #9).
 - 제공된 `default-ruleset.json`의 `protect-main` 설정을 기준으로 PR용 ruleset을 맞추고 승인 0명은 유지하면서 관리자 우회를 추가했다 (PR #9).

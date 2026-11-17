@@ -74,7 +74,7 @@ jobs:
           fi
       - name: Upload measured coverage to Codecov
         if: steps.services.outputs.codecov == 'true'
-        uses: codecov/codecov-action@0561704f0f02c16a585d4c7555e57fa2e44cf909 # v5.5.2
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: out/phantom-quality-coverage/lcov.info
