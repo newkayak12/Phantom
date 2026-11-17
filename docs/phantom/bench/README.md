@@ -37,13 +37,13 @@ to check). A comment-only commit to the bundle list counts as a change too.
   warmed on the old copy (`work/system-*`), so every label warms again. Each case prints one line.
 - App: `PHANTOM_BENCH_APP`, else `PHANTOM_APP`, else `/Applications/Phantom.app`; `PHANTOM_BENCH_APP` measures a
   copy that is not installed, such as an unpacked DMG. `PHANTOM_BENCH_PLUGINS` lists plugin zips (space-separated)
-  unpacked into each run's config copy, for Kotlin, which a release does not bundle (4d0fa4b060).
+  unpacked into each run's config copy, for Kotlin, which a release does not bundle (1d49734b5c).
 
 ## Baselines
 
 | File | From | Status |
 |---|---|---|
-| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to ed67704350, then d776e067d6, a936b0feba and cd2a0cf78f, which swap 8 more originals for Phantom-plugins builds, then the comment-only markers of PR #5, 301c21e98a); since 9433fdbe0f Kotlin is no longer bundled, so the regenerated counts are expected to drop, and 9e74cd8d1c adds one `postStartupActivity` (not measured); `compare` exits 2 until it is regenerated |
+| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to 6019d518b2, then 2cff0f911e, 0748db2720 and 588cd923ce, which swap 8 more originals for Phantom-plugins builds, then the comment-only markers of PR #5, d421f71ac4); since ac9ddb534c Kotlin is no longer bundled, so the regenerated counts are expected to drop, and 17cce24354 adds one `postStartupActivity` (not measured); `compare` exits 2 until it is regenerated |
 | `baseline.json` | — | not yet: needs a quiet machine; then calibrate the tolerances below |
 
 Regenerating `static-baseline.json` needs an app built from the current sources (the counts come from the built

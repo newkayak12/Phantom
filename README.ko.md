@@ -1,4 +1,4 @@
-<!-- synced-with: README.md @ b1a9cbaf29+docs -->
+<!-- synced-with: README.md @ 51a03a83f7+docs -->
 <p align="center">
   <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom" width="180">
 </p>
@@ -48,8 +48,8 @@ Phantom은 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-
 - 플러그인을 업데이트해도 다음에 열 때 모든 파일을 다시 검사하지 않는다(이전에는 345k 파일, 약 2.3 s, CPU 20 s).
 - 비 JetBrains 벤더에서 동의 설정 페이지가 깨지던 문제를 고쳤다. Gradle은 프로젝트 SDK로 돌 수 없으면 지원되는 등록 JDK로 실행한다.
 - 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체한다. Phantom-plugins 판과 IntelliJ 원본이 함께 설치되면 Phantom 판만 로드된다. 전에는 ID 충돌로 둘 다 빠졌다(커밋 `04dba66c3a`).
-- IDE를 최대 1초 멈추는 full GC인 유휴 메모리 정리를 IDE가 유휴 상태가 되고 5초가 아니라 5분 뒤에 한다. 그래서 다른 앱으로 전환할 때마다 돌지 않는다. 힙 여유는 10–25% 대신 20–40%로 둔다(커밋 `4d0fa4b060`).
-- 클래스 데이터 공유(CDS)를 켰다. 설치나 업데이트 뒤 첫 종료 때 JVM이 로드한 클래스를 아카이브로 쓰고(IDE 캐시 폴더에 약 370 MB) 다음 시작부터 매핑한다. Kotlin 프로젝트에서 `phantom-bench.sh`로 잰 값은 app initialization 2.3–3.9 s → 0.8–2.9 s, 첫 smart mode 14–19 s → 5–9 s다(커밋의 코드 주석, `dbfaf015f7`). 이전 빌드의 아카이브는 시작할 때 지운다(커밋 `9e74cd8d1c`).
+- IDE를 최대 1초 멈추는 full GC인 유휴 메모리 정리를 IDE가 유휴 상태가 되고 5초가 아니라 5분 뒤에 한다. 그래서 다른 앱으로 전환할 때마다 돌지 않는다. 힙 여유는 10–25% 대신 20–40%로 둔다(커밋 `1d49734b5c`).
+- 클래스 데이터 공유(CDS)를 켰다. 설치나 업데이트 뒤 첫 종료 때 JVM이 로드한 클래스를 아카이브로 쓰고(IDE 캐시 폴더에 약 370 MB) 다음 시작부터 매핑한다. Kotlin 프로젝트에서 `phantom-bench.sh`로 잰 값은 app initialization 2.3–3.9 s → 0.8–2.9 s, 첫 smart mode 14–19 s → 5–9 s다(커밋의 코드 주석, `71ff75bf3d`). 이전 빌드의 아카이브는 시작할 때 지운다(커밋 `17cce24354`).
 
 **더한 것** ([FORK-DELTA §3.1, §3.4, §5.1](docs/phantom/FORK-DELTA.md))
 - 고유 정체성: `Phantom.app`, 번들 ID `dev.phantom.idea`, URL 스킴 `phantom://`, 설정 폴더 `PhantomIDEA`, Phantom Dark/Light 테마.
@@ -57,7 +57,7 @@ Phantom은 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-
 - Backup and Sync를 내 git 저장소로 한다. GitHub 로그인은 account.jetbrains.com 대신 `gh auth token`을 쓴다.
 - Download JDK 목록은 foojay Disco API에서 받는다. 힙과 파일 페이지 캐시 크기는 기기 RAM에 맞춰 정한다.
 
-**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일, JBR 런타임 목록, Git 설치 목록은 아직 JetBrains에서 받지만, 사용자가 그 다운로드를 고를 때만이다(Grazie 언어 추가, Choose Boot Java Runtime 열기, Windows에서 Git이 없을 때 Download and Install. macOS에서는 Git 설치 목록을 받는 경로가 없다). 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정한다. 프레임워크 라이브러리 버전 목록과 Windows의 Git 업데이트 확인은 이제 플래그를 주지 않으면 JetBrains로 나가지 않는다. 이 변경은 소스에만 들어갔고 아직 빌드하거나 테스트하지 않았다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `6e71ed80c4`) 아직 빌드하거나 테스트하지 않았다.
+**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일, JBR 런타임 목록, Git 설치 목록은 아직 JetBrains에서 받지만, 사용자가 그 다운로드를 고를 때만이다(Grazie 언어 추가, Choose Boot Java Runtime 열기, Windows에서 Git이 없을 때 Download and Install. macOS에서는 Git 설치 목록을 받는 경로가 없다). 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정한다. 프레임워크 라이브러리 버전 목록과 Windows의 Git 업데이트 확인은 이제 플래그를 주지 않으면 JetBrains로 나가지 않는다. 이 변경은 소스에만 들어갔고 아직 빌드하거나 테스트하지 않았다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `4ca69e1a95`) 아직 빌드하거나 테스트하지 않았다.
 
 ## 성능
 
@@ -123,7 +123,7 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-`phantom-build.sh`는 먼저 그 25개 플러그인을 Phantom-plugins의 Gradle 래퍼로 빌드해 `out/phantom-plugins/`에 푼다. 체크아웃이나 플러그인 zip이 없으면 멈춘다. 첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생기고, 번들하지 않는 Kotlin 플러그인은 그 안의 `*-plugins/` 폴더에 zip으로 생긴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `048852ca23`)은 아직 빌드하거나 테스트하지 않았다.
+`phantom-build.sh`는 먼저 그 25개 플러그인을 Phantom-plugins의 Gradle 래퍼로 빌드해 `out/phantom-plugins/`에 푼다. 체크아웃이나 플러그인 zip이 없으면 멈춘다. 첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생기고, 번들하지 않는 Kotlin 플러그인은 그 안의 `*-plugins/` 폴더에 zip으로 생긴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `c844a9f18e`)은 아직 빌드하거나 테스트하지 않았다.
 
 버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 IntelliJ Platform 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`. 서명, 릴리스, 벤치마크는 [BUILD.md](docs/phantom/BUILD.md)에 있다.
 
