@@ -36,6 +36,7 @@
     <string>APPL</string>
     <key>CFBundleIdentifier</key>
     <string>@@bundle_identifier@@@@product_state@@</string>
+    <!-- phantom-idea: Get Info string reworded to "Based on the IntelliJ Platform, (c) ... JetBrains s.r.o." -->
     <key>CFBundleGetInfoString</key>
     <string>@@bundle_name@@ @@version@@, build @@build@@. Based on the IntelliJ Platform, (c) 2000-@@year@@ JetBrains s.r.o.</string>
     <key>CFBundleShortVersionString</key>

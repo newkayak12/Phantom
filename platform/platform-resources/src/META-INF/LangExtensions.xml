@@ -1553,6 +1553,7 @@
                  description="Enable split implementation of File, Project Errors and Code Analysis tabs in Problems View. Key needs to be set in both client and host."
                  restartRequired="true"/>
 
+    <!-- phantom-idea: Endpoints tool window in the core, so Spring, Ktor and other plugins only register providers -->
     <toolWindow id="Endpoints" anchor="bottom" secondary="false" icon="AllIcons.Webreferences.Server"
                 doNotActivateOnStart="true" factoryClass="dev.phantom.ide.endpoints.EndpointsToolWindowFactory"/>
     <toolWindow id="Problems View" anchor="bottom" icon="AllIcons.Toolwindows.ToolWindowProblemsEmpty" canCloseContents="true"

@@ -1,5 +1,6 @@
 package com.intellij.smartUpdate
 
+// phantom-idea: removed the UpdateAction and ApplicationManager imports, used only by the removed Toolbox App restart handling
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -23,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+// phantom-idea: removed the ToolboxUpdateAction and UpdateActionsListener imports
 import java.time.Duration
 import java.time.LocalTime
 import java.util.LinkedList
@@ -43,6 +45,7 @@ internal class SmartUpdate(val project: Project, private val coroutineScope: Cor
     fun property(id: String) = MutableProperty({ value(id) }, { map[id] = it })
   }
 
+  // phantom-idea: removed restartRequested and the listener that restarted the IDE after a Toolbox App update
   private var updateScheduled: Deferred<*>? = null
   private val options = Options()
 

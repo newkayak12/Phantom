@@ -248,6 +248,7 @@ class IndexDiagnosticDumper(private val coroutineScope: CoroutineScope) : Dispos
       if (ApplicationManager.getApplication().isUnitTestMode && !shouldDumpInUnitTestMode) {
         return
       }
+      // phantom-idea: no scanning report file unless -Dintellij.indexes.diagnostics.dump=true (unit tests still dump)
       if (!shouldDumpDiagnostics && !ApplicationManager.getApplication().isUnitTestMode) {
         return
       }
@@ -279,6 +280,7 @@ class IndexDiagnosticDumper(private val coroutineScope: CoroutineScope) : Dispos
         return
       }
       projectDumbIndexingHistory.indexingFinished()
+      // phantom-idea: no indexing report file unless -Dintellij.indexes.diagnostics.dump=true (unit tests still dump)
       if (!shouldDumpDiagnostics && !ApplicationManager.getApplication().isUnitTestMode) {
         return
       }

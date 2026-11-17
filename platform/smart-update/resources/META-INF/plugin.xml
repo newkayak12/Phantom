@@ -15,6 +15,7 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
+    <!-- phantom-idea: removed the ide.update step (IdeUpdateStep updated the IDE through Toolbox App) -->
     <smartUpdateStep id="plugins.update" implementation="com.intellij.smartUpdate.PluginsUpdateStep"/>
     <smartUpdateStep id="vcs.update" implementation="com.intellij.smartUpdate.VcsUpdateStep"/>
     <smartUpdateStep id="build.project" implementation="com.intellij.smartUpdate.BuildProjectStep"/>

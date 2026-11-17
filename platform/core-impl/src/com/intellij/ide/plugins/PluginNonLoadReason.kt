@@ -35,6 +35,7 @@ class PluginIsMarkedDisabled(
   override val shouldNotifyUser: Boolean = false
 }
 
+// phantom-idea: added PluginIsReplacedByAnotherPlugin: a plugin left out because a plugin keeping its id as an alias loads instead
 @ApiStatus.Internal
 class PluginIsReplacedByAnotherPlugin(
   override val plugin: IdeaPluginDescriptor,

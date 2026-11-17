@@ -1,18 +1,18 @@
 # Phantom IDEA 개발 가이드
 
 - 목적: 이 포크를 안전하게 고치는 방법을 작업별로 적는다. 무엇이 어디서 바뀌었는지는 [FORK-DELTA.md](FORK-DELTA.md), 구조와 기동 흐름은 [ARCHITECTURE.md](ARCHITECTURE.md), 빌드·릴리스·벤치 명령은 [BUILD.md](BUILD.md)가 맡는다. 이 문서는 그 내용을 되풀이하지 않고 링크한다.
-- 기준 커밋: 64dc82b3f2
-- 작성일: 2026-11-12
+- 기준 커밋: ea745003d1
+- 작성일: 2026-11-16
 
-표기: `경로:줄`은 기준 커밋에서 직접 연 위치다. "(추정)"은 읽은 사실에서 끌어낸 결론이다. 저장소 루트가 곧 community 루트다(`community/` 디렉터리 없음). 업스트림 문서와 스킬의 `community/...`는 `./...`로 읽는다.
+표기: `경로:줄`은 기준 커밋에서 직접 연 위치다. 단 ea745003d1에서 다시 연 것은 `phantom-build.sh`, `phantom-release.sh`, `phantom-install.sh`, `phantom-bench.sh`, `phantom-bench-report.py`, `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `OpenSourceCommunityInstallersBuildTarget.kt`의 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, ea745003d1이 표식 주석을 더한 78개 파일(FORK-DELTA 2절)과 3929d7998b이 고친 `phantom-sign.sh`에서는 몇 줄 밀렸을 수 있다. "(추정)"은 읽은 사실에서 끌어낸 결론이다. 저장소 루트가 곧 community 루트다(`community/` 디렉터리 없음). 업스트림 문서와 스킬의 `community/...`는 `./...`로 읽는다.
 
 ## 1. 작업 전 확인
 
 이 포크의 규칙이다. 근거는 [FORK-DELTA.md](FORK-DELTA.md) 2절의 히스토리 분석과 README 설계 규칙(`git show be60914099:README.md`의 56-60행, 94-98행)이다.
 
-1. **번들은 설정으로 줄이고 소스는 남긴다.** 플러그인을 뺄 때 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 두고 `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:85-107`의 번들 목록에서만 뺀다. 업스트림 병합을 쉽게 하려는 것이다(e2a4ffa4ee 본문). IntelliJ 플러그인을 Phantom-plugins 판으로 바꿀 때도 원본은 이 목록에서만 뺀다(9229667cc7, 2절 (c)). 소스를 실제로 지운 경우는 FORK-DELTA 2.1절의 6개 커밋뿐이다.
+1. **번들은 설정으로 줄이고 소스는 남긴다.** 플러그인을 뺄 때 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 두고 `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:90-122`의 번들 목록에서만 뺀다. 업스트림 병합을 쉽게 하려는 것이다(e2a4ffa4ee 본문). IntelliJ 플러그인을 Phantom-plugins 판으로 바꿀 때도 원본은 이 목록에서만 뺀다(9229667cc7, 2절 (c)). 소스를 실제로 지운 경우는 FORK-DELTA 2.1절의 6개 커밋뿐이다.
 2. **JetBrains 서버 호출은 지우지 말고 게이트 뒤에 둔다.** 게이트는 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:104-109`의 `jetBrainsServicesEnabled`(시스템 프로퍼티 `phantom.jetbrains.services`, 기본 false) 하나다.
-3. **패치에 표식 주석을 단다.** 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`, XML은 `<!-- phantom-idea: -->`. 단 FORK-DELTA 2절에 따르면 바이너리를 뺀 수정 파일(상태 M, 바이너리 제외) 96개 중 47개에 두 표식(`phantom-idea:`, `Phantom:`)이 모두 없고, 그중 38개는 'phantom'이라는 글자 자체가 없다(대부분 줄 삭제만 한 파일). 델타를 찾을 때는 표식 검색이 아니라 `git diff d2faebf601 HEAD`를 기준으로 삼는다.
+3. **패치에 표식 주석을 단다.** 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`, XML은 `<!-- phantom-idea: -->`. ea745003d1부터 주석을 달 수 있는 수정 업스트림 파일 101개는 모두 수정 덩어리마다 표식이 있다(그중 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만). markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 목록, `build.txt`, 이미지 등 주석을 달 수 없는 수정 파일 34개에는 표식이 없다(FORK-DELTA 2절). 표식은 길잡이일 뿐이고, 델타를 찾을 때는 `git diff d2faebf601 HEAD`를 기준으로 삼는다.
 4. **새 코드는 `dev.phantom.*` 패키지, 새 모듈은 `phantom.*` 이름**을 쓴다(c06e071a51). 예외는 업스트림 패키지 안의 `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt`, `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt`, `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt`다.
 5. **시작 경로를 무겁게 하지 않는다.** README 설계 규칙: 프로젝트가 그 기술을 쓸 때만 동작, 증분 갱신, EDT 작업·불필요한 시작 활동·시작 경로의 네트워크 금지. 로드맵 공통 원칙(`docs/phantom/design/2026-10-16-roadmap.md:50-51`)도 같다. 현재 코어에는 Phantom `postStartupActivity`가 2개 있다(`platform/platform-resources/src/META-INF/PlatformExtensions.xml:841`, `:843`). 정적 게이트(3절)는 시작 활동 등록 수가 하나라도 늘면 실패한다.
 6. **클린룸.** intellij-community API와 공개 스펙만 쓴다. 디컴파일한 JetBrains 코드를 옮기지 않고, Ultimate 플러그인을 번들하지 않으며, 라이선스 검사를 건드리지 않는다(README 94-98행, 로드맵 `:53`).
@@ -24,13 +24,13 @@
 ### (a) 번들에서 플러그인 빼기
 
 - 언제: 업스트림 플러그인을 Phantom 기본 설치에서 빼고 싶을 때.
-- 파일: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:85-107`(`.removing(...)` 사슬), 이유 주석 `:77-84`. 빼려는 ID가 업스트림 목록 어디에 있는지는 `platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:14-58`(`IDEA_BUNDLED_PLUGINS`)과 그것이 포함하는 `DEFAULT_BUNDLED_PLUGINS`(`platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/ProductModulesLayout.kt:23-39`)에서 찾는다.
-- 순서: (1) `.removing("<모듈>")` 한 줄을 더한다. (2) `:77-84` 주석에 이유를 한 줄 쓴다. (3) 다른 번들 플러그인이 그 모듈에 의존하는지 확인한다(커밋 본문들이 "nothing bundled depends on it"으로 적은 확인). (4) 제품 콘텐츠 모듈이면 `.removing`이 아니라 `intellijCommunityBaseFragment()`(`:243-281`)의 `module(...)` 줄을 지운다(770810693c, `:266` 주석). 소스, `.idea/modules.xml`, `intellij.idea.community.main.iml`은 건드리지 않는다. 예: 7c43a36532는 이 파일 한 개만 바꿨다.
+- 파일: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:90-122`(`.removing(...)` 사슬), 이유 주석 `:82-89`. 빼려는 ID가 업스트림 목록 어디에 있는지는 `platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:14-60`(`IDEA_BUNDLED_PLUGINS`)과 그것이 포함하는 `DEFAULT_BUNDLED_PLUGINS`(`platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/ProductModulesLayout.kt:23-39`)에서 찾는다.
+- 순서: (1) `.removing("<모듈>")` 한 줄을 더한다. (2) `:82-89` 주석에 이유를 한 줄 쓴다. (3) 다른 번들 플러그인이 그 모듈에 의존하는지 확인한다(커밋 본문들이 "nothing bundled depends on it"으로 적은 확인). (4) 제품 콘텐츠 모듈이면 `.removing`이 아니라 `intellijCommunityBaseFragment()`(`:262-300`)의 `module(...)` 줄을 지운다(770810693c, `:285` 주석). 소스, `.idea/modules.xml`, `intellij.idea.community.main.iml`은 건드리지 않는다. 예: 7c43a36532는 이 파일 한 개만 바꿨다.
 - 검증: 빌드 후 `Phantom IDEA.app/Contents/plugins/`에 그 플러그인이 없는지 본다. 정적 게이트(3절)는 감소를 실패로 보지 않는다.
 
 ### (b) 뺀 플러그인 되돌리기
 
-- 업스트림 플러그인(소스가 남아 있는 21개, FORK-DELTA 3.2절): `.removing` 줄과 주석을 지운다. 제품 콘텐츠 모듈이면 `module(...)` 줄을 되살린다. 예: a3e497f72d가 `intellij.ide.startup.importSettings`를 `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:267`로 되살렸다(2줄 변경). Phantom-plugins 판이 대신 들어간 7개(`:101-107`)와 Lombok은 그 판을 `PHANTOM_PLUGINS_BUNDLED`(`:31-33`)와 `phantom-build.sh:33`에서도 빼야 한다. 둘을 같이 넣으면 같은 ID와 모듈을 두 번 차지한다(9229667cc7 본문). 04dba66c3a 뒤로는 그 경우 별칭 대체로 Phantom-plugins 판만 로드될 것으로 보인다(추정, FORK-DELTA 3.12절).
+- 업스트림 플러그인(소스가 남아 있는 31개, FORK-DELTA 3.2절): `.removing` 줄과 주석을 지운다. 제품 콘텐츠 모듈이면 `module(...)` 줄을 되살린다. 예: a3e497f72d가 `intellij.ide.startup.importSettings`를 `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:286`로 되살렸다(2줄 변경). Phantom-plugins 판이 대신 들어간 16개(`:106-121`)와 Lombok은 그 판을 `PHANTOM_PLUGINS_BUNDLED`(`:35-38`)와 `phantom-build.sh:33`에서도 빼야 한다. Kotlin(`:122`)을 되돌리면 `pluginModulesToPublish`(`:126`)와 `phantom-release.sh`의 Kotlin zip 확인·게시(`:59-63`, `:81-122`)도 함께 정리해야 한다(추정, 해 본 적 없음). 둘을 같이 넣으면 같은 ID와 모듈을 두 번 차지한다(9229667cc7 본문). 04dba66c3a 뒤로는 그 경우 별칭 대체로 Phantom-plugins 판만 로드될 것으로 보인다(추정, FORK-DELTA 3.12절).
 - 소스까지 지운 모듈(FORK-DELTA 2.1절: 프로모 3개, Toolbox, JetBrains OAuth 등): 지운 커밋을 되돌리고 플러그인 기술자(`META-INF/plugin.xml`) 등록과 `.idea/modules.xml` 항목까지 함께 되살려야 한다(추정, 해 본 적 없음).
 - Phantom-plugins로 옮긴 플러그인(FORK-DELTA 5.2절 8개, Bytecode Viewer·WebP·Modal Commit 대체판): 이 리포에 되돌리지 않는다. IDE의 Plugins 화면에서 공식 저장소 `newkayak12/Phantom-plugins`로 설치한다.
 - 검증: 번들 플러그인 수가 늘면 정적 게이트의 `bundled_plugins`(허용 +0)가 실패한다. 의도한 증가면 같은 커밋에서 `docs/phantom/bench/static-baseline.json`을 새 측정값으로 바꾸고 커밋 본문에 이유를 쓴다. 단 현재 baseline(26.10.27, `bundled_plugins` 56)은 7c43a36532가 `.removing` 5건을 더하기 전 값이라, 되돌리는 플러그인이 5개 이하면 게이트가 실패하지 않는다(추정, 실행하지 않음). 되돌리기 전에 baseline을 새로 측정해 둔다.
@@ -45,18 +45,20 @@
 | `plugins/phantom-<name>/phantom.<name>.iml`, `plugins/phantom-<name>/resources/META-INF/plugin.xml` | 모듈과 플러그인 ID `dev.phantom.<name>`. 콘텐츠 모듈은 `<content>`에 나열(`plugins/phantom-sync/resources/META-INF/plugin.xml:15-17`) |
 | `.idea/modules.xml:359-362` | 프로젝트 모듈 등록. 기존 Phantom 항목 옆에 넣는다 |
 | `intellij.idea.community.main.iml:138-140` | 루트 모듈 RUNTIME 의존(소스 실행·테스트용) |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:20-24` | `PHANTOM_BUNDLED_PLUGINS`에 한 줄 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:23-27` | `PHANTOM_BUNDLED_PLUGINS`에 한 줄 |
 | `plugins/phantom-<name>/BUILD.bazel`, `BUILD.bazel:284-286`, `:473-475`, `build/bazel-generated-file-list.txt:1475-1478` | Bazel 파일. `.iml`에서 생성한다 |
 
 - Bazel 파일 생성기: 이 리포에 있는 것은 `build/jpsModelToBazelCommunityOnly.cmd`뿐이다(업스트림 문서의 `./build/jpsModelToBazel.cmd`는 없다). 확인한 것: 스크립트가 `RUN_WITHOUT_ULTIMATE_ROOT=true`를 켜고(`:8`) `platform/build-scripts/bazel`에서 `bazel.cmd run //:jps-to-bazel`을 실행한다(`:11-12`). 대상은 `platform/build-scripts/bazel/BUILD.bazel:115`이고, 문서상 각 `BUILD.bazel`과 `build/bazel-generated-file-list.txt`를 쓴다(`platform/build-scripts/bazel/README.md:248-252`). 확인하지 못한 것: 이 리포에서 실제로 끝까지 도는지(실행해 보지 않음), Phantom 커밋이 이 명령으로 Bazel 파일을 만들었는지(FORK-DELTA 6.1절). 같은 README `:250`이 만든다는 `build/bazel-targets.json`이 트리에 없어 판단할 수 없다. 돌지 않으면 5f1819d799처럼 같은 형식(`### auto-generated section` 표식, 예 `plugins/phantom-theme/BUILD.bazel:3`)을 손으로 맞춘다.
 - 검증: `./tests.cmd --module <새 테스트 모듈> --test 'dev.phantom.<name>.*'`(컴파일 포함), 빌드한 앱의 `Contents/plugins/`에 새 플러그인 존재. 정적 게이트는 `bundled_plugins`와 시작 등록 증가를 실패로 보므로 (b)처럼 기준선을 의도적으로 갱신한다.
 - Phantom-plugins 판을 번들에 넣기(IntelliJ 플러그인 대체 포함, 9229667cc7이 한 방법):
-  1. Phantom-plugins 쪽: 디렉터리 `<dir>`의 `:<dir>:buildPlugin`이 `<dir>/build/distributions/<dir>-<version>.zip`을 만들고(`<dir>/build.gradle.kts`의 `version = "..."` 줄에서 버전을 읽음), 그 zip이 `<dir>/lib`로 풀려야 한다(`phantom-build.sh:36-43`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:191-192`). IntelliJ 원본을 대체하는 판은 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 둔다(`IdeaCommunityProperties.kt:26-30` 주석). 그래야 원본에 의존하는 번들 플러그인이 대체판으로 해석된다.
-  2. 이 리포: `PHANTOM_PLUGINS_BUNDLED`(`IdeaCommunityProperties.kt:31-33`)와 `phantom-build.sh:33`의 `bundled_from_plugins`에 같은 `<dir>`를 더한다. 두 목록은 주석으로만 서로를 가리킨다.
-  3. 원본이 번들에 있으면 `.removing("<원본 모듈>")`을 `:100` 주석 아래에 더한다(`:101-107`). `PHANTOM_BUNDLED_PLUGINS`에 있던 것이면 그 줄을 지운다(`intellij.lombok` 사례).
-  4. 빌드 설정이 원본 플러그인 디렉터리 이름을 쓰는 곳을 찾아 고친다. 예: `CE_CLASS_VERSIONS`의 커버리지 런타임 경로 `plugins/java-coverage/...` → `plugins/coverage/...`(`platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:68`, a199380d7d). `./tools/rg.cmd -n 'plugins/<원본 디렉터리>/' platform/build-scripts build`로 찾는다.
+  1. Phantom-plugins 쪽: 디렉터리 `<dir>`의 `:<dir>:buildPlugin`이 `<dir>/build/distributions/<dir>-<version>.zip`을 만들고(`<dir>/build.gradle.kts`의 `version = "..."` 줄에서 버전을 읽음), 그 zip이 `<dir>/lib`로 풀려야 한다(`phantom-build.sh:36-43`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:210-211`). IntelliJ 원본을 대체하는 판은 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 둔다(`IdeaCommunityProperties.kt:29-34` 주석. Phantom 자체 구현인 Mermaid `com.phantom.mermaid`만 별칭이 없다). 그래야 원본에 의존하는 번들 플러그인이 대체판으로 해석된다.
+  2. 이 리포: `PHANTOM_PLUGINS_BUNDLED`(`IdeaCommunityProperties.kt:35-38`)와 `phantom-build.sh:33`의 `bundled_from_plugins`에 같은 `<dir>`를 더한다(지금 둘 다 17개). 두 목록은 주석으로만 서로를 가리킨다.
+  3. 원본이 번들에 있으면 `.removing("<원본 모듈>")`을 `:105` 주석 아래에 더한다(`:106-121`). `PHANTOM_BUNDLED_PLUGINS`에 있던 것이면 그 줄을 지운다(`intellij.lombok` 사례).
+  4. 빌드 설정이 원본 플러그인 디렉터리 이름을 쓰는 곳을 찾아 고친다. 예: `CE_CLASS_VERSIONS`의 커버리지 런타임 경로 `plugins/java-coverage/...` → `plugins/coverage/...`(`platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:71`, a199380d7d). `./tools/rg.cmd -n 'plugins/<원본 디렉터리>/' platform/build-scripts build`로 찾는다.
   5. 릴리스 러너는 Phantom-plugins의 `origin/main`을 빌드하므로(`.github/workflows/phantom-release.yml:52-53`) 그쪽 변경을 먼저 main에 올린다.
   - 검증: `./phantom-build.sh`가 `out/phantom-plugins/<dir>/lib`를 만들고 빌드한 앱의 `Contents/plugins/<dir>`가 있는지 본다. 원본과 함께 설치됐을 때의 동작은 FORK-DELTA 3.12절의 테스트로 본다.
+  - 주의(그 판으로 바꾼 뒤): 번들은 이제 `out/phantom-plugins/<dir>`의 Phantom-plugins 빌드를 쓰므로, 이 리포의 `plugins/<이름>` 소스(예 `plugins/github`, `plugins/grazie`, `plugins/terminal`)를 고쳐도 Phantom-plugins가 이 리포의 소스로 빌드하지 않는 한 배포 앱은 바뀌지 않는다. 이 문서를 쓸 때 Phantom-plugins 저장소를 볼 수 없어서 어느 쪽인지 확인하지 못했다. 그 플러그인을 고치려면 먼저 Phantom-plugins의 해당 디렉터리가 무엇으로 빌드하는지 확인한다.
+- Kotlin은 번들하지 않고 zip으로 게시한다(9433fdbe0f, 80b3e36e3d): `.removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)`(`IdeaCommunityProperties.kt:122`)와 `pluginModulesToPublish`(`:126`)로 빌드가 `out/phantom-idea/artifacts/<제품 코드>-plugins/Kotlin-*.zip`을 만들고, `phantom-release.sh:59-63`, `:81-122`가 그것을 Phantom-plugins의 릴리스 `kotlin-262.<YYMMDD>`와 `.phantom/marketplace.json` 항목으로 올린다(BUILD.md 6장). Kotlin은 이 리포의 `plugins/kotlin` 소스로 빌드되므로 그 소스를 고치면 다음 릴리스의 zip에 들어간다.
 
 ### (d) JetBrains 서버 호출 막기·게이트 걸기
 
@@ -78,18 +80,18 @@
 |---|---|
 | 제품 이름, 회사, 로고·아이콘, 기본 테마 | `community-resources/resources/idea/IdeaApplicationInfo.xml:3`, `:5-8`, `:10` |
 | 표시 버전 | 값은 빌드 날짜다. `phantom-build.sh:15`가 YY, MM, DD를 구해 `:46`, `:63`에서 `-Dphantom.version.major=<YY>`, `-Dphantom.version.minor=<MM>.<DD>`로 넘긴다. `ApplicationInfoPropertiesImpl.kt:72-75`가 XML보다 먼저 읽고 `:177-181`이 패키지 안의 `<version>`에 쓴다. 추적 파일 `community-resources/resources/idea/IdeaApplicationInfo.xml:2`는 자리표시자 `0` / `0.0`이므로 고치지 않는다(048852ca23, 빌드 전). 소스에서 실행하면 0.0으로 보인다 |
-| 설정 폴더, 산출물·출력 폴더 이름 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:202-204`, `:207-208`, `:210` |
-| Windows 이름, macOS URL 스킴·번들 ID·앱 이름, Linux 폴더 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:289-290`, `:299`, `:302`, `:304`, `:319` |
+| 설정 폴더, 산출물·출력 폴더 이름 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:221-223`, `:226-227`, `:229` |
+| Windows 이름, macOS URL 스킴·번들 ID·앱 이름, Linux 폴더 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:309-310`, `:320`, `:323`, `:325`, `:341` |
 | Phantom 빌드 번호 `PH-<YYMMDD>.<N>` | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt`, `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:170-175`, `phantom-build.sh:26-27`, `:46`, `:63` |
 | 아이콘 원본 | `community-resources/phantom-brand-src/compose.swift`가 `phantom-hood.png`에서 만든다(빌드가 부르지 않음, BUILD.md 4절) |
 
-- 주의: 번들 ID `dev.phantom.idea`는 `phantom-install.sh:45`, `phantom-sign.sh:18`에도 있다. 설정 폴더 `PhantomIDEA`를 바꾸면 기존 사용자 설정을 못 찾고(추정), `phantom-bench.sh:16`의 경로도 틀어진다. 표시 버전 속성 이름 `phantom.version.major`, `phantom.version.minor`는 `PhantomBuildNumber.kt:21-22`, 플랫폼 브랜치 `262`는 `phantom-build.sh:27`, `:46`, `:63`과 `phantom-release.sh:51-52`에 박혀 있다.
+- 주의: 번들 ID `dev.phantom.idea`는 `phantom-sign.sh`의 `codesign --identifier`에도 있다. `phantom-install.sh`는 eff1276d6a부터 번들 ID가 아니라 앱 경로와 프로세스 ID로 실행 중인 Phantom을 끈다(`phantom-install.sh:52-70`, 번들 ID는 `:57` 주석에만 남음). 설정 폴더 `PhantomIDEA`를 바꾸면 기존 사용자 설정을 못 찾고(추정), `phantom-bench.sh:22`의 경로도 틀어진다. 표시 버전 속성 이름 `phantom.version.major`, `phantom.version.minor`는 `PhantomBuildNumber.kt:21-22`, 플랫폼 브랜치 `262`는 `phantom-build.sh:27`, `:46`, `:63`과 `phantom-release.sh:54`, `:83-84`, `:97-98`, `:101`(Kotlin 릴리스 이름과 `since`)에 박혀 있다.
 - 검증: FORK-DELTA 3.1절 끝(빌드한 `Info.plist`의 `CFBundleIdentifier`, `CFBundleVersion`, `product-info.json`의 build).
 
 ### (g) 업스트림 코드에 플랫폼 패치 넣기
 
-- 최소 diff: 업스트림 줄을 고치기보다 앞에 한 줄을 더한다(조기 반환, 게이트). 함수 본문을 다시 쓰면 병합 때 덩어리 충돌이 난다(FORK-DELTA 6절 "깊게 고친 파일"). 큰 로직은 `dev.phantom.*` 새 파일에 두고 업스트림 파일에서는 호출 한 줄만 둔다(예 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:679`의 `PhantomMarketplace` 호출, ARCHITECTURE 7절).
-- 표식: 패치 줄 바로 위에 `// phantom-idea: <왜, 켜는 법>`. 줄을 지우기만 할 때도 그 자리에 표식 주석을 남긴다(지금 38개 파일에 없는 이유가 이것이다).
+- 최소 diff: 업스트림 줄을 고치기보다 앞에 한 줄을 더한다(조기 반환, 게이트). 함수 본문을 다시 쓰면 병합 때 덩어리 충돌이 난다(FORK-DELTA 6절 "깊게 고친 파일"). 큰 로직은 `dev.phantom.*` 새 파일에 두고 업스트림 파일에서는 호출 한 줄만 둔다(예 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:686`, `:707-708`의 `PhantomMarketplace` 호출, ARCHITECTURE 7절).
+- 표식: 패치 줄 바로 위에 `// phantom-idea: <왜, 켜는 법>`. 줄을 지우기만 할 때도 그 자리에 표식 주석을 남긴다(예전 패치에 표식이 빠졌던 주된 이유가 이것이고, ea745003d1이 빠진 곳을 채웠다).
 - 업스트림 파일을 통째로 지우지 않는다. 지우면 업스트림의 다른 코드가 그 심볼을 계속 쓸 수 있다(0a5ca64795가 `ExternalUpdateManager.TOOLBOX`를 되살린 사례).
 - 마무리: 테스트가 있으면 같은 커밋에 넣고, FORK-DELTA의 해당 주제 표와 CHANGELOG에 한 줄을 더한다. 6절 충돌 표에 오를 만한 파일이면 거기도 적는다.
 
@@ -101,8 +103,8 @@
 2. 별도 워크트리에서 `d2faebf601`을 부모로 하는 가져오기 브랜치를 만든다. 업스트림 새 태그를 `--depth 1`로 받아 그 트리로 작업 트리를 바꾸고(README.md 제외) "Import ... idea/<새 태그>"로 커밋한다. 그러면 Phantom 브랜치와의 병합 기준이 `d2faebf601`이 된다.
 3. 그 브랜치를 Phantom 작업 브랜치에 병합한다. 충돌은 FORK-DELTA 6절 표대로 푼다: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`는 Phantom 식을 유지하고 새 `IDEA_BUNDLED_PLUGINS` 항목마다 뺄지 정한다. `community-resources/resources/idea/IdeaApplicationInfo.xml:2`(업스트림이 올린 `<version>`과 충돌한다)는 Phantom의 자리표시자 줄(`major="0" minor="0.0"`)을 택한다. 표시 버전은 빌드 속성이 정하므로 이 줄의 값은 빌드에 쓰이지 않는다. `build.txt`(`262.SNAPSHOT`)도 Phantom 값을 택한다. `.idea/modules.xml`과 `*.iml`은 원형을 지키며 손으로 합친다.
 4. 병합하지 말고 다시 만들 파일(FORK-DELTA 6.1절): 루트·모듈 `BUILD.bazel`, `build/bazel-generated-file-list.txt`는 `build/jpsModelToBazelCommunityOnly.cmd`로 다시 만든다. `platform/built-in-server/api-dump-unreviewed.txt`의 재생성 명령은 확인되지 않았다.
-5. 의미 충돌 점검: 지운 업스트림 파일 35개를 새 코드가 참조하는지 컴파일로 본다. Phantom-plugins 판으로 바꾼 7개(FORK-DELTA 3.2절)는 업스트림이 그 플러그인의 ID나 콘텐츠 모듈 이름을 바꾸면 Phantom-plugins 판도 맞춰야 한다(추정). `pluginInitContextIdConflictResolver.kt`가 충돌하면 FORK-DELTA 3.12절의 동작을 다시 맞추고 그 테스트를 돌린다. `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt` 등에서 새 JetBrains 호출 경로가 생겼는지 `rg`로 다시 찾는다. 빠진 플러그인 ID가 이름을 바꿨으면 `.removing`이 조용히 효과를 잃는다. `platform/indexing-impl/src/com/intellij/find/ngrams/TrigramIndex.java:94`의 `shardlessVersion`은 업스트림 값보다 크게 다시 정한다. Phantom 테마는 `python3 -I plugins/phantom-theme/tools/generate-themes.py`로 다시 만든다.
-6. 플랫폼 브랜치가 바뀌면(262 → 다음) `phantom-build.sh:27`, `:46`, `:63`, `phantom-release.sh:51-52`의 `262`와 `build.txt`를 고친다. Phantom-plugins 플러그인도 새 플랫폼으로 다시 빌드해야 할 수 있다. 저장소 안의 `android` 클론도 같은 태그로 바꾼다(BUILD.md 2절).
+5. 의미 충돌 점검: 지운 업스트림 파일 35개를 새 코드가 참조하는지 컴파일로 본다. Phantom-plugins 판으로 바꾼 16개(FORK-DELTA 3.2절)는 업스트림이 그 플러그인의 ID나 콘텐츠 모듈 이름을 바꾸면 Phantom-plugins 판도 맞춰야 한다(추정). `pluginInitContextIdConflictResolver.kt`가 충돌하면 FORK-DELTA 3.12절의 동작을 다시 맞추고 그 테스트를 돌린다. `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt` 등에서 새 JetBrains 호출 경로가 생겼는지 `rg`로 다시 찾는다. 빠진 플러그인 ID가 이름을 바꿨으면 `.removing`이 조용히 효과를 잃는다. `platform/indexing-impl/src/com/intellij/find/ngrams/TrigramIndex.java:94`의 `shardlessVersion`은 업스트림 값보다 크게 다시 정한다. Phantom 테마는 `python3 -I plugins/phantom-theme/tools/generate-themes.py`로 다시 만든다.
+6. 플랫폼 브랜치가 바뀌면(262 → 다음) `phantom-build.sh:27`, `:46`, `:63`, `phantom-release.sh:54`, `:83-84`, `:97-98`, `:101`의 `262`와 `build.txt`를 고친다. Phantom-plugins 플러그인도 새 플랫폼으로 다시 빌드해야 할 수 있다. 저장소 안의 `android` 클론도 같은 태그로 바꾼다(BUILD.md 2절).
 7. 3절의 테스트, 빌드, 정적 게이트를 모두 돌리고 CHANGELOG에 "기준 소스" 항목을 더한다. 이 절차를 실제로 한 뒤 이 절의 "(미검증)"을 고친다.
 
 ## 3. 검증
@@ -119,7 +121,7 @@
 | 컴파일만 | `bazel build <대상>`(AGENTS.md). 문서·JSON만 바꿨으면 생략 | AGENTS.md |
 
 - `./tests.cmd`는 Bazel 컴파일을 포함한다(`tests.cmd:15-28`). `--test`에는 FQN이나 와일드카드가 필요하다.
-- 소스에서 IDE를 실행할 때: 개발 모드 레이아웃도 `getAdditionalPluginPaths()`를 부르므로(`platform/build-scripts/src/org/jetbrains/intellij/build/dev/PluginBuilder.kt:74` → `IdeaCommunityProperties.kt:187-194`) `out/phantom-plugins/<dir>/lib`가 없으면 실패할 것으로 보인다(추정, 실행하지 않음). 그 디렉터리를 만드는 것은 `phantom-build.sh:29-44`뿐이다.
+- 소스에서 IDE를 실행할 때: 개발 모드 레이아웃도 `getAdditionalPluginPaths()`를 부르므로(`platform/build-scripts/src/org/jetbrains/intellij/build/dev/PluginBuilder.kt:74` → `IdeaCommunityProperties.kt:206-213`) `out/phantom-plugins/<dir>/lib`가 없으면 실패할 것으로 보인다(추정, 실행하지 않음). 그 디렉터리를 만드는 것은 `phantom-build.sh:29-44`뿐이다.
 - 자동화되지 않은 것: CI는 테스트도 게이트도 돌리지 않는다. 워크플로는 `.github/workflows/phantom-release.yml` 하나이고 수동 릴리스만 한다. `phantom-build.sh`, `phantom-release.sh`도 벤치·게이트·테스트를 부르지 않는다(BUILD.md 9절 6번). 위 확인은 사람이 커밋 전에 직접 돌린다.
 
 ## 4. 커밋·변경 이력 규칙
@@ -128,37 +130,37 @@
 - 접두어: 한 플러그인·도구에 한정되면 `phantom-spring:`, `phantom-install:`, `Phantom bench:`, `HTTP client:`, `Workspaces:`처럼 대상 이름을 붙인다(히스토리에서 읽은 관례). 플랫폼 전반 변경은 접두어 없이 쓴다.
 - 본문: 메커니즘(무엇을 어디서 막거나 바꿨는지), 이유, 되살리는 플래그(`-Dphantom.jetbrains.services=true` 등), 측정값이 있으면 숫자. be60914099 본문이 전형이다.
 - 업스트림 커밋 규칙은 쓰지 않는다: `.agents/skills/commits/SKILL.md`는 JetBrains 형식(YouTrack 티켓, SafePush 검증)을 요구하지만 이 포크 히스토리는 그 형식을 쓰지 않는다.
-- CHANGELOG: `CHANGELOG.md:7-13`의 규칙대로 같은 커밋에서 `미배포` 아래 고정 카테고리에 한 줄을 더하고, 해시는 다음 커밋에서 채운다. 릴리스 태그가 생기면 `미배포` 항목을 그 버전 아래로 옮긴다.
+- CHANGELOG: `CHANGELOG.md:7-14`의 규칙대로 같은 커밋에서 `미배포` 아래 고정 카테고리에 한 줄을 더하고, 끝의 괄호에 넣는 커밋 해시와 PR 번호(`(해시, PR #N)`, PR 없이 main에 넣은 커밋은 해시만)는 다음 커밋에서 채운다. 릴리스 태그가 생기면 `미배포` 항목을 그 버전 아래로 옮긴다.
 - 문서: 패치 지점이 바뀌면 FORK-DELTA의 해당 표를, 빌드 스크립트가 바뀌면 BUILD.md를 고친다. 유지 규칙은 [README.md](README.md) "문서 유지 규칙".
 
 ## 5. 알려진 문제 모음
 
-여러 문서에 흩어진 열린 문제를 한 표로 모았다. 새로 찾은 항목은 넣지 않았다. 상세는 "문서" 열을 본다. 2, 4, 5, 12번은 6e71ed80c4, 5185f60295, 048852ca23, a1313a347c에서 코드를 바꿨지만 아직 빌드하거나 테스트하지 않았으므로 "해결"이 아니라 "변경됨, 빌드 대기"로 표시한다. 빌드와 테스트로 확인되면 행을 지우거나 상태를 고친다. 번호는 다시 매기지 않는다. 3, 7, 8번은 이 브랜치에서 고쳐 문제 칸이 "고침:"으로 시작하며, 고친 스크립트는 끝까지 실행하지 않았다.
+여러 문서에 흩어진 열린 문제를 한 표로 모았다. 새로 찾은 항목은 넣지 않았다. 상세는 "문서" 열을 본다. 2, 4, 5, 12번은 6e71ed80c4, 5185f60295, 048852ca23, a1313a347c에서 코드를 바꿨지만 아직 빌드하거나 테스트하지 않았으므로 "해결"이 아니라 "변경됨, 빌드 대기"로 표시한다. 빌드와 테스트로 확인되면 행을 지우거나 상태를 고친다. 번호는 다시 매기지 않는다. 3, 7, 8, 16번은 이 브랜치에서 고쳐 문제 칸이 "고침:"으로 시작하며(20, 25번은 "일부 고침"), 고친 스크립트는 끝까지 실행하지 않았다. 1, 4, 24번의 "주의"는 ed67704350 뒤 번들 플러그인을 Phantom-plugins가 빌드하게 되면서 생긴 미확인 사항이다.
 
 | # | 문제 | 위치 | 문서 |
 |---|---|---|---|
-| 1 | GitHub 브라우저 로그인 client id가 비어 있어 `gh` 로그인이나 `-Dphantom.github.oauth.client.id` 없이는 예외 | `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt:30`, `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/ui/GHOAuthCredentialsUi.kt:61-62` | ARCHITECTURE 문제 1 |
+| 1 | GitHub 브라우저 로그인 client id가 비어 있어 `gh` 로그인이나 `-Dphantom.github.oauth.client.id` 없이는 예외 | `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/GHDeviceFlow.kt:30`, `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/ui/GHOAuthCredentialsUi.kt:61-62`. 주의: ed67704350부터 번들의 GitHub 플러그인은 Phantom-plugins 빌드다. 이 리포의 `plugins/github`를 고쳐도 Phantom-plugins가 이 소스로 빌드하지 않는 한 배포 앱은 바뀌지 않고, 그 판이 이 코드를 담는지도 확인하지 못했다(Phantom-plugins를 볼 수 없었음) | ARCHITECTURE 문제 1 |
 | 2 | **변경됨, 빌드 대기 (6e71ed80c4)**: Tips of the Day 좋아요/싫어요가 게이트 없이 JetBrains 스테이징으로 가던 것을, 레지스트리 기본값 nowhere와 줄 숨김, `submitFeedback` 게이트로 막음. 테스트 `FeedbackSubmissionGateTest`도 실행 전 | `platform/tips-of-the-day/resources/intellij.platform.tips.xml:41-44`, `platform/tips-of-the-day/src/com/intellij/ide/util/TipsFeedback.kt:76`, `platform/tips-of-the-day/src/com/intellij/ide/util/TipPanel.java:140`, `platform/feedback/src/com/intellij/platform/feedback/impl/GeneralFeedbackSubmit.kt:123-126` | ARCHITECTURE 문제 2 |
 | 3 | 고침(303c4a933a): 안내가 가리키던 없는 `./build/jpsModelToBazel.cmd`를 `./build/jpsModelToBazelCommunityOnly.cmd`로 바꿈(`.ai/guide.md`, `.ai/tool-permissions.json`, 두 skills 폴더의 5개 스킬, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`). `projectModelUpdater.kt:55`는 ultimate 루트가 있을 때만 실행되어 그대로 둠. 이 리포에서 생성기가 끝까지 도는지는 여전히 실행하지 않아 미확인. ARCHITECTURE 문제 3과 FORK-DELTA 6.1도 고쳤다고 적음 | `.ai/guide.md:30`, `.agents/skills/module-dependencies/SKILL.md:24`, `:31` | ARCHITECTURE 문제 3, FORK-DELTA 6.1 |
-| 4 | **변경됨, 빌드 대기 (a1313a347c)**: 사용자에게 보이는 문자열이 코드에 박혀 있던 것(`*.properties` 규칙 위반) 39개를 `PhantomIdeBundle`, `PhantomLangBundle`, `IdeBundle`, `GithubBundle`로 옮김. 문구는 그대로이고 컴파일·화면 확인 전 | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:91-92`, `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/ui/GHOAuthCredentialsUi.kt:56-62`, `platform/platform-impl/resources/messages/PhantomIdeBundle.properties`, `platform/lang-impl/resources/messages/PhantomLangBundle.properties` | ARCHITECTURE 문제 4 |
-| 5 | **변경됨, 빌드 대기 (048852ca23)**: 빌드가 추적 파일 버전을 고치고 릴리스는 커밋 없이 `HEAD`를 태그하던 것을, 표시 버전을 `-Dphantom.version.*`로 넘기고 추적 XML은 자리표시자로 두는 방식으로 바꿈. 빌드가 파일을 안 고치므로 태그 커밋과 릴리스 버전의 어긋남 원인이 사라진다는 것은 코드를 읽은 결론이다. 부작용: 소스 실행과 `installers.cmd` 직접 실행은 버전 0.0 | `phantom-build.sh:15`, `:46`, `:63`, `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:72-75`, `:177-181`, `community-resources/resources/idea/IdeaApplicationInfo.xml:2`, `phantom-release.sh:61`, `:64` | BUILD 9.1, ARCHITECTURE 문제 5 |
-| 6 | 런타임 벤치 기준선 파일이 없어 `compare` 불가, 허용 오차 미보정 | `docs/phantom/bench/README.md:10`, `:32`, `:39-40` | BUILD 9.2, FORK-DELTA 3.10 |
-| 7 | 고침(256d3b35c3): 앱·설정·픽스처 경로를 `PHANTOM_APP`, `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`로 바꿀 수 있음(기본값은 전과 같음). 기본값·재정의 해석만 확인했고 벤치와 설치 전체는 실행하지 않음 | `phantom-install.sh:17`, `phantom-bench.sh:19-20`, `:26`, `phantom-sign.sh:13` | BUILD 9.3 |
+| 4 | **변경됨, 빌드 대기 (a1313a347c)**: 사용자에게 보이는 문자열이 코드에 박혀 있던 것(`*.properties` 규칙 위반) 39개를 `PhantomIdeBundle`, `PhantomLangBundle`, `IdeBundle`, `GithubBundle`로 옮김. 문구는 그대로이고 컴파일·화면 확인 전 | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:91-92`, `plugins/github/github-core/src/org/jetbrains/plugins/github/authentication/ui/GHOAuthCredentialsUi.kt:56-62`, `platform/platform-impl/resources/messages/PhantomIdeBundle.properties`, `platform/lang-impl/resources/messages/PhantomLangBundle.properties`. 주의: `GithubBundle`의 키 10개는 이 리포의 `plugins/github` 소스에 있고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins 빌드다. Phantom-plugins가 이 소스로 빌드하지 않으면 그 문구 변경은 배포 앱에 없다(미확인) | ARCHITECTURE 문제 4 |
+| 5 | **변경됨, 빌드 대기 (048852ca23)**: 빌드가 추적 파일 버전을 고치고 릴리스는 커밋 없이 `HEAD`를 태그하던 것을, 표시 버전을 `-Dphantom.version.*`로 넘기고 추적 XML은 자리표시자로 두는 방식으로 바꿈. 빌드가 파일을 안 고치므로 태그 커밋과 릴리스 버전의 어긋남 원인이 사라진다는 것은 코드를 읽은 결론이다. 부작용: 소스 실행과 `installers.cmd` 직접 실행은 버전 0.0 | `phantom-build.sh:15`, `:46`, `:63`, `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:72-75`, `:177-181`, `community-resources/resources/idea/IdeaApplicationInfo.xml:2`, `phantom-release.sh:70`, `:73` | BUILD 9.1, ARCHITECTURE 문제 5 |
+| 6 | 런타임 벤치 기준선 파일이 없어 `compare` 불가, 허용 오차 미보정 | `docs/phantom/bench/README.md:10`, `:44`, `:63-64` | BUILD 9.2, FORK-DELTA 3.10 |
+| 7 | 고침(256d3b35c3): 앱·설정·픽스처 경로를 `PHANTOM_APP`, `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`로 바꿀 수 있음(기본값은 전과 같음). 기본값·재정의 해석만 확인했고 벤치와 설치 전체는 실행하지 않음. 이어서 b5a1bc773a가 `.app`으로 끝나는 절대 경로가 아닌 `PHANTOM_APP`을 설치에서 거부하게 했고, ecf939da71가 다른 픽스처를 주면 복사본을 바꾸고(`out/phantom-bench/work/fixture.source`) 상대 경로를 부른 폴더 기준으로 읽게 했으며, eff1276d6a이 설치 때 `PHANTOM_APP`에서 실행 중인 Phantom만 프로세스 ID로 끄게 했다 | `phantom-install.sh:22-23`, `:52-70`, `phantom-bench.sh:21-22`, `:28`, `:39-40`, `:49-69`, `phantom-sign.sh`의 `APP=` 줄 | BUILD 9.3 |
 | 8 | 고침(2aa424a169): 인증서가 없으면 `phantom-sign.sh`가 stderr 메시지와 종료 코드 1로 실패. `PHANTOM_SIGN_OPTIONAL=1`이면 경고 후 0이고 `phantom-install.sh`가 이 값을 켬. 헤더 주석의 키체인도 바로잡음. 이어서 인증서가 없으면 `phantom-install.sh`가 `phantom-sign.sh --setup`으로 자체 서명 인증서를 자동으로 만듦(`PHANTOM_SIGN_SETUP=0`이면 건너뜀, 실패하면 전처럼 ad-hoc). 임시 `HOME`과 더미 앱으로 만들기·서명·재서명을 실행했고, 실제 설치와 실제 앱의 개인정보 권한 유지는 실행하지 않음 | `phantom-sign.sh:2-24`, `:40-109`, `phantom-install.sh` 서명 호출 | BUILD 5장, 9.4 |
-| 9 | GitHub Actions용 건너뛰기 목록이 로컬 빌드에도 항상 적용(upstream 동작) | `build/src/OpenSourceCommunityInstallersBuildTarget.kt:18-23`, `:38`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:71-72` | BUILD 9.5 |
+| 9 | GitHub Actions용 건너뛰기 목록이 로컬 빌드에도 항상 적용(upstream 동작). 80b3e36e3d가 목록에서 `ARCHIVE_PLUGINS`를 빼서 지금 건너뛰는 것은 `CROSS_PLATFORM_DISTRIBUTION_STEP`, `SOURCES_ARCHIVE_STEP`이다 | `build/src/OpenSourceCommunityInstallersBuildTarget.kt:19-24`, `:39`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:72-73` | BUILD 9.5 |
 | 10 | 테스트·벤치·정적 게이트가 CI와 빌드·릴리스 스크립트에 연결되지 않음 | `.github/workflows/phantom-release.yml` | BUILD 9.6 |
 | 11 | FUS 업로드 주소는 외부 jar 안에 있어 확인 못 함. 전송은 게이트가 아니라 사용자 동의로 결정 | `platform/statistics/uploader/src/com/intellij/internal/statistic/eventLog/connection/EventLogSettingsClient.kt:96-98` | ARCHITECTURE 6절 열린 질문 (a) |
 | 12 | **변경됨, 빌드 대기 (6e71ed80c4, 5185f60295)**: 게이트 밖 피드백 전송(대화상자 경로)과 지역 URL 매핑을 `submitFeedback` 맨 앞 게이트로 막음. 5185f60295가 `OnboardingFeedbackForm.kt:279`의 감사 알림도 같은 조건으로 건너뛰게 함. 테스트의 요청 대기 시간은 15초라 그보다 느린 지역 매핑 조회는 고장 난 게이트를 통과시킬 수 있음 | `platform/feedback/src/com/intellij/platform/feedback/impl/GeneralFeedbackSubmit.kt:116-126`, `:135`, `platform/platform-impl/src/com/intellij/ide/RegionUrlMapper.java:42` | ARCHITECTURE 6절 (b) |
 | 13 | 프레임워크 라이브러리 다운로드가 jetbrains.com 사용(UI를 열 때만으로 보임, 추정) | `platform/ide-core/src/com/intellij/facet/frameworks/LibrariesDownloadConnectionService.java:6-7` | ARCHITECTURE 6절 (b) |
 | 14 | remoteDev 다운로드 주소가 남아 있음(Code With Me·Gateway 설치 시에만 쓰임, 추정) | `platform/remoteDev-util/src/com/intellij/remoteDev/RemoteDevSystemSettings.kt:17-19` | ARCHITECTURE 6절 (b) |
 | 15 | 내장 서버가 JetBrains ij-perf origin에 로컬 기동 보고서 읽기를 허용(외부 전송은 아님) | `platform/built-in-server/src/org/jetbrains/ide/StartUpMeasurementService.kt:16-21` | ARCHITECTURE 6절 (b) |
-| 16 | 수정 파일 96개 중 47개에 두 표식이 모두 없음(38개는 'phantom' 글자 자체가 없음) | - (`git diff d2faebf601 HEAD`) | FORK-DELTA 2절 |
-| 17 | `.removing` 정의를 리포에서 못 찾음. 업스트림이 ID를 바꾸면 조용히 효과를 잃을 수 있음(추정) | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:86-107` | FORK-DELTA 3.2, 6절 |
+| 16 | 고침(ea745003d1): 표식이 없던 수정 덩어리에 `phantom-idea:` 주석을 달아(78개 파일, 주석 137줄, 동작 변화 없음) 주석을 달 수 있는 수정 업스트림 파일 101개 모두 덩어리마다 표식이 있음. 남은 것: 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만 있고, 주석을 달 수 없는 수정 파일 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 목록, `build.txt`, 이미지)에는 표식이 없음 | - (`git diff d2faebf601 HEAD`) | FORK-DELTA 2절 |
+| 17 | `.removing` 정의를 리포에서 못 찾음. 업스트림이 ID를 바꾸면 조용히 효과를 잃을 수 있음(추정) | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:91-122` | FORK-DELTA 3.2, 6절 |
 | 18 | API 덤프 파일 재생성 명령 미확인 | `platform/built-in-server/api-dump-unreviewed.txt` | FORK-DELTA 6.1 |
 | 19 | 게이트를 켜고 끄는 Grazie 테스트의 모듈은 `intellij.grazie.tests.pro`(`plugins/grazie/src/tests.pro/intellij.grazie.tests.pro.iml`의 `testSrc`). 실행은 하지 않음 | `plugins/grazie/src/tests.pro/testSrc/com/intellij/grazie/pro/BaseTestCase.kt:34`, `:55` | FORK-DELTA 3.3 |
-| 20 | Phantom 파일인 FoojayJdkList 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉬움 | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt:1` | FORK-DELTA 5.1 |
-| 21 | phantom-icons의 ID가 삭제 직전 플러그인 기술자는 `dev.phantom.icons`, 1570329708 본문과 CHANGELOG는 `dev.phantom.iconpack` | `CHANGELOG.md:25` | FORK-DELTA 5.2 |
+| 20 | 일부 고침(ea745003d1): Phantom 파일인 FoojayJdkList 머리에 JetBrains 저작권 문구가 있어 업스트림 파일로 오해하기 쉬움. 저작권 줄은 그대로이고, 바로 아래에 포크가 더한 파일이라는 `// phantom-idea:` 줄이 생겼다(`:2`) | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkList.kt:1-2` | FORK-DELTA 5.1 |
+| 21 | phantom-icons의 ID가 삭제 직전 플러그인 기술자는 `dev.phantom.icons`, 1570329708 본문과 CHANGELOG는 `dev.phantom.iconpack` | `CHANGELOG.md:58` | FORK-DELTA 5.2 |
 | 22 | 기준 커밋 README의 "Done/Planned" 표, "Apple silicon only" 등이 HEAD와 어긋남 | `git show be60914099:README.md` 31-54, 113, 136행 | FORK-DELTA 7절 |
 | 23 | 로드맵 S1–S5 "완료"는 이동 전 상태. 본문은 그대로 두고 머리에 상태 메모만 더함 | `docs/phantom/design/2026-10-16-roadmap.md:38-42` | FORK-DELTA 7절 |
-| 24 | Grazie 언어 파일(LanguageTool, Hunspell), JBR 런타임 선택 피드, Git 설치 목록 피드가 게이트 없이 JetBrains에서 받음. 호출 시점(UI 조작 때만인지)은 확인하지 못함 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/GraziePlugin.kt:20`, `:25`, `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/RuntimeChooserJbr.kt:43`, `plugins/git4idea/backend/src/config/GitDownloadAndInstall.kt:20` | ARCHITECTURE 6절 |
-| 25 | 일부 고침(e29d855fff): baseline은 그대로 낡았지만(26.10.27 빌드, 그 뒤 번들 목록이 바뀜) 이제 `compare`가 `STALE BASELINE`을 stderr에 쓰고 종료 코드 2로 끝나 놓칠 수 없음. 다시 만들려면 빌드된 앱이 필요해 재생성은 하지 않았고 명령은 `docs/phantom/bench/README.md` Baselines에 적음 | `docs/phantom/bench/static-baseline.json`(4b3ffd9498), `phantom-bench-report.py`의 `stale_static_baseline`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` | BUILD 7절 |
+| 24 | Grazie 언어 파일(LanguageTool, Hunspell), JBR 런타임 선택 피드, Git 설치 목록 피드가 게이트 없이 JetBrains에서 받음. 호출 시점(UI 조작 때만인지)은 확인하지 못함 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/GraziePlugin.kt:20`, `:25`, `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/RuntimeChooserJbr.kt:43`, `plugins/git4idea/backend/src/config/GitDownloadAndInstall.kt:20`. 주의: ed67704350부터 번들의 Grazie는 Phantom-plugins 빌드라 위 `plugins/grazie` 줄은 배포 앱의 동작을 말해 주지 않을 수 있다. 그 판이 이 리포의 소스로 빌드되는지는 확인하지 못했다(Phantom-plugins를 볼 수 없었음) | ARCHITECTURE 6절 |
+| 25 | 일부 고침(e29d855fff): baseline은 그대로 낡았지만(26.10.27 빌드, 그 뒤 번들 목록이 바뀜) 이제 `compare`가 `STALE BASELINE`을 stderr에 쓰고 종료 코드 2로 끝나 놓칠 수 없음. 다시 만들려면 빌드된 앱이 필요해 재생성은 하지 않았고 명령은 `docs/phantom/bench/README.md` Baselines에 적음. 빌드 번호에 날짜가 없는 baseline(b5a1bc773a)과 얕은 git 클론(aadcfe0bc7)에서는 판정하지 않고 안내만 쓴다 | `docs/phantom/bench/static-baseline.json`(4b3ffd9498), `phantom-bench-report.py`의 `stale_static_baseline`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt` | BUILD 7절 |

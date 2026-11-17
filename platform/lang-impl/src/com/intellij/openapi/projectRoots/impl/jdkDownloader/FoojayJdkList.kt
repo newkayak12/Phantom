@@ -1,4 +1,5 @@
 // Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// phantom-idea: Phantom's own file, added by the fork (foojay JDK list); not an upstream IntelliJ file
 package com.intellij.openapi.projectRoots.impl.jdkDownloader
 
 import com.intellij.util.io.HttpRequests

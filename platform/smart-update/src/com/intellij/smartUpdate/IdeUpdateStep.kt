@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.updateSettings.impl.restartOrNotify
 import com.intellij.openapi.util.NlsContexts
+// phantom-idea: removed IdeUpdateStep (the IDE update step through Toolbox App) and the imports only it used
 
 fun restartIde(project: Project, @NlsContexts.DialogTitle progressTitle: String = IdeBundle.message("action.UpdateIde.progress.title"), restart: () -> Unit) {
     restartOrNotify(project, true, progressTitle) {

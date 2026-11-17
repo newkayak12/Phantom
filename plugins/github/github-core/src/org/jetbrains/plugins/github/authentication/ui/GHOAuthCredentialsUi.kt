@@ -18,6 +18,7 @@ import org.jetbrains.plugins.github.ui.util.Validator
 import java.awt.datatransfer.StringSelection
 import javax.swing.JComponent
 
+// phantom-idea: login through the gh CLI token or the GitHub OAuth device flow instead of JetBrains' account server (GHOAuthService); imports changed with it
 /**
  * Browser login without JetBrains' account server: reuses the GitHub CLI login when there is one, otherwise runs
  * the device flow (shows a code, opens the GitHub page where the user enters it, and waits for approval).
@@ -48,10 +49,12 @@ internal class GHOAuthCredentialsUi(
   override fun setBusy(busy: Boolean) = Unit
 
   override fun Panel.centerPanel() {
+    // phantom-idea: device code and status labels instead of the progress row
     row { cell(code) }
     row { cell(status) }
   }
 
+  // phantom-idea: gh CLI token first, else the device flow (needs -Dphantom.github.oauth.client.id)
   private suspend fun acquireToken(server: GithubServerPath): String {
     status.text = message("phantom.login.status.looking.for.cli")
     GHDeviceFlow.ghCliToken(server)?.let {

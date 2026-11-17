@@ -47,6 +47,7 @@ public class DefaultUpdateRequestParametersProvider implements UpdateRequestPara
     }
 
     if (ExternalUpdateManager.ACTUAL != null) {
+      // phantom-idea: no "Toolbox" manager name (Toolbox App integration dropped)
       parameters.put("manager", ExternalUpdateManager.ACTUAL.toolName);
     }
 
