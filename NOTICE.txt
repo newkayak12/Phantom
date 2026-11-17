@@ -1,3 +1,17 @@
+Phantom IDEA
+Copyright 2026 Phantom IDEA contributors
+
+This product is a modified version of IntelliJ IDEA Community Edition
+(https://github.com/JetBrains/intellij-community).
 This software includes code from IntelliJ IDEA
 Copyright (C) JetBrains s.r.o.
 https://www.jetbrains.com/idea/
+Licensed under the Apache License, Version 2.0 (LICENSE.txt).
+
+Files changed by Phantom IDEA contributors are marked with "phantom-idea:" comments.
+
+Third-party software included in this product is listed, with its licenses, in
+the license/ folder and in third-party-libraries.html of the distribution.
+
+Phantom IDEA is not affiliated with, sponsored or endorsed by JetBrains s.r.o.
+JetBrains, IntelliJ and IntelliJ IDEA are trademarks of JetBrains s.r.o.
