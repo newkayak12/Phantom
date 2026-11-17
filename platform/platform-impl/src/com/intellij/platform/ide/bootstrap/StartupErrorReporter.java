@@ -64,6 +64,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+// phantom-idea: imports for the Phantom changes to the startup error dialog below
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,6 +219,7 @@ public final class StartupErrorReporter {
     }
   }
 
+  // phantom-idea: the support URL is passed in; there is no jb.gg default
   private static void supportCenter(String url) {
     try {
       Desktop.getDesktop().browse(new URI(url));

@@ -7,6 +7,7 @@ import com.intellij.ide.IdeBundle
 import com.intellij.ide.actions.WhatsNewUtil
 import com.intellij.ide.nls.NlsMessages
 import com.intellij.ide.plugins.PluginManagementPolicy
+// phantom-idea: removed the reloadPluginIcon import, used only by the removed Toolbox App promotion
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
@@ -16,6 +17,7 @@ import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.updateSettings.UpdateStrategyCustomization
+// phantom-idea: removed imports used only by the removed Toolbox App promotion (Registry, AlignY, EmptySpacingConfiguration)
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.RightGap
@@ -29,6 +31,7 @@ import org.jetbrains.annotations.ApiStatus
 import javax.swing.JComponent
 import javax.swing.JEditorPane
 
+// phantom-idea: removed TOOLBOX_URL and the UnscaledGaps imports, used only by the removed Toolbox App promotion
 @ApiStatus.Internal
 class UpdateSettingsConfigurable @JvmOverloads constructor (private val checkNowEnabled: Boolean = true) :
   BoundConfigurable(IdeBundle.message("updates.settings.title"), "preferences.updates") {
@@ -153,6 +156,7 @@ class UpdateSettingsConfigurable @JvmOverloads constructor (private val checkNow
         it.init(this)
       }
 
+      // phantom-idea: removed the "We recommend the Toolbox App" promotion (Toolbox App integration dropped)
       var wasEnabled = settings.isCheckNeeded || settings.isPluginsCheckNeeded
 
       onApply {

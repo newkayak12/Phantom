@@ -13,8 +13,9 @@
 # PHANTOM_SIGN_SETUP=0 in the environment, the app stays ad-hoc signed and a warning goes to stderr; the install does
 # not fail (a certificate that is there but cannot be used, e.g. a wrong keychain password, still fails it).
 # Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom IDEA.app); it is also passed to
-# phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. A running Phantom is quit by bundle id,
-# so with two copies running the other one may be the one that quits.
+# phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. Only a Phantom running from that path is
+# asked to quit (by process id, not bundle id, so another copy running elsewhere is left alone), and it is restarted
+# from that path.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -49,11 +50,29 @@ esac
 [[ -n "$DMG" ]] || { echo "no DMG in out/phantom-idea/artifacts"; exit 1; }
 
 was_running=false
-if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
+# pgrep -f takes a regular expression and matches anywhere in the command line, so each hit is kept only when its
+# command line really starts with this app's executable (a copy under another folder, or a path with ( ) in it)
+phantom_pids() {
+  local exe="$APP/Contents/MacOS/idea" pid
+  for pid in $(pgrep -x idea || true); do
+    [[ "$(ps -o command= -p "$pid" 2>/dev/null)" == "$exe"* ]] && print -r -- "$pid"
+  done
+  return 0
+}
+pids=($(phantom_pids))
+if (( ${#pids} )); then
   was_running=true
-  osascript -e 'tell application id "dev.phantom.idea" to quit' || true
-  for _ in {1..180}; do pgrep -f "$APP/Contents/MacOS/idea" > /dev/null || break; sleep 1; done
-  if pgrep -f "$APP/Contents/MacOS/idea" > /dev/null; then
+  # A quit Apple event, as from the Quit menu item, so the IDE saves its state; sent to these processes only.
+  # By bundle id (dev.phantom.idea) it would go to any running copy, which need not be the one at $APP.
+  for pid in $pids; do
+    osascript -l JavaScript -e 'function run(argv) {
+      ObjC.import("AppKit")
+      const app = $.NSRunningApplication.runningApplicationWithProcessIdentifier(Number(argv[0]))
+      if (!app.isNil()) app.terminate
+    }' "$pid" || true
+  done
+  for _ in {1..180}; do [[ -n "$(phantom_pids)" ]] || break; sleep 1; done
+  if [[ -n "$(phantom_pids)" ]]; then
     echo "Phantom is still running (a dialog may be asking something); close it and run again"
     exit 1
   fi
@@ -80,6 +99,6 @@ if $was_running; then
     # the user's own temp dir, not the one of whatever shell ran this script (it may be a sandbox that is gone later)
     TMPDIR="$(getconf DARWIN_USER_TEMP_DIR)" open "$APP"
     sleep 3
-    pgrep -f "$APP/Contents/MacOS/idea" > /dev/null && break
+    [[ -n "$(phantom_pids)" ]] && break
   done
 fi

@@ -2,12 +2,14 @@
 package com.intellij.terminal.tests.agent
 
 import com.intellij.openapi.actionSystem.ActionManager
+// phantom-idea: removed the AnAction import, used only by the removed Junie badge test
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.terminal.frontend.action.TerminalAgentsAvailabilityService
 import org.jetbrains.plugins.terminal.agent.TerminalAgentsStateService
+// phantom-idea: removed the createTerminalAgentActions import, used only by the removed Junie badge test
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.assertj.core.api.Assertions.assertThat
@@ -28,6 +30,7 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
     TerminalAgentsStateService.getInstance().lastLaunchedAgentKey = null
   }
 
+  // phantom-idea: removed the Junie new-badge test; the toolbar tests below use Claude Code instead of Junie
   @Test
   fun `toolbar shows AI Agents button before any agent is selected`() {
     setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("claude_code"), TerminalAgentMode.RUN)))
@@ -39,6 +42,7 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
 
   @Test
   fun `toolbar shows launch action and chevron after selecting an agent`() {
+    // phantom-idea: Claude Code instead of Junie (Junie is no longer a bundled agent)
     setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("claude_code"), TerminalAgentMode.RUN)))
     TerminalAgentsStateService.getInstance().lastLaunchedAgentKey = TerminalAgent.AgentKey("claude_code")
 
@@ -62,6 +66,7 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
     assertThat(ActionManager.getInstance().getAction("Terminal.AiAgents.LaunchJunieCli")).isNotNull()
   }
 
+  // phantom-idea: removed the two "launch Junie CLI action is enabled" tests (Junie is no longer a bundled agent)
   @Test
   fun `launch Junie CLI action is disabled when only another agent is available`() {
     setAvailableAgents(listOf(TerminalAvailableAgentDto(TerminalAgent.AgentKey("codex"), TerminalAgentMode.RUN)))
@@ -98,6 +103,7 @@ internal class TerminalAgentsActionsTest : BasePlatformTestCase() {
     assertThat(TerminalAgentsStateService.getInstance().lastLaunchedAgentKey).isNull()
   }
 
+  // phantom-idea: removed secondaryIcon, used only by the removed Junie badge test
   private fun isVisible(actionId: String): Boolean {
     val action = ActionManager.getInstance().getAction(actionId)
     val event = TestActionEvent.createTestEvent(projectDataContext())

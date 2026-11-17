@@ -419,6 +419,7 @@ class EditorColorsManagerImpl @NonInjectable constructor(schemeManagerFactory: S
         base is BundledEditorColorScheme && base.resourcePath.removeSuffix(".xml") == path
       }
     }
+    // phantom-idea: falls back to the schemes from before a reload while bundled schemes are reloaded
     return schemeManager.findSchemeByName(schemeName) ?: schemesBeforeReload?.get(schemeName)
   }
 
@@ -609,11 +610,13 @@ class EditorColorsManagerImpl @NonInjectable constructor(schemeManagerFactory: S
       return scheme.settingsEqual(bundledScheme)
     }
 
+    // phantom-idea: snapshot of the schemes taken before a reload, see getScheme
     override fun beforeReloaded(schemeManager: SchemeManager<EditorColorsScheme>) {
       schemesBeforeReload = schemeManager.allSchemes.associateBy { it.name }
     }
 
     override fun reloaded(schemeManager: SchemeManager<EditorColorsScheme>, schemes: Collection<EditorColorsScheme>) {
+      // phantom-idea: the reload body is wrapped in try/finally so the snapshot is always cleared
       try {
         if (!isHeadlessMode) {
           schemeManager.loadBundledSchemes(createLoadBundledSchemeRequests(additionalTextAttributes, checkId = false, schemeManager::findSchemeByName))

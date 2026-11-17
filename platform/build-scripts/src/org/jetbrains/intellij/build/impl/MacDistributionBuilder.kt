@@ -568,6 +568,7 @@ class MacDistributionBuilder(
       outputFile = macAppDir.resolve("Info.plist"),
       placeholder = "@@",
       values = listOf(
+        // phantom-idea: Info.plist build is Phantom's own build number (PH-<YYMMDD>.<N>)
         Pair("build", phantomBuildNumber(context)),
         Pair("doc_types", docTypes ?: ""),
         Pair("executable", context.productProperties.baseFileName),
@@ -594,6 +595,7 @@ class MacDistributionBuilder(
             Pair("bundle_name", fullName),
             Pair("version", version),
             Pair("year", todayYear),
+            // phantom-idea: Info.plist build is Phantom's own build number (PH-<YYMMDD>.<N>)
             Pair("build", phantomBuildNumber(context))
           )
         )

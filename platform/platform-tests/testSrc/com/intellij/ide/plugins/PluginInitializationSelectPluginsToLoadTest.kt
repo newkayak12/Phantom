@@ -453,6 +453,7 @@ class PluginInitializationSelectPluginsToLoadTest {
       val (_, discoveryResult) = PluginSetTestBuilder.fromPath(pluginsDirPath).discoverPlugins()
       val (result, excludedPlugins) = testPluginSelection(discoveryResult = discoveryResult)
 
+      // phantom-idea: the alias-keeping plugin replaces the other (upstream expected both excluded); the three tests after this one are Phantom's
       assertThat(result.plugins.map { it.pluginId.idString }).containsExactly("bar")
       assertThat(result.resolvePluginId(PluginId.getId("foo"))?.pluginId?.idString).isEqualTo("bar")
       assertThat(excludedPlugins).hasSize(1)

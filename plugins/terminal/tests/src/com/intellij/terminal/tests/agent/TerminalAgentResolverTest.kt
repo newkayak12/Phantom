@@ -293,6 +293,7 @@ internal class TerminalAgentResolverTest : BasePlatformTestCase() {
     }
   }
 
+  // phantom-idea: removed the two Junie binary lookup tests (Junie is no longer a bundled agent)
   @Test
   fun `posix prefers codex found in PATH over known locations`() {
     runBlocking {
