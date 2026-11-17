@@ -125,12 +125,12 @@ PY
   fi
 }
 
-ENTRY='{"id": "org.jetbrains.kotlin", "name": "Phantom Kotlin", "category": "Languages",
+ENTRY='{"id": "org.jetbrains.kotlin", "name": "Kotlin Support", "category": "Languages",
   "description": "Kotlin language support: editing, inspections, refactorings, debugging and Gradle Kotlin DSL scripts. IntelliJ'"'"'s Kotlin plugin (Apache 2.0) built with each Phantom release; not bundled, since Java-only projects never use it. org.jetbrains.kotlin stays its id, so plugins depending on Kotlin keep working.",
   "depends": ["com.intellij.modules.java"],
   "detect": ["org.jetbrains.kotlin:kotlin-stdlib"], "detectFiles": ["build.gradle.kts", "settings.gradle.kts"]}' \
   publish "$kotlin" Kotlin/lib/kotlin-plugin.jar Kotlin Kotlin
-ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Phantom Maven", "category": "Build Tools",
+ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Maven Support", "category": "Build Tools",
   "description": "Maven projects: import and sync of pom.xml, the Maven tool window, running goals, pom.xml editing and completion, repositories and indexes. IntelliJ'"'"'s Maven plugin (Apache 2.0) built with each Phantom release; not bundled, since Gradle projects never use it. org.jetbrains.idea.maven stays its id, so plugins depending on Maven keep working.",
   "depends": ["com.intellij.modules.java"], "detectFiles": ["pom.xml"]}' \
   publish "$maven" maven-plugin/lib/maven-plugin.jar Maven Maven
