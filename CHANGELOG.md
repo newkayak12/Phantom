@@ -34,6 +34,7 @@
 - Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c, PR #2).
 
 ### 빌드·배포·서명
+- Cloud의 새 분석 모드에서 테스트 코드가 제품 커버리지에 포함되지 않도록 테스트 파일을 분석 대상에서 제외했다. 테스트 실행과 Codecov 보고서는 유지한다 (PR #9).
 - 부분 체크아웃에 없는 업스트림 파일을 Codecov의 자동 줄 보정이 읽다가 실패하지 않도록, 생성된 LCOV를 보정 없이 올리게 했다 (PR #9).
 - 분석 CI는 처음 체크아웃부터 포크 경로만 받아 대형 업스트림 파일 전체를 내려받지 않도록 했다 (PR #9).
 - 품질 도구의 실제 CLI 성공·잘못된 옵션·누락된 기준 이력 경로를 회귀 테스트로 검증한다 (PR #9).
