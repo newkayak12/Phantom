@@ -55,7 +55,7 @@ internal class TrigramIndexFilter : BaseFileTypeInputFilter(FileTypeSubstitution
 
     fileType is PlainTextFileType && FileBasedIndex.IGNORE_PLAIN_TEXT_FILES -> ThreeState.NO
 
-    // Phantom: every text file goes through the library check below, not only those with an exclude extension
+    // phantom-idea: every text file goes through the library check below, not only those with an exclude extension
     ENABLE_EXTENSION_EXCLUDES -> ThreeState.UNSURE //go through slowPathIfFileTypeHintUnsure()
 
     else -> ThreeState.YES
@@ -64,7 +64,7 @@ internal class TrigramIndexFilter : BaseFileTypeInputFilter(FileTypeSubstitution
   override fun slowPathIfFileTypeHintUnsure(file: IndexedFile): Boolean {
     check(ENABLE_EXTENSION_EXCLUDES) { "ENABLE_EXTENSION_EXCLUDES must be true to reach this point" }
 
-    // Phantom: no text file in a library is indexed (Kotlin sources, XML, properties..., not only .java sources);
+    // phantom-idea: no text file in a library is indexed (Kotlin sources, XML, properties..., not only .java sources);
     // Find in Files searches libraries without the index, as it already did for .java sources
     val project = file.project
     if (project != null) {

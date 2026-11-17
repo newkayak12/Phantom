@@ -175,7 +175,7 @@ public final class StartupErrorReporter {
     try {
       var messageObj = prepareMessage(message);
       var close = message("bootstrap.error.option.close");
-      // Phantom: no support link to JetBrains unless one is given with -Dij.startup.error.support.url
+      // phantom-idea: no support link to JetBrains unless one is given with -Dij.startup.error.support.url
       var supportUrl = System.getProperty(SUPPORT_URL_PROPERTY);
       JLabel learnMore = null;
       if (supportUrl != null) {
@@ -194,7 +194,7 @@ public final class StartupErrorReporter {
         var reset = message("bootstrap.error.option.reset");
         var report = message("bootstrap.error.option.report");
         var optionList = new ArrayList<Object>(List.of(close, reset));
-        // Phantom: the default handler sends the error and logs to JetBrains; offer it only with -Dphantom.jetbrains.services=true
+        // phantom-idea: the default handler sends the error and logs to JetBrains; offer it only with -Dphantom.jetbrains.services=true
         if (Boolean.getBoolean("phantom.jetbrains.services") || System.getProperty(HANDLER_CLASS_PROPERTY) != null) optionList.add(report);
         if (learnMore != null) optionList.add(learnMore);
         var options = optionList.toArray();

@@ -59,7 +59,7 @@ object OpenTelemetryUtils {
     return PathManager.getLogDir().resolve(rawPath).toAbsolutePath()
   }
 
-  // Phantom: no metrics files unless a path is given (they were written every minute, ~100 MB in a few days)
+  // phantom-idea: no metrics files unless a path is given (they were written every minute, ~100 MB in a few days)
   fun metricsCsvReportingPath(): Path? =
     resolveMetricsReportingPath(System.getProperty("idea.diagnostic.opentelemetry.metrics.file", ""))
 

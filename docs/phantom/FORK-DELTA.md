@@ -67,7 +67,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | 번들은 설정으로 줄이고 소스는 남긴다 | 플러그인을 빼도 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 둔다. 번들 목록에서만 뺀다. 예: `intellij.keymap.eclipse`는 번들에서 빠졌지만 `intellij.idea.community.main.iml:143`에 남아 있다. | `IdeaCommunityProperties.kt:90-122`. e2a4ffa4ee 본문 "the sources stay for upstream merges". |
 | JetBrains 서비스는 옵트인 플래그 뒤에 둔다 | 자동으로 JetBrains 서버를 부르는 코드는 지우지 않고 `MarketplaceRequests.jetBrainsServicesEnabled`(시스템 프로퍼티 `phantom.jetbrains.services`, 기본 false)로 막는다. | `MarketplaceRequests.kt:108-109`. d7c795f347, fdd9682290, 98673d9e9a, be60914099. |
 | 진단 파일은 기본으로 끈다 | 업스트림의 진단 프로퍼티 기본값을 바꾸거나 새 프로퍼티로 막는다. 켜는 방법은 프로퍼티로 남긴다. | 53aa9e1ec7, 7568bf108c, 3718f68ff4. 4.2절. |
-| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:` 또는 `// Phantom:`(XML은 `<!-- phantom-idea: -->`)를 단다. ea745003d1 뒤의 상태(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 그중 21개 파일의 33개 덩어리는 옛 `// Phantom:` 형식만 있다. ea745003d1 전에는 24개만 표식이 다 있었고, 이 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n -e 'phantom-idea:' -e 'Phantom:'`로 확인한다. ea745003d1 |
+| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:`(XML은 `<!-- phantom-idea: -->`)를 단다. ea745003d1 뒤의 상태(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 옛 `// Phantom:` 형식은 ee343c00f6에서 `phantom-idea:`로 통일했다(22개 파일의 표식 주석 24줄). ea745003d1 전에는 24개만 표식이 다 있었고, 이 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n 'phantom-idea:'`로 확인한다. ea745003d1 |
 | Phantom 코드는 자기 패키지에 둔다 | 새 코드는 `dev.phantom.*` 패키지, 새 모듈은 `phantom.*` 이름을 쓴다. 예외는 업스트림 패키지 안에 넣은 `FoojayJdkList.kt`, `GHDeviceFlow.kt`, `PhantomBuildNumber.kt`다. | c06e071a51(모듈 이름 `intellij.phantom.*` → `phantom.*`). |
 | IntelliJ 플러그인을 Phantom-plugins 판으로 바꿔 번들할 수 있다 | 원본은 `.removing`으로 빼고, Phantom-plugins가 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 두고 빌드한 판을 `PHANTOM_PLUGINS_BUNDLED`로 넣는다. 원본과 함께 설치돼도 대체판만 로드된다(3.12절). 바꾼 뒤에는 이 리포의 원본 소스와 그 안의 포크 패치가 번들에 들어가지 않을 수 있다(3.2절 끝의 주의). | 9229667cc7, 04dba66c3a, a464f46719, ed67704350. 3.2절. |
 | 플러그인은 트리 안에서 만들고 밖으로 옮긴다 | 트리 안에서 만들어 번들한 뒤, 같은 플러그인 ID로 `newkayak12/Phantom-plugins`에 옮기고 번들 목록, 루트 모듈, Bazel 파일 목록, 프로젝트 모듈에서 뺀다. 설계 문서는 남긴다. | 5.2절. 8983487a29, b68d97332e, 1570329708 본문. |
@@ -219,7 +219,7 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 
 #### 3.3.1 `phantom.jetbrains.services`로 막은 호출
 
-게이트는 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:108-109`의 `jetBrainsServicesEnabled`(`Boolean.getBoolean("phantom.jetbrains.services")`) 하나다. `StartupErrorReporter`만 IDE가 뜨기 전이라 같은 프로퍼티를 직접 읽는다.
+게이트는 `platform/platform-impl/src/com/intellij/ide/plugins/marketplace/MarketplaceRequests.kt:108-109`의 `jetBrainsServicesEnabled`(`Boolean.getBoolean("phantom.jetbrains.services")`) 하나다. 같은 프로퍼티를 직접 읽는 곳은 둘이다: `StartupErrorReporter`는 IDE가 뜨기 전이라서, `LibrariesDownloadAssistant`는 모듈(`intellij.platform.ide.core`)이 `MarketplaceRequests`를 볼 수 없어서다.
 
 | 파일:행 | 막는 호출 | 꺼졌을 때 | 커밋 |
 |---|---|---|---|
@@ -229,6 +229,7 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 | `…/MarketplaceRequests.kt:935` | `schedulePluginIdsUpdate` (30초 뒤 ID 목록 갱신) | 예약 안 함 | d7c795f347 |
 | `platform/platform-impl/update-checker/src/com/intellij/openapi/updateSettings/impl/UpdateChecker.kt:343` | 플러그인 업데이트 확인에서 JetBrains Marketplace 백엔드 | Marketplace 백엔드를 빼고 사용자 저장소만 본다 | d7c795f347 |
 | `platform/built-in-server/src/org/jetbrains/ide/UploadLogsService.kt:38,87` | 내장 서버 `/api/logs`(지원 페이지가 IDE 로그 업로드를 요청) | FORBID | fdd9682290 |
+| `platform/built-in-server/src/org/jetbrains/ide/StartUpMeasurementService.kt:19-21` | 내장 서버 `/api/startUpMeasurement`를 JetBrains ij-perf 페이지(`ij-perf.jetbrains.com`, `ij-perf.labs.jb.gg`)가 읽는 것(외부 전송이 아니라 수신) | 기본 origin 검사(로컬 origin은 통과, 그 밖의 origin은 사용자에게 호스트를 신뢰할지 묻는 대화상자). 코드만 바꿨고 빌드 전 | b69ed94772 |
 | `platform/platform-impl/src/com/intellij/platform/ide/bootstrap/StartupErrorReporter.java:196-197` | 시작 오류 대화상자의 Report 버튼(로그와 오류를 JetBrains로 전송) | 버튼 숨김. `ij.startup.error.handler.class`가 있으면 표시 | fdd9682290 |
 | `platform/feedback/src/com/intellij/platform/feedback/ActionBasedFeedbackConfig.kt:65` | 액션 기반 피드백 설문 | 표시 안 함 | 3676457781 |
 | `platform/feedback/src/com/intellij/platform/feedback/impl/FeedbackSurveyUtils.kt:74` | 알림 기반 설문 | 표시 안 함 | 3676457781 |
@@ -236,6 +237,8 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 | `platform/feedback/src/com/intellij/platform/feedback/localization/LocalizationFeedbackDialog.kt:132` | 지역화 피드백 대화상자의 감사 알림 | 알림을 띄우지 않음(보내지 않았으므로) | 6e71ed80c4 |
 | `plugins/ide-features-trainer/src/training/ui/OnboardingFeedbackForm.kt:279` | 온보딩 피드백 양식의 감사 알림(번들 밖 `featuresTrainer` 소속) | 알림을 띄우지 않음. 코드만 바꿨고 빌드 전 | 5185f60295 |
 | `platform/lang-impl/src/com/intellij/openapi/projectRoots/impl/jdkDownloader/JdkList.kt:536` | JDK 목록 피드(download.jetbrains.com) | foojay Disco API(`FoojayJdkList.FEED_URL`, `FoojayJdkList.kt:48`). 레지스트리 `jdk.downloader.url`이 비어 있지 않으면 그 값이 먼저다(`JdkList.kt:530-533`) | be60914099 |
+| `platform/ide-core/src/com/intellij/facet/frameworks/LibrariesDownloadAssistant.java:47-50` (`getDownloadServiceVersions`, 프로퍼티 직접 읽음) | 프레임워크 라이브러리 버전 목록(`www.jetbrains.com/idea/download-assistant.xml`, `frameworks.jetbrains.com`, 주소는 `LibrariesDownloadConnectionService.java:6-7`). New Project 마법사의 Groovy SDK 콤보, `LibraryOptionsPanel`이 화면을 열 때 받던 것 | null 반환, 호출자(`:35-44`)가 번들 목록(`localUrls`, 예 `groovy.sdk.xml`)을 씀. 코드만 바꿨고 빌드 전 | 9f63128702 |
+| `plugins/git4idea/backend/src/config/GitVersionUpdateInSettings.kt:89-91` (`GitNewVersionCheckerStarter`) | Windows의 Git 새 버전 유휴 감시가 받던 Git 설치 목록 피드(`download.jetbrains.com/jdk/feed/v1/gits.json.xz`, `GitDownloadAndInstall.kt:20`) | 감시를 켜지 않음. 업데이트 진입점 액션도 나타나지 않음. Git이 없을 때의 "Download and Install"은 그대로 피드를 받음(사용자 조작). 코드만 바꿨고 빌드 전 | 0cfd99df92 |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/cloud/DefaultGrazieCloudConnector.kt:22,44,46` | Grazie Cloud 연결, 약관 동의, API 클라이언트(api.jetbrains.ai) | false / null | 98673d9e9a |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/cloud/license/GrazieLoginManager.kt:80,159,260` | 라이선스·계정·클라우드 조회, JetBrains Account 로그인 | 초기화만 표시하고 조회 안 함 | 98673d9e9a |
 | `plugins/grazie/src/main/kotlin/com/intellij/grazie/utils/Utils.kt:79` | Grazie Cloud 홍보 | false | 98673d9e9a |
@@ -489,7 +492,7 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `plugins/phantom-http/` | `dev.phantom.http` | 83d8ab6e82 | cab0fa60d7 (디렉터리), ac3007c625 (번들·모듈 목록) |
 | `plugins/phantom-workspaces/` | `dev.phantom.workspaces` | 2a4c13ce66 | 8983487a29 |
 | `plugins/phantom-tabs/` | `dev.phantom.tabs` | 49b1b9e145 | b68d97332e (플랫폼 훅 f5778de337, b02cc88cfe도 되돌림) |
-| `plugins/phantom-icons/` | `dev.phantom.icons` (1570329708 본문은 새 ID를 `dev.phantom.iconpack`으로 적음) | d7310f9556 | 1570329708 |
+| `plugins/phantom-icons/` | `dev.phantom.icons`. 같은 날 Phantom-plugins로 간 Icon Pack은 다른 ID `dev.phantom.iconpack`이다(1570329708 본문에만 근거하고 Phantom-plugins는 읽지 못해 확인 못 함). 즉 ID가 바뀐 이동이다 | d7310f9556 | 1570329708 |
 
 업스트림 플러그인 3개는 소스를 이 리포에 남긴 채 번들에서 빼고 Phantom-plugins 판으로 대체했다(e2a4ffa4ee 본문 기준, 이 리포에서 확인할 수 없음): `intellij.java.byteCodeViewer` → `bytecode`(`dev.phantom.bytecode`), `intellij.webp` → `webp`(`dev.phantom.webp`), `intellij.vcs.git.commit.modal` → `modal-commit`(`dev.phantom.modalcommit`). 이 셋은 필요할 때 설치한다.
 

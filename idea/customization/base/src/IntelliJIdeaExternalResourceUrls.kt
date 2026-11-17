@@ -20,7 +20,7 @@ internal class IntelliJIdeaExternalResourceUrls : BaseJetBrainsExternalProductRe
   override val shortProductNameUsedInForms: String
     get() = "IDEA"
 
-  // Phantom: no JetBrains-only Help menu entries (bug report, support, feedback, YouTube, keymap PDF, What's New, download page)
+  // phantom-idea: no JetBrains-only Help menu entries (bug report, support, feedback, YouTube, keymap PDF, What's New, download page)
   override val bugReportUrl: ((String) -> Url)?
     get() = null
 

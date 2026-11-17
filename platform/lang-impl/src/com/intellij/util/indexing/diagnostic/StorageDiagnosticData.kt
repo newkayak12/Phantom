@@ -64,7 +64,7 @@ import kotlin.math.min
 object StorageDiagnosticData {
   private val MONITOR_STORAGE_LOCK = SystemProperties.getBooleanProperty("vfs.storage-lock.enable-diagnostic", true)
 
-  // Phantom: storage statistics (a JSON file rewritten every minute, OpenTelemetry gauges) are JetBrains diagnostics
+  // phantom-idea: storage statistics (a JSON file rewritten every minute, OpenTelemetry gauges) are JetBrains diagnostics
   private val ENABLED = SystemProperties.getBooleanProperty("intellij.storage.diagnostics.dump", false)
 
   private const val fileNamePrefix = "storage-diagnostic-"
