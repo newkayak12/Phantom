@@ -21,6 +21,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 /** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
+
+// phantom-idea: published to the Phantom plugins repository instead of bundled
+private const val MAVEN_PLUGIN_MODULE = "intellij.maven.plugin"
 val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
   "phantom.sync",
   "phantom.theme",
@@ -35,7 +38,7 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
   "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
   "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grazie", "terminal", "github", "junit", "properties",
-  "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates",
+  "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -128,11 +131,15 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.groovy.scripting")
       .removing("intellij.groovy")
       .removing("intellij.groovy.live.templates")
-      .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
+      .removing("intellij.platform.images")
+      .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
+      .removing(MAVEN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
     // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
     // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
     // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
-    productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
+    // Maven likewise (51 MB): suggested when a project has a pom.xml. Its optional modules elsewhere (Gradle's Maven
+    // import, Kotlin's Maven support, Repository Search's common part) switch off without it.
+    productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE, MAVEN_PLUGIN_MODULE)
 
     // phantom-idea: class data sharing. The JVM archives the loaded classes into $IDE_CACHE_DIR/<base><build>.jsa on the
     // first exit after an install or update (about 25 s, about 370 MB) and maps it on later starts: "app initialization"
@@ -186,7 +193,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       JewelMavenArtifacts.validate(context, artifacts)
     }
 
-    versionCheckerConfig = CE_CLASS_VERSIONS
+    // Maven is published, not bundled, so its runtime jars are not in the distribution to check
+    versionCheckerConfig = CE_CLASS_VERSIONS.filterKeys { !it.startsWith("plugins/maven-plugin/") }
     baseDownloadUrl = "https://download.jetbrains.com/idea/"
     buildDocAuthoringAssets = true
 
