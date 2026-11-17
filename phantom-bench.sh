@@ -9,19 +9,23 @@
 # VM options: the launcher reads the bundled idea.vmoptions first, then the file in $IDEA_VM_OPTIONS
 # (native/XPlatLauncher/src/default.rs, collect_vm_options_from_files), so the user's own options and --vm-extra
 # override bundled ones the same way a user's idea.vmoptions does.
+# Environment (each defaults to the value in parentheses, so nothing needs to be set on the author's machine):
+#   PHANTOM_APP            the app to measure (/Applications/Phantom IDEA.app)
+#   PHANTOM_CONFIG_DIR     the user config copied into each run ($HOME/Library/Application Support/Phantom/PhantomIDEA)
+#   PHANTOM_BENCH_FIXTURE  the project to open, unless --fixture is given ($HOME/projects/private/prototype-reservation-system)
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# PHANTOM_BENCH_APP measures another copy of the app (an unpacked DMG); PHANTOM_BENCH_PLUGINS lists plugin zips unpacked
-# into each run's config copy (Kotlin, which a release does not bundle)
-APP="${PHANTOM_BENCH_APP:-/Applications/Phantom IDEA.app}"
-USER_CONFIG="$HOME/Library/Application Support/Phantom/PhantomIDEA"
+# PHANTOM_BENCH_APP measures another copy of the app (an unpacked DMG) and wins over PHANTOM_APP; PHANTOM_BENCH_PLUGINS
+# lists plugin zips unpacked into each run's config copy (Kotlin, which a release does not bundle)
+APP="${PHANTOM_BENCH_APP:-${PHANTOM_APP:-/Applications/Phantom IDEA.app}}"
+USER_CONFIG="${PHANTOM_CONFIG_DIR:-$HOME/Library/Application Support/Phantom/PhantomIDEA}"
 
 runs=5
 label=base
 settle=180
 vm_extra=""
-fixture_src="$HOME/projects/private/prototype-reservation-system"
+fixture_src="${PHANTOM_BENCH_FIXTURE:-$HOME/projects/private/prototype-reservation-system}"
 while (( $# )); do
   case "$1" in
     --runs) runs="$2"; shift 2 ;;

@@ -22,14 +22,16 @@ This document describes how to manage module dependencies when working with Inte
 The repository uses a hybrid build system:
 - **JPS (*.iml files)**: Source of truth for module dependencies
 - **Bazel (BUILD files)**: Auto-generated from *.iml files
-- **Generator**: run `build/jpsModelToBazel.cmd` after changing .iml files
+- **Generator**: run `./build/jpsModelToBazelCommunityOnly.cmd` after changing .iml files (the only generator script in this repository; `./build/jpsModelToBazel.cmd` does not exist here). It has not been confirmed to run in this fork; see `docs/phantom/DEVELOPMENT.md` section 2 (c). <!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
 
 ## Running the IML-to-Bazel Generator
 
 To manually run the converter that generates Bazel BUILD files from .iml files:
 
+<!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
+
 ```bash
-./build/jpsModelToBazel.cmd
+./build/jpsModelToBazelCommunityOnly.cmd
 ```
 
 This is useful when:

@@ -50,6 +50,9 @@
 - `phantom-build.sh`가 추적 파일 `IdeaApplicationInfo.xml`을 더는 고쳐 쓰지 않는다. 표시 버전(빌드 날짜의 YY와 MM.DD)을 macOS와 Windows `installers.cmd` 실행에 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, `ApplicationInfoPropertiesImpl`이 XML보다 먼저 읽어 `product-info.json`, Info.plist, Windows 설치 파일, 패키지에 넣는 `<version>`에 반영한다. 추적 XML에는 자리표시자 `0` / `0.0`이 남아서 소스에서 IDE를 실행하거나 `installers.cmd`를 직접 실행하면 버전 0.0으로 보인다. 빌드 뒤 작업 트리가 더러워지던 것과 릴리스 태그 커밋의 버전이 릴리스 버전과 다를 수 있던 것이 이 변경으로 사라진다. `ApplicationInfoPropertiesTest`에 테스트 2개를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기) (048852ca23).
 - 커버리지 런타임 jar의 클래스 버전 규칙(`CE_CLASS_VERSIONS`, `BaseIdeaProperties.kt`)의 경로를 `plugins/java-coverage/lib/java-coverage-rt.jar`에서 `plugins/coverage/lib/java-coverage-rt.jar`(Phantom Code Coverage가 Phantom-plugins에서 번들되는 경로)로 바꿨다 (a199380d7d).
 - 릴리스 워크플로가 올바른 YAML이 되게 고쳤다(`notes` 입력 설명의 따옴표 없는 `: ` 때문에 GitHub가 거부했다). `phantom-build.sh`가 저장소 옆의 Phantom-plugins가 필요하므로 러너가 자기 SSH 키로 그것을 클론한다(작업 토큰은 읽을 수 없다). 체크아웃은 실행 사이에 남고 매번 `origin/main`으로 맞춘다 (60ea243e02).
+- `phantom-sign.sh`가 "Phantom Local" 인증서를 찾지 못하면 이유를 stderr에 쓰고 종료 코드 1로 실패한다(전에는 `exit 0`). `PHANTOM_SIGN_OPTIONAL=1`이면 경고만 쓰고 0으로 끝나며, `phantom-install.sh`가 이 값을 켜서 인증서 없는 머신에서도 설치는 ad-hoc 서명으로 끝난다. 헤더 주석이 login 키체인이라고 잘못 적던 것을 전용 키체인 `phantom-signing.keychain-db`로 고쳤다. (2aa424a169)
+- `phantom-install.sh`, `phantom-sign.sh`, `phantom-bench.sh`의 앱·설정·픽스처 경로를 환경변수로 바꿀 수 있다: `PHANTOM_APP`(세 스크립트, `phantom-sign.sh`는 인자가 먼저), `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`(벤치, `--fixture`가 먼저). 기본값은 전과 같다. (256d3b35c3)
+- 로컬 서명 인증서를 저장소 스크립트로 만든다. `./phantom-sign.sh --setup`이 macOS 기본 도구(`/usr/bin/openssl`, `security`)만으로 전용 키체인, 비밀번호 파일, 자체 서명 코드 서명 인증서 "Phantom Local"(Apple 인증서 아님, 10년)을 대화상자 없이 만들고, 이미 있으면 아무것도 바꾸지 않는다. `phantom-install.sh`는 인증서가 없으면 서명 전에 이를 실행한다(`PHANTOM_SIGN_SETUP=0`이면 건너뜀, 실패하면 전처럼 ad-hoc 서명). 서명은 `codesign --keychain`으로 전용 키체인을 가리켜 키체인 검색 목록과 신뢰 설정을 바꾸지 않는다. 기존 키체인·인증서로 서명한 결과(designated requirement)는 전과 같다.
 
 ### 버그 수정
 - 다른 플러그인의 ID를 별칭으로 가진 플러그인(예: `dev.phantom.toml`, 별칭 `org.toml.lang`)과 그 원본이 함께 설치되면 ID 충돌로 둘 다 제외되던 것을, 대체하는 쪽만 로드하고 대체된 쪽은 "대체됨"으로 표시하며 그 의존 플러그인은 대체한 쪽으로 해석하도록 고쳤다. 대체한 쪽을 끄면 원본이 다시 로드된다. essential 플러그인은 대체되지 않는다. 새 비적재 사유 `PluginIsReplacedByAnotherPlugin`("Replaced by …")을 더했고, `PluginInitializationSelectPluginsToLoadTest`에서 둘 다 제외를 기대하던 테스트 1개를 바꾸고 3개를 더했다 (04dba66c3a).
@@ -60,6 +63,7 @@
 - `phantom-bench.sh`와 `phantom-bench-report.py`를 추가했다. 설치된 앱을 고정 프로젝트 복사본에서 격리 실행하고 플랫폼 자체 보고서로 지표를 뽑는다 (38efaf66bf).
 - N회 실행의 중앙값/최소/최대 요약과 baseline 대비 회귀 검사(`compare`)를 추가했다. 시간은 10%, 메모리와 클래스 수는 5%, 멈춤 1회 이상 나빠지면 실패한다 (6767ffc6e1).
 - 앱을 띄우지 않고 번들 크기, jar 수, 번들 플러그인, 사전 로드 서비스, 시작 활동 등록 수를 세는 `static` 게이트를 추가했다. baseline은 설치된 26.10.27이다 (4b3ffd9498).
+- 정적 게이트 `compare`가 baseline 앱의 빌드 날짜(빌드 번호 `262.<YYMMDD>`)보다 번들 목록 `IdeaCommunityProperties.kt`의 마지막 커밋이 늦으면 stderr에 `STALE BASELINE`을 쓰고, 회귀가 없어도 종료 코드 2로 끝난다. 지금의 `static-baseline.json`(26.10.27)은 이 검사에 걸린다. 빌드된 앱이 있어야 다시 만들 수 있어 파일은 그대로 두고, 재생성 명령을 `docs/phantom/bench/README.md`에 적었다.
 
 ### 문서
 - 탭 그룹 설계와 구현 계획을 추가했다 (a8ad9cfcd9).
@@ -67,6 +71,7 @@
 - 개발 문서 체계를 만들었다. `docs/phantom/`에 문서 색인(`README.md`), `ARCHITECTURE.md`, `FORK-DELTA.md`, `BUILD.md`, `DEVELOPMENT.md`를 더하고 이 `CHANGELOG.md`를 만들었다. `README.md`를 개편하고 한국어판 `README.ko.md`를 더했으며, `AGENTS.md`의 이 포크에 없는 경로를 고치고 Phantom 규칙을 넣었다. 개편 전 README의 인덱싱 절은 `docs/phantom/2026-10-29-indexing-changes.md`로 옮겼다 (ff39526a22, PR #1 병합 2c0cfbd022).
 - 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2).
 - 문서가 기준으로 삼던 be60914099 뒤 main에 들어온 네 커밋(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서에 반영했다. 번들 구성(빼는 업스트림 모듈 21개, Phantom-plugins에서 빌드해 넣는 8개), Phantom-plugins 체크아웃이 필요한 빌드 절차와 릴리스 워크플로, 플러그인 별칭 대체(FORK-DELTA 3.12절), 밀린 `경로:줄`, 포크 델타 숫자(d2faebf601..64dc82b3f2)를 고치고 현행 문서의 기준 커밋을 64dc82b3f2로 바꿨다.
+- 없는 `./build/jpsModelToBazel.cmd`를 가리키던 안내를 이 리포의 유일한 생성기 `./build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(AGENTS.md와 같은 문구, 이 포크에서 도는지는 미확인). 대상: `.ai/guide.md`, `.ai/tool-permissions.json`, `.agents/skills`와 `.claude/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`. Kotlin `projectModelUpdater.kt`는 ultimate 루트가 있을 때만 그 경로를 부르므로 그대로 두었다. (303c4a933a)
 
 ## v26.10.25.1 (2026-10-25)
 
