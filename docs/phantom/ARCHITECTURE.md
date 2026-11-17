@@ -246,7 +246,7 @@ Phantom이 고친 지점: 1~7의 기동 클래스 자체(Main.kt, startup.kt, Ap
   - `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:11-14`: 속성 이름과 `phantomBuildNumber(context)`. `:16-24`: 표시 버전 속성 이름 `PHANTOM_VERSION_MAJOR_PROPERTY`, `PHANTOM_VERSION_MINOR_PROPERTY`와 `phantomVersionProperty(name)`.
   - `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:145-147`: 버전·브랜치 일치 검사 완화. `:71-75`: `majorVersion`, `minorVersion`을 속성 `phantom.version.major/minor`에서 먼저 읽고 없으면 XML에서 읽음. `:177-181`과 `:268-280`(`withPhantomVersion`): 패키지에 들어가는 `<version>`의 `major`, `minor`를 같은 값으로 씀. `:170-175`: `number`를 Phantom 번호로 바꾸고 플랫폼 번호는 `apiVersion`으로 남김. 플러그인 호환성은 `apiVersion`으로 판정된다.
   - `platform/build-scripts/src/org/jetbrains/intellij/build/impl/MacDistributionBuilder.kt:571`, `:597`: Info.plist에 Phantom 번호.
-  - IdeaCommunityProperties.kt: 설정 폴더 `PhantomIDEA`(:203), 산출물 이름 `phantom-idea-<N>`(:207-208), 출력 폴더(:210), Windows 이름(:289-290), mac URL 스킴 `phantom`·번들 ID `dev.phantom.idea`·`Phantom.app`(:299-304), Linux 루트(:319).
+  - IdeaCommunityProperties.kt: 설정 폴더 `PhantomIDEA`(:203), 산출물 이름 `phantom-<N>`(:207-208), 출력 폴더(:210), Windows 이름(:289-290), mac URL 스킴 `phantom`·번들 ID `dev.phantom.idea`·`Phantom.app`(:299-304), Linux 루트(:319).
 
 ## 8. 더 읽을 곳
 

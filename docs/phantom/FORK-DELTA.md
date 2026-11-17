@@ -98,7 +98,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:10` | `<default-laf light="Phantom Light" dark="Phantom Dark"/>` | a91f9ef7e8 |
 | `build.txt:1` | `262.10968.SNAPSHOT` → `262.SNAPSHOT` | e8ef2fd569 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:222` | 설정 폴더 선택자를 `PhantomIDEA`로 고정 | fc05eddc04 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:225-227` | 산출물 이름 `phantom-idea-<…>`. `phantom.build.number`가 있으면 그 값을 쓴다 | ae2a766191 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:225-227` | 산출물 이름 `phantom-<…>`. `phantom.build.number`가 있으면 그 값을 쓴다 | ae2a766191 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:229` | 출력 폴더 `phantom-idea` | 1e0d4353f7 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:308-310` | Windows 이름 Phantom. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제(표식 `:308`) | 1e0d4353f7, d0eab60d1b |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:320,323,325,341` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom.app`, Linux 폴더 `phantom-idea`(표식 `:319`, `:340`) | 1e0d4353f7 |
