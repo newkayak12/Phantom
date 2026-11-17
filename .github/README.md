@@ -27,7 +27,7 @@ Create/enable the Phantom project in each service, then configure repository **S
 | Variable | `SONAR_PROJECT_KEY` | Existing SonarQube project key |
 | Variable | `SONAR_ORGANIZATION` | Organization key, required for SonarQube Cloud |
 
-No service secrets or variables existed on 2026-11-17. Until configured, the analysis workflow still produces a measured coverage artifact and explicitly reports that uploads/analysis **did not run**. Fork PRs receive no upload credentials. SonarQube PR analysis also requires an edition/plan that supports it. Configured uploads or quality-gate failures fail CI.
+SonarQube variables and both service tokens were registered on 2026-11-17. If configuration is missing, the analysis workflow still produces a measured coverage artifact and explicitly reports that uploads/analysis **did not run**. Fork PRs receive no upload credentials. SonarQube PR analysis also requires an edition/plan that supports it. Configured uploads or quality-gate failures fail CI.
 
 README badges use the default `main` branch. Workflow badges describe workflow completion, not whether an external upload ran. The Codecov badge remains unavailable until that service receives a report (private repositories may require its badge token). SonarQube shows a neutral setup badge until the actual host/project is known; replace it with that project's quality-gate badge after setup. Do not put analysis or upload secrets into badge URLs.
 
