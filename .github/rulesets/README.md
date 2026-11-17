@@ -1,5 +1,7 @@
 # Phantom branch rules
 
+PR assignment is separate from branch rules: [`phantom-pr-routing.yml`](../workflows/phantom-pr-routing.yml) assigns the PR author and requests reviews from other human collaborators. Drafts wait until ready for review. The workflow runs from the default branch and never checks out PR code; it starts routing new events after merging there.
+
 `main.json` is the desired repository ruleset: changes go through a PR, zero approving reviews are required, review threads must be resolved, and deletion and force pushes are blocked. Repository administrators (role ID `5`) can always bypass these rules.
 
 This file does not configure GitHub by itself. On 2026-11-17, both the rulesets and classic branch protection APIs for the private `newkayak12/Phantom` repository returned HTTP 403: `Upgrade to GitHub Pro or make this repository public to enable this feature.` No live rules were changed. Keep the repository private; enabling the feature requires an account plan that supports it.
