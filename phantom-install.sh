@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Installs the latest Phantom IDEA build into /Applications and restarts it.
+# Installs the latest Phantom IDEA build into /Applications (or $PHANTOM_APP) and restarts it.
 #   ./phantom-install.sh            build with phantom-build.sh, then install
 #   ./phantom-install.sh --no-build install the DMG that is already built
 #   ./phantom-install.sh --release [v26.10.21.1]   install the newest GitHub release's DMG (or that tag's)
@@ -7,10 +7,19 @@
 # app, which is not notarized. The repository is private: the token is $GH_TOKEN, else the one gh is logged in with
 # (that account must see the repository).
 # A running Phantom is asked to quit first (it saves its state); its open projects reopen on the next start.
+# The installed app is re-signed by phantom-sign.sh with PHANTOM_SIGN_SETUP=1 and PHANTOM_SIGN_OPTIONAL=1: on a
+# machine without the "Phantom Local" certificate it first creates one (phantom-sign.sh --setup: a self-signed
+# certificate in ~/Library/Keychains/phantom-signing.keychain-db, one line on stdout says so). If that fails, or with
+# PHANTOM_SIGN_SETUP=0 in the environment, the app stays ad-hoc signed and a warning goes to stderr; the install does
+# not fail (a certificate that is there but cannot be used, e.g. a wrong keychain password, still fails it).
+# Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom IDEA.app); it is also passed to
+# phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. A running Phantom is quit by bundle id,
+# so with two copies running the other one may be the one that quits.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP="/Applications/Phantom IDEA.app"
+APP="${PHANTOM_APP:-/Applications/Phantom IDEA.app}"
+[[ "$APP" == /*.app ]] || { echo "error: PHANTOM_APP must be an absolute path ending in .app, got '$APP'" >&2; exit 1; }
 
 DMG=""
 case "${1:-}" in
@@ -57,7 +66,9 @@ rm -rf "$APP.new"
 ditto "$mnt/Phantom IDEA.app" "$APP.new"
 rm -rf "$APP"
 mv "$APP.new" "$APP"
-./phantom-sign.sh "$APP"
+# without the "Phantom Local" certificate phantom-sign.sh creates it first (PHANTOM_SIGN_SETUP=0 skips that); if there is
+# still none, the app stays ad-hoc signed: phantom-sign.sh warns on stderr, the install goes on
+PHANTOM_SIGN_SETUP="${PHANTOM_SIGN_SETUP:-1}" PHANTOM_SIGN_OPTIONAL=1 ./phantom-sign.sh "$APP"
 echo "installed $(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Contents/Info.plist") from $DMG ($(stat -f %Sm "$DMG"))"
 
 if $was_running; then

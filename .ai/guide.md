@@ -27,7 +27,7 @@ To regenerate, run `node community/.ai/render-guides.mjs`.
   `tests.cmd` performs Bazel compilation internally, so a separate `bazel build` step is not needed when tests will be run.
   Module-specific rules may override the runner. Skip if plugin has no tests. See [TESTING](../.agents/skills/testing/SKILL.md).
 - **Bazel compilation without tests:** when only verifying compilation (no tests to run), use `bazel build <target>` for affected modules. Skip if only `.js`, `.mjs`, `.md`, `.txt`, or `.json` files are modified.
-- After modifying `*.iml`, `BUILD.bazel`, or `.idea/` files: run `./build/jpsModelToBazel.cmd`.
+- After modifying `*.iml`, `BUILD.bazel`, or `.idea/` files: run `./build/jpsModelToBazelCommunityOnly.cmd` (the only generator script in this repository; `./build/jpsModelToBazel.cmd` does not exist here). It has not been confirmed to run in this fork; see DEVELOPMENT.md section 2 (c). <!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
 
 ### After Writing Code
 
