@@ -82,6 +82,16 @@ jobs:
           flags: phantom-quality
           name: phantom-quality
           fail_ci_if_error: true
+          cleanup: true
+      - name: Limit analysis checkout to Phantom sources
+        if: steps.services.outputs.sonar == 'true'
+        run: |
+          git sparse-checkout set --no-cone \
+            '/.gitignore' '/sonar-project.properties' '/phantom-bench-report.py' \
+            '/tools/phantom-quality.mjs' '/tools/phantom-quality.test.mjs' \
+            '/platform/platform-impl/src/dev/phantom/' \
+            '/platform/lang-impl/src/dev/phantom/' \
+            '/plugins/phantom-sync/' '/plugins/phantom-theme/'
       - name: Analyze Phantom sources with SonarQube
         if: steps.services.outputs.sonar == 'true'
         uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6

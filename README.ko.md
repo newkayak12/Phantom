@@ -5,7 +5,7 @@
 
 <h1 align="center">Phantom</h1>
 
-<p align="center">Kotlin, Spring Boot, JPA 백엔드 개발에 맞춰 덜어 낸 intellij-community 포크.</p>
+<p align="center">Kotlin, Spring Boot, JPA 백엔드 개발에 집중한 IDE.</p>
 
 <p align="center">
   <a href="README.md">English</a> | 한국어<br>
@@ -17,8 +17,7 @@
   <a href="https://github.com/newkayak12/Phantom/actions/workflows/phantom-quality.yml"><img alt="Quality CI" src="https://github.com/newkayak12/Phantom/actions/workflows/phantom-quality.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/newkayak12/Phantom/actions/workflows/phantom-analysis.yml"><img alt="Analysis workflow" src="https://github.com/newkayak12/Phantom/actions/workflows/phantom-analysis.yml/badge.svg?branch=main"></a>
   <a href="https://app.codecov.io/gh/newkayak12/Phantom"><img alt="Codecov: quality tool coverage" src="https://codecov.io/gh/newkayak12/Phantom/branch/main/graph/badge.svg?flag=phantom-quality"></a>
-  <a href=".github/README.md#sonarqube-and-codecov-setup"><img alt="SonarQube: setup required" src="https://img.shields.io/badge/SonarQube-setup%20required-lightgrey"></a>
-  <a href="#업스트림-상표-클린룸-정책"><img alt="Upstream: idea/262.10968.63" src="https://img.shields.io/badge/upstream-idea%2F262.10968.63-lightgrey"></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=newkayak12_Phantom"><img alt="SonarQube quality gate" src="https://sonarcloud.io/api/project_badges/measure?project=newkayak12_Phantom&amp;metric=alert_status"></a>
   <a href="#다운로드와-설치"><img alt="Platforms: macOS arm64, Windows x64" src="https://img.shields.io/badge/platforms-macOS%20arm64%20%7C%20Windows%20x64-lightgrey"></a>
 </p>
 
@@ -27,10 +26,6 @@
 ## 소개
 
 Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그인 번들을 줄이고 고유 테마와 기본 설정을 제공하며, Spring, JPA, HTTP 요청, 데이터베이스 기능은 선택 플러그인으로 설치한다. 플랫폼에서는 시작 시 재스캔, 인덱싱, 메모리 설정을 수정했고, JetBrains 서비스로 가는 자동 요청은 [아래에 설명한 범위](#무엇이-다른가)에서 제한한다.
-
-[JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) 태그 `idea/262.10968.63`을 기반으로 한 개인 프로젝트다. 소스 라이선스와 업스트림 저작권 고지는 [라이선스 절](#라이선스)에 있다. Phantom는 JetBrains와 제휴하거나 보증받은 프로젝트가 아니다.
-
-플랫폼 수정은 작성자가 Spring Boot 프로젝트에서 IntelliJ IDEA Ultimate 2026.2.3을 직접 프로파일링한 결과에서 출발했다. 기동 비용의 약 81%가 오픈소스 플랫폼에 있었고, 프로젝트 전체를 다시 스캔하는 파일 타입 변경 이벤트도 그중 하나였다. 프로파일링 노트는 별도 리포지토리에서 관리한다. 이 리포지토리에 기록한 벤치마크는 [성능 절](#성능)에 있다.
 
 ## 무엇이 다른가
 
@@ -53,7 +48,7 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그
 - 아무것도 바꾸지 않는 파일 타입 변경 이벤트가 더는 프로젝트 전체를 다시 스캔하지 않는다(수정 커밋 `46482b0bf1`은 Atom Material Icons가 시작할 때마다 일으킨 것으로 적고, 벤치마크 기록은 이 귀속을 추정으로 표시한다).
 - 플러그인을 업데이트해도 다음에 열 때 모든 파일을 다시 검사하지 않는다(이전에는 345k 파일, 약 2.3 s, CPU 20 s).
 - 비 JetBrains 벤더에서 동의 설정 페이지가 깨지던 문제를 고쳤다. Gradle은 프로젝트 SDK로 돌 수 없으면 지원되는 등록 JDK로 실행한다.
-- 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체한다. Phantom-plugins 판과 IntelliJ 원본이 함께 설치되면 Phantom 판만 로드된다. 전에는 ID 충돌로 둘 다 빠졌다(커밋 `04dba66c3a`).
+- 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체한다. Phantom-plugins 판과 업스트림 원본이 함께 설치되면 Phantom 판만 로드된다. 전에는 ID 충돌로 둘 다 빠졌다(커밋 `04dba66c3a`).
 
 **더한 것** ([FORK-DELTA §3.1, §3.4, §5.1](docs/phantom/FORK-DELTA.md))
 - 고유 정체성: `Phantom.app`, 번들 ID `dev.phantom.idea`, URL 스킴 `phantom://`, 설정 폴더 `PhantomIDEA`, Phantom Dark/Light 테마.
@@ -64,6 +59,8 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그
 **여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일, JBR 런타임 목록, Git 설치 목록은 아직 JetBrains에서 받지만, 사용자가 그 다운로드를 고를 때만이다(Grazie 언어 추가, Choose Boot Java Runtime 열기, Windows에서 Git이 없을 때 Download and Install. macOS에서는 Git 설치 목록을 받는 경로가 없다). 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정한다. 프레임워크 라이브러리 버전 목록과 Windows의 Git 업데이트 확인은 이제 플래그를 주지 않으면 JetBrains로 나가지 않는다. 이 변경은 소스에만 들어갔고 아직 빌드하거나 테스트하지 않았다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `6e71ed80c4`) 아직 빌드하거나 테스트하지 않았다.
 
 ## 성능
+
+플랫폼 수정은 작성자가 Spring Boot 프로젝트에서 IntelliJ IDEA Ultimate 2026.2.3을 직접 프로파일링한 결과에서 출발했다. 기동 비용의 약 81%가 오픈소스 플랫폼에 있었고, 프로젝트 전체를 다시 스캔하는 파일 타입 변경 이벤트도 그중 하나였다. 프로파일링 노트는 별도 리포지토리에서 관리한다.
 
 2026-10-17에 IntelliJ IDEA Ultimate 2026.2와 번갈아 5회씩 실행한 중앙값이다. 조건: Apple Silicon Mac, Kotlin 멀티 모듈 Gradle 프로젝트 하나를 예열한 복사본, 실행 180초 뒤 측정, Phantom 빌드 `f2e7052`.
 
@@ -97,7 +94,7 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 
 ## 플러그인
 
-백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 그중 17개는 대체하는 IntelliJ 플러그인 대신 번들에 들어간다. Mermaid(Phantom 자체 구현)를 뺀 나머지는 IntelliJ 플러그인 ID를 별칭으로 가지므로 원본에 의존하는 플러그인도 그대로 해석된다.
+백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 그중 17개는 대체하는 업스트림 플러그인 대신 번들에 들어간다. Mermaid(Phantom 자체 구현)를 뺀 나머지는 업스트림 플러그인 ID를 별칭으로 가지므로 원본에 의존하는 플러그인도 그대로 해석된다.
 
 | 번들, 이 리포지토리에서 빌드 | 번들, Phantom-plugins에서 빌드 | Phantom-plugins에서 필요할 때 설치 |
 |---|---|---|
@@ -106,7 +103,7 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 | Endpoints 도구 창(코어, 내용은 플러그인이 채움) | `lombok`(전에 번들하던 커뮤니티 Lombok 플러그인을 대체) | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
 | GitHub 플러그인 저장소 지원(코어) | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
 | | `grazie`, `terminal`, `github` | `http-client`: `.http` 요청 파일 |
-| | | `kotlin`: IntelliJ Kotlin 플러그인. 이 리포지토리의 릴리스마다 빌드 |
+| | | `kotlin`: Kotlin 언어 플러그인. 이 리포지토리의 릴리스마다 빌드 |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit`(번들에서 뺀 업스트림 플러그인을 대체) |
 
@@ -127,9 +124,9 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 
 `phantom-build.sh`는 먼저 그 17개 플러그인을 Phantom-plugins의 Gradle 래퍼로 빌드해 `out/phantom-plugins/`에 푼다. 체크아웃이나 플러그인 zip이 없으면 멈춘다. 첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생기고, 번들하지 않는 Kotlin 플러그인은 그 안의 `*-plugins/` 폴더에 zip으로 생긴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `048852ca23`)은 아직 빌드하거나 테스트하지 않았다.
 
-버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 IntelliJ Platform 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`. 서명, 릴리스, 벤치마크는 [BUILD.md](docs/phantom/BUILD.md)에 있다.
+버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 플랫폼 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`. 서명, 릴리스, 벤치마크는 [BUILD.md](docs/phantom/BUILD.md)에 있다.
 
-플랫폼을 수정하거나 디버그하려면 체크아웃 루트를 기존 IntelliJ 프로젝트로 열고 공유 실행 구성 **IDEA**를 쓴다. 프로젝트 SDK는 `jbr-25`(JDK 25)다. 소스 실행과 배포 빌드가 서로 다른 플러그인을 로드할 수 있으므로, 대체 플러그인의 변경을 검증하기 전에 [IDE 설정과 소스 실행 안내](docs/phantom/DEVELOPMENT.md#ide에서-소스-열기실행하기)를 읽는다.
+플랫폼을 수정하거나 디버그하려면 체크아웃 루트를 기존 프로젝트로 열고 공유 실행 구성 **IDEA**를 쓴다. 프로젝트 SDK는 `jbr-25`(JDK 25)다. 소스 실행과 배포 빌드가 서로 다른 플러그인을 로드할 수 있으므로, 대체 플러그인의 변경을 검증하기 전에 [IDE 설정과 소스 실행 안내](docs/phantom/DEVELOPMENT.md#ide에서-소스-열기실행하기)를 읽는다.
 
 ## 문서
 
@@ -146,7 +143,7 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 
 > Phantom는 JetBrains와 제휴하지 않았으며 JetBrains의 보증을 받지 않았다. IntelliJ와 IntelliJ IDEA는 JetBrains s.r.o.의 상표다.
 
-intellij-community 태그 `idea/262.10968.63`을 기준으로 한다. 첫 커밋은 업스트림 트리(업스트림 README와 히스토리는 빠짐)이고, Phantom 변경은 그 뒤부터다. 새 업스트림 태그를 병합할 때 충돌하기 쉬운 파일은 [FORK-DELTA §6](docs/phantom/FORK-DELTA.md)에 정리되어 있다.
+[JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) 태그 `idea/262.10968.63`을 기준으로 한다. 첫 커밋은 업스트림 트리(업스트림 README와 히스토리는 빠짐)이고, Phantom 변경은 그 뒤부터다. 새 업스트림 태그를 병합할 때 충돌하기 쉬운 파일은 [FORK-DELTA §6](docs/phantom/FORK-DELTA.md)에 정리되어 있다.
 
 Ultimate 바이너리는 **동작과 성능을 이해하기 위해서만** 디컴파일했다(개인 분석이며 이 리포지토리에 포함되지 않는다). Phantom 코드는 intellij-community API와 공개 명세를 바탕으로 작성한다. 디컴파일한 JetBrains 코드는 여기에 복사하지 않고, Ultimate 플러그인은 번들하지 않으며, 라이선스 검사는 절대 건드리지 않는다.
 

@@ -4,7 +4,7 @@
 - 기준 커밋: ea745003d1 (개발 안내 추가는 0a09032770에서 확인)
 - 작성일: 2026-11-17
 
-Phantom는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
+Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 개인 IDE 프로젝트다. 이 문서들은 사용·빌드·개발 안내와 설계·측정 기록을 구분해 안내한다. 기반 소스는 JetBrains intellij-community 태그 `idea/262.10968.63`이며, 저장소 루트가 곧 community 루트다.
 
 ## 여기서 시작
 
