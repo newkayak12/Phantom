@@ -75,7 +75,7 @@ Phantom는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-
 
 ## 다운로드와 설치
 
-빌드는 [GitHub Releases](https://github.com/newkayak12/Phantom-IDEA/releases)에 `v<YY>.<MM>.<DD>.<N>` 태그로 올라간다. Intel Mac과 Linux 빌드는 없다.
+빌드는 [GitHub Releases](https://github.com/newkayak12/Phantom/releases)에 `v<YY>.<MM>.<DD>.<N>` 태그로 올라간다. Intel Mac과 Linux 빌드는 없다.
 
 | 플랫폼 | 파일 |
 |---|---|
@@ -111,7 +111,7 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 Apple Silicon macOS, 16 GB 이상 RAM, 첫 빌드용 여유 디스크 약 120 GB, 그리고 Phantom-plugins 읽기 권한(릴리스 워크플로에 따르면 비공개 리포지토리)이 필요하다.
 
 ```bash
-git clone git@github.com:newkayak12/Phantom-IDEA.git phantom-idea && cd phantom-idea
+git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
 # 17 bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
