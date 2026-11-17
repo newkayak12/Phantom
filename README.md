@@ -72,7 +72,7 @@ Method and raw notes: [benchmark record](docs/phantom/2026-10-17-benchmark-vs-ul
 
 ## Download and install
 
-Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom-IDEA/releases), tagged `v<YY>.<MM>.<DD>.<N>`. There are no Intel Mac or Linux builds.
+Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom/releases), tagged `v<YY>.<MM>.<DD>.<N>`. There are no Intel Mac or Linux builds.
 
 | Platform | File |
 |---|---|
@@ -108,7 +108,7 @@ Planned, not built: Spring runtime (Actuator), Docker and Kubernetes, database m
 Needs macOS on Apple Silicon, 16 GB+ RAM, about 120 GB free disk for the first build, and read access to Phantom-plugins (a private repository, per the release workflow).
 
 ```bash
-git clone git@github.com:newkayak12/Phantom-IDEA.git phantom-idea && cd phantom-idea
+git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
 # 17 bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
