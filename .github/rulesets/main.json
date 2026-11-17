@@ -1,5 +1,5 @@
 {
-  "name": "Phantom main",
+  "name": "protect-main",
   "target": "branch",
   "enforcement": "active",
   "bypass_actors": [
@@ -21,6 +21,7 @@
     {
       "type": "pull_request",
       "parameters": {
+        "allowed_merge_methods": ["merge", "squash", "rebase"],
         "required_approving_review_count": 0,
         "dismiss_stale_reviews_on_push": false,
         "require_code_owner_review": false,

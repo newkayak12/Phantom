@@ -120,7 +120,7 @@
 
 로컬에서는 `node --test tools/phantom-quality.test.mjs`와 `node tools/phantom-quality.mjs --base origin/main`을 실행한다(Node 22 이상, Python 3, Bash/Zsh 필요). 기본 base는 업스트림 스냅샷 `d2faebf601`이며, 지정한 base와 HEAD의 공통 조상부터 작업 트리까지 변경된 파일과 ignore되지 않은 새 파일을 검사한다. `--lint`를 `--base` 앞에 붙이면 ShellCheck와 actionlint도 실행한다. 두 도구는 PATH에 있어야 하고, CI는 ShellCheck와 Zsh를 Ubuntu 패키지로, actionlint `v1.7.7`을 Go로 설치한다. ShellCheck는 Bash 스크립트의 error 수준, actionlint는 변경된 워크플로를 검사한다.
 
-참고한 [prototype-reservation-system](https://github.com/newkayak12/prototype-reservation-system)의 Detekt·SonarCloud 설정을 이 모노레포 전체에 적용하지는 않는다. Kotlin/Java는 영향 모듈의 IDE 검사·컴파일·테스트로 검증하고, SonarCloud는 별도의 프로젝트·조직·토큰 설정이 필요해 이번 CI에 포함하지 않았다.
+참고한 [prototype-reservation-system](https://github.com/newkayak12/prototype-reservation-system)의 Detekt 설정을 이 모노레포 전체에 적용하지는 않는다. Kotlin/Java는 영향 모듈의 IDE 검사·컴파일·테스트로 검증한다. 별도 Phantom analysis CI는 Node 품질 도구의 LCOV를 생성하고, 설정이 갖춰지면 Codecov에 올리고 Phantom 소유 소스를 SonarQube로 분석한다. 서비스 설정과 라벨·이슈 자동화는 [GitHub 자동화 안내](../../.github/README.md)를 본다. JVM 커버리지는 포함하지 않는다.
 
 | 확인 | 명령 | 근거 |
 |---|---|---|
