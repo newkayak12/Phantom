@@ -1,10 +1,10 @@
-# Phantom IDEA 문서 안내
+# Phantom 문서 안내
 
-- 목적: Phantom IDEA 문서가 무엇이 있고, 어떤 순서로 읽고, 어느 것이 지금도 맞는지 알려 준다.
+- 목적: Phantom 문서가 무엇이 있고, 어떤 순서로 읽고, 어느 것이 지금도 맞는지 알려 준다.
 - 기준 커밋: ea745003d1
 - 작성일: 2026-11-16
 
-Phantom IDEA는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
+Phantom는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
 
 ## 여기서 시작
 

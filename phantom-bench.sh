@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Measures the installed Phantom IDEA on a fixed project.
+# Measures the installed Phantom on a fixed project.
 #   ./phantom-bench.sh [--runs 5] [--label base] [--settle 180] [--vm-extra FILE] [--fixture DIR]
 # Each run starts the app with its own copy of the user's config and log directory, so the user's running IDE
 # is untouched. The system directory (caches, indexes) is kept per label and warmed by one discarded run.
@@ -10,7 +10,7 @@
 # (native/XPlatLauncher/src/default.rs, collect_vm_options_from_files), so the user's own options and --vm-extra
 # override bundled ones the same way a user's idea.vmoptions does.
 # Environment (each defaults to the value in parentheses, so nothing needs to be set on the author's machine):
-#   PHANTOM_APP            the app to measure (/Applications/Phantom IDEA.app)
+#   PHANTOM_APP            the app to measure (/Applications/Phantom.app)
 #   PHANTOM_CONFIG_DIR     the user config copied into each run ($HOME/Library/Application Support/Phantom/PhantomIDEA)
 #   PHANTOM_BENCH_FIXTURE  the project to open, unless --fixture is given ($HOME/projects/private/prototype-reservation-system)
 # A relative --fixture or PHANTOM_BENCH_FIXTURE is relative to the directory this script is called from.
@@ -20,7 +20,7 @@ cd "$(dirname "$0")"
 
 # PHANTOM_BENCH_APP measures another copy of the app (an unpacked DMG) and wins over PHANTOM_APP; PHANTOM_BENCH_PLUGINS
 # lists plugin zips unpacked into each run's config copy (Kotlin, which a release does not bundle)
-APP="${PHANTOM_BENCH_APP:-${PHANTOM_APP:-/Applications/Phantom IDEA.app}}"
+APP="${PHANTOM_BENCH_APP:-${PHANTOM_APP:-/Applications/Phantom.app}}"
 USER_CONFIG="${PHANTOM_CONFIG_DIR:-$HOME/Library/Application Support/Phantom/PhantomIDEA}"
 
 runs=5

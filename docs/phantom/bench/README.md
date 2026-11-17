@@ -9,7 +9,7 @@ numbers and compares them with a baseline. Plan: `docs/plans/2026-10-30-phantom-
 ./phantom-bench.sh --runs 5 --label base
 python3 phantom-bench-report.py compare docs/phantom/bench/baseline.json out/phantom-bench/<sha>/base/summary.json
 
-python3 phantom-bench-report.py static "/Applications/Phantom IDEA.app" > /tmp/static.json
+python3 phantom-bench-report.py static "/Applications/Phantom.app" > /tmp/static.json
 python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json /tmp/static.json
 ```
 
@@ -48,7 +48,7 @@ bundle, not from the sources), so it needs a full build with the Phantom-plugins
 
 ```
 ./phantom-install.sh      # builds HEAD and installs it; or --no-build for a DMG already built from HEAD
-python3 phantom-bench-report.py static "${PHANTOM_APP:-/Applications/Phantom IDEA.app}" > docs/phantom/bench/static-baseline.json
+python3 phantom-bench-report.py static "${PHANTOM_APP:-/Applications/Phantom.app}" > docs/phantom/bench/static-baseline.json
 python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json docs/phantom/bench/static-baseline.json
 ```
 

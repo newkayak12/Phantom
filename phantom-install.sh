@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Installs the latest Phantom IDEA build into /Applications (or $PHANTOM_APP) and restarts it.
+# Installs the latest Phantom build into /Applications (or $PHANTOM_APP) and restarts it.
 #   ./phantom-install.sh            build with phantom-build.sh, then install
 #   ./phantom-install.sh --no-build install the DMG that is already built
 #   ./phantom-install.sh --release [v26.10.21.1]   install the newest GitHub release's DMG (or that tag's)
@@ -12,15 +12,21 @@
 # certificate in ~/Library/Keychains/phantom-signing.keychain-db, one line on stdout says so). If that fails, or with
 # PHANTOM_SIGN_SETUP=0 in the environment, the app stays ad-hoc signed and a warning goes to stderr; the install does
 # not fail (a certificate that is there but cannot be used, e.g. a wrong keychain password, still fails it).
-# Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom IDEA.app); it is also passed to
+# Environment: PHANTOM_APP is the app to replace (default /Applications/Phantom.app); it is also passed to
 # phantom-sign.sh. It is deleted and replaced, so it must be a *.app path. Only a Phantom running from that path is
 # asked to quit (by process id, not bundle id, so another copy running elsewhere is left alone), and it is restarted
 # from that path.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP="${PHANTOM_APP:-/Applications/Phantom IDEA.app}"
+APP="${PHANTOM_APP:-/Applications/Phantom.app}"
 [[ "$APP" == /*.app ]] || { echo "error: PHANTOM_APP must be an absolute path ending in .app, got '$APP'" >&2; exit 1; }
+# The app was "Phantom IDEA.app" before the rename to Phantom. With the default path and no Phantom.app yet, that copy
+# is the one quit and replaced: it is removed once Phantom.app is in place (settings live elsewhere and stay).
+LEGACY_APP=""
+if [[ -z "${PHANTOM_APP:-}" && ! -e "$APP" && -d "/Applications/Phantom IDEA.app" ]]; then
+  LEGACY_APP="/Applications/Phantom IDEA.app"
+fi
 
 DMG=""
 case "${1:-}" in
@@ -53,9 +59,10 @@ was_running=false
 # pgrep -f takes a regular expression and matches anywhere in the command line, so each hit is kept only when its
 # command line really starts with this app's executable (a copy under another folder, or a path with ( ) in it)
 phantom_pids() {
-  local exe="$APP/Contents/MacOS/idea" pid
+  local exe="$APP/Contents/MacOS/idea" legacy="${LEGACY_APP:+$LEGACY_APP/Contents/MacOS/idea}" pid cmd
   for pid in $(pgrep -x idea || true); do
-    [[ "$(ps -o command= -p "$pid" 2>/dev/null)" == "$exe"* ]] && print -r -- "$pid"
+    cmd="$(ps -o command= -p "$pid" 2>/dev/null)"
+    [[ "$cmd" == "$exe"* || ( -n "$legacy" && "$cmd" == "$legacy"* ) ]] && print -r -- "$pid"
   done
   return 0
 }
@@ -82,9 +89,10 @@ mnt=$(mktemp -d)
 hdiutil attach -nobrowse -readonly -mountpoint "$mnt" "$DMG" -quiet
 trap 'hdiutil detach "$mnt" -quiet || true; rmdir "$mnt" 2>/dev/null || true' EXIT
 rm -rf "$APP.new"
-ditto "$mnt/Phantom IDEA.app" "$APP.new"
+ditto "$mnt/Phantom.app" "$APP.new"
 rm -rf "$APP"
 mv "$APP.new" "$APP"
+if [[ -n "$LEGACY_APP" ]]; then rm -rf "$LEGACY_APP"; fi
 # without the "Phantom Local" certificate phantom-sign.sh creates it first (PHANTOM_SIGN_SETUP=0 skips that); if there is
 # still none, the app stays ad-hoc signed: phantom-sign.sh warns on stderr, the install goes on
 PHANTOM_SIGN_SETUP="${PHANTOM_SIGN_SETUP:-1}" PHANTOM_SIGN_OPTIONAL=1 ./phantom-sign.sh "$APP"

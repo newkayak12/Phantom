@@ -1,4 +1,4 @@
-# Phantom IDEA 아키텍처
+# Phantom 아키텍처
 
 목적: 큰 트리에서 길을 찾고 프로그램을 안전하게 고치기 위한 구조·흐름 지도. 패치 지점 전체 목록은 [FORK-DELTA.md](FORK-DELTA.md), 빌드·서명·릴리스·벤치 명령은 [BUILD.md](BUILD.md)가 맡는다.
 기준 커밋: ea745003d1
@@ -241,12 +241,12 @@ Phantom이 고친 지점: 1~7의 기동 클래스 자체(Main.kt, startup.kt, Ap
 
 ### 브랜딩·버전 배관
 
-- 제품 정보: `community-resources/resources/idea/IdeaApplicationInfo.xml:2-10`. 버전(`major`/`minor`, 빌드 날짜 YY.MM.DD), 회사 Phantom, 로고·아이콘, 이름 `Phantom IDEA`, 기본 테마 `Phantom Light`/`Phantom Dark`. `<version>` 줄(:2)은 자리표시자 `major="0" minor="0.0"`이다. `phantom-build.sh`는 더는 이 파일을 고치지 않고, 빌드 날짜를 시스템 속성 `phantom.version.major`(YY)와 `phantom.version.minor`(MM.DD)로 넘긴다(048852ca23, 빌드 전). 소스에서 실행하거나 `installers.cmd`를 직접 실행하면 속성이 없어 표시 버전이 0.0이다.
+- 제품 정보: `community-resources/resources/idea/IdeaApplicationInfo.xml:2-10`. 버전(`major`/`minor`, 빌드 날짜 YY.MM.DD), 회사 Phantom, 로고·아이콘, 이름 `Phantom`, 기본 테마 `Phantom Light`/`Phantom Dark`. `<version>` 줄(:2)은 자리표시자 `major="0" minor="0.0"`이다. `phantom-build.sh`는 더는 이 파일을 고치지 않고, 빌드 날짜를 시스템 속성 `phantom.version.major`(YY)와 `phantom.version.minor`(MM.DD)로 넘긴다(048852ca23, 빌드 전). 소스에서 실행하거나 `installers.cmd`를 직접 실행하면 속성이 없어 표시 버전이 0.0이다.
 - 빌드 번호는 두 개다. 플랫폼 빌드 `262.<YYMMDD>`(`-Dbuild.number`)와 표시용 `PH-<YYMMDD>.<N>`(`-Dphantom.build.number`, phantom-build.sh:46, :63). 저장소의 `build.txt`는 `262.SNAPSHOT`이다.
   - `platform/build-scripts/src/org/jetbrains/intellij/build/impl/PhantomBuildNumber.kt:11-14`: 속성 이름과 `phantomBuildNumber(context)`. `:16-24`: 표시 버전 속성 이름 `PHANTOM_VERSION_MAJOR_PROPERTY`, `PHANTOM_VERSION_MINOR_PROPERTY`와 `phantomVersionProperty(name)`.
   - `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:145-147`: 버전·브랜치 일치 검사 완화. `:71-75`: `majorVersion`, `minorVersion`을 속성 `phantom.version.major/minor`에서 먼저 읽고 없으면 XML에서 읽음. `:177-181`과 `:268-280`(`withPhantomVersion`): 패키지에 들어가는 `<version>`의 `major`, `minor`를 같은 값으로 씀. `:170-175`: `number`를 Phantom 번호로 바꾸고 플랫폼 번호는 `apiVersion`으로 남김. 플러그인 호환성은 `apiVersion`으로 판정된다.
   - `platform/build-scripts/src/org/jetbrains/intellij/build/impl/MacDistributionBuilder.kt:571`, `:597`: Info.plist에 Phantom 번호.
-  - IdeaCommunityProperties.kt: 설정 폴더 `PhantomIDEA`(:203), 산출물 이름 `phantom-idea-<N>`(:207-208), 출력 폴더(:210), Windows 이름(:289-290), mac URL 스킴 `phantom`·번들 ID `dev.phantom.idea`·`Phantom IDEA.app`(:299-304), Linux 루트(:319).
+  - IdeaCommunityProperties.kt: 설정 폴더 `PhantomIDEA`(:203), 산출물 이름 `phantom-idea-<N>`(:207-208), 출력 폴더(:210), Windows 이름(:289-290), mac URL 스킴 `phantom`·번들 ID `dev.phantom.idea`·`Phantom.app`(:299-304), Linux 루트(:319).
 
 ## 8. 더 읽을 곳
 

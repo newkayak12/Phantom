@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom IDEA" width="180">
+  <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom" width="180">
 </p>
 
-<h1 align="center">Phantom IDEA</h1>
+<h1 align="center">Phantom</h1>
 
 <p align="center">A trimmed fork of intellij-community for Kotlin, Spring Boot and JPA backend work.</p>
 
@@ -19,7 +19,7 @@
 
 ## What is this
 
-Phantom IDEA is a personal fork of [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community), based on tag `idea/262.10968.63` and licensed under Apache 2.0 like its upstream. It removes what a backend developer does not use, turns off automatic calls to JetBrains services, fixes platform issues found by profiling, and moves Ultimate-style backend features (Spring, JPA, HTTP client, database) into clean-room plugins installed on demand. It is not affiliated with or endorsed by JetBrains ([details](#upstream-trademarks-and-clean-room-policy)).
+Phantom is a personal fork of [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community), based on tag `idea/262.10968.63` and licensed under Apache 2.0 like its upstream. It removes what a backend developer does not use, turns off automatic calls to JetBrains services, fixes platform issues found by profiling, and moves Ultimate-style backend features (Spring, JPA, HTTP client, database) into clean-room plugins installed on demand. It is not affiliated with or endorsed by JetBrains ([details](#upstream-trademarks-and-clean-room-policy)).
 
 Why the platform and not only the bundle: profiling IntelliJ IDEA Ultimate 2026.2.3 on a Spring Boot project put about 81% of startup cost in the open-source platform itself (the author's own profiling, recorded outside this repository), including a file type change event that rescanned the whole project.
 
@@ -47,7 +47,7 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 - A plugin that keeps another plugin's id as an alias now replaces it: with a Phantom-plugins build and the IntelliJ original both installed, only the Phantom build loads, where the id conflict used to leave both out (commit `04dba66c3a`).
 
 **Added** ([FORK-DELTA §3.1, §3.4, §5.1](docs/phantom/FORK-DELTA.md))
-- Own identity: `Phantom IDEA.app`, bundle id `dev.phantom.idea`, URL scheme `phantom://`, settings folder `PhantomIDEA`, Phantom Dark/Light themes.
+- Own identity: `Phantom.app`, bundle id `dev.phantom.idea`, URL scheme `phantom://`, settings folder `PhantomIDEA`, Phantom Dark/Light themes.
 - Plugin repositories from GitHub repos (`owner/repo`), with [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) always registered.
 - Backup and Sync to your own git repository; GitHub login through `gh auth token` instead of account.jetbrains.com.
 - Download JDK lists JDKs from the foojay Disco API; heap and file page cache are sized to the machine's RAM.
@@ -82,13 +82,13 @@ Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom-IDEA/relea
 > [!WARNING]
 > Builds are not signed by a recognized authority. The macOS app is ad-hoc signed and not notarized, so Gatekeeper blocks a DMG downloaded in a browser. The Windows files are unsigned, so Windows may warn about an unknown publisher.
 
-On macOS, `./phantom-install.sh --release [tag]` from a clone downloads the DMG with curl (no quarantine flag), replaces `/Applications/Phantom IDEA.app` and restarts it; it needs `gh auth login` or `GH_TOKEN`. The ad-hoc signature changes with every build, so macOS would ask for privacy permissions again after each install; to avoid that, the script re-signs the app with a local self-signed certificate (not an Apple certificate, no Apple account) and creates that certificate in its own keychain the first time (`./phantom-sign.sh --setup` does it by hand, `PHANTOM_SIGN_SETUP=0` skips it; see [BUILD.md §5](docs/phantom/BUILD.md)).
+On macOS, `./phantom-install.sh --release [tag]` from a clone downloads the DMG with curl (no quarantine flag), replaces `/Applications/Phantom.app` and restarts it; it needs `gh auth login` or `GH_TOKEN`. The ad-hoc signature changes with every build, so macOS would ask for privacy permissions again after each install; to avoid that, the script re-signs the app with a local self-signed certificate (not an Apple certificate, no Apple account) and creates that certificate in its own keychain the first time (`./phantom-sign.sh --setup` does it by hand, `PHANTOM_SIGN_SETUP=0` skips it; see [BUILD.md §5](docs/phantom/BUILD.md)).
 
 The IDE does not check for its own updates; install new releases the same way. On first run you can import settings from an installed JetBrains IDE.
 
 ## Plugins
 
-Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom IDEA build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Seventeen of its plugins are built into the bundle in place of the IntelliJ plugins they replace; all but Mermaid (Phantom's own implementation) keep the IntelliJ plugin ids as aliases, so plugins that depend on the originals still resolve.
+Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Seventeen of its plugins are built into the bundle in place of the IntelliJ plugins they replace; all but Mermaid (Phantom's own implementation) keep the IntelliJ plugin ids as aliases, so plugins that depend on the originals still resolve.
 
 | Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
 |---|---|---|
@@ -133,7 +133,7 @@ Most project docs are written in Korean.
 
 ## Upstream, trademarks and clean-room policy
 
-> Phantom IDEA is not affiliated with or endorsed by JetBrains. IntelliJ and IntelliJ IDEA are trademarks of JetBrains s.r.o.
+> Phantom is not affiliated with or endorsed by JetBrains. IntelliJ and IntelliJ IDEA are trademarks of JetBrains s.r.o.
 
 Based on intellij-community tag `idea/262.10968.63`. The first commit is the upstream tree (without its README and without upstream history); Phantom changes start after it. [FORK-DELTA §6](docs/phantom/FORK-DELTA.md) lists the files most likely to conflict when a newer upstream tag is merged.
 
