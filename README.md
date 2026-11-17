@@ -33,7 +33,7 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 - "Report to JetBrains" error submission and the default IDE update feed (`-Didea.updates.url` brings it back).
 
 **Trimmed** ([FORK-DELTA §3.2, §3.3, §3.5](docs/phantom/FORK-DELTA.md))
-- 39 upstream plugins out of the bundle: 14 dropped (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …), 24 replaced by Phantom-plugins builds (TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown, Mermaid, Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub, JUnit, Properties, Repository Search, JSON, Gradle DSL, Groovy, Groovy Scripting, Groovy Live Templates), and Kotlin, which each release publishes as a separate zip, named Phantom Kotlin with Phantom as vendor and the id `org.jetbrains.kotlin` kept, to the Phantom plugins repository instead (it is suggested for projects that use Kotlin or Gradle Kotlin DSL scripts); plus Android and Compose. Sources stay for upstream merges.
+- 41 upstream plugins out of the bundle: 14 dropped (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …), 25 replaced by Phantom-plugins builds (TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown, Mermaid, Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub, JUnit, Properties, Repository Search, JSON, Gradle DSL, Groovy, Groovy Scripting, Groovy Live Templates, Images), and Kotlin and Maven, which each release publishes as separate zips, named Kotlin Support and Maven Support with Phantom as vendor and the ids `org.jetbrains.kotlin` and `org.jetbrains.idea.maven` kept, to the Phantom plugins repository instead (Kotlin is suggested for projects that use Kotlin or Gradle Kotlin DSL scripts, Maven for projects with a `pom.xml`); plus Android and Compose. Sources stay for upstream merges.
 - Some changes listed on this page live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try Ultimate", the ShellCheck download, the disabled Package Search client). Whether those builds carry them was not checked; see [FORK-DELTA §3.2](docs/phantom/FORK-DELTA.md).
 - The Marketplace listing leaves out plugins JetBrains publishes (Phantom ships its own versions of the ones it keeps); running from sources, internal mode or `-Dphantom.marketplace.showAll=true` shows them.
 - Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
@@ -90,7 +90,7 @@ The IDE does not check for its own updates; install new releases the same way. O
 
 ## Plugins
 
-Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Twenty-five of its plugins are built into the bundle in place of the IntelliJ plugins they replace; all but Mermaid (Phantom's own implementation) keep the IntelliJ plugin ids as aliases, so plugins that depend on the originals still resolve (per the commit messages; the Groovy commit does not say).
+Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Twenty-six of its plugins are built into the bundle in place of the IntelliJ plugins they replace; all but Mermaid (Phantom's own implementation) keep the IntelliJ plugin ids as aliases, so plugins that depend on the originals still resolve (per the commit messages; the Groovy and Images commits do not say).
 
 | Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
 |---|---|---|
@@ -99,9 +99,10 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 | Endpoints tool window (core; plugins fill it) | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
 | GitHub plugin repository support (core) | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
 | | `grazie`, `terminal`, `github` | `http-client`: `.http` request files |
-| | `junit`, `properties`, `json` | `kotlin`: Phantom Kotlin, the IntelliJ Kotlin plugin (id `org.jetbrains.kotlin`) built by each release of this repository |
+| | `junit`, `properties`, `json` | `kotlin`: Kotlin Support, the IntelliJ Kotlin plugin (id `org.jetbrains.kotlin`) built by each release of this repository |
 | | `repository-search`, `gradle-dsl` | |
-| | `groovy`, `groovy-scripting`, `groovy-live-templates` | |
+| | `groovy`, `groovy-scripting`, `groovy-live-templates` | `maven`: Maven Support, the IntelliJ Maven plugin (id `org.jetbrains.idea.maven`) built by each release of this repository |
+| | `images` | |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
 
@@ -115,12 +116,12 @@ Needs macOS on Apple Silicon, 16 GB+ RAM, about 120 GB free disk for the first b
 git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
-# 25 bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
+# 26 bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
 git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-`phantom-build.sh` first builds those 25 plugins with Phantom-plugins' Gradle wrapper and unpacks them into `out/phantom-plugins/`; it stops if the checkout or a plugin zip is missing. The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`, with the unbundled Kotlin plugin as a zip under its `*-plugins/` folder. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `c844a9f18e`) has not been built or tested yet.
+`phantom-build.sh` first builds those 26 plugins with Phantom-plugins' Gradle wrapper and unpacks them into `out/phantom-plugins/`; it stops if the checkout or a plugin zip is missing. The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`, with the unbundled Kotlin and Maven plugins as zips under its `*-plugins/` folder. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `c844a9f18e`) has not been built or tested yet.
 
 Versions: display `YY.MM.DD`, build number `PH-<YYMMDD>.<N>`, and an internal platform build `262.<YYMMDD>` so plugins built for IntelliJ Platform 262 keep loading. Signing, releases and benchmarks: [BUILD.md](docs/phantom/BUILD.md).
 
