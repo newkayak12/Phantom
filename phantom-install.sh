@@ -58,11 +58,15 @@ esac
 was_running=false
 # pgrep -f takes a regular expression and matches anywhere in the command line, so each hit is kept only when its
 # command line really starts with this app's executable (a copy under another folder, or a path with ( ) in it)
+# The executable was MacOS/idea before it became MacOS/phantom: the copy being replaced may still run the old one.
 phantom_pids() {
-  local exe="$APP/Contents/MacOS/idea" legacy="${LEGACY_APP:+$LEGACY_APP/Contents/MacOS/idea}" pid cmd
-  for pid in $(pgrep -x idea || true); do
+  local app pid cmd apps=("$APP")
+  [[ -n "$LEGACY_APP" ]] && apps+=("$LEGACY_APP")
+  for pid in $(pgrep -x phantom || true) $(pgrep -x idea || true); do
     cmd="$(ps -o command= -p "$pid" 2>/dev/null)"
-    [[ "$cmd" == "$exe"* || ( -n "$legacy" && "$cmd" == "$legacy"* ) ]] && print -r -- "$pid"
+    for app in $apps; do
+      [[ "$cmd" == "$app/Contents/MacOS/phantom"* || "$cmd" == "$app/Contents/MacOS/idea"* ]] && { print -r -- "$pid"; break; }
+    done
   done
   return 0
 }
@@ -93,6 +97,12 @@ ditto "$mnt/Phantom.app" "$APP.new"
 rm -rf "$APP"
 mv "$APP.new" "$APP"
 if [[ -n "$LEGACY_APP" ]]; then rm -rf "$LEGACY_APP"; fi
+# The launcher reads the user's VM options and runtime choice from <config>/phantom.vmoptions and phantom.jdk; before
+# the executable was renamed they were idea.vmoptions and idea.jdk. Copied once, so the old files keep applying.
+config="$HOME/Library/Application Support/Phantom/PhantomIDEA"
+for ext in vmoptions jdk; do
+  if [[ -f "$config/idea.$ext" && ! -e "$config/phantom.$ext" ]]; then cp -p "$config/idea.$ext" "$config/phantom.$ext"; fi
+done
 # without the "Phantom Local" certificate phantom-sign.sh creates it first (PHANTOM_SIGN_SETUP=0 skips that); if there is
 # still none, the app stays ad-hoc signed: phantom-sign.sh warns on stderr, the install goes on
 PHANTOM_SIGN_SETUP="${PHANTOM_SIGN_SETUP:-1}" PHANTOM_SIGN_OPTIONAL=1 ./phantom-sign.sh "$APP"

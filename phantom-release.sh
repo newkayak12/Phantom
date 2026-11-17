@@ -37,8 +37,8 @@ trap 'hdiutil detach "$mnt" -quiet || true; rmdir "$mnt" 2>/dev/null || true' EX
 app="$mnt/Phantom.app"
 # the build signs only the launcher, ad hoc and without sealed resources, so a strict `codesign --verify` cannot pass;
 # require that signature and a launcher macOS will start
-codesign -d "$app/Contents/MacOS/idea" 2>/dev/null
-file "$app/Contents/MacOS/idea" | grep -q "arm64"
+codesign -d "$app/Contents/MacOS/phantom" 2>/dev/null
+file "$app/Contents/MacOS/phantom" | grep -q "arm64"
 shown="$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app/Contents/Info.plist")"
 [[ "$shown" == "$build" ]] || { echo "Info.plist says $shown, expected $build"; exit 1; }
 hdiutil detach "$mnt" -quiet; trap - EXIT; rmdir "$mnt"
