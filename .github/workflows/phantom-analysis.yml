@@ -91,6 +91,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: out/phantom-quality-coverage/lcov.info
           disable_search: true
+          # Sparse checkout omits upstream files that Codecov's automatic fixes try to read.
+          disable_file_fixes: true
           flags: phantom-quality
           name: phantom-quality
           fail_ci_if_error: true
