@@ -13,5 +13,16 @@ Files changed by Phantom contributors are marked with "phantom-idea:" comments.
 Third-party software included in this product is listed, with its licenses, in
 the license/ folder and in third-party-libraries.html of the distribution.
 
+The distribution also includes the following components under the GNU General Public License, version 2, with the
+Classpath Exception. Their complete corresponding source code is available at:
+  JetBrains Runtime (the bundled Java runtime, jbr/): https://github.com/JetBrains/JetBrainsRuntime
+    the source of the build in a release is tag jbr-release-<runtimeBuild>, with runtimeBuild from
+    build/dependencies/dependencies.properties (25.0.4b508.27: tag jbr-release-25.0.4b508.27)
+  jb-jdi: https://github.com/JetBrains/intellij-deps-jdi
+  sa-jdwp: https://github.com/JetBrains/jdk-sa-jdwp
+  java-compatibility: https://github.com/JetBrains/intellij-deps-java-compatibility
+On request, Phantom contributors provide a copy of that source code, at no more than the cost of making it, for three
+years after the release that included it: open an issue at https://github.com/newkayak12/Phantom/issues.
+
 Phantom is not affiliated with, sponsored or endorsed by JetBrains s.r.o.
 JetBrains, IntelliJ and IntelliJ IDEA are trademarks of JetBrains s.r.o.

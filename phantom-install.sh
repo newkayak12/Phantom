@@ -52,7 +52,7 @@ case "${1:-}" in
   *) ./phantom-build.sh ;;
 esac
 # The build number in the name follows the build date, so take the newest one
-[[ -n "$DMG" ]] || DMG=$(ls -t out/phantom-idea/artifacts/phantom-idea-*-aarch64.dmg 2>/dev/null | head -1)
+[[ -n "$DMG" ]] || DMG=$(ls -t out/phantom-idea/artifacts/phantom-*-aarch64.dmg 2>/dev/null | head -1)
 [[ -n "$DMG" ]] || { echo "no DMG in out/phantom-idea/artifacts"; exit 1; }
 
 was_running=false
