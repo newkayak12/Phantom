@@ -16,7 +16,7 @@
   <a href="https://github.com/newkayak12/Phantom/actions/workflows/phantom-quality.yml"><img alt="Quality CI" src="https://github.com/newkayak12/Phantom/actions/workflows/phantom-quality.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/newkayak12/Phantom/actions/workflows/phantom-analysis.yml"><img alt="Analysis workflow" src="https://github.com/newkayak12/Phantom/actions/workflows/phantom-analysis.yml/badge.svg?branch=main"></a>
   <a href="https://app.codecov.io/gh/newkayak12/Phantom"><img alt="Codecov: quality tool coverage" src="https://codecov.io/gh/newkayak12/Phantom/branch/main/graph/badge.svg?flag=phantom-quality"></a>
-  <a href="https://sonarcloud.io/summary/new_code?id=newkayak12_Phantom"><img alt="SonarQube quality gate" src="https://sonarcloud.io/api/project_badges/measure?project=newkayak12_Phantom&amp;metric=alert_status"></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=newkayak12_Phantom"><img alt="SonarQube quality gate" src="https://sonarcloud.io/api/project_badges/measure?project=newkayak12_Phantom&amp;metric=alert_status&amp;token=6a41d7c304b7c2d65aa9bf426fb78d1bb9ce415f"></a>
   <a href="#download-and-install"><img alt="Platforms: macOS arm64, Windows x64" src="https://img.shields.io/badge/platforms-macOS%20arm64%20%7C%20Windows%20x64-lightgrey"></a>
 </p>
 
