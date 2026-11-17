@@ -5,7 +5,7 @@
   <logo url="/phantom_logo.png"/>
   <icon svg="/phantom.svg" svg-small="/phantom_16.svg"/>
   <icon-eap svg="/phantom-eap.svg" svg-small="/phantom-eap_16.svg"/>
-  <names product="Phantom" fullname="Phantom IDEA" script="idea" motto="A lighter IDE on the IntelliJ Platform"/>
+  <names product="Phantom" fullname="Phantom" script="idea" motto="A lighter IDE on the IntelliJ Platform"/>
 
   <default-laf light="Phantom Light" dark="Phantom Dark"/>
 

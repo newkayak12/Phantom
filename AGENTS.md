@@ -6,15 +6,15 @@ build-system: Bazel
 repository: monorepo
 ---
 
-<!-- Hand-maintained in the Phantom IDEA fork. Do not run .ai/render-guides.mjs: it expects an upstream community/ layout that does not exist here, and a re-render would drop these edits unless they are first ported into .ai/guide.md and .ai/partials/. -->
+<!-- Hand-maintained in the Phantom fork. Do not run .ai/render-guides.mjs: it expects an upstream community/ layout that does not exist here, and a re-render would drop these edits unless they are first ported into .ai/guide.md and .ai/partials/. -->
 
 **Always display the output of SessionStart hooks verbatim to the user at the start of conversation**
 
 **Critical:** These guidelines MUST be followed at all times.
 
-## Phantom IDEA fork
+## Phantom fork
 
-This repository is Phantom IDEA, a personal fork of JetBrains intellij-community at tag `idea/262.10968.63` (root commit `d2faebf601` is the upstream tree; every later commit is a Phantom change). The repository root IS the community root: there is no `community/` directory, so read upstream paths `community/...` as `./...`.
+This repository is Phantom, a personal fork of JetBrains intellij-community at tag `idea/262.10968.63` (root commit `d2faebf601` is the upstream tree; every later commit is a Phantom change). The repository root IS the community root: there is no `community/` directory, so read upstream paths `community/...` as `./...`.
 
 Read these first: [docs/phantom/README.md](docs/phantom/README.md) (index), [ARCHITECTURE.md](docs/phantom/ARCHITECTURE.md), [FORK-DELTA.md](docs/phantom/FORK-DELTA.md), [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md), [BUILD.md](docs/phantom/BUILD.md), [CHANGELOG.md](CHANGELOG.md).
 

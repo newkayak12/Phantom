@@ -1,4 +1,4 @@
-# Builds Phantom IDEA for Apple silicon and Windows x64 and publishes the DMG, the Windows installer and the Windows zip
+# Builds Phantom for Apple silicon and Windows x64 and publishes the DMG, the Windows installer and the Windows zip
 # as a GitHub release (tag v<YY>.<MM>.<DD>.<N>).
 #   Actions → Phantom release → Run workflow (optional notes). Not on tag pushes: phantom-release.sh pushes the tag
 #   itself, so a tag trigger would build every release twice.

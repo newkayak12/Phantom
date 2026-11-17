@@ -1,4 +1,4 @@
-# Phantom IDEA 개발 가이드
+# Phantom 개발 가이드
 
 - 목적: 이 포크를 안전하게 고치는 방법을 작업별로 적는다. 무엇이 어디서 바뀌었는지는 [FORK-DELTA.md](FORK-DELTA.md), 구조와 기동 흐름은 [ARCHITECTURE.md](ARCHITECTURE.md), 빌드·릴리스·벤치 명령은 [BUILD.md](BUILD.md)가 맡는다. 이 문서는 그 내용을 되풀이하지 않고 링크한다.
 - 기준 커밋: ea745003d1
@@ -26,7 +26,7 @@
 - 언제: 업스트림 플러그인을 Phantom 기본 설치에서 빼고 싶을 때.
 - 파일: `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:90-122`(`.removing(...)` 사슬), 이유 주석 `:82-89`. 빼려는 ID가 업스트림 목록 어디에 있는지는 `platform/build-scripts/src/org/jetbrains/intellij/build/BaseIdeaProperties.kt:14-60`(`IDEA_BUNDLED_PLUGINS`)과 그것이 포함하는 `DEFAULT_BUNDLED_PLUGINS`(`platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/ProductModulesLayout.kt:23-39`)에서 찾는다.
 - 순서: (1) `.removing("<모듈>")` 한 줄을 더한다. (2) `:82-89` 주석에 이유를 한 줄 쓴다. (3) 다른 번들 플러그인이 그 모듈에 의존하는지 확인한다(커밋 본문들이 "nothing bundled depends on it"으로 적은 확인). (4) 제품 콘텐츠 모듈이면 `.removing`이 아니라 `intellijCommunityBaseFragment()`(`:262-300`)의 `module(...)` 줄을 지운다(770810693c, `:285` 주석). 소스, `.idea/modules.xml`, `intellij.idea.community.main.iml`은 건드리지 않는다. 예: 7c43a36532는 이 파일 한 개만 바꿨다.
-- 검증: 빌드 후 `Phantom IDEA.app/Contents/plugins/`에 그 플러그인이 없는지 본다. 정적 게이트(3절)는 감소를 실패로 보지 않는다.
+- 검증: 빌드 후 `Phantom.app/Contents/plugins/`에 그 플러그인이 없는지 본다. 정적 게이트(3절)는 감소를 실패로 보지 않는다.
 
 ### (b) 뺀 플러그인 되돌리기
 
@@ -115,7 +115,7 @@
 | 패치별 테스트 | `./tests.cmd --module intellij.platform.lang.tests --test com.intellij.openapi.projectRoots.impl.jdkDownloader.FoojayJdkListTest`<br>`./tests.cmd --module intellij.platform.lang.tests --test com.intellij.util.indexing.FileTypeChangeRescanTest`<br>`./tests.cmd --module intellij.terminal.tests --test 'com.intellij.terminal.tests.agent.*'` | FORK-DELTA 3.3, 3.5절 |
 | 플러그인 별칭 대체(04dba66c3a) | `./tests.cmd --module intellij.platform.tests --test com.intellij.ide.plugins.PluginInitializationSelectPluginsToLoadTest` | FORK-DELTA 3.12절. 모듈 이름은 `platform/platform-tests/intellij.platform.tests.iml`(`testSrc` 소스 폴더, `:7`)에서 읽었다. 업스트림 테스트 클래스에 04dba66c3a가 1개를 바꾸고 3개를 더했다(`PluginInitializationSelectPluginsToLoadTest.kt:444-510`). 이 문서를 쓰며 실행하지 않았다 |
 | 이 브랜치가 더한 테스트 2개(6e71ed80c4와 5185f60295의 보정, 048852ca23) | `./tests.cmd --module intellij.featuresTrainer.tests --test training.ui.FeedbackSubmissionGateTest`<br>`./tests.cmd --module intellij.platform.buildScripts.tests --test org.jetbrains.intellij.build.ApplicationInfoPropertiesTest` | BUILD.md 8절. 모듈 이름은 `plugins/ide-features-trainer/intellij.featuresTrainer.tests.iml`, `platform/build-scripts/tests/intellij.platform.buildScripts.tests.iml`에서 읽었다. 둘 다 실행하지 않았다(프로젝트를 아직 빌드하지 않음). 뒤쪽은 기존 테스트에 `phantomVersion`, `phantomVersionWithoutVersionElement`를 더한 것이다(`ApplicationInfoPropertiesTest.java:28-44`) |
-| 정적 게이트 | `python3 phantom-bench-report.py static "/Applications/Phantom IDEA.app" > /tmp/static.json`<br>`python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json /tmp/static.json` | BUILD.md 7절. 설치된 앱이 필요. 회귀면 종료 코드 1. baseline 앱의 빌드 날짜가 `IdeaCommunityProperties.kt`의 마지막 커밋 날짜보다 앞서면 회귀가 없어도 stderr에 `STALE BASELINE`을 쓰고 종료 코드 2(e29d855fff) |
+| 정적 게이트 | `python3 phantom-bench-report.py static "/Applications/Phantom.app" > /tmp/static.json`<br>`python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json /tmp/static.json` | BUILD.md 7절. 설치된 앱이 필요. 회귀면 종료 코드 1. baseline 앱의 빌드 날짜가 `IdeaCommunityProperties.kt`의 마지막 커밋 날짜보다 앞서면 회귀가 없어도 stderr에 `STALE BASELINE`을 쓰고 종료 코드 2(e29d855fff) |
 | 런타임 벤치 | `./phantom-bench.sh --runs 5 --label base` 후 `compare` | 런타임 기준선 `docs/phantom/bench/baseline.json`이 없어 지금은 비교 불가(5절 표) |
 | 빌드 | `./phantom-build.sh`(`PHANTOM_WINDOWS=0`이면 DMG만) | BUILD.md 3절. Phantom-plugins 체크아웃이 이 리포 옆(`../Phantom-plugins`)이나 `PHANTOM_PLUGINS_REPO`에 있어야 한다(9229667cc7, BUILD.md 2절). 048852ca23 이후 추적 파일을 고치지 않으므로 빌드 뒤 `git status`가 깨끗해야 한다(빌드 전이라 확인하지 못했다). 빌드는 `out/phantom-plugins/`를 만든다(무시되는 `out/` 아래) |
 | 컴파일만 | `bazel build <대상>`(AGENTS.md). 문서·JSON만 바꿨으면 생략 | AGENTS.md |

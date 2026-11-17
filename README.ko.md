@@ -1,9 +1,9 @@
 <!-- synced-with: README.md @ ea745003d1+docs -->
 <p align="center">
-  <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom IDEA" width="180">
+  <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom" width="180">
 </p>
 
-<h1 align="center">Phantom IDEA</h1>
+<h1 align="center">Phantom</h1>
 
 <p align="center">Kotlin, Spring Boot, JPA 백엔드 개발에 맞춰 덜어 낸 intellij-community 포크.</p>
 
@@ -22,7 +22,7 @@
 
 ## 소개
 
-Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community)를 개인이 포크한 IDE다. 기준은 태그 `idea/262.10968.63`이고, 업스트림과 같은 Apache 2.0 라이선스를 따른다. 백엔드 개발자가 쓰지 않는 것을 빼고, JetBrains 서비스로 가는 자동 호출을 끄고, 프로파일링으로 찾은 플랫폼 문제를 고친다. Ultimate에만 있던 백엔드 기능(Spring, JPA, HTTP 클라이언트, 데이터베이스)은 필요할 때 설치하는 클린룸 플러그인으로 옮겼다. JetBrains와 제휴하거나 보증받은 프로젝트가 아니다([자세히](#업스트림-상표-클린룸-정책)).
+Phantom는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community)를 개인이 포크한 IDE다. 기준은 태그 `idea/262.10968.63`이고, 업스트림과 같은 Apache 2.0 라이선스를 따른다. 백엔드 개발자가 쓰지 않는 것을 빼고, JetBrains 서비스로 가는 자동 호출을 끄고, 프로파일링으로 찾은 플랫폼 문제를 고친다. Ultimate에만 있던 백엔드 기능(Spring, JPA, HTTP 클라이언트, 데이터베이스)은 필요할 때 설치하는 클린룸 플러그인으로 옮겼다. JetBrains와 제휴하거나 보증받은 프로젝트가 아니다([자세히](#업스트림-상표-클린룸-정책)).
 
 번들만이 아니라 플랫폼까지 고치는 이유: Spring Boot 프로젝트에서 IntelliJ IDEA Ultimate 2026.2.3을 프로파일링하니 기동 비용의 약 81%가 오픈소스 플랫폼 자체에 있었고(작성자가 직접 한 프로파일링이며 이 리포지토리 밖에 기록돼 있다), 프로젝트 전체를 다시 스캔하게 만드는 파일 타입 변경 이벤트도 그중 하나였다.
 
@@ -50,7 +50,7 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 - 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체한다. Phantom-plugins 판과 IntelliJ 원본이 함께 설치되면 Phantom 판만 로드된다. 전에는 ID 충돌로 둘 다 빠졌다(커밋 `04dba66c3a`).
 
 **더한 것** ([FORK-DELTA §3.1, §3.4, §5.1](docs/phantom/FORK-DELTA.md))
-- 고유 정체성: `Phantom IDEA.app`, 번들 ID `dev.phantom.idea`, URL 스킴 `phantom://`, 설정 폴더 `PhantomIDEA`, Phantom Dark/Light 테마.
+- 고유 정체성: `Phantom.app`, 번들 ID `dev.phantom.idea`, URL 스킴 `phantom://`, 설정 폴더 `PhantomIDEA`, Phantom Dark/Light 테마.
 - GitHub 리포지토리(`owner/repo`)를 플러그인 저장소로 쓴다. [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)는 항상 등록되어 있다.
 - Backup and Sync를 내 git 저장소로 한다. GitHub 로그인은 account.jetbrains.com 대신 `gh auth token`을 쓴다.
 - Download JDK 목록은 foojay Disco API에서 받는다. 힙과 파일 페이지 캐시 크기는 기기 RAM에 맞춰 정한다.
@@ -85,13 +85,13 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 > [!WARNING]
 > 공인된 기관의 서명이 없다. macOS 앱은 ad-hoc 서명만 되어 있고 공증(notarization)을 받지 않아서, 브라우저로 받은 DMG는 Gatekeeper가 막는다. Windows 파일은 서명하지 않았으므로 Windows가 알 수 없는 게시자라고 경고할 수 있다.
 
-macOS에서는 클론한 리포지토리에서 `./phantom-install.sh --release [tag]`를 실행하면 DMG를 curl로 받고(격리 플래그가 붙지 않는다) `/Applications/Phantom IDEA.app`을 교체한 뒤 다시 띄운다. `gh auth login` 또는 `GH_TOKEN`이 필요하다. ad-hoc 서명은 빌드마다 바뀌어 설치할 때마다 macOS가 개인정보 권한을 다시 물을 것이므로, 이 스크립트는 앱을 로컬 자체 서명 인증서(Apple 인증서가 아니고 Apple 계정도 필요 없다)로 다시 서명하고, 처음에는 그 인증서를 전용 키체인에 만든다(`./phantom-sign.sh --setup`으로 직접 만들 수 있고, `PHANTOM_SIGN_SETUP=0`이면 건너뛴다. [BUILD.md §5](docs/phantom/BUILD.md) 참고).
+macOS에서는 클론한 리포지토리에서 `./phantom-install.sh --release [tag]`를 실행하면 DMG를 curl로 받고(격리 플래그가 붙지 않는다) `/Applications/Phantom.app`을 교체한 뒤 다시 띄운다. `gh auth login` 또는 `GH_TOKEN`이 필요하다. ad-hoc 서명은 빌드마다 바뀌어 설치할 때마다 macOS가 개인정보 권한을 다시 물을 것이므로, 이 스크립트는 앱을 로컬 자체 서명 인증서(Apple 인증서가 아니고 Apple 계정도 필요 없다)로 다시 서명하고, 처음에는 그 인증서를 전용 키체인에 만든다(`./phantom-sign.sh --setup`으로 직접 만들 수 있고, `PHANTOM_SIGN_SETUP=0`이면 건너뛴다. [BUILD.md §5](docs/phantom/BUILD.md) 참고).
 
 IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 방법으로 설치한다. 첫 실행 때 설치된 JetBrains IDE의 설정을 가져올 수 있다.
 
 ## 플러그인
 
-백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom IDEA 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 그중 17개는 대체하는 IntelliJ 플러그인 대신 번들에 들어간다. Mermaid(Phantom 자체 구현)를 뺀 나머지는 IntelliJ 플러그인 ID를 별칭으로 가지므로 원본에 의존하는 플러그인도 그대로 해석된다.
+백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 그중 17개는 대체하는 IntelliJ 플러그인 대신 번들에 들어간다. Mermaid(Phantom 자체 구현)를 뺀 나머지는 IntelliJ 플러그인 ID를 별칭으로 가지므로 원본에 의존하는 플러그인도 그대로 해석된다.
 
 | 번들, 이 리포지토리에서 빌드 | 번들, Phantom-plugins에서 빌드 | Phantom-plugins에서 필요할 때 설치 |
 |---|---|---|
@@ -136,7 +136,7 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 
 ## 업스트림, 상표, 클린룸 정책
 
-> Phantom IDEA는 JetBrains와 제휴하지 않았으며 JetBrains의 보증을 받지 않았다. IntelliJ와 IntelliJ IDEA는 JetBrains s.r.o.의 상표다.
+> Phantom는 JetBrains와 제휴하지 않았으며 JetBrains의 보증을 받지 않았다. IntelliJ와 IntelliJ IDEA는 JetBrains s.r.o.의 상표다.
 
 intellij-community 태그 `idea/262.10968.63`을 기준으로 한다. 첫 커밋은 업스트림 트리(업스트림 README와 히스토리는 빠짐)이고, Phantom 변경은 그 뒤부터다. 새 업스트림 태그를 병합할 때 충돌하기 쉬운 파일은 [FORK-DELTA §6](docs/phantom/FORK-DELTA.md)에 정리되어 있다.
 

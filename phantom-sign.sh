@@ -1,10 +1,10 @@
 #!/bin/zsh
-# Re-signs an installed Phantom IDEA with the local "Phantom Local" certificate and a fixed identifier.
+# Re-signs an installed Phantom with the local "Phantom Local" certificate and a fixed identifier.
 # An ad-hoc signature changes with every build, so macOS treats each build as a new app and asks for its
 # privacy permissions (Downloads, Documents, ...) again; a fixed certificate + identifier keeps them.
 #   ./phantom-sign.sh [APP]    re-sign APP
 #   ./phantom-sign.sh --setup  create the certificate on this machine (once), then exit
-# APP is the first argument, else $PHANTOM_APP, else /Applications/Phantom IDEA.app.
+# APP is the first argument, else $PHANTOM_APP, else /Applications/Phantom.app.
 # The certificate is self-signed and made on this machine (not an Apple certificate, no Apple account). It lives only
 # in the dedicated keychain ~/Library/Keychains/phantom-signing.keychain-db, whose password is in
 # ~/.config/phantom/signing-keychain.pass. codesign is pointed at that keychain with --keychain, so the keychain is
@@ -96,7 +96,7 @@ EOF
   exit 0
 fi
 
-APP="${1:-${PHANTOM_APP:-/Applications/Phantom IDEA.app}}"
+APP="${1:-${PHANTOM_APP:-/Applications/Phantom.app}}"
 if ! have_cert && [[ "${PHANTOM_SIGN_SETUP:-0}" == 1 ]]; then
   /bin/zsh "$SELF" --setup || echo "warning: creating the '$ID' certificate failed (reason above)" >&2
 fi
