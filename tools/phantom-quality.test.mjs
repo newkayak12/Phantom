@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { changedFiles, check, syntaxCommand } from './phantom-quality.mjs';
 
@@ -78,6 +79,22 @@ test('uses the common ancestor when a target branch has advanced', t => {
 test('rejects missing base refs instead of silently checking nothing', t => {
   const repo = repository(t);
   assert.throws(() => check(repo.cwd, 'missing-base'));
+});
+
+test('CLI reports successful checks, invalid arguments and unavailable history', t => {
+  const repo = repository(t);
+  repo.write('new.mjs', 'export const value = 1;\n');
+  const runner = fileURLToPath(new URL('./phantom-quality.mjs', import.meta.url));
+  const run = (...args) => spawnSync(process.execPath, [runner, ...args], { cwd: repo.cwd, encoding: 'utf8' });
+  const success = run('--base', repo.base);
+  assert.equal(success.status, 0, success.stderr);
+  assert.match(success.stdout, /1 changed files, 1 syntax\/lint checks/);
+  const invalid = run('--unknown');
+  assert.equal(invalid.status, 2);
+  assert.match(invalid.stderr, /Usage:/);
+  const missing = run('--base', 'unavailable-history');
+  assert.equal(missing.status, 2);
+  assert.match(missing.stderr, /Fetch the base commit/);
 });
 
 test('skips symlinks and preserves filenames as command arguments', t => {

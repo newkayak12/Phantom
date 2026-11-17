@@ -34,6 +34,7 @@
 - Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c, PR #2).
 
 ### 빌드·배포·서명
+- 품질 도구의 실제 CLI 성공·잘못된 옵션·누락된 기준 이력 경로를 회귀 테스트로 검증한다 (PR #9).
 - Cloud가 포함 패턴도 무시하는 것을 실제 재실행에서 확인해, 분석 직전 sparse checkout으로 포크 소스만 남기도록 범위 제한을 보강했다 (PR #9).
 - Codecov 업로더 서명 키 변경에 대응한 공식 Action v7.1.1로 갱신했다. 서명 검증은 유지한다 (PR #9).
 - SonarQube Cloud가 `sonar.sources`를 무시하는 분석 모드에서도 포크 소스만 검사하도록 포함 패턴을 명시했다. 실제 첫 분석이 업스트림 전체를 읽다가 메모리 부족으로 실패한 데 따른 수정이다 (PR #9).
