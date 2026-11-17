@@ -509,7 +509,7 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `.idea/modules.xml`, `*.iml` | 생성 파일이 아니다. 원본이다(`AGENTS.md`). 손으로 합친 뒤 위 명령으로 Bazel 파일을 다시 만든다 | - |
 | `platform/built-in-server/api-dump-unreviewed.txt` | 다시 만드는 명령은 확인하지 못했다(`tools/apiDump/` 디렉터리는 있음) | - |
 
-`AGENTS.md`는 2026-11-12에 `build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다. 옛 경로 `./build/jpsModelToBazel.cmd`는 이 트리에 없는데도 `.ai/guide.md:30`, `.ai/tool-permissions.json:40`, `.claude/skills`와 `.agents/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module에 남아 있다. Phantom 커밋이 이 명령으로 Bazel 파일을 만들었는지는 히스토리에서 확인할 수 없다.
+`AGENTS.md`는 2026-11-12에 `build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다. 옛 경로 `./build/jpsModelToBazel.cmd`는 이 트리에 없는데도 `.ai/guide.md`, `.ai/tool-permissions.json`, `.claude/skills`와 `.agents/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module 등을 가리키고 있었다. 303c4a933a가 이들을 `build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(생성기가 이 포크에서 도는지는 여전히 미확인). Phantom 커밋이 이 명령으로 Bazel 파일을 만들었는지는 히스토리에서 확인할 수 없다.
 
 ## 7. README와 어긋나는 점
 

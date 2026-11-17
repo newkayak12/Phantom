@@ -414,7 +414,8 @@ function buildUpdatePrompt(g, repoRoot) {
     `  3. Refresh the \`<sha256sum>\` from https://repo1.maven.org/maven2/${groupPath}/${g.artifactId}/${g.latest}/${g.artifactId}-${g.latest}.jar.sha256`,
     ``,
     `Preserve the existing iml formatting (attribute order, indentation, no trailing newline changes).`,
-    `After editing, run \`./build/jpsModelToBazel.cmd\` to regenerate BUILD.bazel files.`,
+    // phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have
+    `After editing, run \`./build/jpsModelToBazelCommunityOnly.cmd\` to regenerate BUILD.bazel files.`,
   ].join("\n")
 }
 
