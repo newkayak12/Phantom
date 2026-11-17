@@ -27,7 +27,7 @@ build="$(cat out/phantom-build-number)"          # PH-261018.2
 day="${build#PH-}"; day="${day%%.*}"; n="${build##*.}"
 version="${day:0:2}.${day:2:2}.${day:4:2}"
 tag="v$version.$n"
-dmg="out/phantom-idea/artifacts/phantom-idea-$day.$n-aarch64.dmg"
+dmg="out/phantom-idea/artifacts/phantom-$day.$n-aarch64.dmg"
 [[ -f "$dmg" ]] || { echo "no $dmg"; exit 1; }
 
 # The DMG must hold an intact app that reports this build
@@ -46,8 +46,8 @@ hdiutil detach "$mnt" -quiet; trap - EXIT; rmdir "$mnt"
 # Windows x64, when phantom-build.sh built it: an NSIS installer, and a zip whose product-info.json reports this
 # version and platform build (the Windows files carry no PH- number)
 assets=("$dmg")
-exe="out/phantom-idea/artifacts/phantom-idea-$day.$n.exe"
-zip="out/phantom-idea/artifacts/phantom-idea-$day.$n.win.zip"
+exe="out/phantom-idea/artifacts/phantom-$day.$n.exe"
+zip="out/phantom-idea/artifacts/phantom-$day.$n.win.zip"
 if [[ -f "$exe" || -f "$zip" ]]; then
   file "$exe" | grep -q "Nullsoft Installer"
   info="$(unzip -p "$zip" product-info.json)"

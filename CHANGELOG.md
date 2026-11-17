@@ -18,6 +18,9 @@
 ### 브랜딩·버전
 - 제품 이름을 Phantom IDEA에서 Phantom으로 바꿨다(IntelliJ IDEA 상표와 혼동을 피하려고). 앱은 `Phantom.app`, Windows 이름과 설치 폴더는 `Phantom`, 스플래시(`phantom_logo*.png`, `compose.swift splash phantom-white.png`로 다시 만듦)와 DMG 배경의 글자도 Phantom이다. 설정이 이어지도록 번들 ID `dev.phantom.idea`, 설정 폴더 이름 `PhantomIDEA`, 산출물 이름 `phantom-idea-*`는 그대로 둔다. `phantom-install.sh`는 기본 경로에서 `Phantom.app`이 아직 없고 `/Applications/Phantom IDEA.app`이 있으면 그 앱을 종료하고 새 앱으로 바꾼 뒤 지운다. 이 변경 이력의 이전 항목은 당시 이름 그대로 둔다.
 - 실행 파일 이름을 `idea`에서 `phantom`으로 바꿨다(`baseFileName`, `IdeaApplicationInfo.xml`의 `script`). 그래서 `Contents/MacOS/phantom`, 번들 `bin/phantom.vmoptions`, 사용자 설정의 `phantom.vmoptions`·`phantom.jdk`, 환경 변수 `PHANTOM_VM_OPTIONS`·`PHANTOM_PROPERTIES`·`PHANTOM_JDK`가 된다. `phantom-install.sh`는 설정 폴더의 `idea.vmoptions`·`idea.jdk`를 새 이름 파일이 없을 때 한 번 복사하고, 교체할 앱이 아직 `MacOS/idea`로 떠 있어도 찾아 종료한다. DMG를 직접 설치하면 이 복사가 없어 기존 `idea.vmoptions`가 적용되지 않는다. 소개 문구(motto)는 "Built on the open-source IntelliJ Platform"으로 바꾸고 스플래시를 다시 만들었다.
+- 산출물 이름을 `phantom-idea-<YYMMDD>.<N>`에서 `phantom-<YYMMDD>.<N>`으로 바꿨다(DMG, exe, win.zip; `getBaseArtifactName`). Linux 루트 폴더도 `phantom`이다. 출력 폴더 `out/phantom-idea`와 설정 폴더 `PhantomIDEA`는 그대로 둔다. `phantom-install.sh`와 `phantom-build.sh`의 정리 단계는 `phantom-*` 패턴이라 예전 이름의 DMG도 찾고 지운다.
+- `NOTICE.txt`에 GPL 2.0 + Classpath Exception 구성 요소(JetBrains Runtime, jb-jdi, sa-jdwp, java-compatibility)의 소스 위치와, 요청하면 3년 동안 소스 사본을 제공한다는 서면 제안을 넣었다. 바이너리 배포에 GPLv2 3조가 요구하는 것이다. JBR 소스 태그는 `jbr-release-<runtimeBuild>`이다.
+- 수정한 원본 파일 중 표시가 없던 두 파일(`.idea/modules.xml`, `GithubBundle.properties`)에 `phantom-idea:` 표시를 달았다.
 - `LICENSE.txt`를 JetBrains Open-Source Build Terms에서 Apache License 2.0 원문으로 바꾸고, `NOTICE.txt`에 포크 사실과 JetBrains와 무관하다는 문구를 넣었다 (ff512ae2df).
 
 ### JetBrains 서버 통신

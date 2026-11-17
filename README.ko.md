@@ -79,8 +79,8 @@ Phantom는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-
 
 | 플랫폼 | 파일 |
 |---|---|
-| macOS, Apple Silicon | `phantom-idea-<YYMMDD>.<N>-aarch64.dmg` |
-| Windows x64 | `phantom-idea-<YYMMDD>.<N>.exe`(설치 프로그램) 또는 `.win.zip` |
+| macOS, Apple Silicon | `phantom-<YYMMDD>.<N>-aarch64.dmg` |
+| Windows x64 | `phantom-<YYMMDD>.<N>.exe`(설치 프로그램) 또는 `.win.zip` |
 
 > [!WARNING]
 > 공인된 기관의 서명이 없다. macOS 앱은 ad-hoc 서명만 되어 있고 공증(notarization)을 받지 않아서, 브라우저로 받은 DMG는 Gatekeeper가 막는다. Windows 파일은 서명하지 않았으므로 Windows가 알 수 없는 게시자라고 경고할 수 있다.
