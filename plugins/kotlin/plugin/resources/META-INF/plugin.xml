@@ -14,7 +14,7 @@
   <version>@snapshot@</version>
 
   <!--suppress PluginXmlValidity -->
-  <vendor url="https://github.com/newkayak12/Phantom-IDEA">Phantom</vendor>
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
 
   <dependencies>
     <!-- IJ/AS-DEPENDENCY-PLACEHOLDER -->
