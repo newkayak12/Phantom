@@ -1,6 +1,7 @@
 // Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.plugins.marketplace
 
+// phantom-idea: Phantom Marketplace rules (hides plugins Phantom cannot install)
 import dev.phantom.ide.plugins.PhantomMarketplace
 import com.intellij.diagnostic.LoadingState
 import com.intellij.ide.IdeBundle
@@ -400,6 +401,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
      * @return null if failed to download brokenPlugins from the Marketplace
      */
     fun getBrokenPlugins(currentBuild: BuildNumber): Map<PluginId, Set<String>>? {
+      // phantom-idea: no brokenPlugins.json download unless -Dphantom.jetbrains.services=true
       if (!jetBrainsServicesEnabled) return null
       LOG.debug { "Fetching broken plugins for build $currentBuild" }
       val brokenPlugins = try {
@@ -521,6 +523,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
 
               synchronized(this) {
                 LOG.debug { "Downloading new $file from Marketplace for $url" }
+                // phantom-idea: download to a .part file and move it in
                 // download next to the file and move it in: an interrupted download must not leave a truncated
                 // file behind that the next start (or a "not modified" answer) would read
                 val partial = file.resolveSibling("${file.fileName}.part")
@@ -569,6 +572,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
 
   @Throws(IOException::class)
   internal suspend fun getFeatures(param: Map<String, String>): List<FeatureImpl> {
+    // phantom-idea: no plugin suggestions from JetBrains unless -Dphantom.jetbrains.services=true
     if (param.isEmpty() || !jetBrainsServicesEnabled) {
       return emptyList()
     }
@@ -610,6 +614,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   @RequiresBackgroundThread
   @JvmOverloads
   fun getMarketplacePlugins(indicator: ProgressIndicator? = null): Set<PluginId> {
+    // phantom-idea: no Marketplace plugin id list download unless -Dphantom.jetbrains.services=true
     if (!jetBrainsServicesEnabled) return emptySet()
     try {
       return readOrUpdateFile(
@@ -622,6 +627,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
     }
     catch (e: JacksonException) {
       LOG.infoOrDebug("Cannot parse plugins from Marketplace (corrupted or truncated response)", e)
+      // phantom-idea: drop a truncated or corrupted cache so the next request downloads it again
       dropCachedFile(Path.of(PathManager.getPluginTempPath(), MarketplaceUrls.FULL_PLUGINS_XML_IDS_FILENAME))
       return emptySet()
     }
@@ -647,6 +653,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
     catch (_: IOException) {
     }
     catch (e: JacksonException) {
+      // phantom-idea: an unreadable cached id list no longer fails startup
       // a truncated or corrupted cache: drop it with its ETag so the next request downloads it again
       LOG.info("Dropping unreadable $pluginXmlIdsFile: ${e.message}")
       dropCachedFile(pluginXmlIdsFile)
@@ -696,6 +703,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
       .mapNotNull {
         val model = it.toPluginUiModel()
 
+        // phantom-idea: production builds hide Marketplace plugins Phantom cannot install and plugins JetBrains publishes
         if (hideUninstallable && !PhantomMarketplace.isInstallable(it.isPaid, it.nearestUpdate?.compatible != false)) return@mapNotNull null
         if (hideUninstallable && PhantomMarketplace.isJetBrainsPlugin(it.organization)) return@mapNotNull null
         if (it.externalUpdateId != null) return@mapNotNull model
@@ -933,6 +941,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   }
 
   private fun schedulePluginIdsUpdate() {
+    // phantom-idea: no periodic plugin id list refresh unless -Dphantom.jetbrains.services=true
     if (!jetBrainsServicesEnabled) return
     coroutineScope.launch {
       delay(30.seconds)
@@ -1105,6 +1114,7 @@ private fun loadETagForFile(file: Path): String {
   return NO_ETAG
 }
 
+// phantom-idea: added for the corrupted-cache handling above
 private fun dropCachedFile(file: Path) {
   try {
     Files.deleteIfExists(file)

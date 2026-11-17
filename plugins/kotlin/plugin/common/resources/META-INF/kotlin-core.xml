@@ -170,6 +170,7 @@
 
     <projectPathMacroContributor implementation="org.jetbrains.kotlin.idea.macros.KotlinBundledPathMacroContributor"/>
 
+    <!-- phantom-idea: removed KotlinPluginUpdateCheckerStartActivity (it called plugins.jetbrains.com when a .kt file was edited) -->
     <postStartupActivity implementation="org.jetbrains.kotlin.idea.macros.KotlinBundledUsageDetector$MyStartupActivity"/>
     <postStartupActivity implementation="org.jetbrains.kotlin.idea.macros.KotlinBundledRefresher"/>
 

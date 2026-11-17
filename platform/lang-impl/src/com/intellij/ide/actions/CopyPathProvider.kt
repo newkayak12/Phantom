@@ -146,6 +146,7 @@ class CopySourceRootPathProvider : DumbAwareCopyPathProvider() {
       VfsUtilCore.getRelativePath(virtualFile, ProjectFileIndex.getInstance(project).getSourceRootForFile(virtualFile) ?: return null)
     }
 }
+// phantom-idea: removed CopyTBXReferenceProvider (the Copy Toolbox Reference action; Toolbox App integration dropped)
 
 @ApiStatus.Internal
 class CopyFileNameProvider : DumbAwareCopyPathProvider() {

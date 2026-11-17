@@ -81,6 +81,7 @@ object StorageDiagnosticData {
 
   @JvmStatic
   fun startPeriodicDumping() {
+    // phantom-idea: no periodic storage dumps unless -Dintellij.storage.diagnostics.dump=true
     if (!ENABLED) return
     setupReportingToOpenTelemetry()
 
@@ -96,6 +97,7 @@ object StorageDiagnosticData {
 
   @JvmStatic
   fun dumpOnShutdown() {
+    // phantom-idea: no storage dump on shutdown unless -Dintellij.storage.diagnostics.dump=true
     if (!ENABLED) return
     //Since we know it is a shutdown -> cancel regular stats dumping:
     val regularDumpHandleLocalCopy = regularDumpHandle

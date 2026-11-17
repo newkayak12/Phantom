@@ -11,6 +11,7 @@ import com.intellij.grazie.icons.GrazieIcons
 import com.intellij.grazie.utils.catching
 import com.intellij.ide.Region
 import com.intellij.ide.RegionSettings
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable

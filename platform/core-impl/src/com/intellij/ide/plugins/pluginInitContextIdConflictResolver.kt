@@ -25,6 +25,7 @@ fun PluginInitializationContext.resolveIdConflicts(
     ?.let { return it }
   // slow path: there are conflicts
   val toExclude = HashSet<PluginMainDescriptor>()
+  // phantom-idea: plugins replaced by an alias-keeping plugin are excluded first; the remaining id conflicts are resolved as upstream
   compatiblePlugins.excludeReplacedPlugins(essentialPlugins) { plugin, reason ->
     onPluginExcluded(plugin, reason)
     toExclude.add(plugin)

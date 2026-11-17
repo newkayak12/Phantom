@@ -3,6 +3,7 @@ package training.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.RecentProjectsManagerBase
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.internal.statistic.local.ActionsLocalSummary
 import com.intellij.notification.Notification

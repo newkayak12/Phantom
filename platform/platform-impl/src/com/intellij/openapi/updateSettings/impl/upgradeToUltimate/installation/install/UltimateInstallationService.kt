@@ -39,6 +39,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
+// phantom-idea: removed the java.net.http imports and the Toolbox install URL and origin constants (Try Ultimate through Toolbox App dropped)
 import java.nio.file.Path
 import javax.swing.Icon
 
@@ -87,6 +88,7 @@ internal class UltimateInstallationService(
     }
   }
 
+  // phantom-idea: no install through Toolbox App (registry ide.try.ultimate.automatic.installation.use.toolbox); always the regular install
   private suspend fun tryToInstall(suggestedIde: SuggestedIde, build: BuildInfo, pluginId: PluginId?): Boolean =
     tryToInstall(build, pluginId, suggestedIde)
 
