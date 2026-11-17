@@ -1,6 +1,6 @@
-# Phantom IDEA 포크 델타
+# Phantom 포크 델타
 
-- 목적: Phantom IDEA가 업스트림 intellij-community와 어디서 어떻게 다른지 적는다. 이 포크를 안전하게 고치고 새 업스트림 태그를 병합할 때 본다.
+- 목적: Phantom가 업스트림 intellij-community와 어디서 어떻게 다른지 적는다. 이 포크를 안전하게 고치고 새 업스트림 태그를 병합할 때 본다.
 - 기준 커밋: ea745003d1 (업스트림 기준 d2faebf601 = idea/262.10968.63)
 - 작성일: 2026-11-16
 
@@ -94,14 +94,14 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | 파일:행 (HEAD) | 패치 | 커밋 |
 |---|---|---|
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:2` | `<version eap="false" major="0" minor="0.0"/>` 자리표시자와 `phantom-idea` 주석. 이전에는 `<version major="26" minor="10.27"/>`를 `phantom-build.sh`가 sed로 빌드마다 다시 썼다(fc05eddc04, bf2b90f700). 지금은 추적 파일을 고치지 않는다 | fc05eddc04, bf2b90f700, 048852ca23 |
-| `community-resources/resources/idea/IdeaApplicationInfo.xml:3,5-8` | 회사 Phantom, 로고·아이콘 `phantom*.svg`, 이름 Phantom IDEA | 1e0d4353f7 |
+| `community-resources/resources/idea/IdeaApplicationInfo.xml:3,5-8` | 회사 Phantom, 로고·아이콘 `phantom*.svg`, 이름 Phantom | 1e0d4353f7 |
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:10` | `<default-laf light="Phantom Light" dark="Phantom Dark"/>` | a91f9ef7e8 |
 | `build.txt:1` | `262.10968.SNAPSHOT` → `262.SNAPSHOT` | e8ef2fd569 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:222` | 설정 폴더 선택자를 `PhantomIDEA`로 고정 | fc05eddc04 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:225-227` | 산출물 이름 `phantom-idea-<…>`. `phantom.build.number`가 있으면 그 값을 쓴다 | ae2a766191 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:229` | 출력 폴더 `phantom-idea` | 1e0d4353f7 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:308-310` | Windows 이름 Phantom IDEA. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제(표식 `:308`) | 1e0d4353f7, d0eab60d1b |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:320,323,325,341` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom IDEA.app`, Linux 폴더 `phantom-idea`(표식 `:319`, `:340`) | 1e0d4353f7 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:308-310` | Windows 이름 Phantom. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제(표식 `:308`) | 1e0d4353f7, d0eab60d1b |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:320,323,325,341` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom.app`, Linux 폴더 `phantom-idea`(표식 `:319`, `:340`) | 1e0d4353f7 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:145-147` | 버전 major/minor가 빌드 브랜치와 같아야 한다는 검사를 "major가 비어 있지 않음"으로 완화 | e8ef2fd569 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:170-175` | `phantom.build.number`가 있으면 `<build number>`를 Phantom 번호로 바꾸고 플랫폼 빌드를 `apiVersion`에 둔다 | ae2a766191 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:71-75` | `majorVersion`, `minorVersion`을 속성 `phantom.version.major/minor`에서 먼저 읽고 없으면 `applicationInfoOverride`, XML 순 | 048852ca23 |
@@ -115,7 +115,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `plugins/ide-startup/importSettings/src/com/intellij/ide/startup/importSettings/jb/JbImportServiceImpl.kt:310-312` | 설정이 `.../Phantom` 아래에 있으므로 옆의 `JetBrains` 폴더도 가져오기 대상으로 본다 | 048d85af98 |
 | `build/idea-community-images/**` (바이너리 10개), `community-resources/resources/phantom*.svg`, `phantom_logo*.png`, `community-resources/phantom-brand-src/` | 앱 아이콘, DMG 배경, Windows 설치 이미지. 원본 그림과 생성 스크립트 `compose.swift` | 1e0d4353f7, 5a12a1a666, 9ad40b0e37, c8cb99fb6f, d0eab60d1b |
 
-검증: 빌드한 `Phantom IDEA.app/Contents/Info.plist`의 `CFBundleIdentifier`가 `dev.phantom.idea`, `CFBundleVersion`이 `PH-…`인지 본다. `product-info.json`의 `version`이 `YY.MM.DD`이고 About 대화상자도 같은 값인지, 그리고 빌드 뒤 `git status`에 `IdeaApplicationInfo.xml`이 없는지 본다(048852ca23, 빌드 전이라 확인하지 못했다). 앱 안 `product-info.json`의 build가 `262.<YYMMDD>`인지 본다(빌드가 필요하다).
+검증: 빌드한 `Phantom.app/Contents/Info.plist`의 `CFBundleIdentifier`가 `dev.phantom.idea`, `CFBundleVersion`이 `PH-…`인지 본다. `product-info.json`의 `version`이 `YY.MM.DD`이고 About 대화상자도 같은 값인지, 그리고 빌드 뒤 `git status`에 `IdeaApplicationInfo.xml`이 없는지 본다(048852ca23, 빌드 전이라 확인하지 못했다). 앱 안 `product-info.json`의 build가 `262.<YYMMDD>`인지 본다(빌드가 필요하다).
 
 ### 3.2 번들 구성
 
@@ -213,7 +213,7 @@ Phantom-plugins에서 빌드한 판을 번들에 넣을 때는 이 네 곳이 �
 
 주의(소스와 배포 앱): Phantom-plugins 판으로 바꾼 16개의 원본 소스는 이 리포에 남아 있고, 그중 여러 곳에 포크 패치가 있다(`plugins/github`의 `gh`·디바이스 플로 로그인과 `GithubBundle` 문구, `plugins/grazie`의 Grazie Cloud 게이트, `plugins/terminal`의 Junie 삭제, `plugins/yaml`의 "Try Ultimate"·OpenAPI/OpenRewrite 제안 삭제, `plugins/sh`의 ShellCheck 다운로드 경로. 3.3절). 번들은 이제 이 소스가 아니라 Phantom-plugins가 빌드한 `out/phantom-plugins/<dir>`를 쓴다. 따라서 이 리포의 `plugins/<이름>`을 고쳐도 Phantom-plugins가 이 리포의 소스로 빌드하지 않는 한 배포 앱은 바뀌지 않고, 위 패치들이 배포 앱에 들어 있는지도 그 빌드에 달렸다. 이 문서를 쓸 때 Phantom-plugins 저장소를 볼 수 없어서 어느 쪽인지 확인하지 못했다. Kotlin은 다르다: 이 리포의 빌드가 `plugins/kotlin` 소스로 zip을 만든다.
 
-검증: 빌드한 앱의 `Contents/plugins/` 목록에 위 31개 모듈의 플러그인이 없고 `phantom-sync`, `phantom-theme`과 `PHANTOM_PLUGINS_BUNDLED`의 17개 디렉터리가 있는지 본다. `out/phantom-idea/artifacts/*-plugins/`에 `Kotlin-*.zip`이 있는지 본다. `python3 phantom-bench-report.py static "/Applications/Phantom IDEA.app"`가 번들 플러그인 수와 크기를 `docs/phantom/bench/static-baseline.json`과 비교한다(4b3ffd9498). 9229667cc7 이후 빌드한 앱은 이 문서를 쓰며 열어 보지 않았다(v26.11.13.1 릴리스 앱 포함).
+검증: 빌드한 앱의 `Contents/plugins/` 목록에 위 31개 모듈의 플러그인이 없고 `phantom-sync`, `phantom-theme`과 `PHANTOM_PLUGINS_BUNDLED`의 17개 디렉터리가 있는지 본다. `out/phantom-idea/artifacts/*-plugins/`에 `Kotlin-*.zip`이 있는지 본다. `python3 phantom-bench-report.py static "/Applications/Phantom.app"`가 번들 플러그인 수와 크기를 `docs/phantom/bench/static-baseline.json`과 비교한다(4b3ffd9498). 9229667cc7 이후 빌드한 앱은 이 문서를 쓰며 열어 보지 않았다(v26.11.13.1 릴리스 앱 포함).
 
 ### 3.3 JetBrains 네트워크 호출과 텔레메트리
 
@@ -361,7 +361,7 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42` | "운영 모드에서 macOS면 NSIS 건너뜀" 삭제 | d0eab60d1b |
 | `phantom-build.sh` (신규) | 날짜로 구한 표시 버전·빌드 번호를 `installers.cmd`에 `-D`로 넘김(`:15`, `:45-46`, aarch64. 표시 버전은 추적 파일을 고치지 않고 `-Dphantom.version.major/minor`, 048852ca23, 빌드 전. v26.11.13.1의 태그 커밋에는 7fe0ab9436이 손으로 쓴 `26` / `11.13`이 추적 파일에 있었다), Phantom-plugins 체크아웃(`$root/../Phantom-plugins` 또는 `PHANTOM_PLUGINS_REPO`, `:32`)에서 플러그인 17개(`:33`)를 `./gradlew --no-configuration-cache -q -PplatformFromRepository=true :<dir>:buildPlugin`으로 빌드해 `out/phantom-plugins`에 풂(`:29-44`, 체크아웃이나 zip이 없으면 `exit 1`, `:34`, `:42`, 9229667cc7), Windows x64 교차 빌드(`:58-68`), 중간 산출물 삭제 | fc05eddc04 외 4개, 048852ca23, 9229667cc7 |
 | `phantom-release.sh` (신규) | 빌드, DMG 검사, 태그 push, GitHub 릴리스(초안 후 공개). Kotlin zip 확인(`:59-63`)과 Phantom-plugins 저장소에 Kotlin 릴리스·`marketplace.json` 게시(`:81-122`). `origin`이 SSH 호스트 별칭이어도 저장소 이름을 뽑음(`:76`) | ae2a766191 외 5개, 9433fdbe0f, a9c5f07bd5, b5ba0196ab |
-| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom IDEA.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:52-70`) | a0c4e0d04a 외 5개, 256d3b35c3, b5a1bc773a, eff1276d6a |
+| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:52-70`) | a0c4e0d04a 외 5개, 256d3b35c3, b5a1bc773a, eff1276d6a |
 | `phantom-sign.sh` (신규) | 로컬 인증서 "Phantom Local"로 재서명 | e71672a6ab |
 | `.github/workflows/phantom-release.yml` (신규) | 셀프 호스티드 러너에서 수동 실행 릴리스. `notes` 입력 설명을 따옴표로 감싸 올바른 YAML로 고침(`:17`). 빌드 전에 Phantom-plugins를 `$GITHUB_WORKSPACE/../Phantom-plugins`에 클론하거나 `origin/main`으로 맞추는 단계(`:40-55`, 러너의 SSH 키 사용) | ae2a766191, 25be81d8e6, d0eab60d1b, 60ea243e02 |
 | `tools/phantom-runner-setup.sh` (신규) | 셀프 호스티드 러너 등록 | ae2a766191 |
@@ -448,7 +448,7 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `PHANTOM_WINDOWS` | `phantom-build.sh:58` | 1 | 0이면 DMG만 빌드하고 Windows 교차 빌드를 건너뛴다 |
 | `PHANTOM_BUILD_SEQ` | `phantom-build.sh:19-20`, `phantom-release.sh:19-22` | 미설정 | 그날 빌드 순번 N을 고정한다. 없으면 `out/phantom-build-seq`에서 계산 |
 | `PHANTOM_PLUGINS_REPO` | `phantom-build.sh:32`, `phantom-release.sh:62` | `$root/../Phantom-plugins`(이 체크아웃 옆) | 번들할 플러그인 17개를 빌드할 Phantom-plugins 체크아웃. `settings.gradle.kts`가 없으면 빌드가 멈춘다(`phantom-build.sh:34`). 릴리스는 같은 체크아웃에 Kotlin을 게시하며 `.phantom/marketplace.json`이 없으면 멈춘다(`phantom-release.sh:63`). 9229667cc7, 9433fdbe0f |
-| `PHANTOM_APP` | `phantom-install.sh:22`, `phantom-bench.sh:21`, `phantom-sign.sh`(인자가 먼저) | `/Applications/Phantom IDEA.app` | 설치·측정·서명할 앱. 설치는 `.app`으로 끝나는 절대 경로만 받고(`phantom-install.sh:23`) 그 경로에서 실행 중인 Phantom만 끈다. 256d3b35c3, b5a1bc773a, eff1276d6a |
+| `PHANTOM_APP` | `phantom-install.sh:22`, `phantom-bench.sh:21`, `phantom-sign.sh`(인자가 먼저) | `/Applications/Phantom.app` | 설치·측정·서명할 앱. 설치는 `.app`으로 끝나는 절대 경로만 받고(`phantom-install.sh:23`) 그 경로에서 실행 중인 Phantom만 끈다. 256d3b35c3, b5a1bc773a, eff1276d6a |
 | `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE` | `phantom-bench.sh:22`, `:28` | `$HOME/Library/Application Support/Phantom/PhantomIDEA`, `$HOME/projects/private/prototype-reservation-system` | 벤치에 복사할 사용자 설정, 열 프로젝트(`--fixture`가 먼저, 상대 경로는 부른 폴더 기준). 256d3b35c3, ecf939da71 |
 | `PHANTOM_SIGN_SETUP`, `PHANTOM_SIGN_OPTIONAL` | `phantom-sign.sh`, `phantom-install.sh:81` | 설치에서는 `1`, `1` | 인증서가 없을 때 먼저 만들지, 서명 실패를 경고로 끝낼지(BUILD.md 5장). 2aa424a169, 9e69bba61f |
 | `PHANTOM_FOOJAY_E2E` | `platform/lang-impl/testSources/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkListTest.kt:98` | 미설정 | `true`면 실제 JDK를 내려받는 E2E 테스트를 실행 |

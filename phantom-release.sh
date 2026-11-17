@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds Phantom IDEA and publishes the Apple silicon DMG and the Windows x64 installer and zip as a GitHub release
+# Builds Phantom and publishes the Apple silicon DMG and the Windows x64 installer and zip as a GitHub release
 # of this repository.
 #   ./phantom-release.sh               build with phantom-build.sh, check the app, release
 #   ./phantom-release.sh --no-build    release the DMG (and Windows files, if built) phantom-build.sh produced last
@@ -34,7 +34,7 @@ dmg="out/phantom-idea/artifacts/phantom-idea-$day.$n-aarch64.dmg"
 mnt="$(mktemp -d)"
 hdiutil attach -nobrowse -readonly -mountpoint "$mnt" "$dmg" -quiet
 trap 'hdiutil detach "$mnt" -quiet || true; rmdir "$mnt" 2>/dev/null || true' EXIT
-app="$mnt/Phantom IDEA.app"
+app="$mnt/Phantom.app"
 # the build signs only the launcher, ad hoc and without sealed resources, so a strict `codesign --verify` cannot pass;
 # require that signature and a launcher macOS will start
 codesign -d "$app/Contents/MacOS/idea" 2>/dev/null
@@ -75,7 +75,7 @@ git push -q -f origin "refs/tags/$tag"
 # this checkout is a fork of intellij-community; name the repository, or gh picks the upstream
 repo="$(git remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
 # as a draft first: the release only appears once every file (the DMG is ~800 MB) has finished uploading
-gh release create "$tag" "${assets[@]}" -R "$repo" --verify-tag --draft --title "Phantom IDEA $version ($build)" --notes "$NOTES"
+gh release create "$tag" "${assets[@]}" -R "$repo" --verify-tag --draft --title "Phantom $version ($build)" --notes "$NOTES"
 gh release edit "$tag" -R "$repo" --draft=false
 
 # Kotlin for this platform build in the Phantom plugins repository: a release holding the zip, and the marketplace.json
@@ -95,7 +95,7 @@ if ! gh release view "$ktag" -R "$prepo" >/dev/null 2>&1; then
   git -C "$plugins_repo" push -q -f origin "refs/tags/$ktag"
   cp "$kotlin" "out/$kzip"
   gh release create "$ktag" "out/$kzip" -R "$prepo" --verify-tag --title "Kotlin $kversion for Phantom 262.$day" \
-    --notes "The IntelliJ Kotlin plugin built with Phantom IDEA $version ($build), for Phantom builds from 262.$day."
+    --notes "The IntelliJ Kotlin plugin built with Phantom $version ($build), for Phantom builds from 262.$day."
   rm -f "out/$kzip"
 fi
 KVERSION="$kversion" SINCE="262.$day" DOWNLOAD="$ktag/$kzip" python3 - "$plugins_repo/.phantom/marketplace.json" <<'PY'

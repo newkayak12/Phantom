@@ -1,6 +1,6 @@
-# Phantom IDEA 변경 이력
+# Phantom 변경 이력
 
-이 파일은 JetBrains intellij-community를 포크한 개인 프로젝트 Phantom IDEA의 변경 이력이다. 기준(base)은 upstream 태그 `idea/262.10968.63`이며, 루트 커밋 `d2faebf601`이 이 태그의 소스를 한 번에 가져온 것이다. 그 이후의 모든 커밋이 Phantom 변경이다.
+이 파일은 JetBrains intellij-community를 포크한 개인 프로젝트 Phantom의 변경 이력이다. 기준(base)은 upstream 태그 `idea/262.10968.63`이며, 루트 커밋 `d2faebf601`이 이 태그의 소스를 한 번에 가져온 것이다. 그 이후의 모든 커밋이 Phantom 변경이다.
 
 버전 표기는 두 가지다. 릴리스 태그는 `v<YY>.<MM>.<DD>.<N>` 형식이고, 빌드 번호는 `PH-<YYMMDD>.<N>` 형식이다. 플랫폼 빌드 `262.<YYMMDD>`는 내부 apiVersion과 번들 플러그인의 since/until-build로만 쓴다.
 
@@ -14,6 +14,10 @@
 - PR을 스쿼시 머지하거나 브랜치를 리베이스하면 브랜치 커밋의 해시는 main에 남지 않는다. 그 경우에도 PR 번호로 변경을 찾을 수 있다. 해시는 main에 있는 것(스쿼시 커밋)으로 고치고, 고칠 수 없으면 PR 번호만 남긴다.
 
 ## 미배포 (v26.11.13.1 이후)
+
+### 브랜딩·버전
+- 제품 이름을 Phantom IDEA에서 Phantom으로 바꿨다(IntelliJ IDEA 상표와 혼동을 피하려고). 앱은 `Phantom.app`, Windows 이름과 설치 폴더는 `Phantom`, 스플래시(`phantom_logo*.png`, `compose.swift splash phantom-white.png`로 다시 만듦)와 DMG 배경의 글자도 Phantom이다. 설정이 이어지도록 번들 ID `dev.phantom.idea`, 설정 폴더 이름 `PhantomIDEA`, 산출물 이름 `phantom-idea-*`, 실행 파일 `idea`는 그대로 둔다. `phantom-install.sh`는 기본 경로에서 `Phantom.app`이 아직 없고 `/Applications/Phantom IDEA.app`이 있으면 그 앱을 종료하고 새 앱으로 바꾼 뒤 지운다. 이 변경 이력의 이전 항목은 당시 이름 그대로 둔다.
+- `LICENSE.txt`를 JetBrains Open-Source Build Terms에서 Apache License 2.0 원문으로 바꾸고, `NOTICE.txt`에 포크 사실과 JetBrains와 무관하다는 문구를 넣었다 (ff512ae2df).
 
 ### JetBrains 서버 통신
 - 피드백 양식이 JetBrains로 보내던 것과 Tips of the Day 좋아요/싫어요를 막았다. 모든 피드백 양식이 거치는 `submitFeedback`(`GeneralFeedbackSubmit.kt`)이 `-Dphantom.jetbrains.services=true`가 아니면 요청도 지역 URL 매핑 조회도 없이 바로 돌아온다(콜백도 부르지 않으므로 블록 기반 대화상자는 감사 알림을 띄우지 않고, `LocalizationFeedbackDialog`는 알림을 건너뛴다). 레지스트리 `tips.of.the.day.feedback`의 기본값을 staging에서 nowhere로 바꾸고, 그 값이면 `TipPanel`이 좋아요/싫어요 줄을 숨긴다. 테스트 `training.ui.FeedbackSubmissionGateTest`(모듈 `intellij.featuresTrainer.tests`)를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). 이 커밋은 번들 밖 `featuresTrainer`의 `OnboardingFeedbackForm`이 띄우는 감사 알림을 건드리지 않았다 (6e71ed80c4, PR #2).

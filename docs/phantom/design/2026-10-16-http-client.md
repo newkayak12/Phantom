@@ -1,7 +1,7 @@
 # phantom-http: `.http` 파일용 HTTP Client 설계
 
 - 날짜: 2026-10-16
-- 대상: Phantom IDEA (intellij-community `idea/262.10968.63` 포크), Kotlin + Spring Boot + JPA + Gradle 백엔드 개발자
+- 대상: Phantom (intellij-community `idea/262.10968.63` 포크), Kotlin + Spring Boot + JPA + Gradle 백엔드 개발자
 - 상태: 설계 초안 (구현 전)
 - 표기: **[V]** = 이 저장소에서 경로·API가 있는지 직접 확인함, **[A]** = 가정 (공개 문서·일반 지식에 근거하고 아직 확인하지 않음), **[M]** = Ultimate 분석 노트의 측정값 인용
 
@@ -364,7 +364,7 @@ effort는 한 사람 기준 일(day)이다. 총 MVP ≈ **25일**.
 ### 5.2 사용자 프로젝트 수동 확인 (`~/orca/workspaces/prototype-reservation-system`)
 
 1. `compose.yaml`로 MySQL·Redis를 띄우고 `./gradlew :adapter-module:bootRun`으로 서버를 띄운다 **[A: 실행 모듈 이름]**.
-2. Phantom IDEA로 프로젝트를 연다. 첫 smart mode 이후 `idea.log`에서 `Invalidating all indexing flags`가 phantom-http 때문에 늘지 않았는지 본다(플러그인 끈 상태와 비교).
+2. Phantom로 프로젝트를 연다. 첫 smart mode 이후 `idea.log`에서 `Invalidating all indexing flags`가 phantom-http 때문에 늘지 않았는지 본다(플러그인 끈 상태와 비교).
 3. `GeneralUserSignUpController.signUp`에서 "Open in HTTP Client" → `http-client.env.json` 생성 제안을 수락 → `local` 환경 선택 → 실행 → 응답 `BooleanResponse` JSON 확인.
 4. 로그인 요청(auth-server 쪽)에 핸들러로 토큰을 저장하고, `CreateRestaurantController`의 multipart 요청에 `Authorization: Bearer {{token}}`을 넣어 실행한다. 서버 로그에 multipart 파트 `request`가 들어왔는지 본다.
 5. `.http`의 `/api/v1/holiday/{{id}}`에서 Ctrl+B → `CreateHolidayController.createHoliday`로 이동한다.
