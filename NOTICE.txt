@@ -21,7 +21,23 @@ Classpath Exception. Their complete corresponding source code is available at:
   jb-jdi: https://github.com/JetBrains/intellij-deps-jdi
   sa-jdwp: https://github.com/JetBrains/jdk-sa-jdwp
   java-compatibility: https://github.com/JetBrains/intellij-deps-java-compatibility
-On request, Phantom contributors provide a copy of that source code, at no more than the cost of making it, for three
+
+These components are under the GNU Lesser General Public License 2.1, the Mozilla Public License 2.0, the Eclipse
+Public License 1.0 or 2.0, or the Common Development and Distribution License 1.1, unmodified; their source code is
+available at:
+  LGPL 2.1: Trove4j (JetBrains's fork) https://github.com/JetBrains/intellij-deps-trove4j,
+    java-atk-wrapper https://github.com/JetBrains/intellij-deps-java-atk-wrapper,
+    swingx https://central.sonatype.com/artifact/org.swinglabs/swingx-core/1.6.2-2 (sources jar),
+    LanguageTool (in bundled plugins) https://github.com/JetBrains/languagetool
+  MPL 2.0: Rhino https://github.com/mozilla/rhino
+  EPL: Eclipse JDT Core https://github.com/eclipse-jdt/eclipse.jdt.core, LSP4J https://github.com/eclipse/lsp4j,
+    Xtext https://github.com/eclipse/xtext, MVStore https://github.com/h2database/h2database,
+    pty4j https://github.com/JetBrains/pty4j
+  CDDL 1.1: JAXB https://github.com/javaee/jaxb-v2, JavaBeans Activation Framework https://github.com/javaee/activation,
+    Common Annotations https://github.com/javaee/javax.annotation
+Versions are listed in third-party-libraries.html.
+
+For all components above, on request, Phantom contributors provide a copy of that source code, at no more than the cost of making it, for three
 years after the release that included it: open an issue at https://github.com/newkayak12/Phantom/issues.
 
 Phantom is not affiliated with, sponsored or endorsed by JetBrains s.r.o.
