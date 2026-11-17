@@ -2,6 +2,7 @@
 package com.intellij.stats.completion.sender
 
 import com.intellij.ide.ApplicationActivity
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.internal.statistic.utils.StatisticsUploadAssistant
 import com.intellij.openapi.application.ApplicationInfo

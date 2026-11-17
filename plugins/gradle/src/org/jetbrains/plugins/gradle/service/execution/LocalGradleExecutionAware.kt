@@ -4,6 +4,7 @@ package org.jetbrains.plugins.gradle.service.execution
 import com.intellij.execution.target.TargetEnvironmentConfiguration
 import com.intellij.execution.target.TargetEnvironmentsManager
 import com.intellij.openapi.application.ApplicationManager
+// phantom-idea: imports for compatibleGradleJvm (run Gradle on a supported JDK)
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.externalSystem.issue.BuildIssueException
@@ -19,6 +20,7 @@ import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.progress.util.ProgressIndicatorBase
 import com.intellij.openapi.progress.util.ProgressIndicatorListener
 import com.intellij.openapi.project.Project
+// phantom-idea: imports for compatibleGradleJvm (run Gradle on a supported JDK)
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.JdkUtil
@@ -27,6 +29,7 @@ import com.intellij.openapi.roots.ui.configuration.SdkLookupProvider.SdkInfo
 import com.intellij.openapi.util.io.toCanonicalPath
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.PathMapper
+// phantom-idea: imports for compatibleGradleJvm (run Gradle on a supported JDK)
 import com.intellij.util.lang.JavaVersion
 import org.gradle.util.GradleVersion
 import org.jetbrains.annotations.ApiStatus
@@ -121,6 +124,7 @@ class LocalGradleExecutionAware : GradleExecutionAware {
     val provider = getGradleJvmLookupProvider(project, projectSettings)
 
     val sdkInfo = provider.resolveGradleJvmInfo(project, projectSettings.externalProjectPath, projectSettings.gradleJvm)
+    // phantom-idea: a resolved Gradle JVM that the project's Gradle cannot run on is replaced by the newest supported registered JDK
     if (sdkInfo is SdkInfo.Resolved) return compatibleGradleJvm(projectSettings, sdkInfo)
 
     waitForGradleJvmResolving(provider, task, taskNotificationListener)

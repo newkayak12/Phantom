@@ -26,6 +26,7 @@ val IDEA_BUNDLED_PLUGINS: PersistentList<String> = DEFAULT_BUNDLED_PLUGINS + per
   "intellij.repository.search",
   "intellij.maven.plugin",
   "intellij.gradle.plugin",
+  // phantom-idea: removed intellij.android.gradle.declarative.lang.ide (Android dropped from the bundle; android.gradle.dsl stays for Gradle)
   "intellij.android.gradle.dsl",
   "intellij.gradle.java.plugin",
   "intellij.vcs.git",
@@ -55,6 +56,7 @@ val IDEA_BUNDLED_PLUGINS: PersistentList<String> = DEFAULT_BUNDLED_PLUGINS + per
   "intellij.keymap.visualStudio",
   "intellij.keymap.netbeans",
   "intellij.performanceTesting",
+  // phantom-idea: removed intellij.compose.ide.plugin (Android dropped from the bundle)
 )
 
 val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
@@ -65,6 +67,7 @@ val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
   "lib/util_rt.jar" to "1.8",
   "lib/util-8.jar" to "1.8",
   "lib/external-system-rt.jar" to "1.8",
+  // phantom-idea: coverage runtime at Phantom Code Coverage's path (plugins/coverage) instead of plugins/java-coverage
   "plugins/coverage/lib/java-coverage-rt.jar" to "1.8", // Phantom Code Coverage, bundled from Phantom-plugins
   "plugins/junit/lib/junit-rt.jar" to "1.8",
   "plugins/junit/lib/junit5-rt.jar" to "1.8",

@@ -3,6 +3,7 @@ package org.jetbrains.plugins.github.authentication.ui
 
 import com.intellij.collaboration.messages.CollaborationToolsBundle
 import com.intellij.ide.BrowserUtil.browse
+// phantom-idea: imports for the "From gh CLI" button below
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.ui.Messages
@@ -20,6 +21,7 @@ import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.api.executeSuspend
+// phantom-idea: import for the "From gh CLI" button below
 import org.jetbrains.plugins.github.authentication.GHDeviceFlow
 import org.jetbrains.plugins.github.authentication.util.GHSecurityUtil
 import org.jetbrains.plugins.github.authentication.util.GHSecurityUtil.buildNewTokenUrl
@@ -50,6 +52,7 @@ internal class GHTokenCredentialsUi(
         .resizableColumn()
       button(message("credentials.button.generate")) { browseNewTokenUrl() }
         .enabledIf(serverTextField.serverValid)
+      // phantom-idea: "From gh CLI" button fills in the token of an existing gh auth login
       button(message("phantom.credentials.button.from.gh.cli")) { fillFromGhCli() }
         .enabledIf(serverTextField.serverValid)
     }

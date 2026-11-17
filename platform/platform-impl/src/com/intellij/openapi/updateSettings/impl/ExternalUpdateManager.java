@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 /// Represents a tool which manages IDE updates instead of a built-in update engine.
 public enum ExternalUpdateManager {
+  // phantom-idea: TOOLBOX is never detected (Toolbox App integration dropped); the Files/Path imports went with its detection
   /// Never detected (Phantom has no Toolbox App integration); kept for the Android plugin, which compares against it
   TOOLBOX("Toolbox App"),
   SNAP("Snap"),
@@ -25,6 +26,7 @@ public enum ExternalUpdateManager {
       toolName = name;
     }
     else {
+      // phantom-idea: comment reworded without the Toolbox App history; behavior unchanged
       // 'ide.no.platform.update' names the tool, or is 'true' when it is not named
       name = System.getProperty("ide.no.platform.update");
       toolName = "true".equalsIgnoreCase(name) ? "(unknown)" : name;
@@ -35,6 +37,7 @@ public enum ExternalUpdateManager {
   public static final @Nullable ExternalUpdateManager ACTUAL;
   static {
     var home = PathManager.getHomeDir().toString().replace('\\', '/');
+    // phantom-idea: no Toolbox App detection (Toolbox apps folder or ide.managed.by.toolbox)
     if (OS.CURRENT == OS.Linux && (home.startsWith("/snap/") || home.startsWith("/var/lib/snapd/snap/"))) ACTUAL = SNAP;
     else if (OS.CURRENT == OS.Linux && EnvironmentUtil.getValue("FLATPAK_ID") != null) ACTUAL = FLATPAK;
     else if (OS.CURRENT != OS.Windows && home.contains("/homebrew/")) ACTUAL = BREW;
@@ -46,6 +49,7 @@ public enum ExternalUpdateManager {
   /// Returns `true` when the update manager takes care of creating XDG desktop entries.
   @ApiStatus.Internal
   public static boolean isCreatingDesktopEntries() {
+    // phantom-idea: TOOLBOX removed from the managers that create desktop entries
     return ACTUAL == SNAP || ACTUAL == FLATPAK;
   }
 }

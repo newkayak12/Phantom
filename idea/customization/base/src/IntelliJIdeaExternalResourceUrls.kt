@@ -1,6 +1,7 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.idea.customization.base
 
+// phantom-idea: SystemInfoRt import replaced by FeedbackReporter for the Help menu overrides below
 import com.intellij.platform.ide.customization.FeedbackReporter
 import com.intellij.platform.ide.impl.customization.BaseJetBrainsExternalProductResourceUrls
 import com.intellij.util.Url

@@ -19,12 +19,14 @@ internal class TerminalAgentTest : BasePlatformTestCase() {
   fun `default provider returns built-in agent terminals in expected order`() {
     val terminalAgents = DefaultTerminalAgentProvider().getTerminalAgents()
 
+    // phantom-idea: no Junie among the bundled agents (it installed from junie.jetbrains.com)
     assertThat(terminalAgents.map { it.agentKey.key }).containsExactly("claude_code", "codex")
   }
 
   @Test
   fun `default provider exposes bundled selector fields`() {
     val agentsByKey = DefaultTerminalAgentProvider().getTerminalAgents().associateBy { it.agentKey.key }
+    // phantom-idea: removed the Junie assertions (Junie is no longer a bundled agent)
     val codex = agentsByKey.getValue("codex")
     val claude = agentsByKey.getValue("claude_code")
 
@@ -41,6 +43,7 @@ internal class TerminalAgentTest : BasePlatformTestCase() {
     assertThat(claude.posixKnownLocationCandidates).containsExactly("\$HOME/.local/bin", "/usr/local/bin")
     assertThat(claude.windowsKnownLocationCandidates).containsExactly("\$HOME\\AppData\\Roaming\\npm", "\$HOME\\.local\\bin")
     assertThat(claude.windowsExecutableExtensions).containsExactly("exe", "bat", "cmd", "ps1")
+    // phantom-idea: removed the Junie location assertions
   }
 
   @Test
