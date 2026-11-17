@@ -124,7 +124,7 @@ case "splash":
       NSAttributedString(string: t, attributes: [.font: NSFont.systemFont(ofSize: sz * k, weight: weight), .foregroundColor: c])
         .draw(at: NSPoint(x: 48 * k, y: y * k))
     }
-    text("Phantom IDEA", 176, 46, .bold, NSColor(white: 0.07, alpha: 1))
+    text("Phantom", 176, 46, .bold, NSColor(white: 0.07, alpha: 1))
     text("A lighter IDE on the IntelliJ Platform", 146, 16, .regular, NSColor(white: 0.30, alpha: 1))
     text("Built from JetBrains/intellij-community (Apache 2.0)", 32, 11, .regular, NSColor(white: 0.45, alpha: 1))
   }

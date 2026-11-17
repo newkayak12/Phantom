@@ -386,7 +386,7 @@ EDT에서 PSI 조회나 파일 I/O를 하지 않는다. 플레임 그래프 `pai
 
 이 디렉터리는 worktree 여러 개(`docs-readme`, `feat-command-core`, `feat-contract`, `infro`)로 되어 있다 [V]. IDE에서는 그중 하나(예: `infro`)만 프로젝트로 연다.
 
-1. **기본 비용 없음**: Phantom IDEA를 두 플러그인 켬/끔으로 각각 3회 cold start. idea.log의 smart mode 시각과 시작 직후 90초 JFR을 비교한다. 두 플러그인 클래스가 시작 중 로드되지 않았는지 JFR 스택에서 `dev.phantom.profiler`/`dev.phantom.duplicates`를 검색한다(0건이 기대값).
+1. **기본 비용 없음**: Phantom를 두 플러그인 켬/끔으로 각각 3회 cold start. idea.log의 smart mode 시각과 시작 직후 90초 JFR을 비교한다. 두 플러그인 클래스가 시작 중 로드되지 않았는지 JFR 스택에서 `dev.phantom.profiler`/`dev.phantom.duplicates`를 검색한다(0건이 기대값).
 2. **프로파일링 시나리오**: Spring Boot 앱을 "Profile with JFR"로 띄우고 예약 생성 API를 `http` 클라이언트나 `curl`로 100회 호출 → Stop and Open. 확인: (a) 플레임 그래프에서 컨트롤러 → 서비스 → Repository → Hibernate → JDBC 경로가 보인다, (b) "내 코드만"으로 프로젝트 프레임만 남는다, (c) 서비스 메서드 프레임 더블클릭으로 Kotlin 소스 줄로 간다, (d) Allocations로 바꾸면 Jackson/Hibernate 할당이 상위에 보인다.
 3. **async-profiler**: 같은 시나리오를 async-profiler 실행기로 반복. Wall-clock에서 DB 대기 시간(소켓 read)이 보이는지 확인한다.
 4. **Gradle 위임**: Settings > Build Tools > Gradle에서 "Build and run using: Gradle"(기본)과 "IntelliJ IDEA"를 바꿔 가며 2번 반복.

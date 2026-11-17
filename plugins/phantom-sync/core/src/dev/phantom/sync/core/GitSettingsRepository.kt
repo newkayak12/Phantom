@@ -1,4 +1,4 @@
-// Copyright 2026 Phantom IDEA contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2026 Phantom contributors. Use of this source code is governed by the Apache 2.0 license.
 package dev.phantom.sync.core
 
 import com.intellij.openapi.diagnostic.logger
@@ -98,7 +98,7 @@ class GitSettingsRepository(val url: String, private val workDir: Path, private 
   }
 
   private fun commitAndPush(message: String) {
-    git("-c", "user.name=${identity("user.name", "Phantom IDEA")}", "-c", "user.email=${identity("user.email", "phantom@localhost")}",
+    git("-c", "user.name=${identity("user.name", "Phantom")}", "-c", "user.email=${identity("user.email", "phantom@localhost")}",
         "commit", "-q", "-m", message)
     val push = run(listOf(gitExecutable(), "push", "--porcelain", "origin", "$branch:refs/heads/$branch"), workDir, failOnError = false)
     if (push.exitCode != 0) {
@@ -136,7 +136,7 @@ class GitSettingsRepository(val url: String, private val workDir: Path, private 
 
     fun gitExecutable(): String = listOf("/usr/bin/git", "/opt/homebrew/bin/git", "/usr/local/bin/git").firstOrNull { Path.of(it).exists() } ?: "git"
 
-    private fun hostName(): String = runCatching { InetAddress.getLocalHost().hostName }.getOrDefault("Phantom IDEA")
+    private fun hostName(): String = runCatching { InetAddress.getLocalHost().hostName }.getOrDefault("Phantom")
 
     /** Runs a command without a terminal, so git fails instead of prompting for a password. */
     @Throws(IOException::class)

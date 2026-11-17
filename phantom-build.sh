@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build Phantom IDEA (macOS on Apple silicon, Windows x64) with a date-based version.
+# Build Phantom (macOS on Apple silicon, Windows x64) with a date-based version.
 #   Phantom build number: PH-<YYMMDD>.<N>  (what the IDE, Info.plist and artifact names show; N counts the builds of that day)
 #   display version:      <YY>.<MM>.<DD>  (passed as -Dphantom.version.major/minor; the tracked IdeaApplicationInfo.xml keeps
 #                                        a placeholder, so a build leaves the working tree as it was)
@@ -24,7 +24,7 @@ else
 fi
 echo "$d.$n" > "$seq_file"
 phantom="PH-$d.$n"
-echo "Phantom IDEA $yy.$mm.$dd (build $phantom, platform 262.$d)"
+echo "Phantom $yy.$mm.$dd (build $phantom, platform 262.$d)"
 
 # Plugins bundled from Phantom-plugins in place of their IntelliJ originals (PHANTOM_PLUGINS_BUNDLED in
 # IdeaCommunityProperties.kt), built from the checkout next to this one or PHANTOM_PLUGINS_REPO, against the IntelliJ

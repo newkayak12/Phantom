@@ -320,9 +320,9 @@ inline fun ideaCommunityWindowsCustomizer(
 ): WindowsDistributionCustomizer = windowsCustomizer(projectHome) {
   fileAssociations = listOf("java", "gradle", "groovy", "kt", "kts", "pom")
 
-  // phantom-idea: Windows product and install folder name Phantom IDEA (rebrand); the JetBrains uninstall feedback page (uninstallFeedbackUrl) is removed
-  fullName { "Phantom IDEA" }
-  installDirNameHandler { "Phantom IDEA" }
+  // phantom-idea: Windows product and install folder name Phantom (rebrand); the JetBrains uninstall feedback page (uninstallFeedbackUrl) is removed
+  fullName { "Phantom" }
+  installDirNameHandler { "Phantom" }
 
   configure()
 }
@@ -331,13 +331,13 @@ inline fun ideaCommunityMacCustomizer(
   projectHome: Path,
   configure: MacCustomizerBuilder.() -> Unit = {}
 ): MacDistributionCustomizer = macCustomizer(projectHome) {
-  // phantom-idea: macOS URL scheme phantom, bundle id dev.phantom.idea and "Phantom IDEA.app" instead of IntelliJ IDEA OSS (rebrand)
+  // phantom-idea: macOS URL scheme phantom, bundle id dev.phantom.idea and "Phantom.app" instead of IntelliJ IDEA OSS (rebrand)
   urlSchemes = listOf("phantom")
   associateIpr = true
   fileAssociations = FileAssociation.from("java", "groovy", "kt", "kts")
   bundleIdentifier = "dev.phantom.idea"
 
-  rootDirectoryName { _, _ -> "Phantom IDEA.app" }
+  rootDirectoryName { _, _ -> "Phantom.app" }
 
   executableFilePatterns { base, _, _, _ ->
     val kotlinExecutables = KotlinBinaries.kotlinCompilerExecutables

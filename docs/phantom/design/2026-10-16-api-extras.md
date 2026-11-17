@@ -1,7 +1,7 @@
 # phantom-api: OpenAPI, 클라이언트-서버 탐색, HTTP Client 확장 설계
 
 - 날짜: 2026-10-16
-- 대상: Phantom IDEA (intellij-community `idea/262.10968.63` 포크), Kotlin + Spring Boot + JPA + Gradle 백엔드 개발자
+- 대상: Phantom (intellij-community `idea/262.10968.63` 포크), Kotlin + Spring Boot + JPA + Gradle 백엔드 개발자
 - 상태: 설계 초안 (구현 전)
 - 관련 설계: [`2026-10-16-http-client.md`](2026-10-16-http-client.md)(phantom-http), [`2026-10-16-spring-boot.md`](2026-10-16-spring-boot.md)(phantom-spring-boot, Endpoints)
 - 표기: **[V]** = 이 저장소나 사용자 프로젝트에서 경로·API·사실을 직접 확인함, **[A]** = 가정 (공개 문서·일반 지식에 근거, 아직 확인 안 함), **[M]** = Ultimate 분석 노트의 측정값 인용
@@ -398,7 +398,7 @@ GRPC localhost:9090/reservation.TimeTableService/Find
 
 ### 5.2 사용자 프로젝트 수동 확인 (`~/orca/workspaces/prototype-reservation-system`)
 
-1. Phantom IDEA로 `infro` 워크트리를 열고 smart mode를 기다린다.
+1. Phantom로 `infro` 워크트리를 열고 smart mode를 기다린다.
 2. `infrastructure-module/.../httpinterface/timetable/FindTimeTableOccupancyHttpInterface.kt`를 연다. `findTimeTableOccupancyInternally` 옆 거터 → `adapter-module/.../rest/internal/timetable/find/FindTimeTableOccupancyInternalController.kt`의 핸들러로 이동하는지 본다. 이 경우 클라이언트는 `"/api/v1/internal/timetable/$TIME_TABLE/..."`, 서버는 `"${InternalUrl.PREFIX}${FIND_INTERNAL_PAYLOAD}"`로 경로가 다르게 만들어져 있어 상수 평가를 검증하는 좋은 사례다 **[V: 두 파일 내용]**.
 3. 서버 핸들러의 매핑 문자열에서 Find Usages → 클라이언트 인터페이스가 나오는지 본다.
 4. `RestClientConfig.kt`의 `RestClient` 체인 안 `uri(...)`가 있다면 같은 확인(현재 이 파일은 `baseUrl`만 쓴다 **[V]**. 확인용 호출은 scratch Kotlin 파일로).

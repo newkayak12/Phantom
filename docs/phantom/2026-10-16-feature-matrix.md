@@ -1,4 +1,4 @@
-# Phantom IDEA 기능 매트릭스 (FE 제외)
+# Phantom 기능 매트릭스 (FE 제외)
 
 기준: 사용자가 정리한 IntelliJ IDEA Ultimate 기능 목록(2026-10-16)에서 프론트엔드(JS/TS, React/Vue/Angular, HTML/CSS, Node.js)를 뺀 전체.
 

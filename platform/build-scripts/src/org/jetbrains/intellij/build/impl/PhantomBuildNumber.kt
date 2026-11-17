@@ -1,4 +1,4 @@
-// Copyright 2026 Phantom IDEA contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2026 Phantom contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.jetbrains.intellij.build.impl
 
 import org.jetbrains.intellij.build.BuildContext

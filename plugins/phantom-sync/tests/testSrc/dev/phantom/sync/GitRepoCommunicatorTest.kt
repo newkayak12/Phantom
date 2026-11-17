@@ -1,4 +1,4 @@
-// Copyright 2026 Phantom IDEA contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2026 Phantom contributors. Use of this source code is governed by the Apache 2.0 license.
 package dev.phantom.sync
 
 import com.intellij.settingsSync.core.FileState
@@ -43,7 +43,7 @@ class GitRepoCommunicatorTest : BasePlatformTestCase() {
   private fun machine(name: String) = GitRepoCommunicator(GitSettingsRepository(remote, root.resolve(name)))
 
   private fun snapshot(editorXml: String) = SettingsSnapshot(
-    SettingsSnapshot.MetaInfo(Instant.now(), SettingsSnapshot.AppInfo(UUID.randomUUID(), null, "Phantom IDEA", "user", "host", "/config")),
+    SettingsSnapshot.MetaInfo(Instant.now(), SettingsSnapshot.AppInfo(UUID.randomUUID(), null, "Phantom", "user", "host", "/config")),
     setOf(FileState.Modified("options/editor.xml", editorXml.toByteArray())), null, emptyMap(), emptySet())
 
   fun testEmptyRepositoryHasNoSettings() {

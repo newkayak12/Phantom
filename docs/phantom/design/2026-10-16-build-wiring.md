@@ -2,7 +2,7 @@
 
 - 날짜: 2026-10-16
 - 대상 트리: `/Users/sanghyeonkim/Downloads/port/phantom-idea` (intellij-community `idea/262.10968.63`, Bazel)
-- 범위: 새 번들 플러그인 `plugins/phantom-<name>`을 정의하고, Phantom IDEA에 번들로 등록하고, 소스에서 바로 띄워 보고, 테스트를 돌리는 방법
+- 범위: 새 번들 플러그인 `plugins/phantom-<name>`을 정의하고, Phantom에 번들로 등록하고, 소스에서 바로 띄워 보고, 테스트를 돌리는 방법
 - 표기: **[V]**는 이 트리에서 경로, 클래스, 설정을 직접 확인한 것이다. **[A]**는 가정이며 첫 빌드나 첫 실행에서 확인해야 한다.
 - 클린룸: 이 문서는 community 소스, 공개 문서, 분석 노트의 동작 설명만 근거로 쓴다. `reversed/source/`는 열지 않았다.
 
@@ -25,7 +25,7 @@ MVP는 "기능"이 아니라 **배선**이다. Spring Boot, HTTP Client, DB, Doc
 
 ### 1.2 v0.2 이후
 
-- `phantom-*` 플러그인만 zip으로 빌드하는 전용 Bazel 타깃 (설치된 Phantom IDEA에 "Install from disk"로 넣는 용도). community의 `KotlinPluginBuildTarget`처럼 `buildNonBundledPlugins(listOf(...))`를 부르면 된다 [V: `build/src/KotlinPluginBuildTarget.kt`, `KotlinPluginBuilder.kt:324`] [A: 비번들 빌드 경로가 phantom 모듈에도 그대로 동작하는지].
+- `phantom-*` 플러그인만 zip으로 빌드하는 전용 Bazel 타깃 (설치된 Phantom에 "Install from disk"로 넣는 용도). community의 `KotlinPluginBuildTarget`처럼 `buildNonBundledPlugins(listOf(...))`를 부르면 된다 [V: `build/src/KotlinPluginBuildTarget.kt`, `KotlinPluginBuilder.kt:324`] [A: 비번들 빌드 경로가 phantom 모듈에도 그대로 동작하는지].
 - 여러 phantom 플러그인이 공유하는 `phantom-core`(프로젝트 기술 감지, 공용 캐시 키). 공유가 실제로 두 곳 이상에서 필요해질 때만 만든다.
 - `plugin-content.yaml` 스냅샷 (배포 내용 회귀 검사용, 아래 3.7).
 - 무거운 community 번들 플러그인 정리 (`IDEA_BUNDLED_PLUGINS`에서 빼기). 이 문서와 같은 파일을 건드리지만 별도 결정이다.
@@ -158,7 +158,7 @@ productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf("intellij
   <id>dev.phantom.hello</id>
   <name>Phantom Hello</name>
   <vendor>Phantom</vendor>
-  <description><![CDATA[Build-wiring smoke plugin for Phantom IDEA.]]></description>
+  <description><![CDATA[Build-wiring smoke plugin for Phantom.]]></description>
 
   <dependencies>
     <plugin id="com.intellij.modules.lang"/>
@@ -246,7 +246,7 @@ community 플러그인 중 일부에는 `plugin-content.yaml`이 있다 (예: `p
 - B: 루트 `BUILD.bazel`의 `java_binary(name = "main_run", main_class = "com.intellij.idea.Main", runtime_deps = [":main"])`이고, 설정은 `config/idea`, `system/idea`다 [V]. "IDEA" 실행 구성은 같은 모듈을 JPS로 빌드해서 실행한다 [V: `.idea/runConfigurations/IDEA.xml`]. 소스 실행 여부는 `PathManager`가 홈에 `.idea`가 있는지로 판단한다 [V: `platform/util/src/com/intellij/openapi/application/PathManager.java:966`].
 - C: `installers.cmd`는 `//build:i_build_target`(`OpenSourceCommunityInstallersBuildTarget`)을 실행한다 [V]. 증분 대안으로 `build/updateFromSources.cmd`(`OpenSourceCommunityUpdateFromSourcesBuildTarget`, jps-bootstrap 기반, `buildUnpackedDistribution`)가 있다 [V] [A: Bazel 전환 이후에도 쓸 만한 속도인지].
 
-세 모드는 설정 디렉터리가 서로 다르다. 그래서 개발 중 실험이 사용자의 실제 Phantom IDEA 설정(`~/Library/Application Support/JetBrains/PhantomIDEA`)을 더럽히지 않는다 [A: 시스템 셀렉터가 `"PhantomIDEA"`로 고정된 것은 V, 실제 경로는 A].
+세 모드는 설정 디렉터리가 서로 다르다. 그래서 개발 중 실험이 사용자의 실제 Phantom 설정(`~/Library/Application Support/JetBrains/PhantomIDEA`)을 더럽히지 않는다 [A: 시스템 셀렉터가 `"PhantomIDEA"`로 고정된 것은 V, 실제 경로는 A].
 
 ---
 
@@ -263,7 +263,7 @@ community 플러그인 중 일부에는 `plugin-content.yaml`이 있다 (예: `p
 | T5 | **테스트 모듈.** `tests/`에 JUnit5 `@TestApplication` 기반 light 테스트 1개(Java)와 `KotlinLightCodeInsightFixtureTestCase` 기반 테스트 1개(Kotlin)를 쓴다 | 0.5 | `./tests.cmd --module phantom.hello.tests --test 'dev.phantom.hello.*Test'`가 초록이다 |
 | T6 | **클래스로더 경계 검증.** 일부러 `kotlin` 모듈 설명자에서 `<plugin id="org.jetbrains.kotlin"/>`을 빼고 dev server로 실행해 본다. 오류가 로그에 남는지 확인하고 되돌린다 | 0.25 | `out/dev-data/idea_community/system/log/idea.log`에 해당 모듈의 로드 실패 메시지가 있다. 되돌리면 사라진다 |
 | T7 | **경량화 검사 스크립트.** `plugins/phantom-*/**/*.xml`에서 `postStartupActivity|backgroundPostStartupActivity|projectActivity|loading="required"`를 찾는 `tools/rg.cmd` 한 줄을 `docs/phantom/design`의 체크리스트로 남긴다 (P2, P3) | 0.1 | 명령 결과가 비어 있다 |
-| T8 | **배포본 확인.** `./phantom-build.sh` | 0.5 (대기 시간 위주) | DMG로 설치한 Phantom IDEA의 Plugins에 "Phantom Hello"가 Bundled로 보인다. `Phantom IDEA.app/Contents/plugins/` 아래에 플러그인 디렉터리가 있다 |
+| T8 | **배포본 확인.** `./phantom-build.sh` | 0.5 (대기 시간 위주) | DMG로 설치한 Phantom의 Plugins에 "Phantom Hello"가 Bundled로 보인다. `Phantom.app/Contents/plugins/` 아래에 플러그인 디렉터리가 있다 |
 | T9 | **첫 실기능 플러그인에 적용.** `phantom-spring-boot`를 T1–T8 순서로 배선한다. 기능 구현은 `2026-10-16-spring-boot.md`를 따른다 | 0.5 (배선만) | `~/orca/workspaces/prototype-reservation-system`에서 `application.yml`의 `server.port` 완성이 뜬다 (기능 문서 수락 기준) |
 | T10 | **hello 정리.** 골격 검증이 끝나면 `phantom-hello`를 번들 목록에서 빼거나 지운다 | 0.1 | Plugins 목록에서 사라진다 |
 
