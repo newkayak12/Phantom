@@ -1,14 +1,14 @@
 # Phantom 포크 델타
 
-- 목적: Phantom가 업스트림 intellij-community와 어디서 어떻게 다른지 적는다. 이 포크를 안전하게 고치고 새 업스트림 태그를 병합할 때 본다.
+- 목적: Phantom이 업스트림 intellij-community와 어디서 어떻게 다른지 적는다. 이 포크를 안전하게 고치고 새 업스트림 태그를 병합할 때 본다.
 - 기준 커밋: b1a9cbaf29 (업스트림 기준 d2faebf601 = idea/262.10968.63)
 - 작성일: 2026-11-17
 
-이 문서는 d2faebf601과 PR #5 브랜치의 표식 커밋(1절) 사이의 `git diff`에서 만들고, b1a9cbaf29에서 그 앞에 PR 없이 들어온 일곱 커밋(d776e067d6..cd2a0cf78f)을 반영했다. 커밋 메시지는 이유를 찾을 때만 썼다. `path:line`은 파일을 열어 확인한 위치다. b1a9cbaf29에서 다시 연 것은 일곱 커밋이 바꾼 파일(`IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `phantom-build.sh`, `phantom-release.sh`, `phantom-bench.sh`, `PlatformExtensions.xml`, `VmOptionsGenerator.kt`, `JetBrainsProductProperties.kt`, Kotlin `plugin.xml`)의 줄과 이번에 고친 줄이다. 그 표식 커밋에서 연 것은 그 밖의 루트 스크립트(`phantom-sign.sh` 제외), `OpenSourceCommunityInstallersBuildTarget.kt`, `MarketplaceRequests.kt`의 Marketplace 필터 줄이다. 나머지는 64dc82b3f2에서 연 값이고, PR #5(301c21e98a)가 표식 주석을 더한 78개 파일(2절)에서는 몇 줄 밀렸을 수 있다. 직접 읽지 않고 미루어 짐작한 내용은 "(추정)"으로 표시한다.
+이 문서는 d2faebf601과 PR #5 브랜치의 표식 커밋(1절) 사이의 `git diff`에서 만들고, b1a9cbaf29에서 그 앞에 PR 없이 들어온 일곱 커밋(d776e067d6..cd2a0cf78f)을 반영했다. 커밋 메시지는 이유를 찾을 때만 썼다. `path:line`은 파일을 열어 확인한 위치다. b1a9cbaf29에서 다시 연 것은 일곱 커밋이 바꾼 파일(`IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `phantom-build.sh`, `phantom-release.sh`, `phantom-bench.sh`, `PlatformExtensions.xml`, `VmOptionsGenerator.kt`, `JetBrainsProductProperties.kt`, Kotlin `plugin.xml`)의 줄과 이번에 고친 줄이다. 그 뒤 main에 PR 없이 들어온 네 커밋(ff512ae2df, 26b789f453, ffc9401ea0, 60296a1f08)은 브랜딩 행과 `phantom-install.sh`의 줄에만 반영했다(`phantom-install.sh`는 60296a1f08에서 다시 열었다). 그 표식 커밋에서 연 것은 그 밖의 루트 스크립트(`phantom-sign.sh` 제외), `OpenSourceCommunityInstallersBuildTarget.kt`, `MarketplaceRequests.kt`의 Marketplace 필터 줄이다. 나머지는 64dc82b3f2에서 연 값이고, PR #5(301c21e98a)가 표식 주석을 더한 78개 파일(2절)에서는 몇 줄 밀렸을 수 있다. 직접 읽지 않고 미루어 짐작한 내용은 "(추정)"으로 표시한다.
 
 ## 1. 요약
 
-d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 136개다(병합 커밋 6개 포함). 이 절의 숫자(커밋 수, 파일 수, 줄 수)는 모두 d2faebf601부터 PR #5 브랜치의 표식 커밋(브랜치 `fix/known-problems-batch3`의 "Mark every unmarked fork patch in upstream files with a phantom-idea comment")까지 기준이다. PR #5는 스쿼시 머지되어 main에는 그 커밋 대신 스쿼시 커밋 301c21e98a가 있다. 그 뒤의 문서 커밋은 `docs/`와 루트 문서의 줄 수만 바꾼다. 그 뒤 코드 커밋(일곱 커밋, PR #4·#5·#7·#3의 나머지)으로 바뀐 숫자는 다시 세지 않았다.
+d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋이다. 업스트림 히스토리는 이 리포에 없다. 그 뒤 포크 커밋은 136개다(병합 커밋 6개 포함). 이 절의 숫자(커밋 수, 파일 수, 줄 수)는 모두 d2faebf601부터 PR #5 브랜치의 표식 커밋(브랜치 `fix/known-problems-batch3`의 "Mark every unmarked fork patch in upstream files with a phantom-idea comment")까지 기준이다. PR #5는 스쿼시 머지되어 main에는 그 커밋 대신 스쿼시 커밋 301c21e98a가 있다. 그 뒤의 문서 커밋은 `docs/`와 루트 문서의 줄 수만 바꾼다. 그 뒤 코드 커밋(일곱 커밋, PR #4·#5·#7·#3의 나머지, ff512ae2df, 26b789f453, ffc9401ea0, 60296a1f08)으로 바뀐 숫자는 다시 세지 않았다.
 
 ### 1.1 상태별
 
@@ -41,7 +41,7 @@ d2faebf601은 업스트림 태그 소스를 한 번에 들여온 루트 커밋�
 | `plugins/` | 25 | 28 | 14 | +2611 / -924 |
 | `tools/` | 1 | 0 | 0 | +37 / -0 |
 
-루트 파일은 추가 9개(`README.md`, `README.ko.md`, `CHANGELOG.md`, `phantom-build.sh`, `phantom-install.sh`, `phantom-release.sh`, `phantom-sign.sh`, `phantom-bench.sh`, `phantom-bench-report.py`)와 수정 4개(`AGENTS.md`, `BUILD.bazel`, `build.txt`, `intellij.idea.community.main.iml`)다. `.agents/`, `.ai/`, `.claude/`의 수정 12개는 PR #4(c4810b39ef)의 안내 문구 수정이다. `docs/`는 전부 Phantom 문서이고 코드에 영향이 없다. 코드 델타는 `platform/`과 `plugins/`에 몰려 있다. 64dc82b3f2 뒤 늘어난 줄 대부분은 PR #5(301c21e98a)의 표식 주석 137줄, Kotlin 게시(9433fdbe0f), 스크립트 수정이다.
+루트 파일은 추가 9개(`README.md`, `README.ko.md`, `CHANGELOG.md`, `phantom-build.sh`, `phantom-install.sh`, `phantom-release.sh`, `phantom-sign.sh`, `phantom-bench.sh`, `phantom-bench-report.py`)와 수정 4개(`AGENTS.md`, `BUILD.bazel`, `build.txt`, `intellij.idea.community.main.iml`)다. 이 숫자 뒤에 ff512ae2df가 업스트림 루트 파일 두 개를 고쳤다: `LICENSE.txt`는 JetBrains Open-Source Build Terms에서 Apache License 2.0 원문으로 바뀌었고, `NOTICE.txt`에는 JetBrains 고지 앞뒤로 포크 이름, 수정 파일의 `phantom-idea:` 표식, 서드파티 라이선스 위치, JetBrains와 무관하다는 문구가 더해졌다(26b789f453이 그 이름을 Phantom으로 바꿨다). `.agents/`, `.ai/`, `.claude/`의 수정 12개는 PR #4(c4810b39ef)의 안내 문구 수정이다. `docs/`는 전부 Phantom 문서이고 코드에 영향이 없다. 코드 델타는 `platform/`과 `plugins/`에 몰려 있다. 64dc82b3f2 뒤 늘어난 줄 대부분은 PR #5(301c21e98a)의 표식 주석 137줄, Kotlin 게시(9433fdbe0f), 스크립트 수정이다.
 
 ### 1.3 숫자를 다시 만드는 명령
 
@@ -67,7 +67,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | 번들은 설정으로 줄이고 소스는 남긴다 | 플러그인을 빼도 모듈 소스, `.idea/modules.xml` 항목, 루트 모듈 의존은 그대로 둔다. 번들 목록에서만 뺀다. 예: `intellij.keymap.eclipse`는 번들에서 빠졌지만 `intellij.idea.community.main.iml:143`에 남아 있다. | `IdeaCommunityProperties.kt:91-131`. e2a4ffa4ee 본문 "the sources stay for upstream merges". |
 | JetBrains 서비스는 옵트인 플래그 뒤에 둔다 | 자동으로 JetBrains 서버를 부르는 코드는 지우지 않고 `MarketplaceRequests.jetBrainsServicesEnabled`(시스템 프로퍼티 `phantom.jetbrains.services`, 기본 false)로 막는다. | `MarketplaceRequests.kt:108-109`. d7c795f347, fdd9682290, 98673d9e9a, be60914099. |
 | 진단 파일은 기본으로 끈다 | 업스트림의 진단 프로퍼티 기본값을 바꾸거나 새 프로퍼티로 막는다. 켜는 방법은 프로퍼티로 남긴다. | 53aa9e1ec7, 7568bf108c, 3718f68ff4. 4.2절. |
-| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:`(XML은 `<!-- phantom-idea: -->`)를 단다. PR #5 브랜치의 표식 커밋(1절) 뒤의 상태(집계: 그 커밋에서 `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 옛 `// Phantom:` 형식은 PR #7(457ab64daa)에서 `phantom-idea:`로 통일했다(22개 파일의 표식 주석 24줄). 그 표식 커밋 전에는 24개만 표식이 다 있었고, 그 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. PR 없이 main에 바로 들어온 일곱 커밋의 덩어리는 b1a9cbaf29에서 따로 봤다: 표식이 없는 것은 cd2a0cf78f의 `BaseIdeaProperties.kt:82-83`(줄 끝 주석 `// Phantom Groovy, ...`만 있음)과 f56d480a66의 `plugins/kotlin/plugin/resources/META-INF/plugin.xml:17`(벤더 줄) 둘이다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n 'phantom-idea:'`로 확인한다. PR #5(301c21e98a) |
+| 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:`(XML은 `<!-- phantom-idea: -->`)를 단다. PR #5 브랜치의 표식 커밋(1절) 뒤의 상태(집계: 그 커밋에서 `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 옛 `// Phantom:` 형식은 PR #7(457ab64daa)에서 `phantom-idea:`로 통일했다(22개 파일의 표식 주석 24줄). 그 표식 커밋 전에는 24개만 표식이 다 있었고, 그 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. PR 없이 main에 바로 들어온 일곱 커밋의 덩어리는 b1a9cbaf29에서 따로 봤다: 표식이 없는 것은 cd2a0cf78f의 `BaseIdeaProperties.kt:82-83`(줄 끝 주석 `// Phantom Groovy, ...`만 있음)과 f56d480a66의 `plugins/kotlin/plugin/resources/META-INF/plugin.xml:17`(벤더 줄) 둘이다. 그 뒤 ffc9401ea0의 `IdeaCommunityProperties.kt:198-199`(`baseFileName`)에도 표식이 없다(그 뒤 커밋은 이 덩어리만 봤다). 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n 'phantom-idea:'`로 확인한다. PR #5(301c21e98a) |
 | Phantom 코드는 자기 패키지에 둔다 | 새 코드는 `dev.phantom.*` 패키지, 새 모듈은 `phantom.*` 이름을 쓴다. 예외는 업스트림 패키지 안에 넣은 `FoojayJdkList.kt`, `GHDeviceFlow.kt`, `PhantomBuildNumber.kt`다. | c06e071a51(모듈 이름 `intellij.phantom.*` → `phantom.*`). |
 | IntelliJ 플러그인을 Phantom-plugins 판으로 바꿔 번들할 수 있다 | 원본은 `.removing`으로 빼고, Phantom-plugins가 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 두고 빌드한 판을 `PHANTOM_PLUGINS_BUNDLED`로 넣는다. 원본과 함께 설치돼도 대체판만 로드된다(3.12절). 바꾼 뒤에는 이 리포의 원본 소스와 그 안의 포크 패치가 번들에 들어가지 않을 수 있다(3.2절 끝의 주의). | 9229667cc7, 04dba66c3a, a464f46719, ed67704350, d776e067d6, a936b0feba, cd2a0cf78f. 3.2절. |
 | 플러그인은 트리 안에서 만들고 밖으로 옮긴다 | 트리 안에서 만들어 번들한 뒤, 같은 플러그인 ID로 `newkayak12/Phantom-plugins`에 옮기고 번들 목록, 루트 모듈, Bazel 파일 목록, 프로젝트 모듈에서 뺀다. 설계 문서는 남긴다. | 5.2절. 8983487a29, b68d97332e, 1570329708 본문. |
@@ -94,14 +94,15 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | 파일:행 (HEAD) | 패치 | 커밋 |
 |---|---|---|
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:2` | `<version eap="false" major="0" minor="0.0"/>` 자리표시자와 `phantom-idea` 주석. 이전에는 `<version major="26" minor="10.27"/>`를 `phantom-build.sh`가 sed로 빌드마다 다시 썼다(fc05eddc04, bf2b90f700). 지금은 추적 파일을 고치지 않는다 | fc05eddc04, bf2b90f700, 048852ca23 |
-| `community-resources/resources/idea/IdeaApplicationInfo.xml:3,5-8` | 회사 Phantom, 로고·아이콘 `phantom*.svg`, 이름 Phantom | 1e0d4353f7 |
+| `community-resources/resources/idea/IdeaApplicationInfo.xml:3,5-8` | 회사 Phantom, 로고·아이콘 `phantom*.svg`, 이름 Phantom, 실행 파일 이름 `script="phantom"`과 소개 문구(`:8`) | 1e0d4353f7, 26b789f453, ffc9401ea0 |
 | `community-resources/resources/idea/IdeaApplicationInfo.xml:10` | `<default-laf light="Phantom Light" dark="Phantom Dark"/>` | a91f9ef7e8 |
 | `build.txt:1` | `262.10968.SNAPSHOT` → `262.SNAPSHOT` | e8ef2fd569 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:198-199` | 실행 파일 이름 `baseFileName`을 `idea`에서 `phantom`으로(`Contents/MacOS/phantom`, `phantom.vmoptions`, `PHANTOM_VM_OPTIONS` 등. 표식 주석 없음) | ffc9401ea0 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:237` | 설정 폴더 선택자를 `PhantomIDEA`로 고정 | fc05eddc04 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:240-242` | 산출물 이름 `phantom-<…>`. `phantom.build.number`가 있으면 그 값을 쓴다 | ae2a766191 |
 | `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:244` | 출력 폴더 `phantom-idea` | 1e0d4353f7 |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:323-325` | Windows 이름 Phantom. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제(표식 `:323`) | 1e0d4353f7, d0eab60d1b |
-| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:335,338,340,356` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom.app`, Linux 폴더 `phantom`(표식 `:334`, `:355`) | 1e0d4353f7 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:323-325` | Windows 이름 Phantom. 제거 설문 URL(`uninstallFeedbackUrl`) 삭제(표식 `:323`) | 1e0d4353f7, d0eab60d1b, 26b789f453 |
+| `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:335,338,340,356` | URL 스킴 `phantom`, 번들 ID `dev.phantom.idea`, `Phantom.app`, Linux 폴더 `phantom`(표식 `:334`, `:355`) | 1e0d4353f7, 26b789f453 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:145-147` | 버전 major/minor가 빌드 브랜치와 같아야 한다는 검사를 "major가 비어 있지 않음"으로 완화 | e8ef2fd569 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:170-175` | `phantom.build.number`가 있으면 `<build number>`를 Phantom 번호로 바꾸고 플랫폼 빌드를 `apiVersion`에 둔다 | ae2a766191 |
 | `platform/build-scripts/src/org/jetbrains/intellij/build/ApplicationInfoPropertiesImpl.kt:71-75` | `majorVersion`, `minorVersion`을 속성 `phantom.version.major/minor`에서 먼저 읽고 없으면 `applicationInfoOverride`, XML 순 | 048852ca23 |
@@ -113,7 +114,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | `platform/build-scripts/resources/mac/Contents/Info.plist:40` | 저작권 문구 "Based on the IntelliJ Platform" | ae2a766191 |
 | `plugins/ide-startup/importSettings/src/com/intellij/ide/startup/importSettings/data/SettingsService.kt:304` | 가져오기 마법사에 IC 아이콘 대신 제품 아이콘 | 5a12a1a666 |
 | `plugins/ide-startup/importSettings/src/com/intellij/ide/startup/importSettings/jb/JbImportServiceImpl.kt:310-312` | 설정이 `.../Phantom` 아래에 있으므로 옆의 `JetBrains` 폴더도 가져오기 대상으로 본다 | 048d85af98 |
-| `build/idea-community-images/**` (바이너리 10개), `community-resources/resources/phantom*.svg`, `phantom_logo*.png`, `community-resources/phantom-brand-src/` | 앱 아이콘, DMG 배경, Windows 설치 이미지. 원본 그림과 생성 스크립트 `compose.swift` | 1e0d4353f7, 5a12a1a666, 9ad40b0e37, c8cb99fb6f, d0eab60d1b |
+| `build/idea-community-images/**` (바이너리 10개), `community-resources/resources/phantom*.svg`, `phantom_logo*.png`, `community-resources/phantom-brand-src/` | 앱 아이콘, DMG 배경, Windows 설치 이미지. 원본 그림과 생성 스크립트 `compose.swift` | 1e0d4353f7, 5a12a1a666, 9ad40b0e37, c8cb99fb6f, d0eab60d1b, 26b789f453 |
 
 검증: 빌드한 `Phantom.app/Contents/Info.plist`의 `CFBundleIdentifier`가 `dev.phantom.idea`, `CFBundleVersion`이 `PH-…`인지 본다. `product-info.json`의 `version`이 `YY.MM.DD`이고 About 대화상자도 같은 값인지, 그리고 빌드 뒤 `git status`에 `IdeaApplicationInfo.xml`이 없는지 본다(048852ca23, 빌드 전이라 확인하지 못했다). 앱 안 `product-info.json`의 build가 `262.<YYMMDD>`인지 본다(빌드가 필요하다).
 
@@ -378,7 +379,7 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 | `platform/build-scripts/src/org/jetbrains/intellij/build/impl/WinExeInstallerBuilder.kt:41-42` | "운영 모드에서 macOS면 NSIS 건너뜀" 삭제 | d0eab60d1b |
 | `phantom-build.sh` (신규) | 날짜로 구한 표시 버전·빌드 번호를 `installers.cmd`에 `-D`로 넘김(`:15`, `:45-46`, aarch64. 표시 버전은 추적 파일을 고치지 않고 `-Dphantom.version.major/minor`, 048852ca23, 빌드 전. v26.11.13.1의 태그 커밋에는 7fe0ab9436이 손으로 쓴 `26` / `11.13`이 추적 파일에 있었다), Phantom-plugins 체크아웃(`$root/../Phantom-plugins` 또는 `PHANTOM_PLUGINS_REPO`, `:32`)에서 플러그인 25개(`:33`)를 `./gradlew --no-configuration-cache -q -PplatformFromRepository=true :<dir>:buildPlugin`으로 빌드해 `out/phantom-plugins`에 풂(`:29-44`, 체크아웃이나 zip이 없으면 `exit 1`, `:34`, `:42`, 9229667cc7), Windows x64 교차 빌드(`:58-68`), 중간 산출물 삭제 | fc05eddc04 외 4개, 048852ca23, 9229667cc7, d776e067d6, a936b0feba, cd2a0cf78f |
 | `phantom-release.sh` (신규) | 빌드, DMG 검사, 태그 push, GitHub 릴리스(초안 후 공개). Kotlin zip 확인(`:59-63`)과 Phantom-plugins 저장소에 Kotlin 릴리스·`marketplace.json` 게시(`:81-123`, 항목 이름 `Phantom Kotlin`, 벤더 `Phantom`). `origin`이 SSH 호스트 별칭이어도 저장소 이름을 뽑음(`:76`) | ae2a766191 외 5개, 9433fdbe0f, a9c5f07bd5, b5ba0196ab, f56d480a66 |
-| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:52-70`) | a0c4e0d04a 외 5개, PR #4(c4810b39ef), PR #5(301c21e98a) |
+| `phantom-install.sh` (신규) | `PHANTOM_APP`(기본 `/Applications/Phantom.app`, `.app`으로 끝나는 절대 경로만, `:22-23`) 교체와 재시작, `--release`로 릴리스 DMG 설치. 그 경로에서 실행 중인 Phantom만 프로세스 ID로 종료 요청(`:58-90`, 실행 파일 `MacOS/phantom`과 이름 변경 전 `MacOS/idea` 모두). 기본 경로에 `Phantom.app`이 아직 없으면 옛 `/Applications/Phantom IDEA.app`을 종료하고 새 앱을 둔 뒤 지움(`:24-29`, `:99`). 설정 폴더의 `idea.vmoptions`·`idea.jdk`를 새 이름이 없을 때 `phantom.*`으로 한 번 복사(`:100-105`) | a0c4e0d04a 외 5개, PR #4(c4810b39ef), PR #5(301c21e98a), 26b789f453, ffc9401ea0 |
 | `phantom-sign.sh` (신규) | 로컬 인증서 "Phantom Local"로 재서명 | e71672a6ab |
 | `.github/workflows/phantom-release.yml` (신규) | 셀프 호스티드 러너에서 수동 실행 릴리스. `notes` 입력 설명을 따옴표로 감싸 올바른 YAML로 고침(`:17`). 빌드 전에 Phantom-plugins를 `$GITHUB_WORKSPACE/../Phantom-plugins`에 클론하거나 `origin/main`으로 맞추는 단계(`:40-55`, 러너의 SSH 키 사용) | ae2a766191, 25be81d8e6, d0eab60d1b, 60ea243e02 |
 | `tools/phantom-runner-setup.sh` (신규) | 셀프 호스티드 러너 등록 | ae2a766191 |
@@ -469,11 +470,11 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 | `PHANTOM_APP` | `phantom-install.sh:22`, `phantom-bench.sh:23`, `phantom-sign.sh`(인자가 먼저) | `/Applications/Phantom.app` | 설치·측정·서명할 앱. 설치는 `.app`으로 끝나는 절대 경로만 받고(`phantom-install.sh:23`) 그 경로에서 실행 중인 Phantom만 끈다. 벤치에서는 `PHANTOM_BENCH_APP`이 먼저다. PR #4(c4810b39ef), PR #5(301c21e98a) |
 | `PHANTOM_BENCH_APP`, `PHANTOM_BENCH_PLUGINS` | `phantom-bench.sh:21-23`, `:89` | 미설정 | 측정할 다른 앱 복사본(예: 풀어 둔 DMG, `PHANTOM_APP`보다 먼저), 실행마다 설정 복사본의 `plugins/`에 풀 플러그인 zip 목록(공백 구분. 릴리스가 번들하지 않는 Kotlin 등). 4d0fa4b060 |
 | `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE` | `phantom-bench.sh:24`, `:30` | `$HOME/Library/Application Support/Phantom/PhantomIDEA`, `$HOME/projects/private/prototype-reservation-system` | 벤치에 복사할 사용자 설정, 열 프로젝트(`--fixture`가 먼저, 상대 경로는 부른 폴더 기준). PR #4(c4810b39ef), PR #5(301c21e98a) |
-| `PHANTOM_SIGN_SETUP`, `PHANTOM_SIGN_OPTIONAL` | `phantom-sign.sh`, `phantom-install.sh:81` | 설치에서는 `1`, `1` | 인증서가 없을 때 먼저 만들지, 서명 실패를 경고로 끝낼지(BUILD.md 5장). PR #4(c4810b39ef) |
+| `PHANTOM_SIGN_SETUP`, `PHANTOM_SIGN_OPTIONAL` | `phantom-sign.sh`, `phantom-install.sh:108` | 설치에서는 `1`, `1` | 인증서가 없을 때 먼저 만들지, 서명 실패를 경고로 끝낼지(BUILD.md 5장). PR #4(c4810b39ef) |
 | `PHANTOM_FOOJAY_E2E` | `platform/lang-impl/testSources/com/intellij/openapi/projectRoots/impl/jdkDownloader/FoojayJdkListTest.kt:98` | 미설정 | `true`면 실제 JDK를 내려받는 E2E 테스트를 실행 |
 | `PHANTOM_FOOJAY_E2E_SDK` | 같은 파일 `:101` | 문자열 `temurin-21` | E2E 테스트가 받을 SDK 이름 |
 | `GH_TOKEN`, `GITHUB_TOKEN` | `platform/platform-impl/src/dev/phantom/ide/plugins/GitHubTokens.kt:40-41` | 미설정 | 비공개 GitHub 플러그인 저장소 토큰. 순서는 비밀번호 저장소 → 이 변수 → `gh auth token` |
-| `GH_TOKEN` | `phantom-install.sh:29` | `gh auth token` | `--release` 다운로드 토큰 |
+| `GH_TOKEN` | `phantom-install.sh:35` | `gh auth token` | `--release` 다운로드 토큰 |
 | `NOTES` | `phantom-release.sh:65-68` | 이전 태그 이후 커밋 | 릴리스 노트 |
 
 ## 5. 이 리포에 남아 있는 Phantom 고유 코드

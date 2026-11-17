@@ -4,7 +4,7 @@
 - 기준 커밋: b1a9cbaf29
 - 작성일: 2026-11-17
 
-Phantom는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
+Phantom은 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
 
 ## 여기서 시작
 

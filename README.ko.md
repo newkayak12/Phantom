@@ -22,7 +22,7 @@
 
 ## 소개
 
-Phantom는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community)를 개인이 포크한 IDE다. 기준은 태그 `idea/262.10968.63`이고, 업스트림과 같은 Apache 2.0 라이선스를 따른다. 백엔드 개발자가 쓰지 않는 것을 빼고, JetBrains 서비스로 가는 자동 호출을 끄고, 프로파일링으로 찾은 플랫폼 문제를 고친다. Ultimate에만 있던 백엔드 기능(Spring, JPA, HTTP 클라이언트, 데이터베이스)은 필요할 때 설치하는 클린룸 플러그인으로 옮겼다. JetBrains와 제휴하거나 보증받은 프로젝트가 아니다([자세히](#업스트림-상표-클린룸-정책)).
+Phantom은 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community)를 개인이 포크한 IDE다. 기준은 태그 `idea/262.10968.63`이고, 업스트림과 같은 Apache 2.0 라이선스를 따른다. 백엔드 개발자가 쓰지 않는 것을 빼고, JetBrains 서비스로 가는 자동 호출을 끄고, 프로파일링으로 찾은 플랫폼 문제를 고친다. Ultimate에만 있던 백엔드 기능(Spring, JPA, HTTP 클라이언트, 데이터베이스)은 필요할 때 설치하는 클린룸 플러그인으로 옮겼다. JetBrains와 제휴하거나 보증받은 프로젝트가 아니다([자세히](#업스트림-상표-클린룸-정책)).
 
 번들만이 아니라 플랫폼까지 고치는 이유: Spring Boot 프로젝트에서 IntelliJ IDEA Ultimate 2026.2.3을 프로파일링하니 기동 비용의 약 81%가 오픈소스 플랫폼 자체에 있었고(작성자가 직접 한 프로파일링이며 이 리포지토리 밖에 기록돼 있다), 프로젝트 전체를 다시 스캔하게 만드는 파일 타입 변경 이벤트도 그중 하나였다.
 
@@ -140,7 +140,7 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 
 ## 업스트림, 상표, 클린룸 정책
 
-> Phantom는 JetBrains와 제휴하지 않았으며 JetBrains의 보증을 받지 않았다. IntelliJ와 IntelliJ IDEA는 JetBrains s.r.o.의 상표다.
+> Phantom은 JetBrains와 제휴하지 않았으며 JetBrains의 보증을 받지 않았다. IntelliJ와 IntelliJ IDEA는 JetBrains s.r.o.의 상표다.
 
 intellij-community 태그 `idea/262.10968.63`을 기준으로 한다. 첫 커밋은 업스트림 트리(업스트림 README와 히스토리는 빠짐)이고, Phantom 변경은 그 뒤부터다. 새 업스트림 태그를 병합할 때 충돌하기 쉬운 파일은 [FORK-DELTA §6](docs/phantom/FORK-DELTA.md)에 정리되어 있다.
 
