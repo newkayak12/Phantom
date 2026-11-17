@@ -13,6 +13,10 @@
 
 <p align="center">
   <a href="LICENSE.txt"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/license-Apache%202.0-blue"></a>
+  <a href="https://github.com/newkayak12/Phantom/actions/workflows/phantom-quality.yml"><img alt="Quality CI" src="https://github.com/newkayak12/Phantom/actions/workflows/phantom-quality.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/newkayak12/Phantom/actions/workflows/phantom-analysis.yml"><img alt="Analysis workflow" src="https://github.com/newkayak12/Phantom/actions/workflows/phantom-analysis.yml/badge.svg?branch=main"></a>
+  <a href="https://app.codecov.io/gh/newkayak12/Phantom"><img alt="Codecov: quality tool coverage" src="https://codecov.io/gh/newkayak12/Phantom/branch/main/graph/badge.svg?flag=phantom-quality"></a>
+  <a href=".github/README.md#sonarqube-and-codecov-setup"><img alt="SonarQube: setup required" src="https://img.shields.io/badge/SonarQube-setup%20required-lightgrey"></a>
   <a href="#upstream-trademarks-and-clean-room-policy"><img alt="Upstream: idea/262.10968.63" src="https://img.shields.io/badge/upstream-idea%2F262.10968.63-lightgrey"></a>
   <a href="#download-and-install"><img alt="Platforms: macOS arm64, Windows x64" src="https://img.shields.io/badge/platforms-macOS%20arm64%20%7C%20Windows%20x64-lightgrey"></a>
 </p>

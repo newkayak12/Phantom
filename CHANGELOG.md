@@ -55,6 +55,7 @@
 - 얕은(shallow) git 클론에서는 정적 baseline의 나이 검사를 건너뛰고 stderr에 안내(`git fetch --unshallow`)를 쓴다. 얕은 클론에서는 가장 오래 받은 커밋이 번들 목록의 마지막 변경으로 보여 모든 baseline이 `STALE`(종료 코드 2)로 나왔다 (aadcfe0bc7, PR #5).
 
 ### 문서
+- 영어·한국어 README에 main 기준 품질·분석 CI와 Codecov 배지를 추가하고, SonarQube는 프로젝트 설정 전까지 설정 대기로 표시한다 (PR #9).
 - 소개를 Phantom 기능 중심으로 정리하고 직접 측정한 프로파일링 수치와 벤치마크 결과는 유지했다. IntelliJ 소스 열기·실행 안내를 추가하고 오래된 생성기 안내를 바로잡았다 (PR #9).
 - Claude Code가 공통 AGENTS.md를 읽도록 CLAUDE.md를 추가하고, Claude·Codex 작업별 스킬 선택·검증 안내와 Phantom에서 업스트림 AI 지침 생성기를 실행하지 않는 이유를 정리했다 (PR #9).
 - 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2, PR #2).
