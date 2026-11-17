@@ -22,6 +22,18 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.gitignore
+            /sonar-project.properties
+            /codecov.yml
+            /phantom-bench-report.py
+            /tools/phantom-quality.mjs
+            /tools/phantom-quality.test.mjs
+            /platform/platform-impl/src/dev/phantom/
+            /platform/lang-impl/src/dev/phantom/
+            /plugins/phantom-sync/
+            /plugins/phantom-theme/
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a5914442 # v5.0.0
         with:
           node-version: '22'
