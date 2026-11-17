@@ -6,11 +6,14 @@
   phantom-bench-report.py summary <label-dir>  run-*.json -> summary.json (median, min, max per metric)
   phantom-bench-report.py static <App.app>     bundle size, jar and plugin counts, startup registrations -> JSON
   phantom-bench-report.py compare <baseline.json> <summary.json>
-                                               exit 1 when a median is worse than the baseline's beyond its tolerance
+                                               exit 1 when a median is worse than the baseline's beyond its tolerance;
+                                               exit 2 when nothing regressed but a static baseline is stale (its app
+                                               was built before the last change to the bundle list)
 """
 import json
 import re
 import statistics
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -181,6 +184,34 @@ STATIC_TOLERANCE = {"bundle_mb": ("relative", 0.02), "jars": ("absolute", 0), "b
                     "preload_services": ("absolute", 0), **{ep: ("absolute", 0) for ep in STARTUP_EPS}}
 
 
+# The bundle list. A static baseline measured on an app built before its last change does not see plugins removed
+# since then, so putting one back would not fail the gate.
+BUNDLE_LIST = "build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt"
+
+
+def stale_static_baseline(baseline_doc):
+    """Why the static baseline is older than the bundle list, or None. Dates only: the baseline's app build date
+    comes from its build number 262.<YYMMDD>, the bundle list's from its last commit; a change made on the build day
+    is not seen."""
+    m = re.fullmatch(r"\d+\.(\d\d)(\d\d)(\d\d)", str(baseline_doc.get("build", "")))
+    if not m:
+        print(f"note: the baseline app's build number {baseline_doc.get('build')!r} carries no build date (not built by "
+              f"phantom-build.sh?), so its age against {BUNDLE_LIST} is not checked", file=sys.stderr)
+        return None
+    built = f"20{m.group(1)}-{m.group(2)}-{m.group(3)}"
+    try:
+        changed = subprocess.run(["git", "log", "-1", "--format=%cs %h", "--", BUNDLE_LIST],
+                                 cwd=Path(__file__).resolve().parent, capture_output=True, text=True,
+                                 check=True).stdout.split()
+    except (OSError, subprocess.CalledProcessError):
+        print(f"note: no git history here, so the static baseline's age against {BUNDLE_LIST} is not checked",
+              file=sys.stderr)
+        return None
+    if changed and changed[0] > built:
+        return f"its app was built {built}, but {BUNDLE_LIST} last changed {changed[0]} ({changed[1]})"
+    return None
+
+
 def compare(baseline_path, summary_path):
     baseline_doc = json.loads(Path(baseline_path).read_text())
     baseline = baseline_doc["metrics"]
@@ -196,7 +227,12 @@ def compare(baseline_path, summary_path):
         regressions += worse
         change = f"{(after - before) / before:+.1%}" if before else f"{after - before:+}"
         print(f"{'REGRESSION' if worse else 'ok':<10} {metric:<22} {before:>10} -> {after:<10} {change}")
-    return 1 if regressions else 0
+    stale = stale_static_baseline(baseline_doc) if baseline_doc.get("kind") == "static" else None
+    if stale:
+        print(f"STALE BASELINE: {baseline_path}: {stale}. Plugins removed from the bundle since then can come back "
+              f"without failing this gate. Regenerate it as in docs/phantom/bench/README.md (Baselines).",
+              file=sys.stderr)
+    return 1 if regressions else 2 if stale else 0
 
 
 if __name__ == "__main__":
