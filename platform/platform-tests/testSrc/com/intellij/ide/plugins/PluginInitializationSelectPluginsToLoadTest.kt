@@ -441,7 +441,7 @@ class PluginInitializationSelectPluginsToLoadTest {
       assertThat(excludedPlugins.all { it.reason is PluginDeclaresConflictingId }).isTrue()
     }
 
-    // Phantom: a plugin keeping another plugin's id as an alias replaces it, instead of both being excluded
+    // phantom-idea: a plugin keeping another plugin's id as an alias replaces it, instead of both being excluded
     @Test
     fun `plugin keeping another plugin's ID as an alias replaces it`() {
       plugin("foo") { version = "1.0" }.installAt(pluginsDirPath)

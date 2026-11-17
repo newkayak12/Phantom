@@ -67,7 +67,7 @@ class IndexDiagnosticDumper(private val coroutineScope: CoroutineScope) : Dispos
     val projectIndexingActivityHistoryListenerEpName: ExtensionPointName<ProjectIndexingActivityHistoryListener> =
       ExtensionPointName("com.intellij.projectIndexingActivityHistoryListener")
 
-    // Phantom: indexing reports are JetBrains' diagnostics; write them only on request
+    // phantom-idea: indexing reports are JetBrains' diagnostics; write them only on request
     private val shouldDumpDiagnostics: Boolean
       get() = SystemProperties.getBooleanProperty("intellij.indexes.diagnostics.dump", false)
 
