@@ -20,7 +20,7 @@ private const val GATE_PROPERTY = "phantom.jetbrains.services"
 private const val URL_OVERRIDE_PROPERTY = "platform.feedback.test.submission.url"
 
 /**
- * Phantom: feedback forms (this plugin's onboarding form among them) must not reach JetBrains' feedback service
+ * phantom-idea: feedback forms (this plugin's onboarding form among them) must not reach JetBrains' feedback service
  * unless `-Dphantom.jetbrains.services=true`. The submission URL is pointed at a local server, so a broken gate
  * shows up as a request on that server or as a callback, instead of a call to forms-service.jetbrains.com.
  * The platform feedback module has no test root of its own; this module depends on it directly.

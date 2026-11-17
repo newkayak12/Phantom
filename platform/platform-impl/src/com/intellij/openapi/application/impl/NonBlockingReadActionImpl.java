@@ -123,7 +123,7 @@ public final class NonBlockingReadActionImpl<T> implements NonBlockingReadAction
   private static final SubmissionTracker ourUnboundedSubmissionTracker = new SubmissionTracker();
 
   /* ======================== monitoring: ================================================= */
-  // Phantom: OpenTelemetry meters for every non-blocking read action are JetBrains diagnostics, off unless asked for
+  // phantom-idea: OpenTelemetry meters for every non-blocking read action are JetBrains diagnostics, off unless asked for
   private static final boolean ENABLE_OTEL_MONITORING = getBooleanProperty("idea.non-blocking-action.enable-monitoring", false);
   private static final @Nullable OTelMonitor MONITOR;
   // to protect against incorrectly written hashCode() in equality objects

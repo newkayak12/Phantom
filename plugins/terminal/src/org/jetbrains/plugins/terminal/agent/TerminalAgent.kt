@@ -105,7 +105,7 @@ interface TerminalAgentProvider {
 @ApiStatus.Internal
 class DefaultTerminalAgentProvider : TerminalAgentProvider {
   override fun getTerminalAgents(): List<TerminalAgent> {
-    // Phantom: no Junie (JetBrains' agent, installed from junie.jetbrains.com)
+    // phantom-idea: no Junie (JetBrains' agent, installed from junie.jetbrains.com)
     return listOf(ClaudeCodeTerminalAgent, CodexTerminalAgent)
   }
 }
