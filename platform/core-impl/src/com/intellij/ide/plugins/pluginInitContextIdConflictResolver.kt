@@ -40,7 +40,7 @@ fun PluginInitializationContext.resolveIdConflicts(
 }
 
 /**
- * Phantom: a plugin that keeps another plugin's id as an alias replaces it (Phantom-plugins' builds of IntelliJ plugins,
+ * phantom-idea: a plugin that keeps another plugin's id as an alias replaces it (Phantom-plugins' builds of IntelliJ plugins,
  * e.g. dev.phantom.toml with the alias org.toml.lang). With both installed, only the replacement loads: the replaced
  * plugin is left out instead of both being excluded over the id, and its dependents resolve to the replacement.
  */

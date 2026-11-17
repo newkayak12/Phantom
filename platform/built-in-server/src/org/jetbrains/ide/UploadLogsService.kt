@@ -35,7 +35,7 @@ internal class UploadLogsService : RestService() {
   override fun getServiceName(): String = serviceName
 
   override fun isOriginAllowed(request: HttpRequest): OriginCheckResult  {
-    // Phantom: pages can't make the IDE upload its logs to JetBrains unless -Dphantom.jetbrains.services=true
+    // phantom-idea: pages can't make the IDE upload its logs to JetBrains unless -Dphantom.jetbrains.services=true
     if (!MarketplaceRequests.jetBrainsServicesEnabled) return OriginCheckResult.FORBID
     val predefined = isHostInPredefinedHosts(request, trustedPredefinedHosts, propertyKeyForTrustedHosts)
     return if (predefined) OriginCheckResult.ALLOW else OriginCheckResult.FORBID
