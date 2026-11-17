@@ -196,7 +196,7 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
   }
 
   override val baseFileName: String
-    get() = "idea"
+    get() = "phantom"
 
   override fun getProductContentDescriptor(): ProductModulesContentSpec = productModules {
     include(intellijCommunityBaseFragment(platformPrefix))

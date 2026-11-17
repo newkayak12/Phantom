@@ -6,9 +6,9 @@
 # docs/phantom/2026-10-17-benchmark-vs-ultimate-median.md. After --settle seconds the raw outputs (idea.log,
 # the startup report from idea.log.perf.stats.file, jcmd, footprint) are saved and turned into run-N.json by
 # phantom-bench-report.py.
-# VM options: the launcher reads the bundled idea.vmoptions first, then the file in $IDEA_VM_OPTIONS
+# VM options: the launcher reads the bundled phantom.vmoptions first, then the file in $PHANTOM_VM_OPTIONS
 # (native/XPlatLauncher/src/default.rs, collect_vm_options_from_files), so the user's own options and --vm-extra
-# override bundled ones the same way a user's idea.vmoptions does.
+# override bundled ones the same way a user's phantom.vmoptions does.
 # Environment (each defaults to the value in parentheses, so nothing needs to be set on the author's machine):
 #   PHANTOM_APP            the app to measure (/Applications/Phantom.app)
 #   PHANTOM_CONFIG_DIR     the user config copied into each run ($HOME/Library/Application Support/Phantom/PhantomIDEA)
@@ -74,7 +74,7 @@ else
   print -r -- "$fixture_src" > "$source_file"
 fi
 
-if pgrep -f "$APP/Contents/MacOS/idea" >/dev/null; then
+if pgrep -f "$APP/Contents/MacOS/phantom" >/dev/null; then
   echo "note: another Phantom is running; it competes for CPU and adds noise"
 fi
 
@@ -90,15 +90,15 @@ run_once() {
 
   print -l "idea.config.path=$config" "idea.system.path=$system" "idea.log.path=$dir/log" > "$dir/idea.properties"
   {
-    [[ -f "$USER_CONFIG/idea.vmoptions" ]] && cat "$USER_CONFIG/idea.vmoptions"
+    [[ -f "$USER_CONFIG/phantom.vmoptions" ]] && cat "$USER_CONFIG/phantom.vmoptions"
     print -- "-Didea.log.perf.stats.file=$dir/perf.json"
     print -- "-Didea.trust.all.projects=true"
     [[ -n "$vm_extra" ]] && cat "$vm_extra"
   } > "$dir/bench.vmoptions"
 
   local t0; t0="$(python3 -c 'import time; print(int(time.time()*1000))')"
-  IDEA_PROPERTIES="$dir/idea.properties" IDEA_VM_OPTIONS="$dir/bench.vmoptions" \
-    "$APP/Contents/MacOS/idea" "$fixture" >"$dir/stdout.txt" 2>&1 &
+  PHANTOM_PROPERTIES="$dir/idea.properties" PHANTOM_VM_OPTIONS="$dir/bench.vmoptions" \
+    "$APP/Contents/MacOS/phantom" "$fixture" >"$dir/stdout.txt" 2>&1 &
   local pid=$!
   print -l "{\"pid\": $pid, \"launch_epoch_ms\": $t0, \"settle_s\": $settle, \"sha\": \"$sha\", \"label\": \"$label\"}" > "$dir/meta.json"
 
