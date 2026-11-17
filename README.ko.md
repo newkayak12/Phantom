@@ -1,4 +1,4 @@
-<!-- synced-with: README.md @ ea745003d1+docs -->
+<!-- synced-with: README.md @ 0a09032770+docs -->
 <p align="center">
   <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom" width="180">
 </p>
@@ -22,9 +22,11 @@
 
 ## 소개
 
-Phantom는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community)를 개인이 포크한 IDE다. 기준은 태그 `idea/262.10968.63`이고, 업스트림과 같은 Apache 2.0 라이선스를 따른다. 백엔드 개발자가 쓰지 않는 것을 빼고, JetBrains 서비스로 가는 자동 호출을 끄고, 프로파일링으로 찾은 플랫폼 문제를 고친다. Ultimate에만 있던 백엔드 기능(Spring, JPA, HTTP 클라이언트, 데이터베이스)은 필요할 때 설치하는 클린룸 플러그인으로 옮겼다. JetBrains와 제휴하거나 보증받은 프로젝트가 아니다([자세히](#업스트림-상표-클린룸-정책)).
+Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그인 번들을 줄이고 고유 테마와 기본 설정을 제공하며, Spring, JPA, HTTP 요청, 데이터베이스 기능은 선택 플러그인으로 설치한다. 플랫폼에서는 시작 시 재스캔, 인덱싱, 메모리 설정을 수정했고, JetBrains 서비스로 가는 자동 요청은 [아래에 설명한 범위](#무엇이-다른가)에서 제한한다.
 
-번들만이 아니라 플랫폼까지 고치는 이유: Spring Boot 프로젝트에서 IntelliJ IDEA Ultimate 2026.2.3을 프로파일링하니 기동 비용의 약 81%가 오픈소스 플랫폼 자체에 있었고(작성자가 직접 한 프로파일링이며 이 리포지토리 밖에 기록돼 있다), 프로젝트 전체를 다시 스캔하게 만드는 파일 타입 변경 이벤트도 그중 하나였다. 분석 노트는 별도 리포지토리에 있다.
+[JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) 태그 `idea/262.10968.63`을 기반으로 한 개인 프로젝트다. 소스 라이선스와 업스트림 저작권 고지는 [라이선스 절](#라이선스)에 있다. Phantom는 JetBrains와 제휴하거나 보증받은 프로젝트가 아니다.
+
+플랫폼 수정은 작성자가 Spring Boot 프로젝트에서 IntelliJ IDEA Ultimate 2026.2.3을 직접 프로파일링한 결과에서 출발했다. 기동 비용의 약 81%가 오픈소스 플랫폼에 있었고, 프로젝트 전체를 다시 스캔하는 파일 타입 변경 이벤트도 그중 하나였다. 프로파일링 노트는 별도 리포지토리에서 관리한다. 이 리포지토리에 기록한 벤치마크는 [성능 절](#성능)에 있다.
 
 ## 무엇이 다른가
 
@@ -123,6 +125,8 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 
 버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 IntelliJ Platform 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`. 서명, 릴리스, 벤치마크는 [BUILD.md](docs/phantom/BUILD.md)에 있다.
 
+플랫폼을 수정하거나 디버그하려면 체크아웃 루트를 기존 IntelliJ 프로젝트로 열고 공유 실행 구성 **IDEA**를 쓴다. 프로젝트 SDK는 `jbr-25`(JDK 25)다. 소스 실행과 배포 빌드가 서로 다른 플러그인을 로드할 수 있으므로, 대체 플러그인의 변경을 검증하기 전에 [IDE 설정과 소스 실행 안내](docs/phantom/DEVELOPMENT.md#ide에서-소스-열기실행하기)를 읽는다.
+
 ## 문서
 
 프로젝트 문서는 대부분 한국어로 쓰여 있다.
@@ -144,7 +148,7 @@ Ultimate 바이너리는 **동작과 성능을 이해하기 위해서만** 디�
 
 ## 기여
 
-한 개발자의 Kotlin·Spring 백엔드 작업에 맞춘 개인 포크다. 문제는 이 리포지토리의 GitHub Issues에 남긴다. 테스트를 돌리는 CI는 없으니 관련 테스트는 로컬에서 `./tests.cmd`로 실행한다([DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md) 참고).
+한 개발자의 Kotlin·Spring 백엔드 작업에 맞춘 개인 포크다. 문제는 이 리포지토리의 GitHub Issues에 남긴다. [Phantom quality](.github/workflows/phantom-quality.yml)는 CI에서 저장소 스크립트와 워크플로를 검사한다. 관련 IDE 테스트는 로컬에서 `./tests.cmd`로 실행한다([DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md) 참고).
 
 ## 라이선스
 

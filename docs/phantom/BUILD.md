@@ -1,8 +1,8 @@
 # 빌드·릴리스·벤치마크 가이드
 
 - 목적: Phantom를 빌드, 서명, 설치, 릴리스, 측정하는 방법과 그 스크립트의 실제 동작을 적는다.
-- 기준 커밋: ea745003d1
-- 작성일: 2026-11-16
+- 기준 커밋: ea745003d1 (Phantom quality CI 안내는 2026-11-17 작업 트리에서 확인)
+- 작성일: 2026-11-17
 
 이 문서의 줄 번호는 위 커밋의 파일을 직접 열어 확인한 값이다. 단 ea745003d1에서 다시 연 것은 `phantom-build.sh`, `phantom-release.sh`, `phantom-install.sh`, `phantom-bench.sh`, `phantom-bench-report.py`, `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `OpenSourceCommunityInstallersBuildTarget.kt`의 줄이다. `phantom-sign.sh`(3929d7998b이 고침)와 그 밖의 파일 줄은 이전 기준 커밋 64dc82b3f2 때 값이라 몇 줄 밀렸을 수 있다. 읽지 않고 짐작한 내용은 "(추정)"으로 표시했다. 이 문서는 설명만 하며 개선 제안은 하지 않는다.
 
@@ -260,7 +260,7 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
   `GitHubPluginRepositoryTest`는 패키지가 `com.intellij`이지만 커밋 이력(`53c0592476`, `79d2dc6b96`, `e67f21c7b5`)이 Phantom 플러그인 저장소 읽기 기능을 다룬다. 모듈 이름은 `.iml` 파일명과 `sourceFolder` 선언에서 읽은 것이고 실행해 보지는 않았다. 예시 명령:
   `./tests.cmd --module phantom.sync.tests --test dev.phantom.sync.GitRepoCommunicatorTest`
 - 빌드 스크립트(`phantom-*.sh`), `PhantomBuildNumber.kt`, `phantom-bench-report.py`, `plugins/phantom-theme`에 대한 테스트 파일은 찾지 못했다. 표시 버전을 `<version>`에 쓰는 `withPhantomVersion`만 048852ca23의 `ApplicationInfoPropertiesTest`가 다룬다. 이름에 "phantom"과 "Test"가 들어간 파일과 `dev.phantom`을 포함한 테스트 소스를 검색한 결과이며 전수 조사는 아니다.
-- CI에서 테스트를 돌리는 워크플로는 없다. `.github/workflows`에서 "phantom"을 포함하는 파일은 `phantom-release.yml` 하나이고 이 파일은 테스트를 호출하지 않는다.
+- [Phantom quality](../../.github/workflows/phantom-quality.yml)는 PR, main push, 수동 실행에서 품질 도구의 Node 테스트와 변경된 스크립트·워크플로 검사를 한다. IDE 모듈 테스트(`tests.cmd`)는 실행하지 않으므로 위 명령으로 로컬에서 검증한다. 릴리스 워크플로도 IDE 테스트를 호출하지 않는다.
 
 ## 9. 알려진 문제
 
@@ -271,7 +271,7 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
 3. 고침(256d3b35c3). 전에는 앱 `/Applications/Phantom.app`(`phantom-install.sh`, `phantom-bench.sh`, `phantom-sign.sh` 기본값), 사용자 설정 경로(`phantom-bench.sh`), 기본 픽스처 `$HOME/projects/private/prototype-reservation-system`(`phantom-bench.sh`)이 코드에 고정되어 다른 위치에 설치한 머신에서는 바꿀 방법이 없었다. 지금은 환경변수로 바꾼다. 값이 없으면 기본값은 전과 같다: `PHANTOM_APP`(세 스크립트. `phantom-install.sh:22`, `phantom-bench.sh:21`, `phantom-sign.sh`에서는 인자가 먼저), `PHANTOM_CONFIG_DIR`(`phantom-bench.sh:22`), `PHANTOM_BENCH_FIXTURE`(`phantom-bench.sh:28`, `--fixture`가 먼저). 각 스크립트 머리 주석에 적었다. 기본값은 이미 `$HOME`에서 만들어 사용자별 절대 경로는 없었다. 확인: 세 스크립트의 대입 줄을 변수 없이/있이 해석해 기본값과 재정의 값을 출력했다. 벤치 실행과 설치 전체는 실행하지 않았다. 픽스처 프로젝트가 없는 머신에서는 여전히 `--fixture`나 `PHANTOM_BENCH_FIXTURE`가 필요하다. 이어서 b5a1bc773a가 `.app`으로 끝나는 절대 경로가 아닌 `PHANTOM_APP`을 `phantom-install.sh`에서 거부하게 했고(`:23`), ecf939da71가 다른 픽스처를 주면 복사본을 바꾸고 상대 경로를 부른 폴더 기준으로 읽게 했으며(7장), eff1276d6a이 설치 때 `PHANTOM_APP` 경로에서 실행 중인 Phantom만 프로세스 ID로 끄게 했다(5장). 셋 다 벤치 전체나 실제 설치는 실행하지 않았다.
 4. 고침(2aa424a169). 전에는 `phantom-sign.sh`가 인증서가 없어도 메시지만 내고 `exit 0` 해서 호출자가 서명 실패를 알 수 없었고, 헤더 주석은 "login keychain"이라고 잘못 적었다. 지금은 인증서가 없으면 이유를 stderr에 쓰고 종료 코드 1로 실패한다 (`phantom-sign.sh:19-27`). `PHANTOM_SIGN_OPTIONAL=1`이면 같은 상황을 stderr 경고와 종료 코드 0으로 끝낸다. 의도적으로 건너뛰기에 기대는 호출자는 `phantom-install.sh` 하나뿐이고(릴리스 DMG는 ad-hoc 서명이며 설치하는 머신에서 재서명한다는 `phantom-release.sh:10-11`, `phantom-release.yml:9-10` 주석), 이 스크립트가 서명 호출에 이 값을 명시적으로 켠다. 헤더 주석은 전용 키체인 `phantom-signing.keychain-db`만 본다고 고쳤다 (`phantom-sign.sh:7-11`). 확인: 인증서가 없는 임시 `HOME`에서 두 경로(종료 코드 1, `PHANTOM_SIGN_OPTIONAL=1`에서 0)를 실행했다. 실제 인증서로 서명하는 경로와 `phantom-install.sh` 전체는 실행하지 않았다. 이어서 인증서를 만드는 절차가 리포에 없어 다른 사람의 설치는 늘 ad-hoc 서명으로 끝나던 것을 고쳤다: `phantom-sign.sh --setup`이 macOS 기본 도구만으로 전용 키체인·비밀번호 파일·자체 서명 인증서를 만들고, `phantom-install.sh`가 인증서가 없으면 서명 전에 이를 부른다(`PHANTOM_SIGN_SETUP=0`이면 건너뛴다. 만들기에 실패하면 전처럼 경고 후 ad-hoc 서명). 서명은 `codesign --keychain`으로 전용 키체인을 가리켜 검색 목록과 신뢰 설정을 바꾸지 않는다(5장 "로컬 서명 인증서"). 기존 키체인·비밀번호 파일·인증서 이름·식별자는 그대로라 기존 설정의 designated requirement도 같다. 확인: 임시 `HOME`과 더미 앱으로 만들기 두 번, 서명, 재복사 앱 재서명(같은 designated requirement), `codesign --verify`, 자동 만들기·`PHANTOM_SIGN_SETUP=0`·만들기 실패·틀린 비밀번호 경로를 실행했고 키체인 검색 목록이 전후 같았다. 실제 설치와 실제 앱의 개인정보 권한 유지는 실행하지 않았다.
 5. 건너뛰기 목록이 이름과 달리 항상 적용된다. 이는 upstream 동작이다(`git diff d2faebf601 HEAD -- build/src/OpenSourceCommunityInstallersBuildTarget.kt`에서 `:39`의 `OPTIONS.buildStepsToSkip + BUILD_STEPS_DISABLED_FOR_GITHUB_ACTIONS`는 바뀌지 않았다). 포크가 이 파일에서 바꾼 것은 목록에서 `WINDOWS_ZIP_STEP`과 `ARCHIVE_PLUGINS`(80b3e36e3d, Kotlin zip을 만들기 위해)를 뺀 것과 macOS에서 `WINDOWS_EXE_INSTALLER_STEP`을 건너뛰던 조건을 지운 것(Windows 설치 파일과 zip을 만들기 위해)뿐이다. `OpenSourceCommunityInstallersBuildTarget.kt:19-24`의 `BUILD_STEPS_DISABLED_FOR_GITHUB_ACTIONS`가 `:39`에서 조건 없이 `buildStepsToSkip`에 더해진다. 결과: 로컬 빌드에서도 `CROSS_PLATFORM_DISTRIBUTION_STEP`, `SOURCES_ARCHIVE_STEP`이 항상 건너뛰어진다. 그 사이 `IdeaCommunityProperties.kt:72-73`은 `buildCrossPlatformDistribution = true`, `buildSourcesArchive = true`로 남아 있다.
-6. 벤치, 정적 게이트, 테스트가 CI와 빌드·릴리스 스크립트에 연결되어 있지 않다. `phantom-build.sh`, `phantom-release.sh`, `phantom-install.sh`, `phantom-release.yml`에서 `bench`, `tests.cmd`, `static`을 검색한 결과가 없고, `phantom-bench*`를 참조하는 파일은 `phantom-bench.sh`와 `phantom-bench-report.py` 자신뿐이다. 결과: 번들 크기나 시작 등록 수가 늘어도 릴리스 경로에서 자동으로 걸러지지 않는다.
+6. IDE 모듈 테스트, 런타임 벤치와 앱 번들의 정적 게이트는 CI와 빌드·릴리스 스크립트에 연결되어 있지 않다. Phantom quality의 스크립트·워크플로 검사와 별개다. 결과: 번들 크기나 시작 등록 수가 늘어도 릴리스 경로에서 자동으로 걸러지지 않는다.
 
 ### 확인하지 못해 뺀 항목
 

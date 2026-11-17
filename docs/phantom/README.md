@@ -1,15 +1,15 @@
 # Phantom 문서 안내
 
 - 목적: Phantom 문서가 무엇이 있고, 어떤 순서로 읽고, 어느 것이 지금도 맞는지 알려 준다.
-- 기준 커밋: ea745003d1
-- 작성일: 2026-11-16
+- 기준 커밋: ea745003d1 (개발 안내 추가는 0a09032770에서 확인)
+- 작성일: 2026-11-17
 
 Phantom는 JetBrains intellij-community 태그 `idea/262.10968.63`의 개인 포크다. 저장소 루트가 곧 community 루트다.
 
 ## 여기서 시작
 
 1. **쓰거나 빌드하려는 사람**: [README.md](../../README.md)(한국어 [README.ko.md](../../README.ko.md)) → [BUILD.md](BUILD.md)(준비물, 빌드, 설치, 릴리스) → [CHANGELOG.md](../../CHANGELOG.md)(무엇이 바뀌었나).
-2. **코드를 고치려는 사람**: [ARCHITECTURE.md](ARCHITECTURE.md)(지도) → [FORK-DELTA.md](FORK-DELTA.md)(업스트림과 다른 곳 전부) → [DEVELOPMENT.md](DEVELOPMENT.md)(작업별 방법, 검증, 알려진 문제) → [BUILD.md](BUILD.md) 7-8절(벤치, 테스트).
+2. **코드를 고치려는 사람**: [ARCHITECTURE.md](ARCHITECTURE.md)(지도) → [FORK-DELTA.md](FORK-DELTA.md)(업스트림과 다른 곳 전부) → [DEVELOPMENT.md](DEVELOPMENT.md)(IDE에서 열기·실행, 작업별 방법, 검증, 알려진 문제) → [BUILD.md](BUILD.md) 7-8절(벤치, 테스트).
 3. **AI 에이전트**: [AGENTS.md](../../AGENTS.md)(자동으로 읽힘) → 이 문서 → DEVELOPMENT.md 1절(규칙)과 5절(알려진 문제) → 고칠 주제의 FORK-DELTA 절 → 필요하면 ARCHITECTURE.md. 현행 문서의 `경로:줄`은 기준 커밋 기준이므로 HEAD에서 다시 열어 확인한다.
 
 ## 문서 목록

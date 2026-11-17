@@ -34,6 +34,9 @@
 - Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c, PR #2).
 
 ### 빌드·배포·서명
+- Phantom 변경 파일용 품질 검사와 PR CI를 추가했다. 스크립트 구문, GitHub Actions와 Bash 정적 분석을 검사하며, IDE 모듈 컴파일·테스트는 별도 실행한다.
+- 기본 브랜치의 PR 필수·승인 0명·관리자 우회 ruleset을 JSON으로 관리한다. 비공개 저장소의 GitHub 요금제 제한(HTTP 403)으로 실제 설정 적용은 대기 상태다.
+- 로컬 worktree, AI 개인 설정·세션·자격 증명과 루트 환경 변수 파일을 gitignore에 추가했다. 공유 지침·스킬·IDE 프로젝트 파일은 계속 추적한다.
 - `phantom-build.sh`가 추적 파일 `IdeaApplicationInfo.xml`을 더는 고쳐 쓰지 않는다. 표시 버전(빌드 날짜의 YY와 MM.DD)을 macOS와 Windows `installers.cmd` 실행에 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, `ApplicationInfoPropertiesImpl`이 XML보다 먼저 읽어 `product-info.json`, Info.plist, Windows 설치 파일, 패키지에 넣는 `<version>`에 반영한다. 추적 XML에는 자리표시자 `0` / `0.0`이 남아서 소스에서 IDE를 실행하거나 `installers.cmd`를 직접 실행하면 버전 0.0으로 보인다. 빌드 뒤 작업 트리가 더러워지던 것과 릴리스 태그 커밋의 버전이 릴리스 버전과 다를 수 있던 것이 이 변경으로 사라진다. `ApplicationInfoPropertiesTest`에 테스트 2개를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). PR #2 병합(fe53ddfed4)으로 main에 들어오면서 7fe0ab9436이 쓴 `26` / `11.13`도 이 자리표시자로 바뀌었다 (048852ca23, PR #2).
 - `phantom-sign.sh`가 "Phantom Local" 인증서를 찾지 못하면 이유를 stderr에 쓰고 종료 코드 1로 실패한다(전에는 `exit 0`). `PHANTOM_SIGN_OPTIONAL=1`이면 경고만 쓰고 0으로 끝나며, `phantom-install.sh`가 이 값을 켜서 인증서 없는 머신에서도 설치는 ad-hoc 서명으로 끝난다. 헤더 주석이 login 키체인이라고 잘못 적던 것을 전용 키체인 `phantom-signing.keychain-db`로 고쳤다. (2aa424a169, PR #4)
 - `phantom-install.sh`, `phantom-sign.sh`, `phantom-bench.sh`의 앱·설정·픽스처 경로를 환경변수로 바꿀 수 있다: `PHANTOM_APP`(세 스크립트, `phantom-sign.sh`는 인자가 먼저), `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`(벤치, `--fixture`가 먼저). 기본값은 전과 같다. (256d3b35c3, PR #4)
@@ -49,6 +52,8 @@
 - 얕은(shallow) git 클론에서는 정적 baseline의 나이 검사를 건너뛰고 stderr에 안내(`git fetch --unshallow`)를 쓴다. 얕은 클론에서는 가장 오래 받은 커밋이 번들 목록의 마지막 변경으로 보여 모든 baseline이 `STALE`(종료 코드 2)로 나왔다 (aadcfe0bc7, PR #5).
 
 ### 문서
+- 소개를 Phantom 기능 중심으로 정리하고 직접 측정한 프로파일링 수치와 벤치마크 결과는 유지했다. IntelliJ 소스 열기·실행 안내를 추가하고 오래된 생성기 안내를 바로잡았다.
+- Claude Code가 공통 AGENTS.md를 읽도록 CLAUDE.md를 추가하고, Claude·Codex 작업별 스킬 선택·검증 안내와 Phantom에서 업스트림 AI 지침 생성기를 실행하지 않는 이유를 정리했다.
 - 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2, PR #2).
 - 문서가 기준으로 삼던 be60914099 뒤 main에 들어온 네 커밋(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서에 반영했다. 번들 구성(빼는 업스트림 모듈 21개, Phantom-plugins에서 빌드해 넣는 8개), Phantom-plugins 체크아웃이 필요한 빌드 절차와 릴리스 워크플로, 플러그인 별칭 대체(FORK-DELTA 3.12절), 밀린 `경로:줄`, 포크 델타 숫자(d2faebf601..64dc82b3f2)를 고치고 현행 문서의 기준 커밋을 64dc82b3f2로 바꿨다. 숫자는 그때 값이고 지금은 아래 항목의 값이다 (d65bc7d02d, PR #2).
 - 없는 `./build/jpsModelToBazel.cmd`를 가리키던 안내를 이 리포의 유일한 생성기 `./build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(AGENTS.md와 같은 문구, 이 포크에서 도는지는 미확인). 대상: `.ai/guide.md`, `.ai/tool-permissions.json`, `.agents/skills`와 `.claude/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`. Kotlin `projectModelUpdater.kt`는 ultimate 루트가 있을 때만 그 경로를 부르므로 그대로 두었다. (303c4a933a, PR #4)

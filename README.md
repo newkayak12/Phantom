@@ -19,9 +19,11 @@
 
 ## What is this
 
-Phantom is a personal fork of [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community), based on tag `idea/262.10968.63` and licensed under Apache 2.0 like its upstream. It removes what a backend developer does not use, turns off automatic calls to JetBrains services, fixes platform issues found by profiling, and moves Ultimate-style backend features (Spring, JPA, HTTP client, database) into clean-room plugins installed on demand. It is not affiliated with or endorsed by JetBrains ([details](#upstream-trademarks-and-clean-room-policy)).
+Phantom is an IDE for Kotlin, Spring Boot and JPA backend development. It ships a smaller plugin bundle, its own themes and defaults, and optional plugins for Spring, JPA, HTTP requests and databases. Platform changes cover startup rescanning, indexing and memory settings; automatic JetBrains service requests are restricted as described [below](#whats-different).
 
-Why the platform and not only the bundle: profiling IntelliJ IDEA Ultimate 2026.2.3 on a Spring Boot project put about 81% of startup cost in the open-source platform itself (the author's own profiling, recorded outside this repository), including a file type change event that rescanned the whole project. The analysis notes live in a separate repository.
+This is a personal project based on [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) tag `idea/262.10968.63`. Source licensing and upstream attribution are listed [below](#license). Phantom is not affiliated with or endorsed by JetBrains.
+
+The platform changes follow the author's profiling of IntelliJ IDEA Ultimate 2026.2.3 on a Spring Boot project: about 81% of startup cost was in the open-source platform, including a file type change event that rescanned the whole project. The profiling notes are maintained in a separate repository. Benchmarks recorded here are in the [performance section](#performance).
 
 ## What's different
 
@@ -120,6 +122,8 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 
 Versions: display `YY.MM.DD`, build number `PH-<YYMMDD>.<N>`, and an internal platform build `262.<YYMMDD>` so plugins built for IntelliJ Platform 262 keep loading. Signing, releases and benchmarks: [BUILD.md](docs/phantom/BUILD.md).
 
+To edit or debug the platform, open this checkout's root as the existing IntelliJ project and use the shared **IDEA** run configuration. The project SDK is `jbr-25` (JDK 25). Source runs and packaged builds can load different plugins; see [IDE setup and source execution](docs/phantom/DEVELOPMENT.md#ide에서-소스-열기실행하기) before validating a change to a replaced plugin.
+
 ## Docs
 
 Most project docs are written in Korean.
@@ -141,7 +145,7 @@ Ultimate binaries were decompiled **only to understand behavior and performance*
 
 ## Contributing
 
-This is a personal fork shaped by one developer's Kotlin and Spring backend work; report problems in this repository's GitHub Issues. No CI runs the tests; run the affected ones locally with `./tests.cmd` (see [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md)).
+This is a personal fork shaped by one developer's Kotlin and Spring backend work; report problems in this repository's GitHub Issues. [Phantom quality](.github/workflows/phantom-quality.yml) checks repository scripts and workflows in CI. Run affected IDE tests locally with `./tests.cmd` (see [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md)).
 
 ## License
 
