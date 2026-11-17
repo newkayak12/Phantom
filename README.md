@@ -80,7 +80,7 @@ Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom-IDEA/relea
 > [!WARNING]
 > Builds are not signed by a recognized authority. The macOS app is ad-hoc signed and not notarized, so Gatekeeper blocks a DMG downloaded in a browser. The Windows files are unsigned, so Windows may warn about an unknown publisher.
 
-On macOS, `./phantom-install.sh --release [tag]` from a clone downloads the DMG with curl (no quarantine flag), replaces `/Applications/Phantom IDEA.app` and restarts it; it needs `gh auth login` or `GH_TOKEN`. The ad-hoc signature changes with every build, so macOS asks for privacy permissions again unless you re-sign with a local certificate (`phantom-sign.sh`, see [BUILD.md §5](docs/phantom/BUILD.md)).
+On macOS, `./phantom-install.sh --release [tag]` from a clone downloads the DMG with curl (no quarantine flag), replaces `/Applications/Phantom IDEA.app` and restarts it; it needs `gh auth login` or `GH_TOKEN`. The ad-hoc signature changes with every build, so macOS would ask for privacy permissions again after each install; to avoid that, the script re-signs the app with a local self-signed certificate (not an Apple certificate, no Apple account) and creates that certificate in its own keychain the first time (`./phantom-sign.sh --setup` does it by hand, `PHANTOM_SIGN_SETUP=0` skips it; see [BUILD.md §5](docs/phantom/BUILD.md)).
 
 The IDE does not check for its own updates; install new releases the same way. On first run you can import settings from an installed JetBrains IDE.
 

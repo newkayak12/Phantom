@@ -83,7 +83,7 @@ Phantom IDEA는 [JetBrains/intellij-community](https://github.com/JetBrains/inte
 > [!WARNING]
 > 공인된 기관의 서명이 없다. macOS 앱은 ad-hoc 서명만 되어 있고 공증(notarization)을 받지 않아서, 브라우저로 받은 DMG는 Gatekeeper가 막는다. Windows 파일은 서명하지 않았으므로 Windows가 알 수 없는 게시자라고 경고할 수 있다.
 
-macOS에서는 클론한 리포지토리에서 `./phantom-install.sh --release [tag]`를 실행하면 DMG를 curl로 받고(격리 플래그가 붙지 않는다) `/Applications/Phantom IDEA.app`을 교체한 뒤 다시 띄운다. `gh auth login` 또는 `GH_TOKEN`이 필요하다. ad-hoc 서명은 빌드마다 바뀌므로, 로컬 인증서로 다시 서명하지 않으면(`phantom-sign.sh`, [BUILD.md §5](docs/phantom/BUILD.md)) macOS가 개인정보 권한을 다시 묻는다.
+macOS에서는 클론한 리포지토리에서 `./phantom-install.sh --release [tag]`를 실행하면 DMG를 curl로 받고(격리 플래그가 붙지 않는다) `/Applications/Phantom IDEA.app`을 교체한 뒤 다시 띄운다. `gh auth login` 또는 `GH_TOKEN`이 필요하다. ad-hoc 서명은 빌드마다 바뀌어 설치할 때마다 macOS가 개인정보 권한을 다시 물을 것이므로, 이 스크립트는 앱을 로컬 자체 서명 인증서(Apple 인증서가 아니고 Apple 계정도 필요 없다)로 다시 서명하고, 처음에는 그 인증서를 전용 키체인에 만든다(`./phantom-sign.sh --setup`으로 직접 만들 수 있고, `PHANTOM_SIGN_SETUP=0`이면 건너뛴다. [BUILD.md §5](docs/phantom/BUILD.md) 참고).
 
 IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 방법으로 설치한다. 첫 실행 때 설치된 JetBrains IDE의 설정을 가져올 수 있다.
 

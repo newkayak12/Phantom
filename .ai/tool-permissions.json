@@ -37,7 +37,7 @@
     ["bazel", "info"],
     ["bazel", "run"],
     ["./bazel-build-all.cmd"],
-    ["./build/jpsModelToBazel.cmd"],
+    ["./build/jpsModelToBazelCommunityOnly.cmd"],
     ["bun", "build/jps-module.mjs"],
     ["{{TOOLS_DIR}}/rg.cmd"],
     ["{{TOOLS_DIR}}/fd.cmd"],

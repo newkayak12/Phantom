@@ -101,9 +101,11 @@ Pluginization is a good moment to verify that each former direct module declares
 
 After the source edits, run the generators so the platform descriptors, Bazel files, and `.idea/modules.xml` are updated to match:
 
+<!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
+
 ```bash
 bazel run //platform/buildScripts:plugin-model-tool
-./build/jpsModelToBazel.cmd
+./build/jpsModelToBazelCommunityOnly.cmd
 ```
 
 Expected diffs:
@@ -128,7 +130,7 @@ Pluginization can break narrow test modules even when product packaging tests pa
 - Inspect `Plugin set resolution` and `Problems found loading plugins` in local or TeamCity test logs.
 - Treat messages such as missing `intellij.platform.structureView.impl`, `intellij.platform.execution.serviceView`, or `intellij.platform.navbar.frontend` as a missing wrapper-plugin runtime dependency (`intellij.moduleSet.plugin.structureView`, `intellij.moduleSet.plugin.servicesView`, or the new `intellij.platform.<feature>.plugin`).
 - Add the wrapper dep only to the affected test module with `scope="RUNTIME"`. Do not add it to broad shared modules such as `intellij.platform.testFramework` or aggregate/global test infrastructure.
-- After changing `.iml`, run `./build/jpsModelToBazel.cmd` and verify the generated `BUILD.bazel` runtime deps are updated.
+- After changing `.iml`, run `./build/jpsModelToBazelCommunityOnly.cmd` <!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have --> and verify the generated `BUILD.bazel` runtime deps are updated.
 - For TeamCity, read the published test log artifact when needed: `/app/rest/builds/id:<buildId>/artifacts/content/testlog.zip!.../idea.log`.
 
 ## Pre-TeamCity Canary Suite

@@ -13,7 +13,12 @@ python3 phantom-bench-report.py static "/Applications/Phantom IDEA.app" > /tmp/s
 python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json /tmp/static.json
 ```
 
-`compare` exits 1 when a metric is worse than the baseline by more than its tolerance.
+`compare` exits 1 when a metric is worse than the baseline by more than its tolerance. With a static baseline it
+also checks the baseline's age: when the baseline app's build date (from its build number `262.<YYMMDD>`) is earlier
+than the last commit to the bundle list `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`, it prints
+`STALE BASELINE` on stderr and exits 2 if nothing regressed (1 still wins). Plugins removed from the bundle after the
+baseline was taken could otherwise come back without failing the gate. The check compares days, so a bundle change
+made on the baseline build's own day is not seen; outside a git checkout it is skipped with a note.
 
 ## Conditions
 
@@ -21,15 +26,28 @@ python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json 
   reach smart mode, against 3.4 s in the 2026-10-17 benchmark; numbers from a loaded machine are not comparable.
 - The user's own Phantom may keep running: each bench run has its own config copy (without `.lock`), system and log
   directories. It still competes for CPU, so close it for a baseline.
-- Fixture: `~/projects/private/prototype-reservation-system`, copied once to `out/phantom-bench/work/fixture`
+- Fixture: `--fixture DIR`, else `$PHANTOM_BENCH_FIXTURE`, else `~/projects/private/prototype-reservation-system`;
+  copied once to `out/phantom-bench/work/fixture`
   without `mysql_data` and `build/`.
 
 ## Baselines
 
 | File | From | Status |
 |---|---|---|
-| `static-baseline.json` | installed 26.10.27 | recorded |
+| `static-baseline.json` | installed 26.10.27 (build `262.261027`) | stale: the bundle list changed after that build (commits from 2026-10-28 on, 1570329708 to ed67704350); `compare` exits 2 until it is regenerated |
 | `baseline.json` | — | not yet: needs a quiet machine; then calibrate the tolerances below |
+
+Regenerating `static-baseline.json` needs an app built from the current sources (the counts come from the built
+bundle, not from the sources), so it needs a full build with the Phantom-plugins checkout next to this one:
+
+```
+./phantom-install.sh      # builds HEAD and installs it; or --no-build for a DMG already built from HEAD
+python3 phantom-bench-report.py static "${PHANTOM_APP:-/Applications/Phantom IDEA.app}" > docs/phantom/bench/static-baseline.json
+python3 phantom-bench-report.py compare docs/phantom/bench/static-baseline.json docs/phantom/bench/static-baseline.json
+```
+
+The last command must exit 0 (no `STALE BASELINE`). Then update the table above with the new version and build, and
+commit the JSON with a message that says why the counts changed.
 
 ## Tolerances
 
