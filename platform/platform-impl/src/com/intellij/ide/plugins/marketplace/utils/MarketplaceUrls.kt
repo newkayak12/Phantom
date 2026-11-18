@@ -103,11 +103,14 @@ object MarketplaceUrls {
     val parameters = hashMapOf(
       "id" to descriptor.pluginId.idString,
       "build" to ApplicationInfoImpl.orFromPluginCompatibleBuild(buildNumber),
-      "uuid" to uuid,
       "updatedFrom" to updatedFrom,
       "os" to buildOsParameter(),
       "arch" to CpuArch.CURRENT.name
     )
+    // phantom-idea: the device id is sent only if one is given; Phantom passes none (PluginDownloader.getMarketplaceDownloadsUUID)
+    if (uuid.isNotEmpty()) {
+      parameters["uuid"] = uuid
+    }
    descriptor.channel?.let {
       parameters["channel"] = it
     }
