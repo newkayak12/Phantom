@@ -72,8 +72,9 @@ if [[ -z "${NOTES:-}" ]]; then
   previous="$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)"
   NOTES="$(git log --no-merges --format='- %s' ${previous:+$previous..}HEAD | head -40)"
 fi
-# CI checks out a pushed commit; a local release first pushes what it built
-[[ -n "${GITHUB_ACTIONS:-}" ]] || git push -q origin HEAD
+# main takes changes only through pull requests, so a release is made from a commit already merged there
+git fetch -q origin main
+git merge-base --is-ancestor HEAD origin/main || { echo "HEAD is not on origin/main: merge it through a pull request first"; exit 1; }
 # the tag goes up with git: creating it through the API needs the token's workflow scope, since the commit touches
 # .github/workflows
 git tag -f "$tag" HEAD

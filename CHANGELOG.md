@@ -41,6 +41,7 @@
 - `phantom-sign.sh --setup`이 가져오기와 키 접근 목록 설정 사이에서 멈춘 설치(codesign이 쓸 수 없는 인증서가 남고 다시 실행하면 할 일이 없다고 하던 것)를 다시 실행할 때 접근 목록을 다시 건다. 자동 잠금 설정은 이번 실행이 만든 키체인에만 걸고, .p12 비밀번호를 환경변수로 내보내지 않으며, 임시 키 폴더를 INT, TERM, HUP에서도 지운다 (3929d7998b, PR #4).
 - `phantom-install.sh`가 `PHANTOM_APP`을 지우고 바꾸므로 `.app`으로 끝나는 절대 경로가 아니면 거부한다 (b5a1bc773a, PR #4).
 - `phantom-install.sh`가 실행 중인 Phantom을 끌 때 번들 ID(`tell application id "dev.phantom.idea"`)가 아니라 `PHANTOM_APP` 경로에서 실행 중인 프로세스(`pgrep -f "$APP/Contents/MacOS/idea"`)의 프로세스 ID로 종료를 요청한다(`osascript -l JavaScript`의 `NSRunningApplication.terminate`, Quit 메뉴와 같은 Apple 이벤트라 IDE가 상태를 저장한다). 전에는 두 복사본이 떠 있으면 다른 쪽이 꺼지고 교체할 쪽은 180초 대기 끝에 실패할 수 있었다. 기다리기와 재시작(`open "$APP"`)은 전처럼 그 경로 기준이다. 같은 번들 ID의 스테이 오픈 애플릿 두 개로 확인했고 실제 Phantom 두 개로는 실행하지 않았다 (eff1276d6a, PR #5).
+- `main`은 관리자도 pull request로만 바꾼다. GitHub 규칙 `.github/rulesets/main.json`(PR 필수, force push·삭제 금지, 관리자는 PR 안에서만 우회)은 저장소를 공개로 바꾼 뒤 적용한다. `phantom-release.sh`는 `origin/main`에 이미 있는 커밋에서만 릴리스하고(직접 push하지 않음), Phantom-plugins의 marketplace.json도 pull request로 고친다. `CLAUDE.md`(AGENTS.md를 불러오고 Git·Claude 규칙을 더함)와 `.claude/settings.json`을 넣고, `docs/superpowers`를 지우고 에이전트 작업 파일을 무시한다.
 
 ### 벤치마크
 - 정적 게이트 `compare`가 baseline 앱의 빌드 날짜(빌드 번호 `262.<YYMMDD>`)보다 번들 목록 `IdeaCommunityProperties.kt`의 마지막 커밋이 늦으면 stderr에 `STALE BASELINE`을 쓰고, 회귀가 없어도 종료 코드 2로 끝난다. 지금의 `static-baseline.json`(26.10.27)은 이 검사에 걸린다. 빌드된 앱이 있어야 다시 만들 수 있어 파일은 그대로 두고, 재생성 명령을 `docs/phantom/bench/README.md`에 적었다 (e29d855fff, PR #4).
