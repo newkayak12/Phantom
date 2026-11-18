@@ -132,6 +132,22 @@ jobs:
             '/platform/platform-impl/src/dev/phantom/' \
             '/platform/lang-impl/src/dev/phantom/' \
             '/plugins/phantom-sync/' '/plugins/phantom-theme/'
+      - name: Fetch source history needed by SonarQube blame
+        if: steps.services.outputs.sonar == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # JGit cannot lazily fetch historical blobs from the partial clone.
+          header="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          echo "::add-mask::$header"
+          git rev-list --objects --all -- \
+            .gitignore sonar-project.properties phantom-bench-report.py \
+            tools/phantom-quality.mjs tools/phantom-quality.test.mjs \
+            platform/platform-impl/src/dev/phantom/ \
+            platform/lang-impl/src/dev/phantom/ \
+            plugins/phantom-sync/ plugins/phantom-theme/ \
+            | cut -d ' ' -f 1 \
+            | git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $header" cat-file --batch > /dev/null
       - name: Analyze Phantom sources with SonarQube
         if: steps.services.outputs.sonar == 'true'
         uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
