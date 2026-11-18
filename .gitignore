@@ -48,3 +48,6 @@ stale_outputs_checked
 /.envrc
 /.scannerwork/
 /.sonar/
+/.superpowers/
+/.orca/
+/docs/superpowers/
