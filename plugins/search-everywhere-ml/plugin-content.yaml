@@ -52,9 +52,6 @@
 - name: lib/modules/intellij.searchEverywhereMl.typos.jar
   contentModules:
   - name: intellij.searchEverywhereMl.typos
-    libraries:
-      ai.grazie.spell.gec.engine.local.jvm:
-      - name: $MAVEN_REPOSITORY$/ai/grazie/spell/gec-spell-engine-local/0/gec-spell-engine-local-0.jar
 - name: lib/searchEverywhereMl.jar
   modules:
   - name: intellij.searchEverywhereMl

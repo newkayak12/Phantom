@@ -4,9 +4,8 @@
 
   <dependencies>
     <plugin id="tanvd.grazi"/>
-    <module name="intellij.libraries.ai.grazie.spell.gec.engine.local"/>
+    <!-- phantom-idea: the closed Grazie speller library and Grazie core module dependencies were removed; the module uses its own ActionsSpeller -->
     <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
-    <module name="intellij.grazie.core"/>
     <module name="intellij.platform.ml.impl"/>
     <!-- endregion -->
   </dependencies>
