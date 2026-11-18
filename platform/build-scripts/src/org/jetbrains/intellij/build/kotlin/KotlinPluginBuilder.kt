@@ -101,7 +101,7 @@ abstract class KotlinPluginBuilder(val kind : KotlinPluginKind = System.getPrope
       "intellij.kotlin.injection",
       "kotlin.scripting",
       "intellij.kotlin.coverage",
-      "intellij.kotlin.completion.ml",
+      // phantom-idea: intellij.kotlin.completion.ml left out; it packs JetBrains' unlicensed completion-ranking-kotlin model
       "intellij.kotlin.copyright",
       "intellij.kotlin.spellchecker",
       "intellij.kotlin.jvm.decompiler",

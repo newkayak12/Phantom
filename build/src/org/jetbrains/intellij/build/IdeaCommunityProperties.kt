@@ -37,7 +37,7 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
  */
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
   "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
-  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grazie", "terminal", "github", "junit", "properties",
+  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grammar", "terminal", "github", "junit", "properties",
   "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images",
 )
 
@@ -146,6 +146,15 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     // 0.8-2.9 s instead of 2.3-3.9 s and the first smart mode 5-9 s instead of 14-19 s (phantom-bench.sh, Kotlin fixture).
     // It replaces -Djava.system.class.loader=PathClassLoader, which the dynamic archive does not support.
     enableCds = true
+
+    // phantom-idea: JetBrains' user agreements, privacy policies and consent lists are not Phantom's and are not shipped. The code
+    // reads them only for vendor JetBrains (EndUserAgreement, ConsentOptions) or tolerates their absence (LocalConsentOptions);
+    // eua.html stays in the source tree because the SBOM generator reads it.
+    productLayout.addPlatformSpec { layout, _ ->
+      layout.excludeFromModule("intellij.platform.resources", listOf(
+        "eua.html", "euaCommunity.html", "PrivacyPolicy.html", "privacyEap.html", "consents.json", "localConsents.json",
+      ))
+    }
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build

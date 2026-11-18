@@ -14,7 +14,8 @@ LangString update_context_menu_label ${LANG_ENGLISH} 'Add "Open Folder as Projec
 LangString create_associations_group ${LANG_ENGLISH} "Create Associations"
 ; Rider-specific
 LangString additional_features ${LANG_ENGLISH} "Additional features"
-LangString install_etw_service ${LANG_ENGLISH} "Install JetBrains ETW Host Service"
+; phantom-idea: no JetBrains name in the installer
+LangString install_etw_service ${LANG_ENGLISH} "Install ETW Host Service"
 LangString windows_defender_exclusions ${LANG_ENGLISH} "Add Rider executables to Microsoft Defender exclusions"
 
 ; Uninstall options page

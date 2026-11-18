@@ -1,4 +1,5 @@
-CFBundleGetInfoString = "@@bundle_name@@ @@version@@、ビルド @@build@@、Copyright JetBrains s.r.o., (c) 2000-@@year@@";
+/* phantom-idea: JetBrains keeps the upstream copyright, Phantom adds its own for the modifications */
+CFBundleGetInfoString = "@@bundle_name@@ @@version@@、ビルド @@build@@、Copyright 2000-@@year@@ JetBrains s.r.o. and contributors; modifications Copyright 2026 Phantom contributors";
 
 NSCameraUsageDescription = "@@bundle_name@@ のアプリケーションがデバイスのカメラへのアクセス許可をリクエストしています。";
 NSMicrophoneUsageDescription = "@@bundle_name@@ のアプリケーションがデバイスのマイクへのアクセス許可をリクエストしています。";
