@@ -22,6 +22,7 @@
 - `NOTICE.txt`에 GPL 2.0 + Classpath Exception 구성 요소(JetBrains Runtime, jb-jdi, sa-jdwp, java-compatibility)의 소스 위치와, 요청하면 3년 동안 소스 사본을 제공한다는 서면 제안을 넣었다. 바이너리 배포에 GPLv2 3조가 요구하는 것이다. JBR 소스 태그는 `jbr-release-<runtimeBuild>`이다.
 - 수정한 원본 파일 중 표시가 없던 두 파일(`.idea/modules.xml`, `GithubBundle.properties`)에 `phantom-idea:` 표시를 달았다.
 - `LICENSE.txt`를 JetBrains Open-Source Build Terms에서 Apache License 2.0 원문으로 바꾸고, `NOTICE.txt`에 포크 사실과 JetBrains와 무관하다는 문구를 넣었다 (ff512ae2df).
+- Windows 설치 파일이 JetBrains를 게시자로 적던 것을 Phantom으로 바꿨다: 버전 정보의 `CompanyName`은 Phantom, `LegalCopyright`는 "Copyright 2000-<연도> JetBrains s.r.o. and contributors; modifications Copyright 2026 Phantom contributors", 제거 목록 레지스트리의 `Publisher`는 Phantom, `URLInfoAbout`은 https://github.com/newkayak12/Phantom 이다(`build/conf/nsis/idea.nsi`). 설치 옵션 "Install JetBrains ETW Host Service"(ja/ko/zh_CN 포함)에서 JetBrains를 뺐다. 같은 저작권 문구를 macOS `InfoPlist.strings`(`CFBundleGetInfoString`, 5개 언어)와 `bin/phantom.exe`·`phantom64.exe`의 `LegalCopyright`(`WindowsDistributionBuilder.kt`)에도 쓴다. About의 회사 URL과 러너 등록 스크립트(`tools/phantom-runner-setup.sh`)가 없는 저장소 `newkayak12/phantom-idea`를 가리키던 것을 `newkayak12/Phantom`으로 고쳤다.
 
 ### 번들 구성
 
