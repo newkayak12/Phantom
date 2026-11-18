@@ -42,6 +42,9 @@ stale_outputs_checked
 /.env
 /.env.local
 /.env.*.local
+/.env.*
+!/.env.example
+!/.env.*.example
 /.envrc
 /.scannerwork/
 /.sonar/

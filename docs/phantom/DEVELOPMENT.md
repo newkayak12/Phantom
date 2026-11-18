@@ -21,6 +21,8 @@
 
 ## 2. 작업별 방법
 
+현재 번들 목록은 [BUILD.md 1절](BUILD.md#1-한눈에-보기)의 2026-11-18 상태를 본다. 아래 기준 커밋에서 센 17개 대체 플러그인·31개 제거 항목은 당시 값이며, 현재 설정은 각각 26개·40개다. 플러그인 저장소의 해당 모듈은 자체 `src/main` 소스를 빌드한다. 이 포크의 같은 이름 소스를 고쳐도 그 복사본이 자동으로 갱신되지는 않는다.
+
 ### IDE에서 소스 열기·실행하기
 
 1. [BUILD.md 2절](BUILD.md#2-사전-준비)의 Android 체크아웃을 준비하고, IDE의 Open으로 **이 저장소 루트**를 연다. 이미 `.idea/modules.xml`과 `*.iml`이 있는 IntelliJ 프로젝트다. `community/` 하위 폴더를 찾거나 Gradle 프로젝트로 새로 가져오지 않는다.
@@ -135,7 +137,7 @@
 
 - `./tests.cmd`는 Bazel 컴파일을 포함한다(`tests.cmd:15-28`). `--test`에는 FQN이나 와일드카드가 필요하다.
 - 소스에서 IDE를 실행할 때: 개발 모드 레이아웃도 `getAdditionalPluginPaths()`를 부르므로(`platform/build-scripts/src/org/jetbrains/intellij/build/dev/PluginBuilder.kt:74` → `IdeaCommunityProperties.kt:206-213`) `out/phantom-plugins/<dir>/lib`가 없으면 실패할 것으로 보인다(추정, 실행하지 않음). 그 디렉터리를 만드는 것은 `phantom-build.sh:29-44`뿐이다.
-- 자동화되지 않은 것: CI는 테스트도 게이트도 돌리지 않는다. 워크플로는 `.github/workflows/phantom-release.yml` 하나이고 수동 릴리스만 한다. `phantom-build.sh`, `phantom-release.sh`도 벤치·게이트·테스트를 부르지 않는다(BUILD.md 9절 6번). 위 확인은 사람이 커밋 전에 직접 돌린다.
+- 자동화되지 않은 것: IDE 모듈 테스트와 앱 번들의 정적 게이트·런타임 벤치는 로컬에서 별도로 실행한다. CI의 저장소 스크립트 검사와 Node 커버리지 분석은 이 검증을 대신하지 않는다. `phantom-build.sh`, `phantom-release.sh`도 벤치·게이트·IDE 테스트를 부르지 않는다(BUILD.md 9절 6번).
 
 ## 4. 커밋·변경 이력 규칙
 

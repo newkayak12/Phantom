@@ -8,6 +8,8 @@
 
 ## 1. 한눈에 보기
 
+**2026-11-18 현재 구성:** `phantom-build.sh`의 `bundled_from_plugins`와 `IdeaCommunityProperties.kt`의 `PHANTOM_PLUGINS_BUNDLED`는 모두 26개다. 기존 17개에 `junit`, `properties`, `repository-search`, `json`, `gradle-dsl`, `groovy-scripting`, `groovy`, `groovy-live-templates`, `images`가 더해졌다. 아래 기준 커밋의 목록·줄 번호·17개 집계는 당시 기록이므로 현재 작업에서는 두 설정을 직접 확인한다. 이 수는 번들 설정의 항목 수이며 측정된 벤치마크 값과 별개다.
+
 파이프라인은 다음 사슬이다.
 
 1. `./phantom-build.sh` -> Phantom-plugins 체크아웃에서 플러그인 17개를 Gradle로 빌드해 `out/phantom-plugins/`에 풂 -> `installers.cmd` -> `build/run_build_target.sh` -> `bazel.cmd run //build:i_build_target` -> `OpenSourceCommunityInstallersBuildTarget.kt`의 `main` -> `out/phantom-idea/artifacts/`에 DMG(macOS arm64), exe, win.zip, 그리고 번들하지 않는 Kotlin 플러그인 zip(`<제품 코드>-plugins/` 아래).

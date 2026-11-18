@@ -8,6 +8,8 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 개인 IDE 프로
 
 ## 여기서 시작
 
+현재 자동화 범위와 남은 검증은 [기반 구성 현황](../../.github/BASELINE.md), CI·배지 설정은 [GitHub 자동화 안내](../../.github/README.md), AI 작업 흐름은 [`.ai/workflow.md`](../../.ai/workflow.md)를 본다. 플러그인별 현재 기능은 별도 [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)의 README와 한국어 문서가 기준이다. 아래 과거 설계 상태는 현재 플러그인 출시 여부를 뜻하지 않는다.
+
 1. **쓰거나 빌드하려는 사람**: [README.md](../../README.md)(한국어 [README.ko.md](../../README.ko.md)) → [BUILD.md](BUILD.md)(준비물, 빌드, 설치, 릴리스) → [CHANGELOG.md](../../CHANGELOG.md)(무엇이 바뀌었나).
 2. **코드를 고치려는 사람**: [ARCHITECTURE.md](ARCHITECTURE.md)(지도) → [FORK-DELTA.md](FORK-DELTA.md)(업스트림과 다른 곳 전부) → [DEVELOPMENT.md](DEVELOPMENT.md)(IDE에서 열기·실행, 작업별 방법, 검증, 알려진 문제) → [BUILD.md](BUILD.md) 7-8절(벤치, 테스트).
 3. **AI 에이전트**: [AGENTS.md](../../AGENTS.md)(자동으로 읽힘) → 이 문서 → DEVELOPMENT.md 1절(규칙)과 5절(알려진 문제) → 고칠 주제의 FORK-DELTA 절 → 필요하면 ARCHITECTURE.md. 현행 문서의 `경로:줄`은 기준 커밋 기준이므로 HEAD에서 다시 열어 확인한다.

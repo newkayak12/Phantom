@@ -1,46 +1,14 @@
-# Contributing to JetBrains IDEs Open Source
+# Contributing to Phantom
 
-Thanks for your interest in contributing to the JetBrains IDEs open-source repository!
+Report reproducible problems and propose changes in [GitHub Issues](https://github.com/newkayak12/Phantom/issues). Include the affected version, platform, steps, expected behavior and relevant logs with personal data removed. For security vulnerabilities, follow [SECURITY.md](SECURITY.md).
 
-## What kinds of contributions we welcome
+Before changing code, read [AGENTS.md](AGENTS.md) and the affected module's guidance. Platform patches and bundle selection belong here; most plugin features belong in the separate Phantom-plugins repository. Read [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md) for setup, source ownership and test commands.
 
-- **Bug fixes (preferred).** Most contributions we accept are fixes for reproducible issues. Tests should supply those fixes if possible.
-- **Features (by prior agreement only).** If you want to add a feature, please discuss it with us first. We accept features only when they
-  align with our roadmap for the relevant subsystem.
-- **“Patch welcome” issues.** We maintain a list of feature requests and improvements that we warmly welcome from the community:
-  https://youtrack.jetbrains.com/issues?q=%23patch_welcome
+Keep the change focused, preserve compatibility and license notices, and put user-facing strings in resource bundles. Describe the behavior changed and the reason. Add an entry under 미배포 in CHANGELOG.md. Run affected tests with ./tests.cmd, specifying the test module and fully qualified test name; use Bazel compilation when no tests apply. Documentation-only changes need link and diff checks rather than an IDE build.
 
-Before you start, make sure you:
+Use a plain imperative English commit subject, for example `Fix plugin alias resolution`. Include the motivation and verification for substantial changes. YouTrack tickets, JetBrains commit prefixes and Patronus/SafePush are not required for this project. Open a pull request with exact checks run and any unverified behavior; do not publish releases or change versions as an incidental part of a fix.
 
-- Have an existing YouTrack ticket for the issue you plan to work on (or create one if needed): https://youtrack.jetbrains.com/
-- Have read:
-  - [IntelliJ Coding Guidelines](https://plugins.jetbrains.com/docs/intellij/intellij-coding-guidelines.html)
-  - [Contribute Code](https://www.jetbrains.com/opensource/idea/)
-  - Follow the recommended [commit message format](#commit-message-format)
+Claude and Codex share [AGENTS.md](AGENTS.md); [CLAUDE.md](CLAUDE.md) imports it for Claude Code. [.ai/workflow.md](.ai/workflow.md) describes task routing. Personal settings and credentials belong in ignored local files.
 
-## Commit message format
-
-We strongly recommend following this commit message format:
-
-   ```
-   <YouTrack ticket ID>( <YouTrack ticket ID>)* (<subsystem>: )? <subject>
-        
-   <detailed description>?
-   ```
-
-E.g.:
-
-   ```
-   IDEA-125730 Groovy: declare explicit type 
-
-   Broken template should revert all its changes and move the caret back to the original position
-   ```
-
-Avoid including links to any discussions in commit messages (Slack, https://platform.jetbrains.com/, etc.). Instead, summarize the
-discussion right in the commit message, or create a YouTrack ticket and summarize it there.
-
-## Building the IDE
-
-Please read the [README.md](README.md) in order to understand how to build or
-run the IDE on your machine.
+Phantom derives from JetBrains intellij-community. Upstream copyright, license and attribution notices remain in LICENSE.txt, NOTICE.txt and the relevant source files; this contribution guide describes the independently maintained Phantom project.
 

@@ -34,6 +34,8 @@
 - Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c, PR #2).
 
 ### 빌드·배포·서명
+- 릴리스 checkout과 Gradle wrapper 검증 액션을 커밋 SHA로 고정하고, wrapper 검증을 PR·main 변경에 맞췄다. GitHub Actions 의존성은 Dependabot이 주간 묶음 PR로 갱신한다.
+- Jewel의 YouTrack 토큰·단일 커밋 형식 검증은 업스트림 저장소에서만 실행하고, Phantom PR에는 포크의 커밋 규칙을 적용한다. Jewel 빌드·테스트 작업은 유지한다.
 - SonarQube가 찾은 품질 도구의 Git PATH 의존, 정렬 비교, 복잡도 문제를 수정했다 (PR #9).
 - Cloud의 새 분석 모드에서 테스트 코드가 제품 커버리지에 포함되지 않도록 테스트 파일을 분석 대상에서 제외했다. 테스트 실행과 Codecov 보고서는 유지한다 (PR #9).
 - 부분 체크아웃에 없는 업스트림 파일을 Codecov의 자동 줄 보정이 읽다가 실패하지 않도록, 생성된 LCOV를 보정 없이 올리게 했다 (PR #9).
@@ -63,6 +65,8 @@
 - 얕은(shallow) git 클론에서는 정적 baseline의 나이 검사를 건너뛰고 stderr에 안내(`git fetch --unshallow`)를 쓴다. 얕은 클론에서는 가장 오래 받은 커밋이 번들 목록의 마지막 변경으로 보여 모든 baseline이 `STALE`(종료 코드 2)로 나왔다 (aadcfe0bc7, PR #5).
 
 ### 문서
+- 두 저장소의 README·한국어 안내에서 현재 번들 구성과 구현된 플러그인 상태를 바로잡고, AI·자동화·커버리지 범위를 연결했다. 기여·보안·행동 규칙, 이슈·PR 템플릿과 기반 구성 현황 문서로 프로젝트 작업의 진입점을 정리했다. 과거 측정값과 법적 출처 고지는 유지했다.
+- 기여·보안 제보·행동 규칙을 Phantom 유지관리 범위로 고치고, Claude·Codex 커밋·푸시 스킬의 업스트림 절차와 충돌을 없앴다. 로컬 환경 파일과 에이전트 인증·설정 파일의 무시 규칙을 보완했다 (PR #9).
 - README 첫 소개와 배지에서 IntelliJ 업스트림 표시를 걷어내고 Phantom 중심으로 정리했다. 측정 비교와 법적 출처는 해당 절에 남기고 실제 SonarQube 품질 게이트 배지를 연결했다 (PR #9).
 - 영어·한국어 README에 main 기준 품질·분석 CI와 Codecov 배지를 추가하고, SonarQube는 프로젝트 설정 전까지 설정 대기로 표시한다 (PR #9).
 - 소개를 Phantom 기능 중심으로 정리하고 직접 측정한 프로파일링 수치와 벤치마크 결과는 유지했다. IntelliJ 소스 열기·실행 안내를 추가하고 오래된 생성기 안내를 바로잡았다 (PR #9).

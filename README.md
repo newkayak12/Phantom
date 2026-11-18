@@ -34,7 +34,7 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 - "Report to JetBrains" error submission and the default IDE update feed (`-Didea.updates.url` brings it back).
 
 **Trimmed** ([FORK-DELTA §3.2, §3.3, §3.5](docs/phantom/FORK-DELTA.md))
-- 31 upstream plugins out of the bundle: 14 dropped (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …), 16 replaced by Phantom-plugins builds (TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown, Mermaid, Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub), and Kotlin, which each release publishes as a separate zip to the Phantom plugins repository instead (it is suggested for projects that use Kotlin or Gradle Kotlin DSL scripts); plus Android and Compose. Sources stay for upstream merges.
+- 40 upstream plugins out of the bundle: 14 dropped (Learn, MCP server, ACP, internal developer tools, Eclipse import, GitLab, extra keymaps, …), 25 replaced by Phantom-plugins builds (TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown, Mermaid, Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub), and Kotlin, which each release publishes as a separate zip to the Phantom plugins repository instead (it is suggested for projects that use Kotlin or Gradle Kotlin DSL scripts); plus Android and Compose. Sources stay for upstream merges.
 - Some changes listed on this page live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try Ultimate", the ShellCheck download). Whether those builds carry them was not checked; see [FORK-DELTA §3.2](docs/phantom/FORK-DELTA.md).
 - The Marketplace listing leaves out plugins JetBrains publishes (Phantom ships its own versions of the ones it keeps); running from sources, internal mode or `-Dphantom.marketplace.showAll=true` shows them.
 - Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
@@ -91,7 +91,7 @@ The IDE does not check for its own updates; install new releases the same way. O
 
 ## Plugins
 
-Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Seventeen of its plugins are built into the bundle in place of the upstream plugins they replace; all but Mermaid (Phantom's own implementation) keep the original plugin ids as aliases, so plugins that depend on the originals still resolve.
+Backend features live in a separate repository, [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), which every Phantom build registers as a plugin repository. When a project uses a matching library, the IDE suggests the plugin once; you can also install from Settings | Plugins. Twenty-six of its plugins are built into the bundle in place of the upstream plugins they replace; all but Mermaid (Phantom's own implementation) keep the original plugin ids as aliases, so plugins that depend on the originals still resolve.
 
 | Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
 |---|---|---|
@@ -100,11 +100,13 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 | Endpoints tool window (core; plugins fill it) | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
 | GitHub plugin repository support (core) | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
 | | `grazie`, `terminal`, `github` | `http-client`: `.http` request files |
+| | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
+| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images` | |
 | | | `kotlin`: the Kotlin language plugin, built by each release of this repository |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
 
-Planned, not built: Spring runtime (Actuator), Docker and Kubernetes, database migrations and more, designed in [docs/phantom/design/](docs/phantom/design/). Where the moved plugins used to live is listed in [FORK-DELTA §5](docs/phantom/FORK-DELTA.md).
+Docker, Kubernetes and database migrations have plugin projects and marketplace entries in [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins); consult that repository for current feature coverage. Spring runtime (Actuator) remains a design topic in [docs/phantom/design/](docs/phantom/design/). These design records describe their original scope, rather than a current feature checklist. Where the moved plugins used to live is listed in [FORK-DELTA §5](docs/phantom/FORK-DELTA.md).
 
 ## Build from source
 
@@ -114,16 +116,16 @@ Needs macOS on Apple Silicon, 16 GB+ RAM, about 120 GB free disk for the first b
 git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
-# 17 bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
+# Bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
 git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-`phantom-build.sh` first builds those 17 plugins with Phantom-plugins' Gradle wrapper and unpacks them into `out/phantom-plugins/`; it stops if the checkout or a plugin zip is missing. The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`, with the unbundled Kotlin plugin as a zip under its `*-plugins/` folder. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `048852ca23`) has not been built or tested yet.
+`phantom-build.sh` first builds those 26 plugins with Phantom-plugins' Gradle wrapper and unpacks them into `out/phantom-plugins/`; it stops if the checkout or a plugin zip is missing. The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`, with the unbundled Kotlin plugin as a zip under its `*-plugins/` folder. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `048852ca23`) has not been built or tested yet.
 
 Versions: display `YY.MM.DD`, build number `PH-<YYMMDD>.<N>`, and an internal platform build `262.<YYMMDD>` so plugins compatible with platform 262 keep loading. Signing, releases and benchmarks: [BUILD.md](docs/phantom/BUILD.md).
 
-To edit or debug the platform, open this checkout's root as the existing project and use the shared **IDEA** run configuration. The project SDK is `jbr-25` (JDK 25). Source runs and packaged builds can load different plugins; see [IDE setup and source execution](docs/phantom/DEVELOPMENT.md#ide에서-소스-열기실행하기) before validating a change to a replaced plugin.
+To edit or debug the platform, open this checkout's root as the existing project and use the shared **IDEA** run configuration. The project SDK is `jbr-25` (JDK 25). Source runs and packaged builds can load different plugins; see [IDE setup and source execution](docs/phantom/DEVELOPMENT.md#ide에서-소스-열기실행하기) before validating a change to a replaced plugin. The current bundle configuration takes 26 plugins from Phantom-plugins; the current list and recent additions are recorded at the start of [BUILD.md](docs/phantom/BUILD.md).
 
 ## Docs
 
