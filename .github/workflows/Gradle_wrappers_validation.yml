@@ -1,14 +1,26 @@
 name: Gradle Wrappers Validation
+# phantom-idea: validate wrapper changes before merge and on the fork's main branch.
 on:
+  pull_request:
+    paths:
+      - '**/gradle-wrapper.jar'
+      - '.github/workflows/Gradle_wrappers_validation.yml'
   push:
     branches:
-      - master
+      - main
     paths:
-      - '**.jar'
+      - '**/gradle-wrapper.jar'
+      - '.github/workflows/Gradle_wrappers_validation.yml'
+permissions:
+  contents: read
 jobs:
   validation:
     name: Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
+      # phantom-idea: pin wrapper-validation dependencies to reviewed commits.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: gradle/actions/wrapper-validation@017a9effdb900e5b5b2fddfb590a105619dca3c3 # v4.4.2
