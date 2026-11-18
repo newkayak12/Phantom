@@ -20,6 +20,8 @@
   <a href="#download-and-install"><img alt="Platforms: macOS arm64, Windows x64" src="https://img.shields.io/badge/platforms-macOS%20arm64%20%7C%20Windows%20x64-lightgrey"></a>
 </p>
 
+Coverage: repository quality tool only; IDE coverage is not measured.
+
 ## What is this
 
 Phantom is an IDE for Kotlin, Spring Boot and JPA backend development. It ships a smaller plugin bundle, its own themes and defaults, and optional plugins for Spring, JPA, HTTP requests and databases. Platform changes cover startup rescanning, indexing and memory settings; automatic JetBrains service requests are restricted as described [below](#whats-different).
