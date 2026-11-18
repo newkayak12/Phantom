@@ -16,6 +16,7 @@
 ## 미배포 (v26.11.13.1 이후)
 
 - 최신 main의 정책·배포 변경을 기반 설정 PR에 통합하고, PR 작성자를 제외한 collaborator 리뷰 요청을 PR 생성·재오픈·ready·업데이트 및 수동 실행에서 처리하도록 했다. 플러그인은 Spotless·detekt와 테스트·패키징 workflow를 중복 없이 나눈다.
+- Jewel의 업스트림 PR 형식 검사용 파일 필터도 업스트림에서만 실행하고, checkout에 필요한 contents 읽기 권한을 명시했다.
 
 ### 브랜딩·버전
 - 제품 이름을 Phantom IDEA에서 Phantom으로 바꿨다(IntelliJ IDEA 상표와 혼동을 피하려고). 앱은 `Phantom.app`, Windows 이름과 설치 폴더는 `Phantom`, 스플래시(`phantom_logo*.png`, `compose.swift splash phantom-white.png`로 다시 만듦)와 DMG 배경의 글자도 Phantom이다. 설정이 이어지도록 번들 ID `dev.phantom.idea`, 설정 폴더 이름 `PhantomIDEA`, 산출물 이름 `phantom-idea-*`는 그대로 둔다. `phantom-install.sh`는 기본 경로에서 `Phantom.app`이 아직 없고 `/Applications/Phantom IDEA.app`이 있으면 그 앱을 종료하고 새 앱으로 바꾼 뒤 지운다. 이 변경 이력의 이전 항목은 당시 이름 그대로 둔다.

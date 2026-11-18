@@ -81,9 +81,12 @@ jobs:
         run: ${{ steps.kotlin.outputs.bin-dir }}/kotlin ./scripts/annotate-detekt.main.kts
 
   check_paths:
+    # phantom-idea: this filter only feeds upstream PR formalities.
+    if: github.repository == 'JetBrains/intellij-community'
     name: Check changed files
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: read
     outputs:
       run_formalities: ${{ steps.filter.outputs.run_formalities }}
