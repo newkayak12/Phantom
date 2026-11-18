@@ -8,6 +8,14 @@
     {"name": "area: build", "color": "5319e7", "description": "Phantom build, packaging and release scripts", "paths": ["^phantom-.*\\.(sh|py)$", "^build/src/", "^platform/build-scripts/", "^community-resources/"]},
     {"name": "area: automation", "color": "1d76db", "description": "GitHub workflows and repository automation", "paths": ["^\\.github/", "^tools/phantom-"]},
     {"name": "area: platform", "color": "c5def5", "description": "IntelliJ platform patches maintained by Phantom", "paths": ["^platform/(?!build-scripts/)"]},
-    {"name": "area: plugins", "color": "bfd4f2", "description": "Plugin sources or bundle selection; shipped ownership requires verification", "paths": ["^plugins/", "^build/src/org/jetbrains/intellij/build/IdeaCommunityProperties\\.kt$"]}
+    {"name": "area: plugins", "color": "bfd4f2", "description": "Plugin sources or bundle selection; shipped ownership requires verification", "paths": ["^plugins/", "^build/src/org/jetbrains/intellij/build/IdeaCommunityProperties\\.kt$"]},
+    {"name":"size/XS","color":"c2e0c6","description":"PR with fewer than 50 changed lines"},
+    {"name":"size/S","color":"7bd148","description":"PR with 50–149 changed lines"},
+    {"name":"size/M","color":"fbca04","description":"PR with 150–499 changed lines"},
+    {"name":"size/L","color":"f9d0c4","description":"PR with 500–999 changed lines"},
+    {"name":"size/XL","color":"f29513","description":"PR with 1000–2999 changed lines"},
+    {"name":"size/XXL","color":"b60205","description":"PR with at least 3000 changed lines"},
+    {"name":"conflict","color":"d73a4a","description":"PR currently has merge conflicts"},
+    {"name":"stale","color":"ededed","description":"No activity for 60 days; removed on updates"}
   ]
 }
