@@ -148,7 +148,7 @@ private data class ProductDescriptor(val applicationName: String, val platformNa
       platformName = IdeBundle.message("subscription.dialog.ultimate"),
       activateButtonText = IdeBundle.message("subscription.dialog.activate.button.ultimate"),
       promoUrl = "https://www.jetbrains.com/products/compare/?product=idea&product=idea-ult",
-      imagePath = "/images/IdeaBannerLogo.png",
+      imagePath = "/phantom_logo.png", // phantom-idea: no JetBrains product banner
     )
 
     val pyCharm = ProductDescriptor(
@@ -156,7 +156,7 @@ private data class ProductDescriptor(val applicationName: String, val platformNa
       platformName = IdeBundle.message("subscription.dialog.pro"),
       activateButtonText = IdeBundle.message("subscription.dialog.activate.button.pro"),
       promoUrl = "https://www.jetbrains.com/pycharm/editions",
-      imagePath = "/images/PyCharmBannerLogo.png",
+      imagePath = "/phantom_logo.png", // phantom-idea: no JetBrains product banner
     )
   }
 }
