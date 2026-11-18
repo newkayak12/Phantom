@@ -95,6 +95,24 @@
 - 지워지는 것: `.sit`, 이전 DMG, `out/phantom-idea/temp`, `maven-artifacts`, `jps`, `dist.*` (위 8, 9단계). 이전 `.exe`와 `.zip`을 지우는 줄은 없다. Windows 빌드가 `out/phantom-idea` 전체를 비운다고 `phantom-build.sh:59`가 설명한다.
 - 남는 것: `out/phantom-build-seq`, `out/phantom-build-number`, `out/phantom-plugins/`(다음 빌드가 지우고 다시 만든다, `phantom-build.sh:38`).
 
+### Gradle API jar
+
+Gradle 플러그인이 쓰는 프로젝트 라이브러리 "Gradle"(`plugins/gradle-plugin/lib/gradle-api-<버전>.jar`, 약 170 MB)은 JetBrains 저장소에서 받지 않고 Bazel이 처음 필요할 때 만든다(`lib/gradle-api.bzl`, `lib/MODULE.bazel`의 `gradle_api`).
+
+- 만드는 법: services.gradle.org에서 `gradle-<버전>-bin.zip`을 받아 `distribution_sha256`(Gradle이 `.sha256`으로 공개한 값)으로 확인하고, 그 Gradle을 오프라인·전용 사용자 홈으로 한 작업짜리 프로젝트에 돌려 `gradleApi()` jar를 IntelliJ 레시피(`build/dependencies/gradle-api-deps/build.gradle`)와 같은 include/exclude로 다시 묶는다. 압축 없이(STORED), 타임스탬프 고정, 정렬된 순서로 쓰고 Gradle의 `LICENSE`·`NOTICE`를 `META-INF/gradle/`에 넣는다(IDE 빌드가 라이브러리 jar의 `META-INF/LICENSE*`를 지우므로 그 이름은 피한다). 결과는 `sha256`과 맞아야 하며 다르면 실제 값을 보여 주고 실패한다.
+- 필요한 것: JDK 17 이상(`JAVA_HOME`, 없으면 macOS `/usr/libexec/java_home -v 17+`), `shasum` 또는 `sha256sum`, services.gradle.org 접속(`build/bazel_downloader.cfg`가 이 호스트만 프록시 없이 허용). 시간은 이 Mac에서 약 25초다.
+- 9.6.0에서 확인한 것: Temurin 21(Bazel 안)과 Corretto 17(Bazel 밖, 다른 사용자 홈)로 만든 jar의 sha256이 같다. JetBrains의 `org.jetbrains.intellij.deps:gradle-api:9.6.0`과 파일 44,078개의 이름·CRC·크기가 모두 같고, 다른 것은 더한 Gradle `LICENSE`·`NOTICE` 두 파일뿐이다.
+
+새 Gradle 버전으로 옮기는 법:
+
+1. `build/dependencies/dependencies.properties`의 `gradleApiVersion`(업스트림이 올린 값)을 확인한다.
+2. `lib/MODULE.bazel`의 `gradle_api`에서 `version`과 `distribution_sha256`(`https://services.gradle.org/distributions/gradle-<버전>-bin.zip.sha256`)을 바꾸고 `sha256`은 그대로 둔 채 `./bazel.cmd build @lib//:gradle`을 돌린다. 실패 메시지의 sha256을 적고 한 번 더(다른 JDK로) 만들어 같은지 본 뒤 `sha256`에 넣는다. `lib/MODULE.bazel`을 고친 뒤 Bazel이 옛 값을 계속 쓰면 `./bazel.cmd shutdown` 후 다시 돌린다.
+3. 파일 이름의 버전을 맞춘다: `lib/BUILD.bazel`의 `copy_file`(`org.jetbrains.intellij.deps/gradle-api-<버전>.jar`)과 `.idea/libraries/Gradle.xml`의 `maven-id`. 배포본 jar 이름 `gradle-api-<버전>.jar`은 `GradleInitScriptUtil.kt`가 데몬 클래스패스에서 빼는 데 쓴다.
+4. 새 배포본의 `lib/`·`lib/plugins/` 파일 이름과 `LICENSE`를 보고 `CommunityLibraryLicenses.kt`의 "in Gradle" 항목(버전, 추가·삭제된 라이브러리, 라이선스)과 `NOTICE.txt`의 LGPL 항목을 고친다.
+5. `build/jpsModelToBazelCommunityOnly.cmd`로 Bazel 파일을 다시 만들면 `lib/MODULE.bazel`의 생성 구역에 `org_jetbrains_intellij_deps-gradle-api-*_http`(packages.jetbrains.team)가 다시 생기고 `lib/BUILD.bazel`이 그것을 가리킨다. 그 줄들을 지우고 `@gradle_api//file`로 되돌린다.
+
+IntelliJ로 이 저장소를 열 때(JPS 모델)는 `.idea/libraries/Gradle.xml`의 Maven 좌표로 jar를 내려받는다. 릴리스 경로(`phantom-build.sh` → Bazel)는 그 경로를 쓰지 않는다.
+
 ### 소요 시간
 
 README는 첫 빌드가 약 2시간, 이후 빌드는 "minutes"라고 쓴다 (`README.md:119`). 워크플로 타임아웃은 240분이다 (`phantom-release.yml:30`). 9229667cc7부터 앞에 붙은 Phantom-plugins Gradle 빌드의 시간은 재지 않았다.
