@@ -4,6 +4,8 @@ Report reproducible problems and propose changes in [GitHub Issues](https://gith
 
 Before changing code, read [AGENTS.md](AGENTS.md) and the affected module's guidance. Platform patches and bundle selection belong here; most plugin features belong in the separate Phantom-plugins repository. Read [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md) for setup, source ownership and test commands.
 
+Plan a new plugin, module or larger change in a GitHub issue rather than a document under `docs/`, and reference it from each pull request (`Part of #N`, the last one `Closes #N`) so it closes on merge. Keep private data out of issues.
+
 Keep the change focused, preserve compatibility and license notices, and put user-facing strings in resource bundles. Describe the behavior changed and the reason. Add an entry under 미배포 in CHANGELOG.md. Run affected tests with ./tests.cmd, specifying the test module and fully qualified test name; use Bazel compilation when no tests apply. Documentation-only changes need link and diff checks rather than an IDE build.
 
 Use a plain imperative English commit subject, for example `Fix plugin alias resolution`. Include the motivation and verification for substantial changes. YouTrack tickets, JetBrains commit prefixes and Patronus/SafePush are not required for this project. Open a pull request with exact checks run and any unverified behavior; do not publish releases or change versions as an incidental part of a fix.
