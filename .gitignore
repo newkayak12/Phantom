@@ -24,3 +24,11 @@ native/**/build/
 platform/build-scripts/licenses/gradlebuild/build
 stale_outputs_checked
 /android
+# coding-agent and OS working files; CLAUDE.md and .claude/settings.json are shared
+.claude/*
+!.claude/settings.json
+.superpowers/
+.teams_output/
+.harness-run/
+.orca/
+docs/superpowers/
