@@ -8,7 +8,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.IncompleteDependenciesService.DependenciesState
 import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.assertions.Assertions.assertThat
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

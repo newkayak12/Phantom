@@ -4,7 +4,7 @@ import com.intellij.ide.starter.ide.IDETestContext
 import com.intellij.internal.statistic.eventLog.SerializationHelper
 import com.intellij.tools.ide.util.common.logError
 import com.intellij.tools.ide.util.common.logOutput
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import java.nio.file.Path
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.exists

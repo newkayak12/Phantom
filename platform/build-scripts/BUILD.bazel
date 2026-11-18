@@ -116,8 +116,6 @@ jvm_library(
         "//platform/util/base/multiplatform",
         "//platform/util/base",
         "@community//build:zip",
-        "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
         "@lib//:platform-build_scripts-netty",
         "@lib//:platform-build_scripts-jetbrains-intellij-deps-coverage-reporter",
         "//libraries/ktor/client",

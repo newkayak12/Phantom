@@ -7,7 +7,7 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-import com.jetbrains.fus.reporting.model.lion3.LogEvent;
+import com.intellij.internal.statistic.eventLog.LogEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

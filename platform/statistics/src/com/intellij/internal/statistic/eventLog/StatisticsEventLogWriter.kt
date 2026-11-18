@@ -4,7 +4,6 @@ package com.intellij.internal.statistic.eventLog
 import com.intellij.internal.statistic.config.eventLog.EventLogBuildType
 import com.intellij.internal.statistic.utils.StatisticsRecorderUtil
 import com.intellij.openapi.Disposable
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.ApiStatus

@@ -3,9 +3,11 @@ package com.intellij.internal.statistics
 
 import com.intellij.internal.statistic.config.EventLogOptions.MACHINE_ID_SALT
 import com.intellij.internal.statistic.config.EventLogOptions.MACHINE_ID_SALT_REVISION
+import com.intellij.internal.statistic.eventLog.EventLogConfigOptionsService
 import com.intellij.internal.statistic.eventLog.EventLogConfiguration
 import com.intellij.internal.statistic.eventLog.EventLogRecorderConfiguration
-import com.intellij.internal.statistic.eventLog.validator.storage.FusComponentProvider
+import com.intellij.internal.statistic.eventLog.validator.storage.persistence.EventLogMetadataSettingsPersistence
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import kotlin.test.assertNotEquals
 
@@ -49,7 +51,11 @@ class EventLogConfigurationTest : BasePlatformTestCase() {
     val configuration = EventLogConfiguration.getInstance().getOrCreate(recorderId)
     val initialValue = function(configuration)
 
-    FusComponentProvider.updateOptions(recorderId, values)
+    // phantom-idea: options are no longer delivered by the closed FUS library; publish them the way it did
+    val changedOptions = EventLogMetadataSettingsPersistence.getInstance().updateOptions(recorderId, values)
+    if (changedOptions.isNotEmpty()) {
+      ApplicationManager.getApplication().messageBus.syncPublisher(EventLogConfigOptionsService.TOPIC).optionsChanged(recorderId, changedOptions)
+    }
     val newValue = function(configuration)
     return Pair(initialValue, newValue)
   }

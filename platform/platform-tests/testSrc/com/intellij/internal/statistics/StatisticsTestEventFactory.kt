@@ -3,7 +3,7 @@ package com.intellij.internal.statistics
 
 import com.intellij.internal.statistic.eventLog.escape
 import com.intellij.internal.statistic.eventLog.newLogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 
 object StatisticsTestEventFactory {
   const val DEFAULT_SESSION_ID = "a96c3f145"

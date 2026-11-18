@@ -6,7 +6,7 @@ import com.intellij.codeInsight.inline.completion.logs.TestInlineCompletionLogs.
 import com.intellij.codeInsight.inline.completion.logs.TestInlineCompletionLogs.singleSessionLog
 import com.intellij.internal.statistic.FUCollectorTestCase
 import com.intellij.openapi.util.Disposer
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
 import kotlin.test.assertEquals

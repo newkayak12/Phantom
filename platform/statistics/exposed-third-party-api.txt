@@ -1,2 +1,1 @@
-com/jetbrains/fus/reporting/model/lion3/LogEvent
 kotlin/jvm/internal/DefaultConstructorMarker

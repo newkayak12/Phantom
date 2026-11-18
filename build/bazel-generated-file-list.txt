@@ -863,8 +863,6 @@ platform/sqlite
 platform/starter
 platform/statistics
 platform/statistics/config
-platform/statistics/devkit
-platform/statistics/envTests
 platform/statistics/testFramework
 platform/statistics/uploader
 platform/structuralsearch

@@ -14,51 +14,14 @@ import com.intellij.internal.statistic.eventLog.events.scheme.GroupDescriptor
 import com.intellij.internal.statistic.eventLog.events.scheme.PluginSchemeDescriptor
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEventAction
-import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
-import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
+import com.intellij.internal.statistic.eventLog.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEventAction
+import com.intellij.internal.statistic.eventLog.LogEventGroup
 import org.junit.jupiter.api.Assertions
 import java.io.File
-import java.io.StringWriter
 
 internal class SerializationHelperTest : BasePlatformTestCase() {
   private fun getTestDataRoot() = PlatformTestUtil.getPlatformTestDataPath() + "fus/serialization/"
-
-  fun testSerializationGroupRemoteRule() {
-    val enums = mapOf("__event_id1" to setOf("loading.config.failed", "logs.send", "metadata.loaded"),
-                      "__event_id2" to setOf("metadata.updated", "metadata.load.failed", "metadata.update.failed"))
-
-    val eventData = mapOf("code" to setOf("{regexp#integer}"),
-                          "error" to setOf("{util#class_name}",
-                                           "{enum:EMPTY_SERVICE_URL|UNREACHABLE_SERVICE|EMPTY_RESPONSE_BODY|ERROR_ON_LOAD}",
-                                           "{enum:EMPTY_CONTENT|INVALID_JSON|UNKNOWN}"),
-                          "version" to setOf("{regexp#version}"))
-
-    val regexps = mapOf("count" to "\\d+K?M?\\+?",
-                        "float" to "-?\\d+\\.\\d+(E\\-?\\d+)?",
-                        "integer" to "-?\\d+(\\+)?")
-
-    val validationRule = EventGroupRemoteDescriptors.GroupRemoteRule()
-    validationRule.event_id = setOf("{enum#__event_id}", "{enum:sessionFinished|searchRestarted}")
-    validationRule.enums = enums
-    validationRule.event_data = eventData
-    validationRule.regexps = regexps
-
-    val serializationText = SerializationHelper.serialize(validationRule)
-    val realText = File(getTestDataRoot() + "SerializationGroupRemoteRule.json").readText(Charsets.UTF_8)
-
-    Assertions.assertEquals(realText, serializationText)
-  }
-
-  fun testDeserializationGroupRemoteRule() {
-    val validationRule = File(getTestDataRoot() + "SerializationGroupRemoteRule.json").readText(Charsets.UTF_8)
-
-    val deserializationObject = SerializationHelper.deserialize(validationRule, EventGroupRemoteDescriptors.GroupRemoteRule::class.java)
-    val serializationText = SerializationHelper.serialize(deserializationObject)
-
-    Assertions.assertEquals(validationRule, serializationText)
-  }
 
   fun testSerializationGroupDescriptor() {
     val filedDescriptor = FieldDescriptor("plugin", setOf("{util#class_name}", "{util#plugin}"))
@@ -90,50 +53,6 @@ internal class SerializationHelperTest : BasePlatformTestCase() {
     val realText = File(getTestDataRoot() + "SerializationFeatureUsageData.json").readText(Charsets.UTF_8)
 
     Assertions.assertEquals(realText, serializationText)
-  }
-
-  fun testSerializationEventGroupRemoteDescriptors() {
-    val eventGroupRemoteDescriptors = EventGroupRemoteDescriptors()
-
-    eventGroupRemoteDescriptors.version = "1"
-    val validationRule = EventGroupRemoteDescriptors.GroupRemoteRule()
-    validationRule.event_id = setOf("{enum#__event_id}", "{enum:sessionFinished|searchRestarted}")
-    validationRule.enums = mapOf("__event_id" to setOf("enum"))
-    validationRule.event_data = mapOf("data" to setOf("{regexp#integer}"))
-    validationRule.regexps = mapOf("count" to "\\d+K?M?\\+?")
-    eventGroupRemoteDescriptors.rules = validationRule
-
-    val eventGroupRemoteDescriptor = EventGroupRemoteDescriptors.EventGroupRemoteDescriptor()
-    eventGroupRemoteDescriptor.rules = validationRule
-    eventGroupRemoteDescriptor.id = "id"
-
-    val groupBuildRange = EventGroupRemoteDescriptors.GroupBuildRange()
-    groupBuildRange.to = "2"
-    groupBuildRange.from = "1"
-    eventGroupRemoteDescriptor.builds?.add(groupBuildRange)
-
-    val anonymizedFields = EventGroupRemoteDescriptors.AnonymizedFields()
-    anonymizedFields.event = "event"
-    anonymizedFields.fields?.add("filed")
-    eventGroupRemoteDescriptor.anonymized_fields?.add(anonymizedFields)
-
-    eventGroupRemoteDescriptor.versions?.add(EventGroupRemoteDescriptors.GroupVersionRange("1", "2"))
-    eventGroupRemoteDescriptors.groups.add(eventGroupRemoteDescriptor)
-
-    val serializationText = StringWriter(1024)
-    SerializationHelper.serialize(serializationText, eventGroupRemoteDescriptors)
-    val realText = File(getTestDataRoot() + "SerializationEventGroupRemoteDescriptors.json").readText(Charsets.UTF_8)
-
-    Assertions.assertEquals(realText, serializationText.toString())
-  }
-
-  fun testDeserializationEventGroupRemoteDescriptors() {
-    val eventGroupRemoteDescriptors = File(getTestDataRoot() + "SerializationEventGroupRemoteDescriptors.json").readText(Charsets.UTF_8)
-
-    val deserializationObject = SerializationHelper.deserialize(eventGroupRemoteDescriptors, EventGroupRemoteDescriptors::class.java)
-    val serializationText = SerializationHelper.serialize(deserializationObject)
-
-    Assertions.assertEquals(eventGroupRemoteDescriptors, serializationText)
   }
 
   fun testCustomSerializationLogEvent() {

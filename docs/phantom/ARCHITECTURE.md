@@ -208,6 +208,7 @@ Phantom이 고친 지점: 1~7의 기동 클래스 자체(Main.kt, startup.kt, Ap
 ### 열린 질문
 
 (a) FUS 업로드 엔드포인트의 출처
+- 해결(fix/no-closed-statistics): Phantom은 사용 통계를 보내지 않는다. 아래 전송 경로(`EventLogSettingsClient`, `EventLogUploadSettingsClient`, `EventLogStatisticsService`, 외부 업로더 `EventLogUploader`)와 비공개 라이브러리 `com.jetbrains.fus.reporting:ap-validation-all`을 지웠고, `-Dphantom.usage.statistics=true`가 아니면 통계를 모으지도 않는다(`platform/statistics/src/dev/phantom/statistics/PhantomUsageStatistics.kt`). 아래 항목은 그 전의 기록이다.
 - 확인한 것: 전송 URL은 `platform/statistics/uploader/src/com/intellij/internal/statistic/eventLog/connection/EventLogSettingsClient.kt:96-98` `provideServiceUrl()` → `configurationClient.provideSendEndpoint()`에서 나온다. `configurationClient`는 `EventLogUploadSettingsClient.kt:39` `ConfigurationClientFactory.create(...)`가 만든다. 이 팩토리는 외부 Maven 라이브러리 `com.jetbrains.fus.reporting`(`.idea/libraries/com_jetbrains_fus_reporting_fus_api.xml:3`, `com_jetbrains_fus_reporting_ap_validation_all.xml:3`, 버전 1.0.229) 안에 있고 소스는 이 트리에 없다. 따라서 설정 URL과 전송 URL은 그 jar 안에 있다(추정).
 - 확인한 것: 전송 허용은 `phantom.jetbrains.services`가 아니라 사용자 동의로 결정된다(StatisticsUploadAssistant.java:42-63, :87-99). Phantom은 이 파일을 바꾸지 않았다.
 - 확인하지 못한 것: jar 내용(로컬 `~/.m2`에 없음, Bazel 캐시는 보지 않음), 동의가 기본으로 꺼져 있는지, Phantom 벤더(`company name="Phantom"`)에서 동의 파일이 `consents-<company>.json`으로 바뀌는 분기(ConsentOptions.java:169)가 실제 동의 기본값에 주는 영향.
