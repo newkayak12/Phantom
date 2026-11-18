@@ -5,6 +5,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '13 4 * * *'
 
 permissions:
   contents: read
@@ -30,6 +32,7 @@ jobs:
             /phantom-bench-report.py
             /tools/phantom-quality.mjs
             /tools/phantom-quality.test.mjs
+            /tools/test-summary.py
             /platform/platform-impl/src/dev/phantom/
             /platform/lang-impl/src/dev/phantom/
             /plugins/phantom-sync/
@@ -38,19 +41,29 @@ jobs:
         with:
           node-version: '22'
       - name: Generate quality-tool coverage
+        id: tests
         run: |
           mkdir -p out/phantom-quality-coverage
           node --test --experimental-test-coverage \
             --test-coverage-include=tools/phantom-quality.mjs \
             --test-reporter=spec --test-reporter-destination=stdout \
             --test-reporter=lcov --test-reporter-destination=out/phantom-quality-coverage/lcov.info \
+            --test-reporter=junit --test-reporter-destination=out/phantom-quality-coverage/junit.xml \
             tools/phantom-quality.test.mjs
           test -s out/phantom-quality-coverage/lcov.info
+      - name: Summarize quality-tool tests
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+        run: python3 tools/test-summary.py 'Quality coverage' --outcome "$TEST_OUTCOME" --reports out/phantom-quality-coverage/junit.xml
       - name: Preserve measured coverage
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: phantom-quality-coverage
-          path: out/phantom-quality-coverage/lcov.info
+          path: |
+            out/phantom-quality-coverage/lcov.info
+            out/phantom-quality-coverage/junit.xml
           if-no-files-found: error
       - name: Report external analysis configuration
         id: services
@@ -64,6 +77,19 @@ jobs:
         run: |
           echo '## External analysis' >> "$GITHUB_STEP_SUMMARY"
           echo 'Coverage measures tools/phantom-quality.mjs only; no JVM coverage is claimed.' >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$TRUSTED" == true ]]; then
+            missing=()
+            for name in CODECOV_TOKEN SONAR_TOKEN SONAR_HOST_URL SONAR_PROJECT_KEY; do
+              if [[ -z "${!name}" ]]; then missing+=("$name"); fi
+            done
+            if [[ "$SONAR_HOST_URL" == *sonarcloud.io* && -z "$SONAR_ORGANIZATION" ]]; then
+              missing+=(SONAR_ORGANIZATION)
+            fi
+            if (( ${#missing[@]} )); then
+              echo "::error::Missing analysis configuration: ${missing[*]}"
+              exit 1
+            fi
+          fi
           if [[ "$TRUSTED" == true && -n "$CODECOV_TOKEN" ]]; then
             echo 'codecov=true' >> "$GITHUB_OUTPUT"
           else
