@@ -15,6 +15,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- GitHub 첫 화면에서 제품 README를 가리던 `.github/README.md`를 `.github/WORKFLOWS.md`로 옮겼다. 루트의 Phantom 소개·장점·설치·벤치마크와 배지가 표시된다.
+
 - README의 불필요한 서비스 토큰 설정·등록 이력과 중복 CI 설명을 걷어내고, 배지와 실제 커버리지 범위만 간단히 남겼다. 기능·설치·빌드 안내, 벤치마크 수치와 법적 출처는 유지했다.
 
 - 최신 main의 정책·배포 변경을 기반 설정 PR에 통합하고, PR 작성자를 제외한 collaborator 리뷰 요청을 PR 생성·재오픈·ready·업데이트 및 수동 실행에서 처리하도록 했다. 플러그인은 Spotless·detekt와 테스트·패키징 workflow를 중복 없이 나눈다.

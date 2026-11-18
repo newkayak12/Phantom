@@ -8,7 +8,7 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 개인 IDE 프로
 
 ## 여기서 시작
 
-CI 검사는 [저장소 검사 안내](../../.github/README.md), AI 작업 흐름은 [`.ai/workflow.md`](../../.ai/workflow.md)를 본다. 플러그인별 현재 기능은 별도 [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)의 README와 한국어 문서가 기준이다. 아래 과거 설계 상태는 현재 플러그인 출시 여부를 뜻하지 않는다.
+CI 검사는 [저장소 검사 안내](../../.github/WORKFLOWS.md), AI 작업 흐름은 [`.ai/workflow.md`](../../.ai/workflow.md)를 본다. 플러그인별 현재 기능은 별도 [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)의 README와 한국어 문서가 기준이다. 아래 과거 설계 상태는 현재 플러그인 출시 여부를 뜻하지 않는다.
 
 1. **쓰거나 빌드하려는 사람**: [README.md](../../README.md)(한국어 [README.ko.md](../../README.ko.md)) → [BUILD.md](BUILD.md)(준비물, 빌드, 설치, 릴리스) → [CHANGELOG.md](../../CHANGELOG.md)(무엇이 바뀌었나).
 2. **코드를 고치려는 사람**: [ARCHITECTURE.md](ARCHITECTURE.md)(지도) → [FORK-DELTA.md](FORK-DELTA.md)(업스트림과 다른 곳 전부) → [DEVELOPMENT.md](DEVELOPMENT.md)(IDE에서 열기·실행, 작업별 방법, 검증, 알려진 문제) → [BUILD.md](BUILD.md) 7-8절(벤치, 테스트).
