@@ -32,7 +32,7 @@ jobs:
         name: Check out repository
 
       - name: Set up JBR 21
-        uses: actions/setup-java@v5.6.0
+        uses: actions/setup-java@v6.3.0
         with:
           java-version: 21
           distribution: jetbrains
@@ -53,7 +53,7 @@ jobs:
           annotate_only: true # A forked repo cannot write comments, so just do annotations
 
       - name: Upload JUnit test reports
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         if: failure()
         with:
           name: junit-test-results
@@ -285,7 +285,7 @@ jobs:
           ref: master
 
       - name: Set up JBR 21
-        uses: actions/setup-java@v5.6.0
+        uses: actions/setup-java@v6.3.0
         with:
           java-version: 21
           distribution: jetbrains
@@ -354,7 +354,7 @@ jobs:
               --test_output=errors
 
       - name: Upload Bazel test logs
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         if: failure()
         with:
           name: spectre-test-logs
@@ -386,7 +386,7 @@ jobs:
           --test_output=errors
 
       - name: Upload Bazel test logs
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         if: failure()
         with:
           name: spectre-test-logs-windows
@@ -403,7 +403,7 @@ jobs:
         name: Check out repository
 
       - name: Set up JBR 21
-        uses: actions/setup-java@v5.6.0
+        uses: actions/setup-java@v6.3.0
         with:
           java-version: 21
           distribution: jetbrains
