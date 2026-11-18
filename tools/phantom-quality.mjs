@@ -6,9 +6,11 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const UPSTREAM_BASE = 'd2faebf601';
+// The supported macOS/Linux environments provide Git here; do not resolve it through PATH.
+const GIT = '/usr/bin/git';
 
 function git(cwd, args) {
-  const result = spawnSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  const result = spawnSync(GIT, args, { cwd, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   if (result.error || result.status !== 0) {
     throw new Error(result.error?.message ?? result.stderr.trim());
   }
@@ -21,14 +23,14 @@ export function changedFiles(cwd, base) {
   const ancestor = git(cwd, ['merge-base', commit, 'HEAD']).trim();
   const tracked = git(cwd, ['diff', '--name-only', '-z', '--diff-filter=ACMR', ancestor, '--']);
   const untracked = git(cwd, ['ls-files', '--others', '--exclude-standard', '-z']);
-  return { ancestor, files: [...new Set((tracked + untracked).split('\0').filter(Boolean))].sort() };
+  return { ancestor, files: [...new Set((tracked + untracked).split('\0').filter(Boolean))].sort((a, b) => a.localeCompare(b, 'en')) };
 }
 
 export function syntaxCommand(file, source = '') {
   if (file.endsWith('.sh')) return [/^#![^\n]*\bzsh\b/.test(source) ? 'zsh' : 'bash', ['-n', '--', file]];
   if (/\.(mjs|cjs)$/.test(file)) return [process.execPath, ['--check', '--', file]];
   if (file.endsWith('.json')) {
-    return [process.execPath, ['--input-type=module', '-e', 'import { readFileSync } from "node:fs"; JSON.parse(readFileSync(process.argv[1], "utf8").replace(/^\\uFEFF/, ""));', '--', file]];
+    return [process.execPath, ['--input-type=module', '-e', String.raw`import { readFileSync } from "node:fs"; JSON.parse(readFileSync(process.argv[1], "utf8").replace(/^\uFEFF/, ""));`, '--', file]];
   }
   if (file.endsWith('.py')) {
     // Parse without importing, executing, or leaving __pycache__ in the checkout.
@@ -37,20 +39,24 @@ export function syntaxCommand(file, source = '') {
   return null;
 }
 
+function fileCommands(cwd, file, lint) {
+  const command = syntaxCommand(file, file.endsWith('.sh') ? readFileSync(resolve(cwd, file), 'utf8') : '');
+  const commands = command ? [command] : [];
+  if (lint && command?.[0] === 'bash') commands.push(['shellcheck', ['--severity=error', '--', file]]);
+  if (lint && /^\.github\/workflows\/[^/]+\.ya?ml$/.test(file)) commands.push(['actionlint', ['-shellcheck=', file]]);
+  return commands;
+}
+
 export function check(cwd, base = UPSTREAM_BASE, lint = false) {
   const { ancestor, files } = changedFiles(cwd, base);
   const failures = [];
-  const whitespace = spawnSync('git', ['-c', 'core.whitespace=blank-at-eol,blank-at-eof', 'diff', '--check', ancestor, '--'], { cwd, encoding: 'utf8' });
+  const whitespace = spawnSync(GIT, ['-c', 'core.whitespace=blank-at-eol,blank-at-eof', 'diff', '--check', ancestor, '--'], { cwd, encoding: 'utf8' });
   if (whitespace.error || whitespace.status !== 0) failures.push(whitespace.error?.message ?? whitespace.stdout + whitespace.stderr);
   let checked = 0;
   for (const file of files) {
     // Never follow changed symlinks outside the checkout.
     if (!lstatSync(resolve(cwd, file)).isFile()) continue;
-    const command = syntaxCommand(file, file.endsWith('.sh') ? readFileSync(resolve(cwd, file), 'utf8') : '');
-    const commands = command ? [command] : [];
-    if (lint && command?.[0] === 'bash') commands.push(['shellcheck', ['--severity=error', '--', file]]);
-    if (lint && /^\.github\/workflows\/[^/]+\.ya?ml$/.test(file)) commands.push(['actionlint', ['-shellcheck=', file]]);
-    for (const [executable, args] of commands) {
+    for (const [executable, args] of fileCommands(cwd, file, lint)) {
       checked++;
       const result = spawnSync(executable, args, { cwd, encoding: 'utf8' });
       if (result.error || result.status !== 0) {
