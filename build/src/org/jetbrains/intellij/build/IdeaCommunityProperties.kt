@@ -147,6 +147,15 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     // It replaces -Djava.system.class.loader=PathClassLoader, which the dynamic archive does not support.
     enableCds = true
 
+    // phantom-idea: JetBrains' user agreements, privacy policies and consent lists are not Phantom's and are not shipped. The code
+    // reads them only for vendor JetBrains (EndUserAgreement, ConsentOptions) or tolerates their absence (LocalConsentOptions);
+    // eua.html stays in the source tree because the SBOM generator reads it.
+    productLayout.addPlatformSpec { layout, _ ->
+      layout.excludeFromModule("intellij.platform.resources", listOf(
+        "eua.html", "euaCommunity.html", "PrivacyPolicy.html", "privacyEap.html", "consents.json", "localConsents.json",
+      ))
+    }
+
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
     productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
     productLayout.pluginLayouts = CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS + persistentListOf(

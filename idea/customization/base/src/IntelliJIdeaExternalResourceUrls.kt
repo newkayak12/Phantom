@@ -8,11 +8,12 @@ import com.intellij.util.Url
 import com.intellij.util.Urls
 
 internal class IntelliJIdeaExternalResourceUrls : BaseJetBrainsExternalProductResourceUrls() {
+  // phantom-idea: no JetBrains download or product pages; patches only apply with -Didea.updates.url, which also needs -Didea.patches.url
   override val basePatchDownloadUrl: Url
-    get() = Urls.newFromEncoded("https://download.jetbrains.com/idea/")
+    get() = Urls.newFromEncoded("https://github.com/newkayak12/Phantom/releases/")
 
   override val productPageUrl: Url
-    get() = baseWebSiteUrl.resolve("idea/")
+    get() = Urls.newFromEncoded("https://github.com/newkayak12/Phantom")
 
   override val youtrackProjectId: String
     get() = "IDEA"
@@ -42,9 +43,10 @@ internal class IntelliJIdeaExternalResourceUrls : BaseJetBrainsExternalProductRe
   override val keyboardShortcutsPdfUrl: Url?
     get() = null
 
-  override val gettingStartedPageUrl: Url
-    get() = baseWebSiteUrl.resolve("idea/resources/")
+  // phantom-idea: JetBrains' IntelliJ IDEA documentation does not describe Phantom; no Getting Started action and no web help
+  override val gettingStartedPageUrl: Url?
+    get() = null
 
-  override val baseWebHelpUrl: Url
-    get() = baseWebSiteUrl.resolve("help/idea/")
+  override val baseWebHelpUrl: Url?
+    get() = null
 }

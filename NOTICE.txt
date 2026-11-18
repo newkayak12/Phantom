@@ -11,7 +11,18 @@ Licensed under the Apache License, Version 2.0 (LICENSE.txt).
 Files changed by Phantom contributors are marked with "phantom-idea:" comments.
 
 Third-party software included in this product is listed, with its licenses, in
-the license/ folder and in third-party-libraries.html of the distribution.
+the license/ folder and in third-party-libraries.html of the distribution. The license/ folder also holds the full
+texts of the GPL 2.0 with the Classpath Exception, GPL 3.0, LGPL 2.1, LGPL 3.0, EPL 1.0, EPL 2.0, MPL 2.0, CDDL 1.1,
+SIL OFL 1.1 and CC BY 2.5 (JCIP Annotations) licenses named there. Libraries inside the bundled plugins built in
+Phantom-plugins (https://github.com/newkayak12/Phantom-plugins) are listed in the META-INF folder of each plugin's
+jar (THIRD-PARTY-NOTICES).
+
+Components that are not Java libraries, or are bundled inside another library, and are therefore not in
+third-party-libraries.html:
+  Fonts in the bundled Java runtime (jbr/.../lib/fonts): JetBrains Mono, Inter, Fira Code, Source Code Pro and
+    Inconsolata under the SIL Open Font License 1.1; Droid and Roboto under the Apache License 2.0
+  Windows only: OpenConsole.exe and conpty.dll (Microsoft Terminal, https://github.com/microsoft/terminal, MIT),
+    winpty.dll and winpty-agent.exe (https://github.com/rprichard/winpty, MIT)
 
 The distribution also includes the following components under the GNU General Public License, version 2, with the
 Classpath Exception. Their complete corresponding source code is available at:
@@ -32,13 +43,19 @@ available at:
   MPL 2.0: Rhino https://github.com/mozilla/rhino
   EPL: Eclipse JDT Core https://github.com/eclipse-jdt/eclipse.jdt.core, LSP4J https://github.com/eclipse/lsp4j,
     Xtext https://github.com/eclipse/xtext, MVStore https://github.com/h2database/h2database,
-    pty4j https://github.com/JetBrains/pty4j
+    pty4j https://github.com/JetBrains/pty4j, Eclipse Sisu Inject https://github.com/eclipse-sisu/sisu-project
   CDDL 1.1: JAXB https://github.com/javaee/jaxb-v2, JavaBeans Activation Framework https://github.com/javaee/activation,
     Common Annotations https://github.com/javaee/javax.annotation
+  In the bundled plugins built in Phantom-plugins:
+    LGPL: openregex 1.1.1 https://github.com/knowitall/openregex
+    LGPL 2.1: english-pos-dict 0.6 https://github.com/languagetool-org/english-pos-dict
+    EPL 2.0: JaCoCo 0.8.15 https://github.com/jacoco/jacoco
 Versions are listed in third-party-libraries.html.
 
 For all components above, on request, Phantom contributors provide a copy of that source code, at no more than the cost of making it, for three
 years after the release that included it: open an issue at https://github.com/newkayak12/Phantom/issues.
+To make a request, or for any other question about these notices, contact the Phantom maintainers through that
+issue tracker; say which release and which component you need.
 
 Phantom is not affiliated with, sponsored or endorsed by JetBrains s.r.o.
 JetBrains, IntelliJ and IntelliJ IDEA are trademarks of JetBrains s.r.o.
