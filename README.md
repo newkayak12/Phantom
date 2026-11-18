@@ -99,7 +99,7 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 | `phantom-theme`: Phantom Dark and Light | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` completion and docs |
 | Endpoints tool window (core; plugins fill it) | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
 | GitHub plugin repository support (core) | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
-| | `grazie`, `terminal`, `github` | `http-client`: `.http` request files |
+| | `grammar`, `terminal`, `github` | `http-client`: `.http` request files |
 | | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
 | | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images` | |
 | | | `kotlin`: the Kotlin language plugin, built by each release of this repository |
