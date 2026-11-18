@@ -14,7 +14,8 @@ LangString update_context_menu_label ${LANG_KOREAN} '"폴더를 프로젝트로 
 LangString create_associations_group ${LANG_KOREAN} "연결 생성"
 ; Rider-specific
 LangString additional_features ${LANG_KOREAN} "추가 기능"
-LangString install_etw_service ${LANG_KOREAN} "JetBrains ETW Host Service 설치"
+; phantom-idea: no JetBrains name in the installer
+LangString install_etw_service ${LANG_KOREAN} "ETW Host Service 설치"
 LangString windows_defender_exclusions ${LANG_KOREAN} "Rider 실행 파일을 Microsoft Defender 제외 항목에 추가"
 
 ; Uninstall options page

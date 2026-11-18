@@ -54,7 +54,7 @@ Each line is backed by a commit; file-level detail is in [FORK-DELTA.md](docs/ph
 - Backup and Sync to your own git repository; GitHub login through `gh auth token` instead of account.jetbrains.com.
 - Download JDK lists JDKs from the foojay Disco API; heap and file page cache are sized to the machine's RAM.
 
-**What still talks to the network.** Browsing the Marketplace tab (plugins.jetbrains.com) works by design, and Phantom's own plugin repository is read from GitHub (`-Dphantom.plugins.official=false` drops it). Grazie language files, the JBR runtime list and the Git installer list still come from JetBrains, but only when you ask for that download (adding a Grazie language, opening Choose Boot Java Runtime, Download and Install for a missing Git on Windows; on macOS nothing fetches the Git installer list). Known gaps, listed in [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md): usage statistics upload is governed by your consent setting, not by the flag. The framework library version list and the Windows Git update check now stay off JetBrains unless the flag is set; that change is in the source but has not been built or tested yet. Feedback forms and Tips of the Day like/dislike no longer count as gaps: the forms send nothing unless the flag is set, and the like/dislike row is hidden by default. That change is in the source (commit `4ca69e1a95`) but has not been built or tested yet.
+**What still talks to the network.** Browsing the Marketplace tab (plugins.jetbrains.com) works by design, and Phantom's own plugin repository is read from GitHub (`-Dphantom.plugins.official=false` drops it). Grazie language files, the JBR runtime list and the Git installer list still come from JetBrains, but only when you ask for that download (adding a Grazie language, opening Choose Boot Java Runtime, Download and Install for a missing Git on Windows; on macOS nothing fetches the Git installer list). Usage statistics cannot be turned on: Phantom ships no usage-statistics consent, so there is nothing to accept and the uploader never sends (background in [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)). The full list of outbound connections is in [PRIVACY.md](PRIVACY.md). The framework library version list and the Windows Git update check now stay off JetBrains unless the flag is set; that change is in the source but has not been built or tested yet. Feedback forms and Tips of the Day like/dislike no longer count as gaps: the forms send nothing unless the flag is set, and the like/dislike row is hidden by default. That change is in the source (commit `4ca69e1a95`) but has not been built or tested yet.
 
 ## Performance
 
@@ -135,6 +135,7 @@ Most project docs are written in Korean.
 - [BUILD.md](docs/phantom/BUILD.md): build, sign, install, release, benchmark
 - [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md): working on the code and running tests
 - [CHANGELOG.md](CHANGELOG.md): changes per release
+- [PRIVACY.md](PRIVACY.md): what Phantom collects (nothing) and what it connects to
 
 ## Upstream, trademarks and clean-room policy
 

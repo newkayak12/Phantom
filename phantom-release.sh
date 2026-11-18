@@ -72,8 +72,9 @@ if [[ -z "${NOTES:-}" ]]; then
   previous="$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)"
   NOTES="$(git log --no-merges --format='- %s' ${previous:+$previous..}HEAD | head -40)"
 fi
-# CI checks out a pushed commit; a local release first pushes what it built
-[[ -n "${GITHUB_ACTIONS:-}" ]] || git push -q origin HEAD
+# main takes changes only through pull requests, so a release is made from a commit already merged there
+git fetch -q origin main
+git merge-base --is-ancestor HEAD origin/main || { echo "HEAD is not on origin/main: merge it through a pull request first"; exit 1; }
 # the tag goes up with git: creating it through the API needs the token's workflow scope, since the commit touches
 # .github/workflows
 git tag -f "$tag" HEAD
@@ -87,9 +88,12 @@ gh release edit "$tag" -R "$repo" --draft=false
 # Kotlin and Maven for this platform build in the Phantom plugins repository: a release holding each zip, and the
 # marketplace.json entry pointing at it (since this build: each is compiled against this exact platform)
 prepo="$(git -C "$plugins_repo" remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
+# main there takes changes only through pull requests: the entries are committed on a release branch in a worktree of
+# its own (the checkout in $plugins_repo is left as it is), then merged by a pull request below
 git -C "$plugins_repo" fetch -q origin main
-git -C "$plugins_repo" checkout -q main
-git -C "$plugins_repo" reset -q --hard origin/main
+pbranch="release/phantom-$version"
+pwork="$(mktemp -d)/phantom-plugins"
+git -C "$plugins_repo" worktree add -q -B "$pbranch" "$pwork" origin/main
 
 # $1 zip, $2 descriptor jar in it, $3 tag prefix and asset name, $4 title, then the entry's JSON fields (ENTRY)
 publish() {
@@ -107,7 +111,7 @@ publish() {
       --notes "The IntelliJ $title plugin built with Phantom $version ($build), for Phantom builds from 262.$day."
     rm -f "out/$asset"
   fi
-  ENTRY="$ENTRY" VERSION="$pversion" SINCE="262.$day" DOWNLOAD="$tag/$asset" python3 - "$plugins_repo/.phantom/marketplace.json" <<'PY'
+  ENTRY="$ENTRY" VERSION="$pversion" SINCE="262.$day" DOWNLOAD="$tag/$asset" python3 - "$pwork/.phantom/marketplace.json" <<'PY'
 import json, os, sys
 path = sys.argv[1]
 data = json.load(open(path))
@@ -119,18 +123,25 @@ with open(path, "w") as f:
   json.dump(data, f, indent=2, ensure_ascii=False)
   f.write("\n")
 PY
-  if ! git -C "$plugins_repo" diff --quiet; then
-    git -C "$plugins_repo" commit -q -am "$title $pversion for Phantom 262.$day"
-    git -C "$plugins_repo" push -q origin main
-  fi
+  git -C "$pwork" diff --quiet || git -C "$pwork" commit -q -am "$title $pversion for Phantom 262.$day"
 }
 
 ENTRY='{"id": "org.jetbrains.kotlin", "name": "Kotlin Support", "category": "Languages",
-  "description": "Kotlin language support: editing, inspections, refactorings, debugging and Gradle Kotlin DSL scripts. IntelliJ'"'"'s Kotlin plugin (Apache 2.0) built with each Phantom release; not bundled, since Java-only projects never use it. org.jetbrains.kotlin stays its id, so plugins depending on Kotlin keep working.",
+  "description": "Kotlin language support: editing, inspections, refactorings, debugging and Gradle Kotlin DSL scripts. IntelliJ'"'"'s Kotlin plugin (Apache 2.0) built with each Phantom release; not bundled, since Java-only projects never use it. org.jetbrains.kotlin stays its id, so plugins depending on Kotlin keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
   "depends": ["com.intellij.modules.java"],
   "detect": ["org.jetbrains.kotlin:kotlin-stdlib"], "detectFiles": ["build.gradle.kts", "settings.gradle.kts"]}' \
   publish "$kotlin" Kotlin/lib/kotlin-plugin.jar Kotlin Kotlin
 ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Maven Support", "category": "Build Tools",
-  "description": "Maven projects: import and sync of pom.xml, the Maven tool window, running goals, pom.xml editing and completion, repositories and indexes. IntelliJ'"'"'s Maven plugin (Apache 2.0) built with each Phantom release; not bundled, since Gradle projects never use it. org.jetbrains.idea.maven stays its id, so plugins depending on Maven keep working.",
+  "description": "Apache Maven projects: import and sync of pom.xml, the Maven tool window, running goals, pom.xml editing and completion, repositories and indexes. IntelliJ'"'"'s Maven plugin (Apache 2.0) built with each Phantom release; not bundled, since Gradle projects never use it. org.jetbrains.idea.maven stays its id, so plugins depending on Maven keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
   "depends": ["com.intellij.modules.java"], "detectFiles": ["pom.xml"]}' \
   publish "$maven" maven-plugin/lib/maven-plugin.jar Maven Maven
+
+# --admin merges without waiting for the pull request checks (the ruleset lets admins bypass them in pull requests only)
+if [[ -n "$(git -C "$pwork" log --oneline origin/main..HEAD)" ]]; then
+  git -C "$pwork" push -q -f origin "HEAD:refs/heads/$pbranch"
+  gh pr create -R "$prepo" --base main --head "$pbranch" --title "Kotlin and Maven for Phantom 262.$day" \
+    --body "marketplace.json entries for the Kotlin and Maven releases built with Phantom $version ($build)."
+  gh pr merge "$pbranch" -R "$prepo" --squash --admin --delete-branch
+fi
+git -C "$plugins_repo" worktree remove --force "$pwork"
+git -C "$plugins_repo" branch -q -D "$pbranch" 2>/dev/null || true

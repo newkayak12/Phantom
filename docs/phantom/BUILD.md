@@ -181,7 +181,7 @@ README는 첫 빌드가 약 2시간, 이후 빌드는 "minutes"라고 쓴다 (`R
 ### 셀프호스트 러너 (`tools/phantom-runner-setup.sh`)
 
 - 대화형 스크립트다. 단계마다 y/N을 묻는다 (`:14`).
-- 설치는 GitHub 러너(osx-arm64)를 `~/actions-runner/phantom-idea`에 받아 `newkayak12/phantom-idea`에 레이블 `self-hosted,macOS,ARM64`로 등록하고 launchd 에이전트(`svc.sh install`, `svc.sh start`)로 띄운다 (`:12-13,24-37`). 등록 토큰은 `gh api`로 받는다.
+- 설치는 GitHub 러너(osx-arm64)를 `~/actions-runner/phantom-idea`에 받아 `newkayak12/Phantom`에 레이블 `self-hosted,macOS,ARM64`로 등록하고 launchd 에이전트(`svc.sh install`, `svc.sh start`)로 띄운다 (`:12-13,24-37`). 등록 토큰은 `gh api`로 받는다.
 - `--remove`는 서비스를 멈추고 제거한 뒤 GitHub에서 등록을 해제한다 (`:16-22`).
 - 작업은 사용자 계정 권한으로 실행되므로 파일과 키체인에 접근할 수 있다고 스크립트 주석이 밝힌다 (`:8-10`).
 
