@@ -108,6 +108,7 @@
 - 옛 표식 `// Phantom:`을 `phantom-idea:`로 통일했다(`//` 20줄, KDoc `*` 3줄, XML `<!--` 1줄, `#` 형식은 없었다). 22개 파일의 표식 주석 24줄만 바꿨고 코드는 건드리지 않았다. 이전 항목(ea745003d1)과 DEVELOPMENT 5절 16번이 적은 "21개 파일의 33개 덩어리"와 숫자가 달라 `Phantom:` 주석을 직접 세어 다시 적었고, 차이의 이유는 확인하지 못했다. 코드가 아니라 주석이라 빌드와 테스트는 하지 않았다 (ee343c00f6, PR #7).
 - 알려진 문제 21, 22, 23번(DEVELOPMENT 5절)을 문서로 정리했다. 21번: phantom-icons는 모순이 아니라 ID가 둘임을 v26.11.13.1 절의 `phantom-icons` 항목과 FORK-DELTA 5.2절에 적었다. 22번: 현재 `README.md`와 `README.ko.md`에 어긋나는 곳이 없어 옛 커밋(be60914099) 기록으로 닫았다. 23번: 로드맵 머리의 상태 메모에서 확인하지 못한 "같은 플러그인 ID"를 빼고, 옮긴 커밋과 로드맵 밖에서 옮긴 플러그인(workspaces, tabs, icons)을 더했다. 문서만 바꿨다 (346053c89a, PR #7).
 - 저장소 루트에 `PRIVACY.md`(영어)와 `PRIVACY.ko.md`를 더했다: Phantom과 플러그인은 아무것도 수집하지 않고 Phantom 서버도 없다는 점, 밖으로 나가는 연결 표(GitHub의 `marketplace.json`과 릴리스, schemastore.org 카탈로그와 끄는 곳, foojay·JDK 배포처, start.spring.io, Maven Central, 사용자가 고를 때만 가는 JetBrains, `-Dphantom.jetbrains.services=true`), AI Integration 플러그인의 데이터 흐름, 자격 증명 저장, 문의처(GitHub 이슈). README 두 개의 "사용 통계 업로드는 동의 설정이 결정한다"를, Phantom에는 사용 통계 동의 항목이 없어(동의 파일 `consents-Phantom.json`이 없고 공유 동의 파일도 `~/Library/Application Support/Phantom` 아래라 JetBrains IDE와 섞이지 않는다) 켤 수 없다는 설명으로 바꾸고 PRIVACY 문서를 링크했다 (c7559f5fe2, PR #12).
+- 새 플러그인·모듈이나 큰 변경의 계획은 `docs/`가 아니라 GitHub 이슈에 쓰고, 구현 PR에 `Part of #N`/`Closes #N`을 달아 머지 때 이슈가 닫히게 하는 규칙을 AGENTS.md와 CONTRIBUTING.md에 추가. 이슈에는 비공개 정보를 쓰지 않는다 (PR #23)
 
 ### 버그 수정
 
