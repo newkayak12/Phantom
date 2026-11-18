@@ -10,6 +10,11 @@
     <module name="intellij.platform.testRunner"/>
   </dependencies>
   <!-- endregion -->
+  <!-- phantom-idea: the Groovy runtime for the tooling proxy (GRADLE_TOOLING_EXTENSION_PROXY_CLASSES) comes from Groovy
+       Scripting's module instead of a groovy.jar of this plugin's own (CommunityRepositoryModules) -->
+  <dependencies>
+    <module name="intellij.libraries.groovy"/>
+  </dependencies>
 
   <resource-bundle>messages.GradleBundle</resource-bundle>
 
