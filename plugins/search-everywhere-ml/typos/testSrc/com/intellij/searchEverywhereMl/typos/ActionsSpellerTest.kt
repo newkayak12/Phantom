@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ActionsSpellerTest {
   private val speller = speller(
     "show" to 40, "color" to 12, "picker" to 5, "settings" to 30, "setting" to 3, "format" to 100, "forma" to 1,
-    "code" to 50, "close" to 20, "project" to 25,
+    "code" to 50, "close" to 20, "project" to 25, "demo" to 10,
   )
 
   @Test
@@ -48,6 +48,16 @@ internal class ActionsSpellerTest {
   @Test
   fun `max limits the suggestions`() {
     assertEquals(1, speller.suggestAndRank("formt", 1).size)
+  }
+
+  @Test
+  fun `only the closest candidates are returned`() {
+    assertEquals(listOf("settings"), speller.suggestAndRank("settigns", 5).keys.toList())
+  }
+
+  @Test
+  fun `two edits that change the first letter are not suggested`() {
+    assertEquals(emptyMap<String, Double>(), speller.suggestAndRank("lemon", 5))
   }
 
   @Test

@@ -13,7 +13,8 @@ import kotlin.math.min
  *
  * Candidates are vocabulary words within an optimal string alignment (Damerau-Levenshtein) distance
  * that grows with the word length, up to [LanguageModelDictionary.MAX_LEVENSHTEIN_DISTANCE].
- * They are ranked by distance first and by frequency in the vocabulary second.
+ * Only candidates at the smallest distance found are returned, ranked by frequency in the vocabulary.
+ * For words shorter than [LONG_WORD_LENGTH], candidates two or more edits away must keep the query's first letter.
  */
 internal class ActionsSpeller(private val dictionary: LanguageModelDictionary) {
   private val vocabulary: Set<String> = dictionary.allWords
@@ -47,7 +48,9 @@ internal class ActionsSpeller(private val dictionary: LanguageModelDictionary) {
     for (length in minLength..maxLength) {
       for (candidate in wordsByLength[length]) {
         val distance = osaDistance(query, candidate, bound, buffers)
-        if (distance <= bound) {
+        // In words shorter than LONG_WORD_LENGTH, two or more edits that also change the first letter mostly turn an
+        // ordinary word into an unrelated action word ("lemon" -> "demo"), so such candidates are left out.
+        if (distance <= bound && (distance == 1 || query.length >= LONG_WORD_LENGTH || candidate[0] == query[0])) {
           candidates.add(Candidate(candidate, distance, score(distance, dictionary.getFrequency(candidate) ?: 0)))
         }
       }
@@ -58,7 +61,9 @@ internal class ActionsSpeller(private val dictionary: LanguageModelDictionary) {
     val best = candidates.first()
     val topConfidence = exp(-TOP_DISTANCE_DECAY * best.distance)
     val result = LinkedHashMap<String, Double>()
-    for (candidate in candidates.take(max)) {
+    // Only the closest candidates are returned: a farther one would get a low confidence, yet the sentence scoring
+    // normalizes against it when it is frequent, which pushed the right correction below min.confidence.
+    for (candidate in candidates.asSequence().takeWhile { it.distance == best.distance }.take(max)) {
       result[candidate.word] = candidate.score / best.score * topConfidence
     }
     return result
@@ -77,6 +82,7 @@ internal class ActionsSpeller(private val dictionary: LanguageModelDictionary) {
 
   companion object {
     const val MIN_WORD_LENGTH: Int = 3
+    const val LONG_WORD_LENGTH: Int = 9
 
     /** How fast a candidate's score falls with each edit. */
     private const val DISTANCE_WEIGHT = 1.5
