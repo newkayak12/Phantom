@@ -1,6 +1,6 @@
 <component xmlns="http://jetbrains.org/intellij/schema/application-info">
   <version eap="false" major="0" minor="0.0"/> <!-- phantom-idea: placeholder; phantom-build.sh passes the display version (YY, MM.DD of the build date) as -Dphantom.version.major/minor and the build writes it into the packaged copy -->
-  <company name="Phantom" url="https://github.com/newkayak12/phantom-idea"/>
+  <company name="Phantom" url="https://github.com/newkayak12/Phantom"/> <!-- phantom-idea: the repository is newkayak12/Phantom -->
   <build number="IC-__BUILD__" date="__BUILD_DATE__" majorReleaseDate="20260716"/>
   <logo url="/phantom_logo.png"/>
   <icon svg="/phantom.svg" svg-small="/phantom_16.svg"/>

@@ -372,7 +372,8 @@ internal class WindowsDistributionBuilder(
         }
       val launcherProperties = mapOf(
         "CompanyName" to appInfo.companyName,
-        "LegalCopyright" to "Copyright 2000-${LocalDate.now().year} ${appInfo.companyName}",
+        // phantom-idea: JetBrains keeps the upstream copyright, Phantom adds its own for the modifications
+        "LegalCopyright" to "Copyright 2000-${LocalDate.now().year} JetBrains s.r.o. and contributors; modifications Copyright 2026 Phantom contributors",
         "ProductName" to appInfo.productNameWithEdition,
         "ProductVersion" to "$productVersion-${appInfo.productCode}", // "242.1234.56.0-IU"
       )

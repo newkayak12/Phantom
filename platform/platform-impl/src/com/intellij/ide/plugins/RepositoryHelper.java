@@ -169,7 +169,7 @@ public final class RepositoryHelper {
         LOG.error("Using deprecated API for getting plugins from Marketplace");
       }
       var base = MarketplaceCustomizationService.getInstance().getPluginsListUrl();
-      url = Urls.newFromEncoded(base).addParameters(Map.of("uuid", PluginDownloader.getMarketplaceDownloadsUUID()));
+      url = Urls.newFromEncoded(base); // phantom-idea: no device id (uuid) parameter
       pluginListFile = Paths.get(PathManager.getPluginsPath(), PLUGIN_LIST_FILE);
     }
     else {
