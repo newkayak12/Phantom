@@ -45,7 +45,7 @@ internal class JEditorPaneDemoAction : DumbAwareAction("HTML Rendering Playgroun
         UIUtil.doNotScrollToCaret(myView)
 
         var html = Preferences.userRoot().get(PREFERENCE_KEY, "")
-        if (html.isNullOrEmpty()) html = DEFAULT_HTML // phantom-idea: StringUtil came from the closed ap-validation-all library
+        if (html.isNullOrEmpty()) html = DEFAULT_HTML // phantom-idea: StringUtil came from the ap-validation-all library
 
         val editorFactory: EditorFactory? = EditorFactory.getInstance()
         val editorDocument: Document = editorFactory!!.createDocument(html)

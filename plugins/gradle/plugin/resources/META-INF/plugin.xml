@@ -2,7 +2,8 @@
   <name>Gradle</name>
   <id>com.intellij.gradle</id>
   <category>Build Tools</category>
-  <vendor>JetBrains</vendor>
+  <!-- phantom-idea: Phantom modified this plugin, so Phantom (not JetBrains) is its vendor -->
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <description>
     <![CDATA[
       Provides integration with <a href="https://www.gradle.org">Gradle</a> for automation of building, testing, publishing, and deployment of software packages.

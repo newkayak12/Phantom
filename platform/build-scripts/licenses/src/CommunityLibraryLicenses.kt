@@ -1461,7 +1461,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("ai.grazie.spell.gec.engine.local"),
     jetbrainsLibrary("ai.grazie.spell.hunspell.en"),
     jetbrainsLibrary("cloud-config-client"),
-    jetbrainsLibrary("com.jetbrains.fus.reporting.fus-api"),
     jetbrainsLibrary("completion-log-events"),
     jetbrainsLibrary("completion-ranking-cpp-exp"),
     jetbrainsLibrary("completion-ranking-css-exp"),
@@ -1553,15 +1552,46 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("kotlinc.sam-with-receiver-compiler-plugin"),
     jetbrainsLibrary("kotlinc.scripting-compiler-plugin"),
     jetbrainsLibrary("kotlinc.symbol-light-classes"),
-    jetbrainsLibrary("kotlinx-collections-immutable"),
     jetbrainsLibrary("kotlinx-coroutines-debug"),
     jetbrainsLibrary("ml-completion-prev-exprs-models"),
     jetbrainsLibrary("tcServiceMessages"),
     jetbrainsLibrary("terminal-completion-db-with-extensions"),
     jetbrainsLibrary("terminal-completion-spec"),
-    jetbrainsLibrary("tips-idea-ce"),
     jetbrainsLibrary("tips-pycharm-community"),
     jetbrainsLibrary("workspace-model-codegen"),
+
+    // phantom-idea: libraries Phantom ships that the upstream list marks as JetBrains-own or leaves out (JetBrains group IDs and
+    // jars bundled inside another library are skipped by the generator). Kept at the end so the SBOM's first match by library
+    // name stays the parent entry.
+    LibraryLicense("IntelliJ IDEA Community tips", libraryName = "tips-idea-ce", url = "https://github.com/JetBrains/help-sources")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("JetBrains FUS reporting API", libraryName = "com.jetbrains.fus.reporting.fus-api",
+                   url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/fus/reporting/fus-api/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS)
+      .copyrightText("Copyright 2000-2026 JetBrains s.r.o."),
+    LibraryLicense("kotlinx.collections.immutable", libraryName = "kotlinx-collections-immutable", url = "https://github.com/Kotlin/kotlinx.collections.immutable")
+      .apache("https://github.com/Kotlin/kotlinx.collections.immutable/blob/master/LICENSE.txt"),
+    LibraryLicense("SSHJ (JetBrains's fork)", libraryName = "SSHJ", url = "https://github.com/hierynomus/sshj")
+      .apache("https://github.com/hierynomus/sshj/blob/master/LICENSE"),
+    LibraryLicense("ASN.1 One", libraryName = "SSHJ", transitiveDependency = true, version = "0.6.0", url = "https://github.com/hierynomus/asn-one")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("ed25519-java (EdDSA)", libraryName = "SSHJ", transitiveDependency = true, version = "0.3.0", url = "https://github.com/str4d/ed25519-java")
+      .public("https://creativecommons.org/publicdomain/zero/1.0/"),
+    LibraryLicense("Ktor Server CIO", libraryName = "ktor-server-cio-internal", url = "https://github.com/ktorio/ktor")
+      .apache("https://github.com/ktorio/ktor/blob/main/LICENSE"),
+    LibraryLicense("Typesafe Config", libraryName = "ktor-server-cio-internal", transitiveDependency = true, version = "1.4.5", url = "https://github.com/lightbend/config")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("json-smart", libraryName = "jsonpath", transitiveDependency = true, version = "2.6.0", url = "https://github.com/netplex/json-smart-v2")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("accessors-smart", libraryName = "jsonpath", transitiveDependency = true, version = "2.6.0", url = "https://github.com/netplex/json-smart-v2")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("JavaEWAH", libraryName = "jetbrains.intellij.deps.eclipse.jgit", transitiveDependency = true, version = "1.2.3", url = "https://github.com/lemire/javaewah")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Commons BeanUtils", libraryName = "opencsv", transitiveDependency = true, version = "1.11.0", url = "https://commons.apache.org/proper/commons-beanutils/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Eclipse Sisu Inject", libraryName = "maven-resolver-provider", transitiveDependency = true, version = "0.9.0.M3", url = "https://eclipse.dev/sisu/")
+      .eplV2("https://www.eclipse.org/legal/epl-v20.html"),
   )
 }
 private fun ffmpegLibraryLicense(name: String): LibraryLicense {

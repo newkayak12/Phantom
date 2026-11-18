@@ -30,7 +30,7 @@ import java.util.regex.Pattern
  *
  * phantom-idea: Phantom validates events only by the rules declared in code, that is by the `validationRule` of the
  * [EventField]s each event is registered with in its [EventLogGroup]. Upstream validated by rules downloaded from
- * JetBrains' metadata server through the closed library com.jetbrains.fus.reporting:ap-validation-all, which Phantom
+ * JetBrains' metadata server through the JetBrains library (no published sources) com.jetbrains.fus.reporting:ap-validation-all, which Phantom
  * does not ship. A value that no rule accepts is replaced with the [ValidationResultType] description; an event whose
  * id is not registered in its group is not recorded.
  *

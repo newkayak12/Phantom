@@ -8,7 +8,7 @@ import org.jetbrains.intellij.build.impl.ModuleOutputPatcher
 
 /**
  * phantom-idea: Phantom does not bundle JetBrains' feature usage statistics metadata. Upstream downloaded it here with the
- * closed library com.jetbrains.fus.reporting:ap-validation-all; Phantom validates events by the rules declared in code.
+ * JetBrains library (no published sources) com.jetbrains.fus.reporting:ap-validation-all; Phantom validates events by the rules declared in code.
  */
 @Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
 internal fun CoroutineScope.createStatisticsRecorderBundledMetadataProviderTask(moduleOutputPatcher: ModuleOutputPatcher,

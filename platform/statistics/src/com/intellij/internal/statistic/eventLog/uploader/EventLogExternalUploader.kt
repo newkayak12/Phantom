@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 
 /**
  * phantom-idea: Phantom has no statistics sender. Upstream started a separate uploader process here that sent the event
- * log to JetBrains; that process needed the closed library com.jetbrains.fus.reporting:ap-validation-all, which Phantom
+ * log to JetBrains; that process needed the JetBrains library (no published sources) com.jetbrains.fus.reporting:ap-validation-all, which Phantom
  * does not ship. Both entry points do nothing.
  */
 object EventLogExternalUploader {

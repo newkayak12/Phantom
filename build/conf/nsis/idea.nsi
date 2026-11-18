@@ -40,10 +40,11 @@ OutFile "${OUT_DIR}\${OUT_FILE}.exe"
 InstallDir "${DEFAULT_INST_DIR}"
 
 !define /date CURRENT_YEAR "%Y"
-VIAddVersionKey /LANG=0 "CompanyName" "JetBrains s.r.o."
+; phantom-idea: Phantom is the publisher of this build; JetBrains keeps the upstream copyright line (Apache-2.0 4(b))
+VIAddVersionKey /LANG=0 "CompanyName" "Phantom"
 VIAddVersionKey /LANG=0 "FileDescription" "${MUI_PRODUCT} Windows Installer"
 VIAddVersionKey /LANG=0 "FileVersion" "${VER_BUILD}"
-VIAddVersionKey /LANG=0 "LegalCopyright" "Copyright 2000-${CURRENT_YEAR} JetBrains s.r.o."
+VIAddVersionKey /LANG=0 "LegalCopyright" "Copyright 2000-${CURRENT_YEAR} JetBrains s.r.o. and contributors; modifications Copyright 2026 Phantom contributors"
 VIAddVersionKey /LANG=0 "ProductName" "${MUI_PRODUCT}"
 VIAddVersionKey /LANG=0 "ProductVersion" "${MUI_VERSION_MAJOR}.${MUI_VERSION_MINOR}"
 VIFileVersion ${FILE_VERSION_NUM}
@@ -563,8 +564,9 @@ Function UninstallRecord
   WriteRegStr SHCTX $0 "InstallLocation" "$INSTDIR"
   WriteRegStr SHCTX $0 "DisplayIcon" "$productLauncher"
   WriteRegStr SHCTX $0 "DisplayVersion" "${VER_BUILD}"
-  WriteRegStr SHCTX $0 "Publisher" "JetBrains s.r.o."
-  WriteRegStr SHCTX $0 "URLInfoAbout" "https://www.jetbrains.com/products"
+  ; phantom-idea: Phantom, not JetBrains, publishes this build
+  WriteRegStr SHCTX $0 "Publisher" "Phantom"
+  WriteRegStr SHCTX $0 "URLInfoAbout" "https://github.com/newkayak12/Phantom"
   WriteRegDWORD SHCTX $0 "NoModify" 1
   WriteRegDWORD SHCTX $0 "NoRepair" 1
 FunctionEnd

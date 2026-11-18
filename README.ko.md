@@ -55,7 +55,7 @@ Phantom는 [JetBrains/intellij-community](https://github.com/JetBrains/intellij-
 - Backup and Sync를 내 git 저장소로 한다. GitHub 로그인은 account.jetbrains.com 대신 `gh auth token`을 쓴다.
 - Download JDK 목록은 foojay Disco API에서 받는다. 힙과 파일 페이지 캐시 크기는 기기 RAM에 맞춰 정한다.
 
-**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일, JBR 런타임 목록, Git 설치 목록은 아직 JetBrains에서 받지만, 사용자가 그 다운로드를 고를 때만이다(Grazie 언어 추가, Choose Boot Java Runtime 열기, Windows에서 Git이 없을 때 Download and Install. macOS에서는 Git 설치 목록을 받는 경로가 없다). 알려진 빈틈은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)에 있다. 사용 통계 업로드는 플래그가 아니라 사용자 동의 설정이 결정한다. 프레임워크 라이브러리 버전 목록과 Windows의 Git 업데이트 확인은 이제 플래그를 주지 않으면 JetBrains로 나가지 않는다. 이 변경은 소스에만 들어갔고 아직 빌드하거나 테스트하지 않았다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `6e71ed80c4`) 아직 빌드하거나 테스트하지 않았다.
+**여전히 네트워크에 접속하는 것.** Marketplace 탭 탐색(plugins.jetbrains.com)은 일부러 남겼고, Phantom 자체 플러그인 저장소는 GitHub에서 읽는다(`-Dphantom.plugins.official=false`로 뺄 수 있다). Grazie 언어 파일, JBR 런타임 목록, Git 설치 목록은 아직 JetBrains에서 받지만, 사용자가 그 다운로드를 고를 때만이다(Grazie 언어 추가, Choose Boot Java Runtime 열기, Windows에서 Git이 없을 때 Download and Install. macOS에서는 Git 설치 목록을 받는 경로가 없다). 사용 통계는 켤 수 없다. Phantom에는 사용 통계 동의 항목이 없어 동의할 것이 없고 업로더는 보내지 않는다(배경은 [ARCHITECTURE.md §6](docs/phantom/ARCHITECTURE.md)). 밖으로 나가는 연결 전체는 [PRIVACY.ko.md](PRIVACY.ko.md)에 있다. 프레임워크 라이브러리 버전 목록과 Windows의 Git 업데이트 확인은 이제 플래그를 주지 않으면 JetBrains로 나가지 않는다. 이 변경은 소스에만 들어갔고 아직 빌드하거나 테스트하지 않았다. 피드백 양식과 Tips of the Day의 좋아요/싫어요는 더는 빈틈으로 치지 않는다. 양식은 플래그를 주지 않으면 아무것도 보내지 않고, 좋아요/싫어요 줄은 기본으로 숨겨진다. 이 변경은 소스에 들어갔지만(커밋 `6e71ed80c4`) 아직 빌드하거나 테스트하지 않았다.
 
 ## 성능
 
@@ -133,6 +133,7 @@ git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
 - [BUILD.md](docs/phantom/BUILD.md): 빌드, 서명, 설치, 릴리스, 벤치마크
 - [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md): 코드 작업과 테스트 실행
 - [CHANGELOG.md](CHANGELOG.md): 릴리스별 변경
+- [PRIVACY.ko.md](PRIVACY.ko.md): Phantom이 수집하는 것(없음)과 접속하는 곳
 
 ## 업스트림, 상표, 클린룸 정책
 
