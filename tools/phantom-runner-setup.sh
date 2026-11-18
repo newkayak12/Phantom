@@ -4,12 +4,12 @@
 #   tools/phantom-runner-setup.sh            install into ~/actions-runner/phantom-idea and start it as a login agent
 #   tools/phantom-runner-setup.sh --remove   stop it and unregister it from GitHub
 # What it does: downloads GitHub's runner (osx-arm64) into ~/actions-runner/phantom-idea, registers it for
-# newkayak12/phantom-idea with the labels self-hosted, macOS, ARM64 (a registration token from `gh api`, valid one
+# newkayak12/Phantom with the labels self-hosted, macOS, ARM64 (a registration token from `gh api`, valid one
 # hour), and installs a launchd agent (~/Library/LaunchAgents/actions.runner.*.plist) so it runs while you are logged
 # in. Jobs then run as your user: they can read your files and use your keychain, so only this repository's own
 # workflows should run on it (the repository is private; no fork can trigger it).
 set -euo pipefail
-repo="newkayak12/phantom-idea"
+repo="newkayak12/Phantom"
 dir="$HOME/actions-runner/phantom-idea"
 ask() { read -r -p "$1 [y/N] " a; [[ "$a" == y || "$a" == Y ]]; }
 
