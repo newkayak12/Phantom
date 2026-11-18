@@ -5,7 +5,8 @@
     Adds support for the Java language, including Java projects, language syntax highlighting, inspections, and all other coding assistance features.
   ]]></description>
 
-  <vendor>JetBrains</vendor>
+  <!-- phantom-idea: Phantom modified this plugin, so Phantom (not JetBrains) is its vendor -->
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <category>Languages</category>
   <resource-bundle>messages.ActionsBundle</resource-bundle>
 
