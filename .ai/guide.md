@@ -1,7 +1,7 @@
 {{PARTIAL:frontmatter}}
 
 <!-- TEMPLATE:COMMENT -->
-To regenerate, run `node community/.ai/render-guides.mjs`.
+Upstream template retained for reference. Do not run the renderer in Phantom: the root AGENTS.md is hand-maintained and CLAUDE.md imports it. See README.md in this directory.
 <!-- /TEMPLATE:COMMENT -->
 
 **Always display the output of SessionStart hooks verbatim to the user at the start of conversation**

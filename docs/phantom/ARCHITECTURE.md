@@ -1,8 +1,8 @@
 # Phantom 아키텍처
 
 목적: 큰 트리에서 길을 찾고 프로그램을 안전하게 고치기 위한 구조·흐름 지도. 패치 지점 전체 목록은 [FORK-DELTA.md](FORK-DELTA.md), 빌드·서명·릴리스·벤치 명령은 [BUILD.md](BUILD.md)가 맡는다.
-기준 커밋: ea745003d1
-작성일: 2026-11-16
+기준 커밋: ea745003d1 (생성기 안내는 0a09032770에서 추가 확인)
+작성일: 2026-11-17
 
 표기: `경로:줄`은 기준 커밋에서 직접 연 위치다. 단 ea745003d1에서 다시 연 것은 루트 스크립트(`phantom-sign.sh` 제외), `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, Marketplace 필터 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, ea745003d1이 표식 주석을 더한 78개 파일(FORK-DELTA 2절)에서는 몇 줄 밀렸을 수 있다. "(추정)"은 읽은 사실에서 끌어낸 결론, "(미확인)"은 이번에 열어 보지 못한 내용이다.
 
@@ -65,7 +65,7 @@
 
 - 모듈의 원본은 `*.iml`(JPS)이다. 전체 모듈 목록은 `.idea/modules.xml`에 있다. Phantom 모듈 4개는 `.idea/modules.xml:359-362`에 있다(phantom.theme, phantom.sync.core, phantom.sync, phantom.sync.tests).
 - `BUILD.bazel`은 `.iml`에서 생성된다. 생성 구간은 `### auto-generated section ... start` 주석으로 표시된다(예: `plugins/phantom-sync/BUILD.bazel:3`). 생성 대상 목록은 `build/bazel-generated-file-list.txt`(1,722줄)이다.
-- 생성기 실행: 이 저장소에는 `build/jpsModelToBazelCommunityOnly.cmd`만 있다. 이 스크립트는 `platform/build-scripts/bazel`에서 `bazel run //:jps-to-bazel`을 실행한다(`build/jpsModelToBazelCommunityOnly.cmd:11-12`, 대상 정의 `platform/build-scripts/bazel/BUILD.bazel:115`). AGENTS.md는 2026-11-12에 이 경로로 고쳤다. `.ai/guide.md:30`, `.ai/tool-permissions.json:40`, `.claude/skills`와 `.agents/skills`의 여러 스킬은 아직 존재하지 않는 `./build/jpsModelToBazel.cmd`를 가리킨다(마지막 절 참고).
+- 생성기 실행: 이 저장소에는 `build/jpsModelToBazelCommunityOnly.cmd`만 있다. 이 스크립트는 `RUN_WITHOUT_ULTIMATE_ROOT=true`로 `platform/build-scripts/bazel`에서 `bazel.cmd run //:jps-to-bazel`을 실행한다(`build/jpsModelToBazelCommunityOnly.cmd:8-12`, 대상 정의 `platform/build-scripts/bazel/BUILD.bazel:115`). AGENTS.md는 2026-11-12에, 나머지 안내의 옛 `./build/jpsModelToBazel.cmd` 경로는 303c4a933a에서 고쳤다(마지막 절 참고). 생성기가 이 포크에서 끝까지 도는지는 아직 확인하지 않았다.
 - 루트 집계 모듈 `intellij.idea.community.main.iml`은 소스 실행·테스트용 런타임 의존성을 모은다. Phantom 모듈은 `intellij.idea.community.main.iml:138-140`에, 대응 Bazel 대상은 루트 `BUILD.bazel:284-286`(테스트 라이브러리 `:473-475`)에 있다.
 
 ### 플러그인 선언

@@ -18,6 +18,8 @@ This repository is Phantom, a personal fork of JetBrains intellij-community at t
 
 Read these first: [docs/phantom/README.md](docs/phantom/README.md) (index), [ARCHITECTURE.md](docs/phantom/ARCHITECTURE.md), [FORK-DELTA.md](docs/phantom/FORK-DELTA.md), [DEVELOPMENT.md](docs/phantom/DEVELOPMENT.md), [BUILD.md](docs/phantom/BUILD.md), [CHANGELOG.md](CHANGELOG.md).
 
+Claude Code loads these same rules through [CLAUDE.md](CLAUDE.md). For task routing, skill selection and verification evidence, use [.ai/workflow.md](.ai/workflow.md). Keep shared rules here rather than duplicating them in each client.
+
 Fork rules (details in DEVELOPMENT.md section 1):
 
 - Trim the bundle by configuration (`bundledPluginModules` in `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt`); keep upstream sources, `.idea/modules.xml` entries and root module dependencies.
@@ -90,6 +92,7 @@ Never use the `code-search` skill. See ijproxy for search tools.
 ### Client fallback (no MCP)
 
 - **No MCP:** use `./tools/fd.cmd` (file search) and `./tools/rg.cmd` (text/regex search). These are the only allowed shell file ops on repo paths.
+- When ijproxy is unavailable, use the client's patch/edit tool for edits. Report missing semantic inspections or `lint_files` as unavailable; do not claim they passed.
 
 ### IDE-backed semantic tools
 Available via ijproxy or JetBrains MCP. Use these for semantic operations; avoid manual search/replace when a refactor exists.

@@ -1,28 +1,18 @@
-# CLAUDE.md
-
-The repository's rules are in AGENTS.md (fork rules, module rules, tools); Claude Code reads them from here.
+# Phantom instructions for Claude Code
 
 @AGENTS.md
 
+AGENTS.md is the shared source of repository rules for Claude and Codex. Read [.ai/workflow.md](.ai/workflow.md) for task routing. Use the ijproxy tool names exposed by the current client; the names in AGENTS.md identify the same operations. Read `.ai/local.md` only when it exists.
+
 ## Git
 
-- `main` takes changes only through pull requests, admins included: the GitHub ruleset `.github/rulesets/main.json`
-  requires a pull request, forbids force pushes and deletion, and lets admins bypass only inside a pull request.
-  Apply a change to it with `gh api repos/newkayak12/Phantom/rulesets[/<id>] -X POST|PUT --input .github/rulesets/main.json`.
-- Branches are `<type>/<topic>` (`fix/github-login`, `docs/phantom-dev-docs`). Commit subjects are plain English
-  describing the effect (DEVELOPMENT.md section 4); the body says why.
-- A release (`phantom-release.sh`) is made from a commit already on `origin/main`: merge first, then release. The
-  script pushes only the release tag, and updates Phantom-plugins' marketplace.json through a pull request there.
-- Commits appear under the author's own GitHub identity; no company e-mail addresses in commits.
+- Work on `<type>/<topic>` branches in separate worktrees. Never switch branches, reset or clean the shared checkout. Check for an existing `phantom-build.sh` before building because builds share `out/`.
+- Use plain imperative English commit subjects and explain why in substantial commit bodies. Use the author's own GitHub identity rather than a company e-mail.
+- Submit changes through PRs. The prepared `.github/rulesets/main.json` uses the supplied default ruleset with zero approvals and administrator bypass. The current GitHub plan rejects live ruleset application with HTTP 403; the JSON is not enforced by its presence.
+- Release only a commit already on `origin/main`: merge first, then release. `phantom-release.sh` pushes the release tag and updates Phantom-plugins' marketplace through a PR.
 
 ## For Claude
 
-- Answer the user in Korean, short and direct. Code, comments, commit messages and docs are in English, except the
-  Korean documents (CHANGELOG.md's `미배포` lines, KOR files).
-- Another session may be working in this same checkout: do branch work in a separate worktree
-  (`git worktree add /tmp/<name> -b <branch> origin/main`), never switch branches, reset or clean in the shared one,
-  and check for a running `phantom-build.sh` before building (both write `out/`).
-- Long build or test output goes through the context-mode tools, not into the conversation.
-- Ask before anything outward-facing or hard to undo: releases and tags, force pushes, using the Phantom keychain
-  token, changing repository settings. A yes holds for that one action.
-- Report what was verified and how; a step not run is said to be not run.
+- Answer in Korean, short and direct. Code, comments, commits and documentation are English except existing Korean documents and CHANGELOG 미배포 entries.
+- Use context-mode tools for long output when available. Report exact verification and state what was not run.
+- Releases, tags, force pushes, keychain token access and repository setting changes require explicit authorization. Honor authorization already given in the current session; do not request it again for the same authorized work.

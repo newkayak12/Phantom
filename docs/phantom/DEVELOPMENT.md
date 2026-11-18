@@ -1,8 +1,8 @@
 # Phantom 개발 가이드
 
 - 목적: 이 포크를 안전하게 고치는 방법을 작업별로 적는다. 무엇이 어디서 바뀌었는지는 [FORK-DELTA.md](FORK-DELTA.md), 구조와 기동 흐름은 [ARCHITECTURE.md](ARCHITECTURE.md), 빌드·릴리스·벤치 명령은 [BUILD.md](BUILD.md)가 맡는다. 이 문서는 그 내용을 되풀이하지 않고 링크한다.
-- 기준 커밋: ea745003d1
-- 작성일: 2026-11-16
+- 기준 커밋: ea745003d1 (IDE에서 열기 절은 0a09032770에서 추가 확인)
+- 작성일: 2026-11-17
 
 표기: `경로:줄`은 기준 커밋에서 직접 연 위치다. 단 ea745003d1에서 다시 연 것은 `phantom-build.sh`, `phantom-release.sh`, `phantom-install.sh`, `phantom-bench.sh`, `phantom-bench-report.py`, `IdeaCommunityProperties.kt`, `BaseIdeaProperties.kt`, `OpenSourceCommunityInstallersBuildTarget.kt`의 줄과 이번에 고친 줄이다. 나머지는 64dc82b3f2에서 연 값이고, ea745003d1이 표식 주석을 더한 78개 파일(FORK-DELTA 2절)과 3929d7998b이 고친 `phantom-sign.sh`에서는 몇 줄 밀렸을 수 있다. "(추정)"은 읽은 사실에서 끌어낸 결론이다. 저장소 루트가 곧 community 루트다(`community/` 디렉터리 없음). 업스트림 문서와 스킬의 `community/...`는 `./...`로 읽는다.
 
@@ -20,6 +20,15 @@
 8. **변경마다 [CHANGELOG.md](../../CHANGELOG.md) `미배포` 아래에 항목을 단다**(4절).
 
 ## 2. 작업별 방법
+
+현재 번들 목록은 [BUILD.md 1절](BUILD.md#1-한눈에-보기)의 2026-11-18 상태를 본다. 아래 기준 커밋에서 센 17개 대체 플러그인·31개 제거 항목은 당시 값이며, 현재 설정은 각각 26개·40개다. 플러그인 저장소의 해당 모듈은 자체 `src/main` 소스를 빌드한다. 이 포크의 같은 이름 소스를 고쳐도 그 복사본이 자동으로 갱신되지는 않는다.
+
+### IDE에서 소스 열기·실행하기
+
+1. [BUILD.md 2절](BUILD.md#2-사전-준비)의 Android 체크아웃을 준비하고, IDE의 Open으로 **이 저장소 루트**를 연다. 이미 `.idea/modules.xml`과 `*.iml`이 있는 IntelliJ 프로젝트다. `community/` 하위 폴더를 찾거나 Gradle 프로젝트로 새로 가져오지 않는다.
+2. Project Structure에서 프로젝트 SDK를 확인한다. 추적된 [`.idea/misc.xml`](../../.idea/misc.xml)의 이름은 `jbr-25`, 언어 수준은 `JDK_25`다. 로컬 SDK 목록에 없다면 JDK 25를 그 이름으로 등록한다. 로컬 경로를 맞추기 위해 추적된 `.iml`이나 `.idea` 파일 전체를 다시 쓰지 않는다.
+3. 인덱싱과 의존성 준비가 끝나면 공유 실행 구성 **IDEA**로 실행하거나 디버그한다. [구성 파일](../../.idea/runConfigurations/IDEA.xml)은 `intellij.idea.community.main` 모듈의 `com.intellij.idea.Main`을 실행하며 작업 디렉터리는 `bin/`이다. 개발용 설정은 `config/idea`, 시스템·로그는 `system/idea` 아래를 쓴다. 이 절은 구성 파일을 확인한 안내이며 새 체크아웃에서의 실행 검증은 하지 않았다.
+4. 소스 실행의 플러그인 구성과 배포 앱의 번들 구성을 구분한다. 루트 모듈의 런타임 의존은 업스트림 소스를 유지하지만, `phantom-build.sh`는 Phantom-plugins에서 빌드한 대체 플러그인을 번들한다. 대체 플러그인을 고칠 때는 아래 (c)의 소스 출처를 먼저 확인하고, 배포 동작은 `./phantom-build.sh`의 산출물로 검증한다. 소스 실행에서 보이는 버전 0.0은 [BUILD.md 3절](BUILD.md#3-빌드)의 표시 버전 자리표시자다.
 
 ### (a) 번들에서 플러그인 빼기
 
@@ -109,6 +118,12 @@
 
 ## 3. 검증
 
+[Phantom quality](../../.github/workflows/phantom-quality.yml)는 PR, main push, 수동 실행에서 스크립트·워크플로 검사와 품질 도구의 Node 테스트를 한다. IDE 모듈 테스트, 앱 빌드와 벤치는 아래 명령으로 별도 검증한다. PR 작업 흐름은 [`.ai/workflow.md`](../../.ai/workflow.md), GitHub 규칙 설정은 [`.github/rulesets/README.md`](../../.github/rulesets/README.md)를 본다.
+
+로컬에서는 `node --test tools/phantom-quality.test.mjs`와 `node tools/phantom-quality.mjs --base origin/main`을 실행한다(Node 22 이상, Python 3, Bash/Zsh 필요). 기본 base는 업스트림 스냅샷 `d2faebf601`이며, 지정한 base와 HEAD의 공통 조상부터 작업 트리까지 변경된 파일과 ignore되지 않은 새 파일을 검사한다. `--lint`를 `--base` 앞에 붙이면 ShellCheck와 actionlint도 실행한다. 두 도구는 PATH에 있어야 하고, CI는 ShellCheck와 Zsh를 Ubuntu 패키지로, actionlint `v1.7.7`을 Go로 설치한다. ShellCheck는 Bash 스크립트의 error 수준, actionlint는 변경된 워크플로를 검사한다.
+
+참고한 [prototype-reservation-system](https://github.com/newkayak12/prototype-reservation-system)의 Detekt 설정을 이 모노레포 전체에 적용하지는 않는다. Kotlin/Java는 영향 모듈의 IDE 검사·컴파일·테스트로 검증한다. 별도 Phantom analysis CI는 Node 품질 도구의 LCOV를 생성하고, 설정이 갖춰지면 Codecov에 올리고 Phantom 소유 소스를 SonarQube로 분석한다. 서비스 설정과 라벨·이슈 자동화는 [GitHub 자동화 안내](../../.github/README.md)를 본다. JVM 커버리지는 포함하지 않는다.
+
 | 확인 | 명령 | 근거 |
 |---|---|---|
 | Phantom 테스트 4개 | `./tests.cmd --module phantom.sync.tests --test dev.phantom.sync.GitRepoCommunicatorTest`<br>`./tests.cmd --module intellij.platform.tests --test dev.phantom.ide.memory.MemoryPlanTest`<br>`./tests.cmd --module intellij.platform.lang.tests --test dev.phantom.ide.endpoints.EndpointRequestsTest`<br>`./tests.cmd --module intellij.platform.tests --test com.intellij.ide.plugins.GitHubPluginRepositoryTest` | BUILD.md 8절. 모듈 이름은 `.iml`에서 읽었고 실행해 보지 않았다 |
@@ -122,7 +137,7 @@
 
 - `./tests.cmd`는 Bazel 컴파일을 포함한다(`tests.cmd:15-28`). `--test`에는 FQN이나 와일드카드가 필요하다.
 - 소스에서 IDE를 실행할 때: 개발 모드 레이아웃도 `getAdditionalPluginPaths()`를 부르므로(`platform/build-scripts/src/org/jetbrains/intellij/build/dev/PluginBuilder.kt:74` → `IdeaCommunityProperties.kt:206-213`) `out/phantom-plugins/<dir>/lib`가 없으면 실패할 것으로 보인다(추정, 실행하지 않음). 그 디렉터리를 만드는 것은 `phantom-build.sh:29-44`뿐이다.
-- 자동화되지 않은 것: CI는 테스트도 게이트도 돌리지 않는다. 워크플로는 `.github/workflows/phantom-release.yml` 하나이고 수동 릴리스만 한다. `phantom-build.sh`, `phantom-release.sh`도 벤치·게이트·테스트를 부르지 않는다(BUILD.md 9절 6번). 위 확인은 사람이 커밋 전에 직접 돌린다.
+- 자동화되지 않은 것: IDE 모듈 테스트와 앱 번들의 정적 게이트·런타임 벤치는 로컬에서 별도로 실행한다. CI의 저장소 스크립트 검사와 Node 커버리지 분석은 이 검증을 대신하지 않는다. `phantom-build.sh`, `phantom-release.sh`도 벤치·게이트·IDE 테스트를 부르지 않는다(BUILD.md 9절 6번).
 
 ## 4. 커밋·변경 이력 규칙
 
@@ -148,7 +163,7 @@
 | 7 | 고침(256d3b35c3): 앱·설정·픽스처 경로를 `PHANTOM_APP`, `PHANTOM_CONFIG_DIR`, `PHANTOM_BENCH_FIXTURE`로 바꿀 수 있음(기본값은 전과 같음). 기본값·재정의 해석만 확인했고 벤치와 설치 전체는 실행하지 않음. 이어서 b5a1bc773a가 `.app`으로 끝나는 절대 경로가 아닌 `PHANTOM_APP`을 설치에서 거부하게 했고, ecf939da71가 다른 픽스처를 주면 복사본을 바꾸고(`out/phantom-bench/work/fixture.source`) 상대 경로를 부른 폴더 기준으로 읽게 했으며, eff1276d6a이 설치 때 `PHANTOM_APP`에서 실행 중인 Phantom만 프로세스 ID로 끄게 했다 | `phantom-install.sh:22-23`, `:52-70`, `phantom-bench.sh:21-22`, `:28`, `:39-40`, `:49-69`, `phantom-sign.sh`의 `APP=` 줄 | BUILD 9.3 |
 | 8 | 고침(2aa424a169): 인증서가 없으면 `phantom-sign.sh`가 stderr 메시지와 종료 코드 1로 실패. `PHANTOM_SIGN_OPTIONAL=1`이면 경고 후 0이고 `phantom-install.sh`가 이 값을 켬. 헤더 주석의 키체인도 바로잡음. 이어서 인증서가 없으면 `phantom-install.sh`가 `phantom-sign.sh --setup`으로 자체 서명 인증서를 자동으로 만듦(`PHANTOM_SIGN_SETUP=0`이면 건너뜀, 실패하면 전처럼 ad-hoc). 임시 `HOME`과 더미 앱으로 만들기·서명·재서명을 실행했고, 실제 설치와 실제 앱의 개인정보 권한 유지는 실행하지 않음 | `phantom-sign.sh:2-24`, `:40-109`, `phantom-install.sh` 서명 호출 | BUILD 5장, 9.4 |
 | 9 | GitHub Actions용 건너뛰기 목록이 로컬 빌드에도 항상 적용(upstream 동작). 80b3e36e3d가 목록에서 `ARCHIVE_PLUGINS`를 빼서 지금 건너뛰는 것은 `CROSS_PLATFORM_DISTRIBUTION_STEP`, `SOURCES_ARCHIVE_STEP`이다 | `build/src/OpenSourceCommunityInstallersBuildTarget.kt:19-24`, `:39`, `build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt:72-73` | BUILD 9.5 |
-| 10 | 테스트·벤치·정적 게이트가 CI와 빌드·릴리스 스크립트에 연결되지 않음 | `.github/workflows/phantom-release.yml` | BUILD 9.6 |
+| 10 | IDE 모듈 테스트·런타임 벤치·앱 번들 정적 게이트가 CI와 빌드·릴리스 스크립트에 연결되지 않음. 스크립트·워크플로 검사는 Phantom quality에서 실행 | `.github/workflows/phantom-release.yml`, `.github/workflows/phantom-quality.yml` | BUILD 9.6 |
 | 11 | FUS 업로드 주소는 외부 jar 안에 있어 확인 못 함. 전송은 게이트가 아니라 사용자 동의로 결정 | `platform/statistics/uploader/src/com/intellij/internal/statistic/eventLog/connection/EventLogSettingsClient.kt:96-98` | ARCHITECTURE 6절 열린 질문 (a) |
 | 12 | **변경됨, 빌드 대기 (6e71ed80c4, 5185f60295)**: 게이트 밖 피드백 전송(대화상자 경로)과 지역 URL 매핑을 `submitFeedback` 맨 앞 게이트로 막음. 5185f60295가 `OnboardingFeedbackForm.kt:279`의 감사 알림도 같은 조건으로 건너뛰게 함. 테스트의 요청 대기 시간은 15초라 그보다 느린 지역 매핑 조회는 고장 난 게이트를 통과시킬 수 있음 | `platform/feedback/src/com/intellij/platform/feedback/impl/GeneralFeedbackSubmit.kt:116-126`, `:135`, `platform/platform-impl/src/com/intellij/ide/RegionUrlMapper.java:42` | ARCHITECTURE 6절 (b) |
 | 13 | **변경됨, 빌드 대기 (9f63128702)**: 프레임워크 라이브러리 버전 목록이 `www.jetbrains.com/idea/download-assistant.xml`과 `frameworks.jetbrains.com`에서 왔다. 호출 시점은 "다운로드"를 누를 때가 아니라 목록을 보여 주는 화면이 열릴 때다: New Project 마법사에서 Groovy를 고르면 SDK 콤보가 바로 목록을 받고(`plugins/groovy/src/org/jetbrains/plugins/groovy/config/wizard/GroovyProjectWizardUtils.kt:51` → `GroovyDownloadableLibraryType.kt:26`, Maven 쪽은 `plugins/maven/groovy/src/wizard/MavenGroovyNewProjectWizard.kt:117`), Add Framework Support 등의 `LibraryOptionsPanel`은 생성자에서 받는다(`java/idea-ui/src/com/intellij/facet/impl/ui/libraries/LibraryOptionsPanel.java:257`). 둘 다 `FileSetVersionsFetcherBase.java:43` → `LibrariesDownloadAssistant.java:35`를 거친다. 이제 `-Dphantom.jetbrains.services=true`가 아니면 `getDownloadServiceVersions`(`:46-50`)가 null을 돌려 번들 목록(예 `groovy.sdk.xml`, 받는 곳은 repo1.maven.org)을 쓴다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다 | `platform/ide-core/src/com/intellij/facet/frameworks/LibrariesDownloadAssistant.java:47-50`, 주소 `LibrariesDownloadConnectionService.java:6-7` | ARCHITECTURE 6절 (b) |
