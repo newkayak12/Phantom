@@ -23,6 +23,10 @@ third-party-libraries.html:
     Inconsolata under the SIL Open Font License 1.1; Droid and Roboto under the Apache License 2.0
   Windows only: OpenConsole.exe and conpty.dll (Microsoft Terminal, https://github.com/microsoft/terminal, MIT),
     winpty.dll and winpty-agent.exe (https://github.com/rprichard/winpty, MIT)
+  Inside the Gradle API jar (plugins/gradle-plugin/lib/gradle-api-<version>.jar, built from the Gradle distribution
+    of that version): Gradle's own dependencies, which Gradle relocates into org.gradle.internal.impldep. They are
+    listed with their licenses (Apache 2.0, BSD 3-Clause, Eclipse Distribution License 1.0, Bouncy Castle (MIT), MIT,
+    LGPL 2.1) in that jar's META-INF/gradle/LICENSE (Gradle's LICENSE) and in third-party-libraries.html.
 
 The distribution also includes the following components under the GNU General Public License, version 2, with the
 Classpath Exception. Their complete corresponding source code is available at:
@@ -46,6 +50,10 @@ available at:
     pty4j https://github.com/JetBrains/pty4j, Eclipse Sisu Inject https://github.com/eclipse-sisu/sisu-project
   CDDL 1.1: JAXB https://github.com/javaee/jaxb-v2, JavaBeans Activation Framework https://github.com/javaee/activation,
     Common Annotations https://github.com/javaee/javax.annotation
+  LGPL 2.1, inside the Gradle API jar with their packages renamed by Gradle (relocated to org.gradle.internal.impldep):
+    JCIFS 1.3.17 https://www.jcifs.org/ (sources jar: jcifs:jcifs:1.3.17 on Maven Central),
+    JNA 5.17.0 and JNA Platform 5.17.0 (LGPL 2.1 or Apache 2.0) https://github.com/java-native-access/jna (sources jars on Maven Central);
+    the relocation is part of Gradle's build: https://services.gradle.org/distributions/gradle-9.6.0-src.zip
   In the bundled plugins built in Phantom-plugins:
     LGPL: openregex 1.1.1 https://github.com/knowitall/openregex
     LGPL 2.1: english-pos-dict 0.6 https://github.com/languagetool-org/english-pos-dict

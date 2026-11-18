@@ -87,6 +87,7 @@
 - `main`은 관리자도 pull request로만 바꾼다. GitHub 규칙 `.github/rulesets/main.json`(PR 필수, force push·삭제 금지, 관리자는 PR 안에서만 우회)은 저장소를 공개로 바꾼 뒤 적용한다. `phantom-release.sh`는 `origin/main`에 이미 있는 커밋에서만 릴리스하고(직접 push하지 않음), Phantom-plugins의 marketplace.json도 pull request로 고친다. `CLAUDE.md`(AGENTS.md를 불러오고 Git·Claude 규칙을 더함)와 `.claude/settings.json`을 넣고, `docs/superpowers`를 지우고 에이전트 작업 파일을 무시한다 (PR #10).
 - Gradle 플러그인의 Gradle API jar(`gradle-api-9.6.0.jar`)를 JetBrains 저장소(packages.jetbrains.team의 `org.jetbrains.intellij.deps:gradle-api`)에서 받지 않고, services.gradle.org의 Gradle 9.6.0 배포본(Gradle이 공개한 sha256으로 확인)으로 빌드할 때 직접 만든다(`lib/gradle-api.bzl`, IntelliJ의 `build/dependencies/gradle-api-deps` 레시피와 같은 내용, 결과 sha256 고정). 클래스 파일은 JetBrains 것과 같고 Gradle의 LICENSE·NOTICE가 `META-INF/gradle/`에 더 들어간다. 갱신 방법: `docs/phantom/BUILD.md` "Gradle API jar".
 - Gradle 플러그인에서 중복 Groovy(`groovy.jar`, 20 MB)와 `groovy-ant.jar`, `lib/ant/`를 뺐다. Groovy는 Groovy Scripting의 `intellij.libraries.groovy` 모듈을 쓴다.
+- Gradle API jar 안의 Gradle 의존성(`org.gradle.internal.impldep`, JCIFS·JNA LGPL 2.1 포함)을 `NOTICE.txt`와 서드파티 목록(`CommunityLibraryLicenses.kt`)에 적었다.
 
 ### 벤치마크
 - 정적 게이트 `compare`가 baseline 앱의 빌드 날짜(빌드 번호 `262.<YYMMDD>`)보다 번들 목록 `IdeaCommunityProperties.kt`의 마지막 커밋이 늦으면 stderr에 `STALE BASELINE`을 쓰고, 회귀가 없어도 종료 코드 2로 끝난다. 지금의 `static-baseline.json`(26.10.27)은 이 검사에 걸린다. 빌드된 앱이 있어야 다시 만들 수 있어 파일은 그대로 두고, 재생성 명령을 `docs/phantom/bench/README.md`에 적었다 (e29d855fff, PR #4).
