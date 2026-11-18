@@ -23,6 +23,10 @@
 - 수정한 원본 파일 중 표시가 없던 두 파일(`.idea/modules.xml`, `GithubBundle.properties`)에 `phantom-idea:` 표시를 달았다.
 - `LICENSE.txt`를 JetBrains Open-Source Build Terms에서 Apache License 2.0 원문으로 바꾸고, `NOTICE.txt`에 포크 사실과 JetBrains와 무관하다는 문구를 넣었다 (ff512ae2df).
 
+### 번들 구성
+
+- Grazie(Phantom Natural Languages, `dev.phantom.grazie`) 대신 Phantom Grammar(`dev.phantom.grammar`, Phantom-plugins `grammar/`)를 번들한다. JetBrains의 비공개 `ai.grazie.*` 라이브러리를 빼고 LanguageTool만으로 문법·철자를 검사한다. 예전 ID와 `tanvd.grazi`는 별칭으로 남아 Kotlin·Python·TOML·Maven의 문법 검사 연결은 그대로다. 같은 빌드부터 터미널(0.2.0)도 라이선스 없는 JetBrains 명령 스펙·ML 순위 라이브러리 대신 Fig 명령 스펙(MIT)으로 만든 판이다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에서 `grazie`를 `grammar`로 바꿨다.
+
 ### JetBrains 서버 통신
 - 피드백 양식이 JetBrains로 보내던 것과 Tips of the Day 좋아요/싫어요를 막았다. 모든 피드백 양식이 거치는 `submitFeedback`(`GeneralFeedbackSubmit.kt`)이 `-Dphantom.jetbrains.services=true`가 아니면 요청도 지역 URL 매핑 조회도 없이 바로 돌아온다(콜백도 부르지 않으므로 블록 기반 대화상자는 감사 알림을 띄우지 않고, `LocalizationFeedbackDialog`는 알림을 건너뛴다). 레지스트리 `tips.of.the.day.feedback`의 기본값을 staging에서 nowhere로 바꾸고, 그 값이면 `TipPanel`이 좋아요/싫어요 줄을 숨긴다. 테스트 `training.ui.FeedbackSubmissionGateTest`(모듈 `intellij.featuresTrainer.tests`)를 더했다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). 이 커밋은 번들 밖 `featuresTrainer`의 `OnboardingFeedbackForm`이 띄우는 감사 알림을 건드리지 않았다 (6e71ed80c4, PR #2).
 - `OnboardingFeedbackForm`(번들 밖 `featuresTrainer` 소속)이 보내지 않았는데 감사 알림을 띄우던 것을, 다른 호출자와 같은 게이트 조건(`OnboardingFeedbackForm.kt:279`)으로 건너뛰게 했다. `FeedbackSubmissionGateTest`가 요청을 기다리는 시간도 1초에서 15초로 늘렸다(게이트가 없으면 요청 앞에 느린 지역 매핑 조회가 끼어들 수 있다). 한계: 그보다 느린 매핑 조회는 고장 난 게이트를 통과시킬 수 있다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다 (5185f60295, PR #2).

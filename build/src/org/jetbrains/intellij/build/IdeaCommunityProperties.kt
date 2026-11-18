@@ -37,7 +37,7 @@ val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
  */
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
   "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
-  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grazie", "terminal", "github", "junit", "properties",
+  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grammar", "terminal", "github", "junit", "properties",
   "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images",
 )
 
