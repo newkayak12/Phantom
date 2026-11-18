@@ -1,0 +1,13 @@
+{
+  "labels": [
+    {"name": "bug", "color": "d73a4a", "description": "A defect in Phantom", "titlePrefixes": ["bug:", "fix:"]},
+    {"name": "enhancement", "color": "a2eeef", "description": "New or improved Phantom behavior", "titlePrefixes": ["feat:", "enhancement:"]},
+    {"name": "maintenance", "color": "ededed", "description": "Repository maintenance", "titlePrefixes": ["chore:"]},
+    {"name": "revert", "color": "e4e669", "description": "Reverts an earlier change", "titlePrefixes": ["revert ", "revert:"]},
+    {"name": "area: docs", "color": "0075ca", "description": "Phantom documentation and contributor guidance", "titlePrefixes": ["docs:"], "paths": ["(^|/)(README[^/]*|AGENTS|CLAUDE|CHANGELOG)\\.md$", "^docs/phantom/", "^\\.(ai|agents|claude)/"]},
+    {"name": "area: build", "color": "5319e7", "description": "Phantom build, packaging and release scripts", "paths": ["^phantom-.*\\.(sh|py)$", "^build/src/", "^platform/build-scripts/", "^community-resources/"]},
+    {"name": "area: automation", "color": "1d76db", "description": "GitHub workflows and repository automation", "paths": ["^\\.github/", "^tools/phantom-"]},
+    {"name": "area: platform", "color": "c5def5", "description": "IntelliJ platform patches maintained by Phantom", "paths": ["^platform/(?!build-scripts/)"]},
+    {"name": "area: plugins", "color": "bfd4f2", "description": "Plugin sources or bundle selection; shipped ownership requires verification", "paths": ["^plugins/", "^build/src/org/jetbrains/intellij/build/IdeaCommunityProperties\\.kt$"]}
+  ]
+}
