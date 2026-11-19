@@ -1483,8 +1483,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("completion-ranking-sh-exp"),
     jetbrainsLibrary("completion-ranking-swift-exp"),
     jetbrainsLibrary("completion-ranking-typescript-exp"),
-    jetbrainsLibrary("debugger-agent"),
-    jetbrainsLibrary("debugger-memory-agent"),
     jetbrainsLibrary("download-pgp-verifier"),
     jetbrainsLibrary("file-prediction-model"),
     jetbrainsLibrary("find-action-model"),
@@ -1499,7 +1497,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("jetbrains.ai.completion.trigger.nes.polyglot"),jetbrainsLibrary("jetbrains.compose.components.ui.tooling.preview.desktop"),
     jetbrainsLibrary("jetbrains.compose.hot.reload.devtools.api"),
     jetbrainsLibrary("jetbrains.compose.hot.reload.gradle.idea"),
-    jetbrainsLibrary("jetbrains.intellij.deps.rwmutex.idea"),
     jetbrainsLibrary("jetbrains.kotlin.jps.plugin.classpath"),
     jetbrainsLibrary("jetbrains.ml.models.jetenry.inline.prompt.detection.model"),
     jetbrainsLibrary("jetbrains.ml.models.python.imports.ranking.model"),
@@ -1554,7 +1551,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("kotlinc.symbol-light-classes"),
     jetbrainsLibrary("kotlinx-coroutines-debug"),
     jetbrainsLibrary("ml-completion-prev-exprs-models"),
-    jetbrainsLibrary("tcServiceMessages"),
     jetbrainsLibrary("terminal-completion-db-with-extensions"),
     jetbrainsLibrary("terminal-completion-spec"),
     jetbrainsLibrary("tips-pycharm-community"),
@@ -1575,6 +1571,22 @@ object CommunityLibraryLicenses {
       .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
       .suppliedByOrganizations(Suppliers.JETBRAINS)
       .copyrightText("Copyright 2000-2026 JetBrains s.r.o."),
+    LibraryLicense("IntelliJ debugger agent", libraryName = "debugger-agent", url = "https://github.com/JetBrains/debugger-agent")
+      .apache("https://github.com/JetBrains/debugger-agent/blob/main/LICENSE.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS),
+    LibraryLicense("IntelliJ debugger memory agent", libraryName = "debugger-memory-agent", url = "https://github.com/JetBrains/debugger-memory-agent")
+      .apache("https://github.com/JetBrains/debugger-memory-agent/blob/master/LICENSE")
+      .suppliedByOrganizations(Suppliers.JETBRAINS),
+    LibraryLicense("IntelliJ read-write mutex", libraryName = "jetbrains.intellij.deps.rwmutex.idea",
+                   url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/rwmutex-idea/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS)
+      .copyrightText("Copyright 2016-2023 JetBrains s.r.o."),
+    LibraryLicense("TeamCity service messages", libraryName = "tcServiceMessages",
+                   url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/teamcity/serviceMessages/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS)
+      .copyrightText("Copyright 2000-2024 JetBrains s.r.o."),
     LibraryLicense("kotlinx.collections.immutable", libraryName = "kotlinx-collections-immutable", url = "https://github.com/Kotlin/kotlinx.collections.immutable")
       .apache("https://github.com/Kotlin/kotlinx.collections.immutable/blob/master/LICENSE.txt"),
     LibraryLicense("SSHJ (JetBrains's fork)", libraryName = "SSHJ", url = "https://github.com/hierynomus/sshj")
