@@ -559,20 +559,11 @@ class JarPackager private constructor(
             }
           },
           isPreSignedAndExtractedCandidate = isJarPreSigned(file, context),
-          // phantom-idea: the tips library's YouTrack tip ("Try YouTrack") is left out; the tip list comes from community-resources
-          filter = if (libraryName == "tips-idea-ce") ::phantomTipsLibraryFilter else ::defaultLibrarySourcesNamesFilter,
-          filterCacheKey = if (libraryName == "tips-idea-ce") listOf("phantom-no-youtrack-tip") else emptyList(),
+          filter = ::defaultLibrarySourcesNamesFilter,
           moduleName = null,
         )
       )
     }
-  }
-
-  // phantom-idea: see packLibFilesIntoModuleJar
-  private fun phantomTipsLibraryFilter(name: String): Boolean {
-    return defaultLibrarySourcesNamesFilter(name) &&
-           name != "META-INF/tips-intellij-idea-community.xml" &&
-           !name.contains("youtrack_integration", ignoreCase = true)
   }
 
   private fun computeModuleCustomLibrarySources(layout: BaseLayout) {
@@ -759,9 +750,7 @@ class JarPackager private constructor(
               )
             }
           },
-          // phantom-idea: see packLibFilesIntoModuleJar
-          filter = if (libraryName == "tips-idea-ce") ::phantomTipsLibraryFilter else ::defaultLibrarySourcesNamesFilter,
-          filterCacheKey = if (libraryName == "tips-idea-ce") listOf("phantom-no-youtrack-tip") else emptyList(),
+          filter = ::defaultLibrarySourcesNamesFilter,
           moduleName = null,
         )
       )

@@ -5921,20 +5921,6 @@ jvm_import(
 )
 
 copy_file(
-    name = "com.jetbrains.intellij.documentation/tips-intellij-idea-community-241.62.jar_copy",
-    src = "@com_jetbrains_intellij_documentation-tips-intellij-idea-community-241_62_http//file",
-    out = "com.jetbrains.intellij.documentation/tips-intellij-idea-community-241.62.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "idea-community-customization-tips-idea-ce",
-    jar = "@com_jetbrains_intellij_documentation-tips-intellij-idea-community-241_62_http//file",
-    visibility = ["//visibility:public"],
-)
-
-copy_file(
     name = "org.jetbrains.intellij.plugins/structure-intellij-3.330.jar_copy",
     src = "@org_jetbrains_intellij_plugins-structure-intellij-3_330_http//file",
     out = "org.jetbrains.intellij.plugins/structure-intellij-3.330.jar",

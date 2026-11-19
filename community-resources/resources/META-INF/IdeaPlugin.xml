@@ -16,7 +16,7 @@
     <xi:fallback/>
   </xi:include>
   <xi:include href="/META-INF/JavaIdePlugin.xml"/>
-  <xi:include href="/META-INF/tips-intellij-idea-community.xml"/>
+  <!-- phantom-idea: no tips-intellij-idea-community.xml: Phantom ships no Tips of the Day content (the JetBrains tips-idea-ce library is not a dependency) -->
   <xi:include href="/META-INF/community-customization.xml"/>
   <xi:include href="/META-INF/intellij.moduleSets.ide.common.xml"/>
   <xi:include href="/META-INF/intellij.moduleSets.rd.common.xml"/>

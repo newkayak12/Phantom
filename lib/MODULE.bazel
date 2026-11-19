@@ -4705,13 +4705,6 @@ http_file(
 )
 
 http_file(
-    name = "com_jetbrains_intellij_documentation-tips-intellij-idea-community-241_62_http",
-    downloaded_file_path = "tips-intellij-idea-community-241.62.jar",
-    sha256 = "e46de060e29f3d060de5a9dab21711ff4d376e4b2a7e96d332415df60b7d77c8",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/intellij/documentation/tips-intellij-idea-community/241.62/tips-intellij-idea-community-241.62.jar",
-)
-
-http_file(
     name = "org_jetbrains_intellij_plugins-structure-intellij-3_330_http",
     downloaded_file_path = "structure-intellij-3.330.jar",
     sha256 = "33e816ab74eb8348a50b2ad5b724856c50db27e475a762d80cdad2a9d11a3c4e",

@@ -478,8 +478,7 @@
 
   <!-- Tips and Tricks -->
   <extensions defaultExtensionNs="com.intellij">
-    <tipAndTrick file="Kotlin.html"/>
-    <tipAndTrick file="Kotlin_project.html"/>
+    <!-- phantom-idea: Kotlin.html and Kotlin_project.html are not in this repository, so they are not registered -->
     <tipAndTrick file="Kotlin_mix.html"/>
     <tipAndTrick file="Kotlin_Java_convert.html"/>
   </extensions>

@@ -1557,14 +1557,13 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("tcServiceMessages"),
     jetbrainsLibrary("terminal-completion-db-with-extensions"),
     jetbrainsLibrary("terminal-completion-spec"),
+    // phantom-idea: tips-idea-ce removed: Phantom ships no Tips of the Day content
     jetbrainsLibrary("tips-pycharm-community"),
     jetbrainsLibrary("workspace-model-codegen"),
 
     // phantom-idea: libraries Phantom ships that the upstream list marks as JetBrains-own or leaves out (JetBrains group IDs and
     // jars bundled inside another library are skipped by the generator). Kept at the end so the SBOM's first match by library
     // name stays the parent entry.
-    LibraryLicense("IntelliJ IDEA Community tips", libraryName = "tips-idea-ce", url = "https://github.com/JetBrains/help-sources")
-      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
     LibraryLicense("JetBrains FUS reporting API", libraryName = "com.jetbrains.fus.reporting.fus-api",
                    url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/fus/reporting/fus-api/")
       .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")

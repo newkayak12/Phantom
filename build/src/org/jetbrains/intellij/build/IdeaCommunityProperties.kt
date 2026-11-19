@@ -309,7 +309,7 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
   }
 
   include(CommunityProductFragments.javaIdeBaseFragment())
-  deprecatedInclude("intellij.idea.community.customization", "META-INF/tips-intellij-idea-community.xml")
+  // phantom-idea: no tips-intellij-idea-community.xml: Phantom ships no Tips of the Day content (the JetBrains tips-idea-ce library is not a dependency)
 
   module("intellij.platform.coverage")
   module("intellij.platform.coverage.agent")
