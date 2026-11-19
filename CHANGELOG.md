@@ -43,6 +43,7 @@
 - Phantom이 고친 번들 플러그인 네 개(Java `com.intellij.java`, Git `Git4Idea`, Gradle `com.intellij.gradle`, JCEF)의 `<vendor>`를 JetBrains에서 Phantom(https://github.com/newkayak12/Phantom)으로 바꿨다. d2faebf601 이후 변경이 그 플러그인의 모듈에 닿는지로 골랐고, 고치지 않은 나머지 13개(Grid Core, platform-* 등)는 JetBrains 그대로다. vendor가 JetBrains인지에 따라 달라지는 코드를 확인했다: 번들 플러그인끼리 파일 형식이 겹칠 때의 우선순위(`ConflictingFileTypeMappingTracker`)는 지금 번들에 겹치는 확장자가 없어 영향이 없고, 바뀌는 것은 오류 보고 대화상자의 "외부 플러그인" 안내, 설정 내보내기 목록의 항목 이름(리소스 번들 없는 플러그인), 통계(꺼져 있음) 정도다 (4807eaa716, PR #12).
 
 ### 번들 구성
+- 쓰는 곳이 없는 gRPC 라이브러리 두 개(`intellij.libraries.grpc`, `intellij.libraries.grpc.netty.shaded`, 약 34MB)를 앱에서 뺀다. 쓰던 Grazie는 grammar 플러그인으로 바뀌었고, 프로세스 mediator는 어느 제품에도 들어가지 않는다.
 - 번들 Java 런타임을 JBR 25.0.4b508.27에서 25.0.4.1b508.41로 올렸다. 유출된 eMudhra 중간 인증서 8개를 신뢰하지 않게 하는 JetBrains 수정이 들어 있다(같은 b508 계열). Java4Shell(CVE-2026-114938, x86-64만 해당)은 이 빌드에 아직 수정이 없다. `NOTICE.txt`의 JBR 소스 태그도 `jbr-release-25.0.4.1b508.41`로 바꿨다 (PR #20).
 
 - Grid Core 대신 Phantom Grid(`dev.phantom.grid`, Phantom-plugins `grid/`)를 번들한다. 데이터 그리드와 CSV/TSV 표 편집기이며, Phantom이 번들하는 IntelliJ 플러그인 중에는 이것에 의존하는 것이 없고 Phantom-plugins의 ai-integrations·mybatis가 쓴다. `intellij.grid.core.plugin`은 별칭으로, 콘텐츠 모듈 이름은 그대로 남는다. CSV 사용 통계 수집기와 리스너(`intellij.grid.impl.ide`)는 빠졌다.

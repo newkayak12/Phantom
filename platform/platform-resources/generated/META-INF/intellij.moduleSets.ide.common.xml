@@ -427,8 +427,6 @@
     <module name="intellij.regexp" loading="embedded"/>
     <module name="intellij.platform.langInjection"/>
     <module name="intellij.platform.langInjection.backend"/>
-    <module name="intellij.libraries.grpc"/>
-    <module name="intellij.libraries.grpc.netty.shaded"/>
     <module name="intellij.libraries.jspecify"/>
     <module name="intellij.libraries.batik" loading="embedded"/>
     <!-- endregion -->
