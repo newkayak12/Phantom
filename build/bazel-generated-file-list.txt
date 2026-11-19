@@ -1059,7 +1059,6 @@ plugins/editorconfig/backend
 plugins/editorconfig/backend.spellchecking
 plugins/editorconfig/common
 plugins/editorconfig/frontend
-plugins/emojipicker
 plugins/env-files-support
 plugins/env-files-support/java
 plugins/env-files-support/kotlin
