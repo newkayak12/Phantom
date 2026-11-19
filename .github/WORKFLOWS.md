@@ -1,5 +1,7 @@
 # Repository checks
 
+Service setup and troubleshooting: [SERVICES.md](SERVICES.md). Repository quality tests also run weekly on Monday at 03:41 UTC.
+
 | Workflow | Checks |
 |---|---|
 | [PR health](workflows/pr-health.yml) | Maintains one size label and the merge-conflict label; refreshes open PRs when main changes. |
