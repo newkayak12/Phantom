@@ -108,7 +108,7 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
 
-Docker, Kubernetes and database migrations have plugin projects and marketplace entries in [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins); consult that repository for current feature coverage. Spring runtime (Actuator) remains a design topic in [docs/phantom/design/](docs/phantom/design/). These design records describe their original scope, rather than a current feature checklist. Where the moved plugins used to live is listed in [FORK-DELTA §5](docs/phantom/FORK-DELTA.md).
+Docker, Kubernetes and database migrations have plugin projects and marketplace entries in [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins); consult that repository for current feature coverage. Where the moved plugins used to live is listed in [FORK-DELTA §5](docs/phantom/FORK-DELTA.md).
 
 ## Build from source
 

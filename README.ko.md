@@ -111,7 +111,7 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit`(번들에서 뺀 업스트림 플러그인을 대체) |
 
-Docker, Kubernetes와 데이터베이스 마이그레이션은 [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 플러그인 프로젝트와 마켓플레이스 항목이 있다. 현재 기능 범위는 그 저장소에서 확인한다. Spring 런타임(Actuator)은 [docs/phantom/design/](docs/phantom/design/)의 설계 주제로 남아 있다. 이 설계 기록은 당시 범위를 설명하며 현재 기능 체크리스트가 아니다. 옮긴 플러그인이 이 리포지토리 어디에 있었는지는 [FORK-DELTA §5](docs/phantom/FORK-DELTA.md)에 있다.
+Docker, Kubernetes와 데이터베이스 마이그레이션은 [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 플러그인 프로젝트와 마켓플레이스 항목이 있다. 현재 기능 범위는 그 저장소에서 확인한다. 옮긴 플러그인이 이 리포지토리 어디에 있었는지는 [FORK-DELTA §5](docs/phantom/FORK-DELTA.md)에 있다.
 
 ## 소스에서 빌드
 

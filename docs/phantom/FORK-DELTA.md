@@ -70,7 +70,7 @@ git diff --no-renames --numstat d2faebf601 HEAD \
 | 패치에 표식 주석을 단다 | 수정한 줄 옆에 `// phantom-idea:`(XML은 `<!-- phantom-idea: -->`)를 단다. ea745003d1 뒤의 상태(집계: `git diff --name-status d2faebf601 HEAD`의 상태 M 135개): 주석을 달 수 없는 34개(markdown, JSON, `.iml`, `.idea/modules.xml`, `BUILD.bazel`, API 덤프, 생성 파일 목록, `build.txt`, 이미지)를 뺀 수정 업스트림 파일 101개를 검사했고, 101개 모두 수정 덩어리(5줄 이내로 붙은 덩어리는 하나로 셈)마다 3줄 안에 표식이 있다. 옛 `// Phantom:` 형식은 ee343c00f6에서 `phantom-idea:`로 통일했다(22개 파일의 표식 주석 24줄). ea745003d1 전에는 24개만 표식이 다 있었고, 이 커밋이 업스트림 파일 77개와 포크가 더한 `FoojayJdkList.kt`, 모두 78개 파일에 주석 137줄을 더했다(지운 줄 없음, 동작 변화 없음). 이름 변경으로 짝지어진 2건(1.1절)은 세지 않았다. 표식은 덩어리를 찾는 길잡이일 뿐이므로 델타는 `git diff`를 기준으로 삼는다. | `./tools/rg.cmd -n 'phantom-idea:'`로 확인한다. ea745003d1 |
 | Phantom 코드는 자기 패키지에 둔다 | 새 코드는 `dev.phantom.*` 패키지, 새 모듈은 `phantom.*` 이름을 쓴다. 예외는 업스트림 패키지 안에 넣은 `FoojayJdkList.kt`, `GHDeviceFlow.kt`, `PhantomBuildNumber.kt`다. | c06e071a51(모듈 이름 `intellij.phantom.*` → `phantom.*`). |
 | IntelliJ 플러그인을 Phantom-plugins 판으로 바꿔 번들할 수 있다 | 원본은 `.removing`으로 빼고, Phantom-plugins가 `dev.phantom.*` ID에 원본 ID를 별칭으로, 원본 콘텐츠 모듈 이름을 그대로 두고 빌드한 판을 `PHANTOM_PLUGINS_BUNDLED`로 넣는다. 원본과 함께 설치돼도 대체판만 로드된다(3.12절). 바꾼 뒤에는 이 리포의 원본 소스와 그 안의 포크 패치가 번들에 들어가지 않을 수 있다(3.2절 끝의 주의). | 9229667cc7, 04dba66c3a, a464f46719, ed67704350. 3.2절. |
-| 플러그인은 트리 안에서 만들고 밖으로 옮긴다 | 트리 안에서 만들어 번들한 뒤, 같은 플러그인 ID로 `newkayak12/Phantom-plugins`에 옮기고 번들 목록, 루트 모듈, Bazel 파일 목록, 프로젝트 모듈에서 뺀다. 설계 문서는 남긴다. | 5.2절. 8983487a29, b68d97332e, 1570329708 본문. |
+| 플러그인은 트리 안에서 만들고 밖으로 옮긴다 | 트리 안에서 만들어 번들한 뒤, 같은 플러그인 ID로 `newkayak12/Phantom-plugins`에 옮기고 번들 목록, 루트 모듈, Bazel 파일 목록, 프로젝트 모듈에서 뺀다. | 5.2절. 8983487a29, b68d97332e, 1570329708 본문. |
 
 ### 2.1 업스트림 코드를 실제로 지운 곳
 
@@ -380,7 +380,7 @@ GitHub 리포의 `.phantom/marketplace.json`을 플러그인 저장소로 읽는
 
 ### 3.11 문서
 
-`docs/` 아래 31개는 모두 추가 파일이다. 설계 문서 15개(`docs/phantom/design/`, 로드맵 포함), 벤치 결과 3개, 기능 표 1개, 벤치 도구 2개, 계획·명세 4개(`docs/plans/`, `docs/superpowers/`), 개발 문서 5개(`docs/phantom/README.md`, `ARCHITECTURE.md`, `FORK-DELTA.md`, `BUILD.md`, `DEVELOPMENT.md`, ff39526a22), 인덱싱 기록 1개(`docs/phantom/2026-10-29-indexing-changes.md`, ff39526a22). 코드 병합과 무관하다.
+`docs/` 아래 31개는 모두 추가 파일이다. 벤치 결과 3개, 기능 표 1개, 벤치 도구 2개, 계획·명세 4개(`docs/plans/`, `docs/superpowers/`), 개발 문서 5개(`docs/phantom/README.md`, `ARCHITECTURE.md`, `FORK-DELTA.md`, `BUILD.md`, `DEVELOPMENT.md`, ff39526a22), 인덱싱 기록 1개(`docs/phantom/2026-10-29-indexing-changes.md`, ff39526a22). 코드 병합과 무관하다.
 
 ### 3.12 플러그인 로딩: 다른 플러그인의 ID를 별칭으로 가진 플러그인이 그 플러그인을 대체
 
@@ -500,8 +500,6 @@ Phantom 고유 레지스트리 키는 없다. 바꾼 업스트림 키는 아래�
 
 Kotlin(`kotlin.plugin`)은 9433fdbe0f부터 번들하지 않는다. 이 리포의 빌드가 `plugins/kotlin` 소스로 zip을 만들고 `phantom-release.sh`가 Phantom-plugins 저장소의 릴리스 `kotlin-262.<YYMMDD>`와 `.phantom/marketplace.json` 항목(`org.jetbrains.kotlin`, `since` 그 플랫폼 빌드)으로 게시한다. 그 저장소가 Kotlin이나 Gradle Kotlin DSL 스크립트를 쓰는 프로젝트에 설치를 제안한다(커밋 본문, 이 리포에서 확인할 수 없음).
 
-옮긴 플러그인의 설계 문서는 `docs/phantom/design/`에 남아 있다.
-
 ## 6. 충돌 위험이 큰 업스트림 파일
 
 수정 빈도는 `git log --format= --name-only d2faebf601..HEAD | sort | uniq -c | sort -rn`(HEAD = ea745003d1)으로 셌다. 아래는 업스트림에 원래 있던 파일만 골랐다. 표식 주석만 더한 ea745003d1도 한 번으로 센다.
@@ -556,11 +554,3 @@ Kotlin(`kotlin.plugin`)은 9433fdbe0f부터 번들하지 않는다. 이 리포�
 | `README.md:31-38` | "Done" 목록 | 번들에서 뺀 14개 모듈(be60914099 기준. 지금은 31개, 3.2절), `phantom.jetbrains.services` 게이트(3.3절), Toolbox 제거, GitHub 플러그인 저장소, foojay JDK 목록, `PhantomMemorySizer`, VM 옵션 변경, Lombok 번들, Phantom 테마 기본값이 빠져 있다 |
 | `README.md:136` | `phantom-build.sh`가 날짜를 찍는다 | 맞다. 다만 그 방법이 추적 파일 `IdeaApplicationInfo.xml`을 sed로 고치는 것이라(be60914099의 `phantom-build.sh:16`) 빌드 뒤 작업 트리가 더러워진다는 말이 없었다. 048852ca23 이후 빌드는 추적 파일을 고치지 않는다(빌드 전, 코드를 읽은 결론) |
 
-`docs/phantom/design/2026-10-16-roadmap.md`:
-
-| 위치 | 로드맵 | HEAD |
-|---|---|---|
-| `:38-42` | S1-S5(phantom-spring, -spring-boot, -jpa, -http, -db)를 "완료 (DMG 번들 확인)"으로 적는다 | 다섯 플러그인 모두 이 리포에서 삭제되어 Phantom-plugins로 옮겨졌고 번들에 없다(5.2절). 로드맵에는 이동이 없다 |
-| `:17` | Endpoints를 phantom-spring-boot 범위로 둔다 | Endpoints 창은 코어에 있다(3.6절) |
-| `:62` (U1) | 새 툴 윈도우보다 기존 창을 쓴다 | 코어에 새 `Endpoints` 툴 윈도우를 더했다(`LangExtensions.xml:1556-1557`) |
-| `:51` (공통 원칙 2) | 시작 활동을 만들지 않는다 | 플러그인이 아닌 코어에 `postStartupActivity` 2개를 더했다(`PlatformExtensions.xml:841, 843`). 원칙은 플러그인 대상이라 엄밀한 위반은 아니다 |

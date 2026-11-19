@@ -33,31 +33,11 @@ CI 검사는 [저장소 검사 안내](../../.github/WORKFLOWS.md), AI 작업 �
 | `docs/phantom/2026-10-16-feature-matrix.md` | Ultimate 기능 대비 Phantom 계획 표 | 설계 기록 | 작성 시점 기준. 플러그인 위치는 FORK-DELTA 5절로 다시 본다 |
 | `docs/phantom/2026-10-29-indexing-changes.md` | trigram 인덱스·인덱싱 지문 변경과 측정값(기준 커밋 판 README의 Indexing 절을 옮김) | 측정 기록 | 당시 측정값. 패치 위치는 FORK-DELTA 3.5절 |
 | `docs/phantom/2026-10-17-benchmark-vs-ultimate.md`, `-v2.md`, `-median.md` | Phantom 대 Ultimate 기동·메모리 비교 | 측정 기록 | 당시 빌드(c37525a, f2e7052) 기준. 이후 변경은 반영 안 됨 |
-| `docs/phantom/design/2026-10-16-roadmap.md` | 설계 14건의 우선순위와 S1–S5 진행 | 계획 기록 | 머리의 2026-11-12 상태 메모 참고. S1–S5는 Phantom-plugins로 이동 |
 | `docs/plans/2026-10-30-phantom-perf-measure-first.md` | 측정 우선 성능 계획(Task 1–6) | 계획 기록 | Task 1–3은 커밋됨(38efaf66bf, 6767ffc6e1, 4b3ffd9498). Task 4–6 진행은 미확인. 체크박스는 갱신 안 됨 |
 | `docs/superpowers/specs/2026-10-26-phantom-tab-groups-design.md`, `docs/superpowers/plans/2026-10-26-phantom-tab-groups.md` | 탭 그룹 설계와 구현 계획 | 설계 기록, 계획 기록 | (ii) 이동: `phantom-tabs`는 b68d97332e에서 Phantom-plugins로 |
 | `docs/superpowers/specs/2026-10-26-phantom-workspaces-design.md` | 한 창에 여러 프로젝트 | 설계 기록 | (ii) 이동: `phantom-workspaces`는 8983487a29에서 Phantom-plugins로 |
 
-설계 문서 14건(`docs/phantom/design/2026-10-16-*.md`, 모두 설계 기록)의 플러그인 상태. (i) 이 리포에 있음 / (ii) Phantom-plugins로 이동 / (iii) 이 리포에서 만든 적 없음. (ii)는 FORK-DELTA 5.2절, (iii)은 `git log --all -- plugins/phantom-<이름>` 결과 0건으로 판정했다. (iii)이 Phantom-plugins에 있는지는 이 리포에서 확인할 수 없다(미확인).
-
-| 설계 문서 | 플러그인 | 상태 |
-|---|---|---|
-| [build-wiring](design/2026-10-16-build-wiring.md) | (공통 배선, 플러그인 아님) | 해당 없음. 현행 절차는 DEVELOPMENT.md 2절 (c) |
-| [spring-core](design/2026-10-16-spring-core.md) | phantom-spring | (ii) c83c67511e |
-| [spring-boot](design/2026-10-16-spring-boot.md) | phantom-spring-boot | (ii) c83c67511e |
-| [jpa](design/2026-10-16-jpa.md) | phantom-jpa | (ii) 53c0592476 |
-| [jpa-extras](design/2026-10-16-jpa-extras.md) | phantom-jpa 확장 | (ii) 대상 플러그인은 이동. 확장 기능 구현 여부는 미확인 |
-| [http-client](design/2026-10-16-http-client.md) | phantom-http | (ii) cab0fa60d7, ac3007c625 |
-| [database](design/2026-10-16-database.md) | phantom-db | (ii) de02add11d |
-| [docker-k8s](design/2026-10-16-docker-k8s.md) | phantom-containers | (iii) |
-| [spring-runtime](design/2026-10-16-spring-runtime.md) | phantom-spring-runtime | (iii) |
-| [migrations](design/2026-10-16-migrations.md) | phantom-migrations | (iii) |
-| [api-extras](design/2026-10-16-api-extras.md) | phantom-api | (iii) |
-| [diagrams](design/2026-10-16-diagrams.md) | phantom-diagrams | (iii) |
-| [profiler-duplicates](design/2026-10-16-profiler-duplicates.md) | phantom-profiler, phantom-duplicates | (iii) |
-| [infra-extras](design/2026-10-16-infra-extras.md) | phantom-ssh-terminal | (iii) |
-
-(i)에 해당하는 설계 문서는 없다. 이 리포에 남은 Phantom 플러그인 `phantom-sync`, `phantom-theme`에는 설계 문서가 없다. 업스트림 문서(`docs/*.puml`, `docs/notebooks/`, `docs/configurable.md`)는 ARCHITECTURE.md 8절이 안내한다.
+이 리포에 남은 Phantom 플러그인 `phantom-sync`, `phantom-theme`에는 설계 문서가 없다. 업스트림 문서(`docs/*.puml`, `docs/notebooks/`, `docs/configurable.md`)는 ARCHITECTURE.md 8절이 안내한다.
 
 ## 문서 유지 규칙
 

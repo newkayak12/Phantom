@@ -6,7 +6,7 @@
 - **U** = Ultimate 전용이다. Phantom 플러그인으로 새로 만든다 (클린룸)
 - **P** = 일부만 community에 있다
 
-"설계" 열은 어떤 설계 문서가 담당하는지다 (`docs/phantom/design/2026-10-16-<key>.md`).
+"설계" 열은 어떤 설계 문서가 담당하는지다 (설계 문서는 삭제됨).
 
 ## Spring / Spring Boot — 전부 U
 

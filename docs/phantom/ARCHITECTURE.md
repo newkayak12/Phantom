@@ -260,7 +260,7 @@ Phantom이 고친 지점: 1~7의 기동 클래스 자체(Main.kt, startup.kt, Ap
 | `docs/notebooks/1-ContextPropagation.ipynb`, `2-CancellationModel.ipynb`, `3-ReadWriteLock.ipynb` | 코루틴 문맥 전파, 취소 모델, 읽기/쓰기 잠금 |
 | `docs/configurable.md` | 설정 화면(Configurable) |
 | `README.md` | Phantom 소개, 플러그인 분리 표, 버전 체계 |
-| `docs/phantom/2026-10-16-feature-matrix.md`, `docs/phantom/design/` | 기능 매트릭스와 플러그인 설계 문서 |
+| `docs/phantom/2026-10-16-feature-matrix.md` | 기능 매트릭스 |
 | `docs/phantom/bench/README.md` | 벤치마크 설명(명령은 BUILD.md) |
 | `platform/main/README.md`, `native/XPlatLauncher/README.md`, `platform/workspace/codegen/README.md` | 집계 모듈, 런처, 엔티티 코드 생성(파일 존재만 확인, 내용은 읽지 않음) |
 
