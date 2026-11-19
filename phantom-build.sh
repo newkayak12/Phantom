@@ -27,19 +27,43 @@ phantom="PH-$d.$n"
 echo "Phantom $yy.$mm.$dd (build $phantom, platform 262.$d)"
 
 # Plugins bundled from Phantom-plugins in place of their IntelliJ originals (PHANTOM_PLUGINS_BUNDLED in
-# IdeaCommunityProperties.kt), built from the checkout next to this one or PHANTOM_PLUGINS_REPO, against the IntelliJ
-# Community build Phantom is forked from (so no installed Phantom is needed), and unpacked into out/phantom-plugins
-plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
+# IdeaCommunityProperties.kt), unpacked into out/phantom-plugins. By default their zips are downloaded from the
+# phantom-libs release named in build/phantom-plugins-bundle.txt and checked against the sha256 there, so the build
+# needs no Phantom-plugins checkout. With PHANTOM_PLUGINS_REPO set they are built from that checkout instead, against
+# the IntelliJ Community build Phantom is forked from (so no installed Phantom is needed).
 bundled_from_plugins=(toml yaml sh lombok decompiler coverage textmate markdown mermaid copyright editorconfig htmltools testng java-i18n grammar terminal github junit properties repository-search json gradle-dsl groovy-scripting groovy groovy-live-templates images grid git)
-[[ -f "$plugins_repo/settings.gradle.kts" ]] || { echo "no Phantom-plugins checkout at $plugins_repo (set PHANTOM_PLUGINS_REPO)"; exit 1; }
-echo "Phantom-plugins $(git -C "$plugins_repo" log -1 --format='%h %s' | cut -c1-80)"
-tasks=(); for p in "${bundled_from_plugins[@]}"; do tasks+=(":$p:buildPlugin"); done
-(cd "$plugins_repo" && ./gradlew --no-configuration-cache -q -PplatformFromRepository=true "${tasks[@]}")
+zips=()
+if [[ -n "${PHANTOM_PLUGINS_REPO:-}" ]]; then
+  plugins_repo="$PHANTOM_PLUGINS_REPO"
+  [[ -f "$plugins_repo/settings.gradle.kts" ]] || { echo "no Phantom-plugins checkout at $plugins_repo (PHANTOM_PLUGINS_REPO)"; exit 1; }
+  echo "Phantom-plugins $(git -C "$plugins_repo" log -1 --format='%h %s' | cut -c1-80)"
+  tasks=(); for p in "${bundled_from_plugins[@]}"; do tasks+=(":$p:buildPlugin"); done
+  (cd "$plugins_repo" && ./gradlew --no-configuration-cache -q -PplatformFromRepository=true "${tasks[@]}")
+  for p in "${bundled_from_plugins[@]}"; do
+    version="$(sed -nE 's/^version = "([^"]+)"/\1/p' "$plugins_repo/$p/build.gradle.kts")"
+    zips+=("$plugins_repo/$p/build/distributions/$p-$version.zip")
+  done
+else
+  lock="$root/build/phantom-plugins-bundle.txt"
+  tag="$(sed -nE 's/^tag (.+)$/\1/p' "$lock")"
+  cache="$root/out/phantom-plugins-zips/$tag"
+  mkdir -p "$cache"
+  echo "Phantom-plugins zips from phantom-libs release $tag"
+  for p in "${bundled_from_plugins[@]}"; do
+    line="$(grep -E "^[0-9a-f]{64}  $p-[^-/ ]+\.zip$" "$lock" || true)"
+    [[ -n "$line" ]] || { echo "no zip for $p in $lock"; exit 1; }
+    sha="${line%%  *}"; file="${line#*  }"
+    if [[ ! -f "$cache/$file" ]] || [[ "$(shasum -a 256 "$cache/$file" | cut -d' ' -f1)" != "$sha" ]]; then
+      curl -fsSL --retry 3 -o "$cache/$file.part" "https://github.com/newkayak12/phantom-libs/releases/download/$tag/$file"
+      [[ "$(shasum -a 256 "$cache/$file.part" | cut -d' ' -f1)" == "$sha" ]] || { echo "sha256 mismatch for $file"; exit 1; }
+      mv "$cache/$file.part" "$cache/$file"
+    fi
+    zips+=("$cache/$file")
+  done
+fi
 rm -rf "$root/out/phantom-plugins"; mkdir -p "$root/out/phantom-plugins"
-for p in "${bundled_from_plugins[@]}"; do
-  version="$(sed -nE 's/^version = "([^"]+)"/\1/p' "$plugins_repo/$p/build.gradle.kts")"
-  zip="$plugins_repo/$p/build/distributions/$p-$version.zip"
-  [[ -f "$zip" ]] || { echo "no $zip after the Phantom-plugins build"; exit 1; }
+for zip in "${zips[@]}"; do
+  [[ -f "$zip" ]] || { echo "no $zip"; exit 1; }
   unzip -q "$zip" -d "$root/out/phantom-plugins"
 done
 nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 \

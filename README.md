@@ -112,14 +112,14 @@ Docker, Kubernetes and database migrations have plugin projects and marketplace 
 
 ## Build from source
 
-Needs macOS on Apple Silicon, 16 GB+ RAM, about 120 GB free disk for the first build, and read access to Phantom-plugins (a private repository, per the release workflow).
+Needs macOS on Apple Silicon, 16 GB+ RAM, about 120 GB free disk for the first build.
 
 ```bash
 git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
-# Bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
-git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
+# Bundled plugins are downloaded from the phantom-libs release in build/phantom-plugins-bundle.txt
+# (PHANTOM_PLUGINS_REPO=<Phantom-plugins checkout> builds them from source instead)
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 

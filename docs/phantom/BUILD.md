@@ -12,7 +12,7 @@
 
 파이프라인은 다음 사슬이다.
 
-1. `./phantom-build.sh` -> Phantom-plugins 체크아웃에서 플러그인 17개를 Gradle로 빌드해 `out/phantom-plugins/`에 풂 -> `installers.cmd` -> `build/run_build_target.sh` -> `bazel.cmd run //build:i_build_target` -> `OpenSourceCommunityInstallersBuildTarget.kt`의 `main` -> `out/phantom-idea/artifacts/`에 DMG(macOS arm64), exe, win.zip, 그리고 번들하지 않는 Kotlin 플러그인 zip(`<제품 코드>-plugins/` 아래).
+1. `./phantom-build.sh` -> 번들 플러그인 zip을 phantom-libs 릴리스에서 받거나(`build/phantom-plugins-bundle.txt`, 기본) `PHANTOM_PLUGINS_REPO` 체크아웃에서 Gradle로 빌드해 `out/phantom-plugins/`에 풂 -> `installers.cmd` -> `build/run_build_target.sh` -> `bazel.cmd run //build:i_build_target` -> `OpenSourceCommunityInstallersBuildTarget.kt`의 `main` -> `out/phantom-idea/artifacts/`에 DMG(macOS arm64), exe, win.zip, 그리고 번들하지 않는 Kotlin 플러그인 zip(`<제품 코드>-plugins/` 아래).
 2. `./phantom-install.sh` -> (기본은 1번을 먼저 실행, `--release`는 GitHub 릴리스에서 DMG 다운로드) -> `PHANTOM_APP`(기본 `/Applications/Phantom.app`)에서 실행 중인 Phantom만 종료 -> DMG 마운트 -> 그 앱 교체 -> `./phantom-sign.sh` -> 설치된 앱(실행 중이었으면 같은 경로로 재시작).
 3. `./phantom-release.sh` -> 1번 실행 -> DMG/exe/zip과 Kotlin zip 검증 -> 태그 push -> `gh release create --draft` -> `gh release edit --draft=false` -> GitHub 릴리스 -> Kotlin zip을 Phantom-plugins 저장소의 릴리스 `kotlin-262.<YYMMDD>`로 올리고 `.phantom/marketplace.json`을 고쳐 push.
 4. `.github/workflows/phantom-release.yml` -> 셀프호스트 macOS ARM64 러너에서 Phantom-plugins 체크아웃을 맞춘 뒤 `./phantom-release.sh` 실행 (러너 등록은 `tools/phantom-runner-setup.sh`).
@@ -20,7 +20,7 @@
 
 | 스크립트 | 목적 | 주요 옵션과 환경변수 | 출력 |
 |---|---|---|---|
-| `phantom-build.sh` | Phantom-plugins의 번들 플러그인 17개를 빌드한 뒤 날짜 기반 버전으로 macOS DMG와 Windows 설치 파일 빌드 | 인자는 모두 `installers.cmd`에 `-D` JVM 옵션으로 전달. `PHANTOM_WINDOWS`(기본 1, `0`이면 DMG만), `PHANTOM_BUILD_SEQ`(N 고정), `PHANTOM_PLUGINS_REPO`(Phantom-plugins 체크아웃, 기본 `../Phantom-plugins`) | `out/phantom-idea/artifacts/*`(Kotlin zip은 `*-plugins/Kotlin-*.zip`), `out/phantom-plugins/<dir>`, `out/phantom-build-seq`, `out/phantom-build-number` |
+| `phantom-build.sh` | Phantom-plugins의 번들 플러그인 17개를 빌드한 뒤 날짜 기반 버전으로 macOS DMG와 Windows 설치 파일 빌드 | 인자는 모두 `installers.cmd`에 `-D` JVM 옵션으로 전달. `PHANTOM_WINDOWS`(기본 1, `0`이면 DMG만), `PHANTOM_BUILD_SEQ`(N 고정), `PHANTOM_PLUGINS_REPO`(주면 번들 플러그인을 그 Phantom-plugins 체크아웃에서 빌드, 없으면 phantom-libs 릴리스에서 받음) | `out/phantom-idea/artifacts/*`(Kotlin zip은 `*-plugins/Kotlin-*.zip`), `out/phantom-plugins/<dir>`, `out/phantom-build-seq`, `out/phantom-build-number` |
 | `phantom-install.sh` | 최신 빌드를 `/Applications`(또는 `PHANTOM_APP`)에 설치하고 재시작 | 인자 없음(빌드 후 설치), `--no-build`, `--release [tag]`. `GH_TOKEN`(없으면 `gh auth token`), `PHANTOM_APP`(`.app`으로 끝나는 절대 경로), `PHANTOM_SIGN_SETUP` | `PHANTOM_APP`(기본 `/Applications/Phantom.app`), `out/phantom-release-download/` |
 | `phantom-sign.sh` | 설치된 앱을 "Phantom Local" 인증서로 재서명. `--setup`은 그 인증서를 이 머신에 만든다 | 선택 인자: 앱 경로, 또는 `--setup`. `PHANTOM_APP`, `PHANTOM_SIGN_SETUP`(`1`이면 인증서가 없을 때 먼저 `--setup`), `PHANTOM_SIGN_OPTIONAL` | 재서명된 앱 (인증서가 없으면 종료 코드 1, `PHANTOM_SIGN_OPTIONAL=1`이면 경고 후 ad-hoc 서명 유지). `--setup`은 전용 키체인, 비밀번호 파일, 인증서 |
 | `phantom-release.sh` | 빌드 후 GitHub 릴리스 게시, Kotlin zip을 Phantom-plugins에 게시 | `--no-build`. `NOTES`, `PHANTOM_BUILD_SEQ`, `GITHUB_ACTIONS`, `GH_TOKEN`, `PHANTOM_PLUGINS_REPO` | 태그 `v<YY>.<MM>.<DD>.<N>`와 GitHub 릴리스. Phantom-plugins 쪽 태그·릴리스 `kotlin-262.<YYMMDD>`와 `.phantom/marketplace.json` 커밋 |
@@ -35,7 +35,7 @@
 - `android` 클론: 저장소 옆이 아니라 저장소 루트 안의 `android` 디렉터리에 `idea/262.10968.63` 태그를 받아 둔다 (`README.md:112-113`).
   `git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android`
   README는 "Android modules are still referenced by the build graph"라고 이유를 적는다. 이 클론이 없으면 빌드가 실패하는지는 실행하지 않아 확인하지 못했다 (추정).
-- Phantom-plugins 체크아웃(9229667cc7부터): 기본 위치는 이 저장소 옆 `../Phantom-plugins`이고 `PHANTOM_PLUGINS_REPO`로 바꾼다 (`phantom-build.sh:32`). 그 디렉터리에 `settings.gradle.kts`가 없으면 빌드가 시작하지 않는다 (`:34`). 릴리스 워크플로 주석은 이 저장소가 비공개라고 적는다 (`phantom-release.yml:40-42`). 따라서 클론하려면 읽기 권한이 필요하다.
+- 번들 플러그인: 빌드에는 Phantom-plugins 체크아웃이 필요 없다. `phantom-build.sh`가 `build/phantom-plugins-bundle.txt`의 phantom-libs(공개) 릴리스에서 zip을 받는다. `PHANTOM_PLUGINS_REPO`를 주면 그 체크아웃(`settings.gradle.kts` 필요)에서 빌드한다. 릴리스(`phantom-release.sh`)는 Kotlin과 `marketplace.json` 게시 때문에 여전히 Phantom-plugins 체크아웃과 쓰기 권한이 필요하다.
   `git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins` (주소는 `phantom-release.yml:50`의 저장소 이름에서 옮김)
   그 저장소의 Gradle 래퍼(`./gradlew`)가 실행된다 (`:37`). Gradle에 필요한 JDK 등은 그 저장소의 설정에 달렸고 이 리포에서는 확인할 수 없다. 스크립트는 `git`(`:35`), `unzip`(`:43`)도 부른다.
 - Bazel: 별도 설치가 필요 없다. `installers.cmd:18`이 `build/run_build_target.sh`를 부르고, 이 스크립트는 `bazel.cmd run //build:i_build_target`을 실행한다 (`build/run_build_target.sh:22,24`). `bazel.cmd`는 `.bazeliskversion`을 읽어 bazelisk를 캐시 디렉터리(`~/Library/Caches/JetBrains/monorepo-bazelisk`)에 내려받는다 (`bazel.cmd:10,22`). JDK 설정은 이 스크립트들에 없다. Bazel 쪽 툴체인이 제공한다 (추정).
@@ -54,7 +54,8 @@
 3. 일련번호 N을 정한다 (`:17-25`). `PHANTOM_BUILD_SEQ`가 있으면 그 값이다. 없으면 `out/phantom-build-seq`의 `<d>.<마지막 N>`을 읽어 같은 날이면 +1, 날짜가 다르면 1이다. 결정한 `d.N`을 같은 파일에 다시 쓴다.
 4. `phantom=PH-$d.$n`을 만들고 한 줄로 출력한다 (`:26-27`).
 5. 번들에 넣을 Phantom-plugins 플러그인을 빌드한다 (`:29-44`, 9229667cc7). 주석(`:29-31`)은 IntelliJ 원본 대신 번들하는 플러그인(`IdeaCommunityProperties.kt`의 `PHANTOM_PLUGINS_BUNDLED`)이고, Phantom이 포크한 IntelliJ Community 빌드를 대상으로 빌드하므로 설치된 Phantom이 필요 없다고 적는다.
-   - 체크아웃 위치는 `PHANTOM_PLUGINS_REPO`, 없으면 `$root/../Phantom-plugins`다 (`:32`). 그곳에 `settings.gradle.kts`가 없으면 `no Phantom-plugins checkout at ...`을 출력하고 `exit 1` 한다 (`:34`).
+   - 기본: `build/phantom-plugins-bundle.txt`의 `tag` 줄이 가리키는 newkayak12/phantom-libs 릴리스에서 플러그인마다 zip을 `out/phantom-plugins-zips/<tag>/`로 받고, 같은 파일의 sha256과 다르면 `exit 1` 한다. 캐시에 맞는 파일이 있으면 다시 받지 않는다. 목록에 플러그인 zip 줄이 없어도 멈춘다. 새 릴리스와 파일은 `tools/phantom-plugins-bundle.sh`가 만든다.
+   - `PHANTOM_PLUGINS_REPO`를 주면 그 체크아웃에서 Gradle로 빌드한다. `settings.gradle.kts`가 없으면 `no Phantom-plugins checkout at ...`을 출력하고 `exit 1` 한다.
    - 목록은 `toml yaml sh lombok decompiler coverage textmate markdown mermaid copyright editorconfig htmltools testng java-i18n grazie terminal github`, 17개다 (`:33`; `mermaid`는 a464f46719, 뒤 8개는 ed67704350). `IdeaCommunityProperties.kt:36-37`의 목록과 같아야 하지만 코드로 묶여 있지 않다.
    - 체크아웃의 마지막 커밋(해시와 제목 앞 80자)을 출력한다 (`:35`).
    - 목록마다 `:<p>:buildPlugin` 태스크를 모아(`:36`) 체크아웃 안에서 `./gradlew --no-configuration-cache -q -PplatformFromRepository=true <태스크들>`을 한 번 실행한다 (`:37`). `platformFromRepository`의 뜻은 Phantom-plugins의 빌드 설정에 있어 이 리포에서는 확인할 수 없다(주석에 따르면 IntelliJ Community 빌드를 대상으로 한다는 뜻으로 보인다, 추정).
