@@ -207,7 +207,6 @@ jvm_library(
         "//platform/xdebugger-api:debugger",
         "//platform/xdebugger-impl:debugger-impl",
         "//xml/impl",
-        "//plugins/ide-startup/importSettings",
         "//community-resources:customization",
         "//java/plugin",
         "//plugins/copyright",

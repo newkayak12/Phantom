@@ -314,8 +314,7 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
   module("intellij.platform.coverage")
   module("intellij.platform.coverage.agent")
   module("intellij.xml.xmlbeans")
-  // phantom-idea: no onboarding tours
-  module("intellij.ide.startup.importSettings")
+  // phantom-idea: no onboarding tours, no settings import from other IDEs (intellij.ide.startup.importSettings)
   module("intellij.platform.customization.min")
   module("intellij.idea.customization.base")
   module("intellij.idea.customization.backend")

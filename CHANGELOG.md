@@ -43,6 +43,7 @@
 - Phantom이 고친 번들 플러그인 네 개(Java `com.intellij.java`, Git `Git4Idea`, Gradle `com.intellij.gradle`, JCEF)의 `<vendor>`를 JetBrains에서 Phantom(https://github.com/newkayak12/Phantom)으로 바꿨다. d2faebf601 이후 변경이 그 플러그인의 모듈에 닿는지로 골랐고, 고치지 않은 나머지 13개(Grid Core, platform-* 등)는 JetBrains 그대로다. vendor가 JetBrains인지에 따라 달라지는 코드를 확인했다: 번들 플러그인끼리 파일 형식이 겹칠 때의 우선순위(`ConflictingFileTypeMappingTracker`)는 지금 번들에 겹치는 확장자가 없어 영향이 없고, 바뀌는 것은 오류 보고 대화상자의 "외부 플러그인" 안내, 설정 내보내기 목록의 항목 이름(리소스 번들 없는 플러그인), 통계(꺼져 있음) 정도다 (4807eaa716, PR #12).
 
 ### 번들 구성
+- VS Code·Eclipse·다른 JetBrains IDE에서 설정을 가져오는 첫 실행 마법사(`intellij.ide.startup.importSettings`, 약 28MB, 모든 OS용 sqlite 네이티브 포함)를 앱에서 뺀다. 이전 Phantom 버전의 설정을 이어받는 기본 가져오기는 그대로다.
 - 번들 Java 런타임을 JBR 25.0.4b508.27에서 25.0.4.1b508.41로 올렸다. 유출된 eMudhra 중간 인증서 8개를 신뢰하지 않게 하는 JetBrains 수정이 들어 있다(같은 b508 계열). Java4Shell(CVE-2026-114938, x86-64만 해당)은 이 빌드에 아직 수정이 없다. `NOTICE.txt`의 JBR 소스 태그도 `jbr-release-25.0.4.1b508.41`로 바꿨다 (PR #20).
 
 - Grazie(Phantom Natural Languages, `dev.phantom.grazie`) 대신 Phantom Grammar(`dev.phantom.grammar`, Phantom-plugins `grammar/`)를 번들한다. JetBrains의 비공개 `ai.grazie.*` 라이브러리를 빼고 LanguageTool만으로 문법·철자를 검사한다. 예전 ID와 `tanvd.grazi`는 별칭으로 남아 Kotlin·Python·TOML·Maven의 문법 검사 연결은 그대로다. 같은 빌드부터 터미널(0.2.0)도 라이선스 없는 JetBrains 명령 스펙·ML 순위 라이브러리 대신 Fig 명령 스펙(MIT)으로 만든 판이다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에서 `grazie`를 `grammar`로 바꿨다.
