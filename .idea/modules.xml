@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <!-- phantom-idea: Phantom modules (phantom-theme, phantom-sync) added; promo modules removed -->
+  <!-- phantom-idea: promo modules removed -->
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/fleet/andel/fleet.andel.iml" filepath="$PROJECT_DIR$/fleet/andel/fleet.andel.iml" />
@@ -357,10 +357,6 @@
       <module fileurl="file://$PROJECT_DIR$/commandInterface/intellij.commandInterface.iml" filepath="$PROJECT_DIR$/commandInterface/intellij.commandInterface.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" filepath="$PROJECT_DIR$/plugins/commander/intellij.commander.tests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-theme/phantom.theme.iml" filepath="$PROJECT_DIR$/plugins/phantom-theme/phantom.theme.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/core/phantom.sync.core.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/core/phantom.sync.core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/phantom.sync.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/phantom.sync.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/phantom-sync/tests/phantom.sync.tests.iml" filepath="$PROJECT_DIR$/plugins/phantom-sync/tests/phantom.sync.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.iml" />
       <module fileurl="file://$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" filepath="$PROJECT_DIR$/wintools/intellij.community.wintools.tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" filepath="$PROJECT_DIR$/plugins/compilation-charts/intellij.compilation.charts.iml" />
