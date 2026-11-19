@@ -35,8 +35,6 @@ jobs:
             /tools/test-summary.py
             /platform/platform-impl/src/dev/phantom/
             /platform/lang-impl/src/dev/phantom/
-            /plugins/phantom-sync/
-            /plugins/phantom-theme/
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a5914442 # v5.0.0
         with:
           node-version: '22'
@@ -130,8 +128,7 @@ jobs:
             '/.gitignore' '/sonar-project.properties' '/phantom-bench-report.py' \
             '/tools/phantom-quality.mjs' '/tools/phantom-quality.test.mjs' \
             '/platform/platform-impl/src/dev/phantom/' \
-            '/platform/lang-impl/src/dev/phantom/' \
-            '/plugins/phantom-sync/' '/plugins/phantom-theme/'
+            '/platform/lang-impl/src/dev/phantom/'
       - name: Fetch source history needed by SonarQube blame
         if: steps.services.outputs.sonar == 'true'
         env:
@@ -147,7 +144,6 @@ jobs:
             tools/phantom-quality.mjs tools/phantom-quality.test.mjs \
             platform/platform-impl/src/dev/phantom/ \
             platform/lang-impl/src/dev/phantom/ \
-            plugins/phantom-sync/ plugins/phantom-theme/ \
             | awk '{ sub(/^\?/, "", $1); print $1 }' > "$objects"
           GIT_NO_LAZY_FETCH=1 git cat-file --batch-check='%(objectname)' < "$objects" \
             | awk '$2 == "missing" { print $1 }' > "$missing"
