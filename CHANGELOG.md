@@ -63,6 +63,7 @@
 ### 빌드·배포·서명
 - Bazel이 공개 라이브러리를 JetBrains 다운로드 프록시(`cache-redirector.jetbrains.com`)를 거치지 않고 원래 출처(Maven Central, Google Maven, GitHub, npm, PyPI 등)에서 받는다(`build/bazel_downloader.cfg`). `lib/MODULE.bazel`의 URL은 그대로 두고 다운로더가 `cache-redirector.jetbrains.com/<출처>/...`를 `<출처>/...`로 바꾼다. 고정된 sha256은 같다. 원래 출처가 없는 JetBrains 호스팅 아티팩트(packages.jetbrains.team, JBR)는 계속 JetBrains에서 받는다.
 - packages.jetbrains.team에 있는 빌드 아티팩트 중 Maven Central에 sha256이 같은 파일이 있는 15개를 Maven Central에서 받는다. rd 라이브러리(`com.jetbrains.rd`, 배포 앱에 들어감) 10개는 `build/bazel_downloader.cfg`의 그룹 rewrite로, Kotlin 테스트용 표준 라이브러리 5개(`kotlin-stdlib` 2.1.21·1.9.22, `-common`, `-jdk8`, `-js`)는 `plugins/kotlin/kotlin_test_dependencies.bzl`의 URL을 바꿨다. `lib/MODULE.bazel`은 고치지 않았다. 나머지 JetBrains 전용 아티팩트는 이슈 #29로 정리했다 (7d77dac2cb, 203cffa30f, PR #30).
+- 앱에 들어가는 오픈소스 라이브러리 중 JetBrains(`packages.jetbrains.team`)만 호스팅하는 39개와 그 sources jar 35개를 내용 그대로 [newkayak12/phantom-libs](https://github.com/newkayak12/phantom-libs) 릴리스 `jetbrains-hosted-1`에 올리고, `build/bazel_downloader.cfg`가 그 파일 이름만 릴리스 URL로 보낸다. 고정 sha256은 그대로다. JetBrains 자체 라이선스인 4개(`debugger-agent`, `debugger-memory-agent`, `rwmutex-idea`, TeamCity `serviceMessages`)는 올리지 않아 계속 JetBrains에서 받는다. 추가·갱신 방법은 `docs/phantom/BUILD.md`에 적었다.
 - 릴리스 checkout과 Gradle wrapper 검증 액션을 커밋 SHA로 고정하고, wrapper 검증을 PR·main 변경에 맞췄다. GitHub Actions 의존성은 Dependabot이 주간 묶음 PR로 갱신한다.
 - Jewel의 YouTrack 토큰·단일 커밋 형식 검증은 업스트림 저장소에서만 실행하고, Phantom PR에는 포크의 커밋 규칙을 적용한다. Jewel 빌드·테스트 작업은 유지한다.
 - SonarQube가 찾은 품질 도구의 Git PATH 의존, 정렬 비교, 복잡도 문제를 수정했다 (PR #9).
