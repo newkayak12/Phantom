@@ -82,13 +82,13 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 
 | 번들, 이 리포지토리에서 빌드 | 번들, Phantom-plugins에서 빌드 | Phantom-plugins에서 필요할 때 설치 |
 |---|---|---|
-| `phantom-sync`: 내 git 저장소로 Backup and Sync | `toml`, `yaml`, `sh`(Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: 빈, 주입 위치 이동, 자동 주입 검사 |
-| `phantom-theme`: Phantom Dark와 Light | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` 완성과 문서 |
-| Endpoints 도구 창(코어, 내용은 플러그인이 채움) | `lombok`(전에 번들하던 커뮤니티 Lombok 플러그인을 대체) | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
-| GitHub 플러그인 저장소 지원(코어) | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
+| Endpoints 도구 창(코어, 내용은 플러그인이 채움) | `toml`, `yaml`, `sh`(Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: 빈, 주입 위치 이동, 자동 주입 검사 |
+| GitHub 플러그인 저장소 지원(코어) | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` 완성과 문서 |
+|  | `lombok`(전에 번들하던 커뮤니티 Lombok 플러그인을 대체) | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
+|  | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
 | | `grammar`, `terminal`, `github` | `http-client`: `.http` 요청 파일 |
 | | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
-| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images` | |
+| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images`, `theme`, `sync` | |
 | | | `kotlin`: Kotlin 언어 플러그인. 이 리포지토리의 릴리스마다 빌드 |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit`(번들에서 뺀 업스트림 플러그인을 대체) |
