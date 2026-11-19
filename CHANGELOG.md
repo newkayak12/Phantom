@@ -48,7 +48,7 @@
 
 ### 번들 구성
 - 쓰는 곳이 없는 gRPC 라이브러리 두 개(`intellij.libraries.grpc`, `intellij.libraries.grpc.netty.shaded`, 약 34MB)를 앱에서 뺀다. 쓰던 Grazie는 grammar 플러그인으로 바뀌었고, 프로세스 mediator는 어느 제품에도 들어가지 않는다.
-- 이모지 선택기(`intellij.emojipicker`, 리소스 약 10MB)를 앱에서 뺀다. 리눅스에서만 켜지는 기능이라 Phantom이 빌드하는 macOS와 Windows에서는 쓰이지 않는다.
+- 이모지 선택기(`intellij.emojipicker`, 리소스 약 10MB)를 앱에서 뺀다. 리눅스에서만 켜지는 기능이라 Phantom이 빌드하는 macOS와 Windows에서는 쓰이지 않는다. (PR #41)
 - VS Code·Eclipse·다른 JetBrains IDE에서 설정을 가져오는 첫 실행 마법사(`intellij.ide.startup.importSettings`, 약 28MB, 모든 OS용 sqlite 네이티브 포함)를 앱에서 뺀다. 이전 Phantom 버전의 설정을 이어받는 기본 가져오기는 그대로다.
 - 번들 Java 런타임을 JBR 25.0.4b508.27에서 25.0.4.1b508.41로 올렸다. 유출된 eMudhra 중간 인증서 8개를 신뢰하지 않게 하는 JetBrains 수정이 들어 있다(같은 b508 계열). Java4Shell(CVE-2026-114938, x86-64만 해당)은 이 빌드에 아직 수정이 없다. `NOTICE.txt`의 JBR 소스 태그도 `jbr-release-25.0.4.1b508.41`로 바꿨다 (PR #20).
 
