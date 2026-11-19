@@ -194,6 +194,7 @@ class MacDistributionBuilder(
 
       val runtimeDir = context.bundledRuntime.extract(os = OsFamily.MACOS, arch = arch, libc = MacLibcImpl.DEFAULT)
       updateExecutablePermissions(runtimeDir, executableFileMatchers)
+      createCompactHeadersCdsArchive(runtimeDir, arch, context)  // phantom-idea: base CDS archive for -XX:+UseCompactObjectHeaders
 
       if (context.isMacCodeSignEnabled) {
         /**

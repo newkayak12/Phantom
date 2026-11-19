@@ -88,6 +88,7 @@
 - `MAC_SIGN_STEP`, `WIN_SIGN_STEP`을 건너뛴다 (`:31-32`). 그래서 산출물은 서명되지 않거나 ad-hoc 서명이다.
 - `CROSS_PLATFORM_DISTRIBUTION_STEP`, `SOURCES_ARCHIVE_STEP`도 `main`에서 항상 건너뛴다 (`:19-24`, `:39`). 9장 참조. `ARCHIVE_PLUGINS`는 80b3e36e3d가 이 목록에서 빼서(`:23` 주석) 이제 플러그인 zip을 만든다. 번들하지 않는 Kotlin(`IdeaCommunityProperties.kt:122`, `pluginModulesToPublish` `:126`)이 `out/phantom-idea/artifacts/<제품 코드>-plugins/Kotlin-<버전>.zip`으로 나오게 하려는 것이고, 릴리스가 그 zip을 찾는다(6장). 그 폴더에 다른 플러그인 zip이나 `*.blockmap.zip`도 생기는지는 빌드하지 않아 확인하지 못했다(릴리스 스크립트가 blockmap을 거르는 것으로 보아 blockmap은 생기는 것으로 보인다, 추정).
 - 흐름은 `createCommunityBuildContext` -> `compileModules` -> `buildDistributions` -> 독립 실행형 JPS 빌더 생성이다 (`:40-45`). Gradle이 아니다.
+- macOS 산출물을 만들 때 번들 JBR에 `lib/server/classes_coh.jsa`가 없으면 `java -XX:+UseCompactObjectHeaders -Xshare:dump`로 만든다(`PhantomCdsArchive.kt`, `MacDistributionBuilder.kt`의 `createCompactHeadersCdsArchive` 호출). 번들 vmoptions의 `-XX:+UseCompactObjectHeaders`에서는 JVM이 이 기본 CDS 아카이브만 쓰고, 런처의 `-XX:+AutoCreateSharedArchive`(사용자 캐시 폴더의 `phantom262.<빌드>.jsa`)도 이것이 있어야 동작한다. 빌드 머신에서 대상 JBR을 실행해야 하므로 빌드 머신과 OS·아키텍처가 같은 대상에서만 만들고, Windows판에는 만들지 않는다(경고만 남긴다).
 
 ### 산출물 위치와 정리 대상
 
