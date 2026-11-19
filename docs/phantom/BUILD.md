@@ -101,12 +101,12 @@ README는 첫 빌드가 약 2시간, 이후 빌드는 "minutes"라고 쓴다 (`R
 
 ### JetBrains만 호스팅하는 라이브러리 미러
 
-앱에 들어가는 오픈소스 라이브러리 중 `packages.jetbrains.team`에만 있는 39개와 그 `-sources` jar 35개는 [newkayak12/phantom-libs](https://github.com/newkayak12/phantom-libs) 릴리스 `jetbrains-hosted-1`의 자산(원래 파일 이름 그대로, 내용 변경 없음)에서 받는다. `build/bazel_downloader.cfg`의 rewrite 한 줄이 파일 이름을 나열해 그 파일들만 릴리스 URL로 보낸다. 나머지 JetBrains 아티팩트는 그대로다. 파일마다 원래 URL, sha256, 라이선스, 업스트림이 그 저장소의 `SOURCES.csv`에 있다. 이슈 #29 참고.
+앱에 들어가는 오픈소스 라이브러리 중 `packages.jetbrains.team`에만 있는 39개와 그 `-sources` jar 35개는 [newkayak12/phantom-libs](https://github.com/newkayak12/phantom-libs) 릴리스 `jetbrains-hosted-1`의 자산(원래 파일 이름 그대로, 내용 변경 없음)에서 받는다. `debugger-agent`, `debugger-memory-agent`, `rwmutex-idea`, `serviceMessages`와 그 sources jar 8개는 `jetbrains-hosted-2`에 있다. `build/bazel_downloader.cfg`의 태그별 rewrite가 파일 이름을 나열해 그 파일들만 릴리스 URL로 보낸다. 나머지 JetBrains 아티팩트는 그대로다. 파일마다 원래 URL, sha256, 라이선스, 업스트림이 그 저장소의 `SOURCES.csv`에 있다. 이슈 #29 참고.
 
 파일을 더하거나 버전을 바꿀 때:
 1. 원래 URL에서 받아 `lib/MODULE.bazel`(또는 다른 Bazel 파일)에 고정된 sha256과 같은지 확인한다. 라이선스가 오픈소스인지 확인한다. JetBrains 자체 라이선스(`jetbrainsLibrary(...)`)는 올리지 않는다.
 2. phantom-libs에 새 릴리스 태그(예 `jetbrains-hosted-2`)를 만들고 원래 이름으로 올린 뒤, 릴리스 URL에서 다시 받아 sha256을 확인한다. `SOURCES.csv`에 행을 더하고, 새 라이선스면 `LICENSES/`에 원문을 더한다. 커밋 작성자는 개인 계정이어야 한다.
-3. rewrite의 파일 이름 목록과 태그를 고친다. `allow cache-redirector.jetbrains.com`과 `allow packages.jetbrains.team`을 잠시 빼고 `./bazel.cmd fetch --force --repository_cache= --repo=@@lib++http_file+<이름>`이 되는지 확인한 뒤 되돌린다.
+3. 새 태그의 rewrite 줄을 더하거나 파일 이름 목록을 고친다. `allow cache-redirector.jetbrains.com`과 `allow packages.jetbrains.team`을 잠시 빼고 `./bazel.cmd fetch --force --repository_cache= --repo=@@lib++http_file+<이름>`이 되는지 확인한 뒤 되돌린다.
 
 ## 4. 제품 정의가 있는 곳
 
