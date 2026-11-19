@@ -6,9 +6,9 @@ import com.intellij.internal.statistic.eventLog.FeatureUsageData
 import com.intellij.internal.statistic.eventLog.StatisticsEventLogListener
 import com.intellij.openapi.components.service
 import com.intellij.testFramework.junit5.TestApplication
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEventAction
-import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
+import com.intellij.internal.statistic.eventLog.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEventAction
+import com.intellij.internal.statistic.eventLog.LogEventGroup
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test

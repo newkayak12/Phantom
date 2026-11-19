@@ -105,7 +105,8 @@ interface TerminalAgentProvider {
 @ApiStatus.Internal
 class DefaultTerminalAgentProvider : TerminalAgentProvider {
   override fun getTerminalAgents(): List<TerminalAgent> {
-    return listOf(JunieTerminalAgent, ClaudeCodeTerminalAgent, CodexTerminalAgent)
+    // phantom-idea: no Junie (JetBrains' agent, installed from junie.jetbrains.com)
+    return listOf(ClaudeCodeTerminalAgent, CodexTerminalAgent)
   }
 }
 
@@ -149,35 +150,4 @@ private object CodexTerminalAgent : BundledTerminalAgent(
   ),
   icon = TerminalIcons.Agents.Codex,
 )
-
-private object JunieTerminalAgent : BundledTerminalAgent(
-  agentKey = TerminalAgent.AgentKey("junie"),
-  displayName = TerminalBundle.message("terminal.aiAgents.junie.displayName"),
-  binaryName = "junie",
-  posixKnownLocationCandidates = listOf($$"$HOME/.local/bin"),
-  windowsKnownLocationCandidates = listOf($$"$HOME\\.local\\bin"),
-  windowsExecutableExtensions = listOf("bat"),
-  icon = TerminalIcons.Agents.Junie,
-) {
-  override val installActionText: String
-    get() = TerminalBundle.message("terminal.aiAgents.junie.installActionText")
-
-  override val secondaryText: String
-    get() = TerminalBundle.message("terminal.aiAgents.junie.secondaryText")
-
-  override val showsNewBadge: Boolean
-    get() = true
-
-  override val installCommandUnix: List<String> = listOf(
-    "/bin/bash", "-c",
-    $$"curl -fsSL https://junie.jetbrains.com/install.sh | /bin/bash && exec \"$HOME/.local/bin/junie\"",
-  )
-
-  override val installCommandWindows: List<String> = listOf(
-    "powershell.exe",
-    "-NoProfile",
-    "-ExecutionPolicy", "Bypass",
-    "-Command",
-    $$"iex (irm 'https://junie.jetbrains.com/install.ps1'); & \"$HOME\\.local\\bin\\junie.bat\"",
-  )
-}
+// phantom-idea: removed JunieTerminalAgent (JetBrains' agent, installed from junie.jetbrains.com)

@@ -38,10 +38,8 @@ internal suspend fun buildNsisInstaller(
   context: BuildContext,
   arch: JvmArchitecture,
 ): Path? {
-  if (OsFamily.currentOs == OsFamily.MACOS && !context.options.isInDevelopmentMode) {
-    Span.current().addEvent("Windows installers shouldn't be built on macOS in production mode")
-    return null
-  }
+  // phantom-idea: no "not on macOS in production mode" skip; the Windows installer is built on the release Mac
+  // (the NSIS bundle has a makensis for macOS) and nothing is signed
 
   val communityHome = context.paths.communityHomeDir
   val installerFileName = context.productProperties.getBaseArtifactName(context) + suffix

@@ -17,7 +17,7 @@ import com.intellij.internal.statistic.eventLog.validator.rules.impl.CustomValid
 import com.intellij.testFramework.UsefulTestCase;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.util.Consumer;
-import com.jetbrains.fus.reporting.model.lion3.LogEvent;
+import com.intellij.internal.statistic.eventLog.LogEvent;
 import junit.framework.TestCase;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;

@@ -5,7 +5,10 @@ import com.dynatrace.hash4j.hashing.HashStream64
 import com.dynatrace.hash4j.hashing.Hashing
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl
+// phantom-idea: imports for affectsIndexing below
+import com.intellij.ide.plugins.PluginMainDescriptor
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.yieldAllDescriptors
 import com.intellij.idea.AppMode
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.impl.ApplicationInfoImpl
@@ -71,13 +74,16 @@ private fun computeIdeFingerprint(debugHelperToken: Int): IdeFingerprint {
 
   // the loadedPlugins list is sorted
   val loadedPlugins = PluginManagerCore.loadedPlugins
-  hasher.putInt(loadedPlugins.size)
+  // phantom-idea: only plugins that can change what or how files are indexed count, so updating, adding or removing any other
+  // plugin keeps the fingerprint and the next project open skips the full scan of every file
+  val indexingPlugins = loadedPlugins.filter { it.isBundled || affectsIndexing(it) }
+  hasher.putInt(indexingPlugins.size)
   // Classpath is too huge to calculate its fingerprint. Dev Mode is a preferred way to run IDE from sources.
   if (PluginManagerCore.isRunningFromSources()) {
     hasher.putLong(System.currentTimeMillis())
   }
   else {
-    for (plugin in loadedPlugins) {
+    for (plugin in indexingPlugins) {
       // no need to check bundled plugins - handled by taking build time and version into account
       if (!plugin.isBundled) {
         addPluginFingerprint(plugin = plugin, hasher = hasher)
@@ -102,8 +108,31 @@ private fun computeIdeFingerprint(debugHelperToken: Int): IdeFingerprint {
   val durationMs = System.currentTimeMillis() - startTime
   Logger.getInstance("com.intellij.platform.ide.IdeFingerprint")
     .info("Calculated dependencies fingerprint in $durationMs ms " +
-          "(hash=${fingerprint.asString()}, buildTime=${appInfo.buildTime.toEpochSecond()}, appVersion=${appInfo.build.asString()})")
+          "(hash=${fingerprint.asString()}, buildTime=${appInfo.buildTime.toEpochSecond()}, appVersion=${appInfo.build.asString()}, " +
+          "indexing plugins=${indexingPlugins.filter { !it.isBundled }.joinToString { it.pluginId.idString }})")
   return fingerprint
+}
+
+// phantom-idea: only plugins that can change indexing count for the fingerprint (and are logged), so updating any other plugin does not trigger a full scan
+/**
+ * Extension point name parts that can change which files are indexed or what their indexed data is: indexes and stubs,
+ * file types, languages (parsers, word scanners), decompilers, roots and excludes, file property pushers.
+ * Deliberately broad: a plugin wrongly counted only costs one full scan after its update, a plugin wrongly left out
+ * keeps stale index data.
+ */
+private val INDEXING_EXTENSION_POINT_PARTS = listOf("index", "stub", "filetype", "parserdefinition", "findusagesprovider",
+                                                    "syntaxhighlighter", "ast.factory", "fileviewprovider", "substitutor", "decompiler",
+                                                    "roots", "exclude", "pusher", "orderenumeration", "workspacemodel", "gist")
+
+private fun affectsIndexing(plugin: IdeaPluginDescriptor): Boolean {
+  if (plugin !is PluginMainDescriptor) return true
+  val descriptors = sequence { yieldAllDescriptors(plugin) }
+  return descriptors.any { descriptor ->
+    descriptor.extensions.keys.any { epName ->
+      val name = epName.lowercase()
+      INDEXING_EXTENSION_POINT_PARTS.any { name.contains(it) }
+    }
+  }
 }
 
 private fun addPluginFingerprint(plugin: IdeaPluginDescriptor, hasher: HashStream64) {

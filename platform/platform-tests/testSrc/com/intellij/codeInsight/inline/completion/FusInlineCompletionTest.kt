@@ -20,8 +20,8 @@ import com.intellij.internal.statistic.eventLog.events.EventField
 import com.intellij.internal.statistic.eventLog.events.EventFields
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileTypes.PlainTextFileType
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
+import com.intellij.internal.statistic.eventLog.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEventGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.junit.Test

@@ -1,6 +1,8 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.plugins;
 
+// phantom-idea: GitHub plugin repositories (.phantom/marketplace.json)
+import dev.phantom.ide.plugins.GitHubPluginRepository;
 import com.intellij.ide.IdeBundle;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
@@ -296,6 +298,9 @@ public final class PluginHostsConfigurable implements Configurable.NoScroll, Con
   }
 
   private static @NotNull String correctRepositoryRule(@NotNull String input) {
+    // phantom-idea: GitHub repositories are kept as `owner/repo`
+    var gitHub = GitHubPluginRepository.normalize(input);
+    if (gitHub != null) return gitHub;
     if (VirtualFileManager.extractProtocol(input) == null) {
       return VirtualFileManager.constructUrl(URLUtil.HTTP_PROTOCOL, input);
     }

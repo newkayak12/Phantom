@@ -1,6 +1,8 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.platform.feedback.localization
 
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -127,6 +129,8 @@ internal class LocalizationFeedbackDialog(
                    if (forTest || System.getProperty(
                        "ide.feedback.localization.test")?.toBoolean() == true) FeedbackRequestType.TEST_REQUEST
                    else FeedbackRequestType.PRODUCTION_REQUEST)
+    // phantom-idea: submitFeedback sends nothing while JetBrains services are off, so do not thank the user for sending it
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) return
     ThanksForFeedbackNotification(description = LocalizationFeedbackBundle.message("notification.thanks.feedback.content")).notify(
       myProject)
   }

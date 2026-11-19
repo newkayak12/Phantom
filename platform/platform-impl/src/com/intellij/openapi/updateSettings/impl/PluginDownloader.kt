@@ -23,7 +23,6 @@ import com.intellij.ide.plugins.newui.PluginDependencyModel
 import com.intellij.ide.plugins.newui.PluginUiModel
 import com.intellij.ide.plugins.newui.PluginUiModelAdapter
 import com.intellij.ide.plugins.readBasicDescriptorDataFromArtifact
-import com.intellij.internal.statistic.DeviceIdManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.impl.ApplicationInfoImpl
@@ -354,14 +353,8 @@ class PluginDownloader private constructor(
     private val LOG: Logger = Logger.getInstance(PluginDownloader::class.java)
 
     @JvmStatic
-    fun getMarketplaceDownloadsUUID(): String {
-      try {
-        return DeviceIdManager.getOrGenerateId(object : DeviceIdManager.DeviceIdToken {}, "MarketplaceDownloads")
-      }
-      catch (_: DeviceIdManager.InvalidDeviceIdTokenException) {
-        return ""
-      }
-    }
+    // phantom-idea: no device id in Marketplace requests (Phantom is not a JetBrains product); was DeviceIdManager.getOrGenerateId(.., "MarketplaceDownloads")
+    fun getMarketplaceDownloadsUUID(): String = ""
 
     @JvmStatic
     fun showErrorDialog(@NotificationContent text: String) {

@@ -6,7 +6,7 @@ import com.intellij.internal.statistic.FUCollectorTestCase
 import com.intellij.openapi.Disposable
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.junit5.TestDisposable
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

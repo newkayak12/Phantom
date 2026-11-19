@@ -3,7 +3,6 @@ package com.intellij.internal.statistic.eventLog
 
 import com.intellij.internal.statistic.config.EventLogOptions.DEFAULT_ID_REVISION
 import com.intellij.internal.statistic.eventLog.filters.LogEventFilter
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
 import org.jetbrains.annotations.ApiStatus
 import tools.jackson.core.exc.StreamReadException
 import tools.jackson.databind.DatabindException

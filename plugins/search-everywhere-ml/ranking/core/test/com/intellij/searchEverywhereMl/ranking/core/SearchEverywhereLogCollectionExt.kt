@@ -2,7 +2,7 @@ package com.intellij.searchEverywhereMl.ranking.core
 
 import com.intellij.searchEverywhereMl.ranking.core.SearchEverywhereMLStatisticsCollector.COLLECTED_RESULTS_DATA_KEY
 import com.intellij.searchEverywhereMl.ranking.core.features.get
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 
 fun Iterable<LogEvent>.firstEventWithCollectedItems() = this.first { it.event.data[COLLECTED_RESULTS_DATA_KEY].isNotEmpty() }
 

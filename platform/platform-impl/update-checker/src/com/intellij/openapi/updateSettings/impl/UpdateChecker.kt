@@ -339,7 +339,8 @@ object UpdateChecker {
     val pluginHosts = UpdateCheckerPluginsFacade.getInstance().getPluginHosts()
     return pluginHosts.mapNotNull { host ->
       when {
-        isMarketplaceBackend(host) -> marketplaceBackend
+        // phantom-idea: plugins come from the Phantom repositories; JetBrains Marketplace only on request
+        isMarketplaceBackend(host) -> marketplaceBackend.takeIf { MarketplaceRequests.jetBrainsServicesEnabled }
         host == null -> MarketplaceLikePluginRepository() // non-official marketplace-like backend
         else -> CustomPluginRepository(host)
       }

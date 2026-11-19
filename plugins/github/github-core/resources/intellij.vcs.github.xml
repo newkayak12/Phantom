@@ -42,7 +42,7 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
-    <httpRequestHandler implementation="org.jetbrains.plugins.github.authentication.GHOAuthCallbackHandler"/>
+    <!-- phantom-idea: removed GHOAuthCallbackHandler (GitHub login no longer goes through account.jetbrains.com) -->
 
     <applicationService serviceImplementation="org.jetbrains.plugins.github.util.GithubSettings"/>
 

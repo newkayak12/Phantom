@@ -1,4 +1,12 @@
-# AI Guide Renderer README
+# Phantom AI workflow and upstream renderer
+
+For current instructions, start with [AGENTS.md](../AGENTS.md) and [workflow.md](workflow.md). [CLAUDE.md](../CLAUDE.md) imports the shared rules for Claude Code; Codex reads AGENTS.md directly.
+
+**Do not run `render-guides.mjs` in this fork.** The retained upstream renderer assumes a parent checkout with a `community/` directory, shared partials and Ultimate-specific inputs that Phantom does not have. It can overwrite the hand-maintained fork rules. Neither its templates nor `tool-permissions.json` configure a client until explicitly rendered. No generated permission configuration is required for the workflow above.
+
+Edit shared rules in AGENTS.md and task guidance in workflow.md. Keep existing language/module skills in their client directories synchronized when changing their content. Do not install a remote skill bundle or introduce hooks just to use this repository.
+
+The remainder documents the **upstream renderer**, not a supported Phantom regeneration procedure. Its `community/...` paths refer to that upstream layout.
 
 This directory (`community/.ai`) contains the templates and documentation source used by:
 

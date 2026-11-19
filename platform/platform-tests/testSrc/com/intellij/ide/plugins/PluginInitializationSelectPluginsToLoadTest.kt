@@ -441,8 +441,9 @@ class PluginInitializationSelectPluginsToLoadTest {
       assertThat(excludedPlugins.all { it.reason is PluginDeclaresConflictingId }).isTrue()
     }
 
+    // phantom-idea: a plugin keeping another plugin's id as an alias replaces it, instead of both being excluded
     @Test
-    fun `plugin main ID conflicts with another plugin alias`() {
+    fun `plugin keeping another plugin's ID as an alias replaces it`() {
       plugin("foo") { version = "1.0" }.installAt(pluginsDirPath)
       plugin("bar") {
         version = "1.0"
@@ -452,9 +453,61 @@ class PluginInitializationSelectPluginsToLoadTest {
       val (_, discoveryResult) = PluginSetTestBuilder.fromPath(pluginsDirPath).discoverPlugins()
       val (result, excludedPlugins) = testPluginSelection(discoveryResult = discoveryResult)
 
-      assertThat(result.plugins).isEmpty()
-      assertThat(excludedPlugins).hasSize(2)
-      assertThat(excludedPlugins.all { it.reason is PluginDeclaresConflictingId }).isTrue()
+      // phantom-idea: the alias-keeping plugin replaces the other (upstream expected both excluded); the three tests after this one are Phantom's
+      assertThat(result.plugins.map { it.pluginId.idString }).containsExactly("bar")
+      assertThat(result.resolvePluginId(PluginId.getId("foo"))?.pluginId?.idString).isEqualTo("bar")
+      assertThat(excludedPlugins).hasSize(1)
+      val reason = excludedPlugins[0].reason as PluginIsReplacedByAnotherPlugin
+      assertThat(reason.plugin.pluginId.idString).isEqualTo("foo")
+      assertThat(reason.replacement.pluginId.idString).isEqualTo("bar")
+    }
+
+    @Test
+    fun `replacement with the replaced plugin's content modules loads alone`() {
+      plugin("foo") {
+        version = "1.0"
+        content { module("foo.core", loadingRule = ModuleLoadingRuleValue.REQUIRED) {} }
+      }.installAt(pluginsDirPath)
+      plugin("bar") {
+        version = "1.0"
+        pluginAliases = listOf("foo")
+        content { module("foo.core", loadingRule = ModuleLoadingRuleValue.REQUIRED) {} }
+      }.installAt(pluginsDirPath)
+
+      val (_, discoveryResult) = PluginSetTestBuilder.fromPath(pluginsDirPath).discoverPlugins()
+      val (result, excludedPlugins) = testPluginSelection(discoveryResult = discoveryResult)
+
+      assertThat(result.plugins.map { it.pluginId.idString }).containsExactly("bar")
+      assertThat(excludedPlugins.map { it.reason }).singleElement().isInstanceOf(PluginIsReplacedByAnotherPlugin::class.java)
+    }
+
+    @Test
+    fun `replaced plugin loads when the replacement is disabled`() {
+      plugin("foo") { version = "1.0" }.installAt(pluginsDirPath)
+      plugin("bar") {
+        version = "1.0"
+        pluginAliases = listOf("foo")
+      }.installAt(pluginsDirPath)
+
+      val (_, discoveryResult) = PluginSetTestBuilder.fromPath(pluginsDirPath).discoverPlugins()
+      val (result, _) = testPluginSelection(disabledPlugins = setOf(PluginId.getId("bar")), discoveryResult = discoveryResult)
+
+      assertThat(result.plugins.map { it.pluginId.idString }).containsExactly("foo")
+    }
+
+    @Test
+    fun `essential plugin is not replaced`() {
+      plugin("foo") { version = "1.0" }.installAt(pluginsDirPath)
+      plugin("bar") {
+        version = "1.0"
+        pluginAliases = listOf("foo")
+      }.installAt(pluginsDirPath)
+
+      val (_, discoveryResult) = PluginSetTestBuilder.fromPath(pluginsDirPath).discoverPlugins()
+      val (result, excludedPlugins) = testPluginSelection(essentialPlugins = setOf(PluginId.getId("foo")), discoveryResult = discoveryResult)
+
+      assertThat(result.plugins.map { it.pluginId.idString }).containsExactly("foo")
+      assertThat(excludedPlugins.map { it.reason }).singleElement().isInstanceOf(PluginDeclaresConflictingId::class.java)
     }
 
     @Test

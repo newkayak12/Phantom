@@ -7,6 +7,8 @@ import com.intellij.grazie.cloud.license.GrazieLoginState
 import com.intellij.grazie.cloud.license.ensureTermsOfServiceShown
 import com.intellij.grazie.cloud.license.notifyOnLicensingError
 import com.intellij.grazie.utils.runBlockingModalProcess
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.logger
@@ -17,7 +19,8 @@ private val logger = logger<DefaultGrazieCloudConnector>()
 class DefaultGrazieCloudConnector : GrazieCloudConnector {
   override fun isAuthorized(): Boolean = GrazieLoginManager.state().value.isCloudConnected
 
-  override fun connect(project: Project): Boolean = runBlockingModalProcess(project, title = GrazieBundle.message("grazie.cloud.logging.in.progress.title")) {
+  // phantom-idea: Grazie Cloud (api.jetbrains.ai) is JetBrains' service; it is off unless -Dphantom.jetbrains.services=true
+  override fun connect(project: Project): Boolean = MarketplaceRequests.jetBrainsServicesEnabled && runBlockingModalProcess(project, title = GrazieBundle.message("grazie.cloud.logging.in.progress.title")) {
     val state = GrazieLoginManager.logInToCloud(true)
     logger.debug { "State returned from the cloud login routine: $state" }
     return@runBlockingModalProcess when (state) {
@@ -39,9 +42,10 @@ class DefaultGrazieCloudConnector : GrazieCloudConnector {
 
   override fun isCloudEnabledByDefault(): Boolean = false
 
-  override fun askUserConsentForCloud(): Boolean = ensureTermsOfServiceShown()
+  // phantom-idea: Grazie Cloud (api.jetbrains.ai) and its terms dialog only with -Dphantom.jetbrains.services=true
+  override fun askUserConsentForCloud(): Boolean = MarketplaceRequests.jetBrainsServicesEnabled && ensureTermsOfServiceShown()
 
-  override fun api(): SuspendableAPIGatewayClient = GrazieCloudConfig.api()
+  override fun api(): SuspendableAPIGatewayClient? = if (MarketplaceRequests.jetBrainsServicesEnabled) GrazieCloudConfig.api() else null
 
   override fun subscribeToAuthorizationStateEvents(disposable: Disposable, listener: () -> Unit): Unit =
     GrazieLoginManager.subscribe(disposable, listener)

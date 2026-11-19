@@ -56,7 +56,7 @@ f:com.intellij.internal.statistic.eventLog.EventLogRecorderConfiguration
 - f:getSessionId():java.lang.String
 f:com.intellij.internal.statistic.eventLog.EventLogRecorderConfiguration$Companion
 com.intellij.internal.statistic.eventLog.StatisticsEventLogListener
-- a:onLogEvent(com.jetbrains.fus.reporting.model.lion3.LogEvent,java.lang.String,java.util.Map):V
+- a:onLogEvent(com.intellij.internal.statistic.eventLog.LogEvent,java.lang.String,java.util.Map):V
 f:com.intellij.internal.statistic.eventLog.StatisticsEventLogProviderUtil
 - sf:INSTANCE:com.intellij.internal.statistic.eventLog.StatisticsEventLogProviderUtil
 - sf:forceLoggingAlwaysEnabled():Z

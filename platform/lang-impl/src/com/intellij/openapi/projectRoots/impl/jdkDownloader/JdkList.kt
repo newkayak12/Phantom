@@ -4,6 +4,8 @@
 package com.intellij.openapi.projectRoots.impl.jdkDownloader
 
 import com.intellij.diagnostic.LoadingState
+// phantom-idea: import for the jetBrainsServicesEnabled check (the foojay list unless JetBrains services are on)
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.impl.ApplicationInfoImpl
 import com.intellij.openapi.components.Service
@@ -531,6 +533,8 @@ class JdkListDownloader : JdkListDownloaderBase() {
           return registry
         }
       }
+      // phantom-idea: JDKs are listed by foojay; JetBrains' feed only with -Dphantom.jetbrains.services=true
+      if (!MarketplaceRequests.jetBrainsServicesEnabled) return FoojayJdkList.FEED_URL
       return "https://download.jetbrains.com/jdk/feed/v1/jdks.json.xz"
     }
 }
@@ -610,6 +614,18 @@ abstract class JdkListDownloaderBase {
     catch (t: IOException) {
       thisLogger().warn("Failed to download the list of available JDKs from $feedUrl. ${t.message}")
       return EmptyRawJdkList
+    }
+
+    // phantom-idea: a foojay response is plain JSON in its own format; a broken one lists nothing
+    if (FoojayJdkList.isFoojayFeed(feedUrl)) {
+      val feed = try {
+        FoojayJdkList.toFeed(rawDataXZ.decodeToString())
+      }
+      catch (t: Throwable) {
+        thisLogger().warn("Failed to read the list of available JDKs from $feedUrl. ${t.message}", t)
+        return EmptyRawJdkList
+      }
+      return RawJdkListImpl(feedUrl, feed)
     }
 
     val rawData = try {

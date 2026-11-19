@@ -15,7 +15,7 @@ import com.intellij.internal.statistics.StatisticsTestEventFactory.newStateEvent
 import com.intellij.internal.statistics.StatisticsTestEventValidator.assertLogEventIsValid
 import com.intellij.internal.statistics.StatisticsTestEventValidator.isValid
 import com.intellij.openapi.util.io.FileUtil
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals

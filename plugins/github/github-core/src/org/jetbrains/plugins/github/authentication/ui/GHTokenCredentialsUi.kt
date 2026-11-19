@@ -3,6 +3,10 @@ package org.jetbrains.plugins.github.authentication.ui
 
 import com.intellij.collaboration.messages.CollaborationToolsBundle
 import com.intellij.ide.BrowserUtil.browse
+// phantom-idea: imports for the "From gh CLI" button below
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBPasswordField
@@ -17,6 +21,8 @@ import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.api.executeSuspend
+// phantom-idea: import for the "From gh CLI" button below
+import org.jetbrains.plugins.github.authentication.GHDeviceFlow
 import org.jetbrains.plugins.github.authentication.util.GHSecurityUtil
 import org.jetbrains.plugins.github.authentication.util.GHSecurityUtil.buildNewTokenUrl
 import org.jetbrains.plugins.github.exceptions.GithubAuthenticationException
@@ -46,6 +52,22 @@ internal class GHTokenCredentialsUi(
         .resizableColumn()
       button(message("credentials.button.generate")) { browseNewTokenUrl() }
         .enabledIf(serverTextField.serverValid)
+      // phantom-idea: "From gh CLI" button fills in the token of an existing gh auth login
+      button(message("phantom.credentials.button.from.gh.cli")) { fillFromGhCli() }
+        .enabledIf(serverTextField.serverValid)
+    }
+  }
+
+  /** Fills the token of an existing `gh auth login`, so a GitHub CLI user does not have to create another token. */
+  private fun fillFromGhCli() {
+    val server = serverTextField.tryParseServer() ?: return
+    ApplicationManager.getApplication().executeOnPooledThread {
+      val token = GHDeviceFlow.ghCliTokenBlocking(server)
+      ApplicationManager.getApplication().invokeLater({
+        if (token != null) tokenTextField.text = token
+        else Messages.showWarningDialog(tokenTextField, message("phantom.credentials.gh.cli.no.login", server.host),
+                                        message("phantom.credentials.gh.cli.title"))
+      }, ModalityState.stateForComponent(tokenTextField))
     }
   }
 

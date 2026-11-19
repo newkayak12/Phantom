@@ -13,9 +13,9 @@ import com.intellij.internal.statistic.utils.EventsIdentityWindowThrottle
 import com.intellij.internal.statistic.utils.EventsRateWindowThrottle
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Disposer
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEventAction
-import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
+import com.intellij.internal.statistic.eventLog.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEventAction
+import com.intellij.internal.statistic.eventLog.LogEventGroup
 import kotlinx.coroutines.CoroutineScope
 
 internal class StatisticsEventLogThrottleWriter(configOptionsService: EventLogConfigOptionsService,

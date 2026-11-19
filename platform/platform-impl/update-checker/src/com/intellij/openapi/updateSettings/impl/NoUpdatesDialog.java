@@ -89,9 +89,7 @@ final class NoUpdatesDialog extends AbstractUpdateDialog {
     if (manager == null) {
       return IdeBundle.message("updates.no.updates.message", app);
     }
-    else if (manager == ExternalUpdateManager.TOOLBOX) {
-      return IdeBundle.message("updates.no.updates.toolbox.message", app);
-    }
+    // phantom-idea: removed the Toolbox App branch (Toolbox App integration dropped)
     else if (manager == ExternalUpdateManager.SNAP) {
       return IdeBundle.message("updates.no.updates.snap.message", app);
     }

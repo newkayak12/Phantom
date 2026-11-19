@@ -9,7 +9,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.extensions.impl.ExtensionPointImpl
 import com.intellij.openapi.progress.runBlockingMaybeCancellable
 import com.intellij.openapi.project.Project
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import java.util.function.Consumer
 
 object FUCollectorTestCase {

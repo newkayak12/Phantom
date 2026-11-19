@@ -1,6 +1,5 @@
 package com.intellij.searchEverywhereMl.typos
 
-import ai.grazie.spell.GrazieSpeller
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereSpellCheckResult
 import com.intellij.searchEverywhereMl.typos.models.NGramModelProvider
 import org.jetbrains.annotations.ApiStatus
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus
  */
 @ApiStatus.Internal
 internal class SpellerSuggestionsGenerator(
-  private val speller: GrazieSpeller,
+  private val speller: ActionsSpeller, // phantom-idea: own speller instead of the closed GrazieSpeller
   private val nGramModelProvider: NGramModelProvider = NGramModelProvider(),
   private val suggestionLimit: Int = 5
 ) {

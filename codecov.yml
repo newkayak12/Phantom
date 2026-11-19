@@ -1,0 +1,19 @@
+# This report measures the repository quality tool, not the IntelliJ/JVM product.
+coverage:
+  status:
+    project:
+      phantom-quality:
+        target: auto
+        threshold: 1%
+        flags:
+          - phantom-quality
+    patch:
+      phantom-quality:
+        target: 70%
+        flags:
+          - phantom-quality
+flags:
+  phantom-quality:
+    paths:
+      - tools/phantom-quality.mjs
+    carryforward: false

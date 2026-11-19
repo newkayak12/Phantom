@@ -52,7 +52,7 @@ The plugin is split across many JPS modules. Know which one you are touching bef
 - Run IDE-side tests (FQN required — simple class names do not match):
   - `./tests.cmd --module intellij.maven.tests --test org.jetbrains.idea.maven.<...>.SomeTest`
   - Wildcards must be quoted: `./tests.cmd --module intellij.maven.tests --test 'org.jetbrains.idea.maven.importing.*'`
-- After editing any `*.iml`, `BUILD.bazel`, or `.idea/` file under this tree, run `./build/jpsModelToBazel.cmd` (repo-wide invariant — `*.iml` is the source of truth).
+- After editing any `*.iml`, `BUILD.bazel`, or `.idea/` file under this tree, run `./build/jpsModelToBazelCommunityOnly.cmd` (repo-wide invariant — `*.iml` is the source of truth) (the only generator script in this repository; `./build/jpsModelToBazel.cmd` does not exist here). It has not been confirmed to run in this fork. <!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
 - After writing code, run `lint_files` on edited files and fix warnings introduced by the change.
 
 ## House rules

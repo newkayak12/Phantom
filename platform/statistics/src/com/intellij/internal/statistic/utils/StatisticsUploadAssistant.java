@@ -3,30 +3,20 @@ package com.intellij.internal.statistic.utils;
 
 import com.intellij.ide.ConsentOptionsProvider;
 import com.intellij.idea.AppMode;
-import com.intellij.internal.statistic.eventLog.EventLogInternalApplicationInfo;
-import com.intellij.internal.statistic.eventLog.EventLogInternalSendConfig;
 import com.intellij.internal.statistic.eventLog.ExternalEventLogSettings;
 import com.intellij.internal.statistic.eventLog.StatisticsEventLogProviderUtil;
-import com.intellij.internal.statistic.eventLog.connection.EventLogSendListener;
-import com.intellij.internal.statistic.eventLog.connection.EventLogSettingsClient;
-import com.intellij.internal.statistic.eventLog.connection.EventLogStatisticsService;
-import com.intellij.internal.statistic.eventLog.connection.EventLogUploadSettingsClient;
-import com.intellij.internal.statistic.eventLog.connection.StatisticsService;
 import com.intellij.internal.statistic.persistence.UsageStatisticsPersistenceComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.text.Strings;
+import dev.phantom.statistics.PhantomUsageStatistics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.BooleanSupplier;
-
-import static com.intellij.internal.statistic.eventLog.StatisticsEventLogProviderUtil.getEventLogProvider;
 
 public final class StatisticsUploadAssistant {
   private static final String IDEA_HEADLESS_ENABLE_STATISTICS = "idea.headless.enable.statistics";
-  private static final String IDEA_TEAMCITY_ENABLE_STATISTICS = "idea.teamcity.enable.statistics";
   private static final String IDEA_SUPPRESS_REPORT_STATISTICS = "idea.suppress.statistics.report";
   private static final String ENABLE_LOCAL_STATISTICS_WITHOUT_REPORT = "idea.local.statistics.without.report";
   private static final String USE_TEST_STATISTICS_SEND_ENDPOINT = "idea.use.test.statistics.send.endpoint";
@@ -39,27 +29,10 @@ public final class StatisticsUploadAssistant {
     return isSendAllowed(StatisticsUploadAssistant::isAllowedByUserConsent);
   }
 
+  @SuppressWarnings("unused")
   public static boolean isSendAllowed(@NotNull BooleanSupplier isAllowedByUserConsent) {
-    if (isSuppressStatisticsReport() || isLocalStatisticsWithoutReport()) {
-      return false;
-    }
-
-    if (ApplicationManager.getApplication().isHeadlessEnvironment()) {
-      if (isHeadlessStatisticsEnabled()) {
-        return true;
-      }
-      if (!AppMode.isStatisticsAllowedByStarter()) {
-        return false;
-      }
-    }
-
-    // Prohibit sending statistics if the client is running on TC. TC can collect statistics but not send.
-    // Allow sending from TC if the "idea.teamcity.enable.statistics" property exists.
-    if (isTeamcityDetected()) {
-      return isTeamcityStatisticsEnabled();
-    }
-
-    return isAllowedByUserConsent.getAsBoolean();
+    // phantom-idea: Phantom has no statistics sender
+    return false;
   }
 
   public static boolean isCollectAllowed() {
@@ -67,6 +40,10 @@ public final class StatisticsUploadAssistant {
   }
 
   public static boolean isCollectAllowed(@NotNull BooleanSupplier isAllowedByUserConsent) {
+    // phantom-idea: nothing is collected unless -Dphantom.usage.statistics=true
+    if (!PhantomUsageStatistics.getEnabled()) {
+      return false;
+    }
     if (ApplicationManager.getApplication().isHeadlessEnvironment()) {
       if (isHeadlessStatisticsEnabled()) {
         return true;
@@ -103,7 +80,8 @@ public final class StatisticsUploadAssistant {
   }
 
   public static boolean isCollectAllowedOrForced() {
-    return isCollectAllowed() || isForceCollectEnabled();
+    // phantom-idea: forcing collection does not override -Dphantom.usage.statistics
+    return isCollectAllowed() || (PhantomUsageStatistics.getEnabled() && isForceCollectEnabled());
   }
 
   public static boolean isCollectionForceDisabled() {
@@ -120,10 +98,6 @@ public final class StatisticsUploadAssistant {
     return Boolean.getBoolean(IDEA_HEADLESS_ENABLE_STATISTICS);
   }
 
-  private static boolean isTeamcityStatisticsEnabled() {
-    return Boolean.getBoolean(IDEA_TEAMCITY_ENABLE_STATISTICS);
-  }
-
   public static boolean isTestStatisticsEnabled() {
     return isLocalStatisticsWithoutReport()
            || isTeamcityDetected()
@@ -131,29 +105,7 @@ public final class StatisticsUploadAssistant {
            || isUseTestStatisticsConfig();
   }
 
-  public static @NotNull StatisticsService getEventLogStatisticsService(@NotNull String recorderId) {
-    EventLogSendListener listener = new EventLogSendListener() {
-      @Override
-      public void onLogsSend(@NotNull List<String> successfullySentFiles,
-                             @NotNull List<Integer> errors,
-                             int totalLocalFiles) {
-        int success = successfullySentFiles.size();
-        int failed = errors.size();
-        getEventLogProvider(recorderId).getEventLogSystemLogger$intellij_platform_statistics()
-          .logFilesSend(totalLocalFiles, success, failed, false, successfullySentFiles, errors);
-      }
-    };
-
-    return new EventLogStatisticsService(
-      EventLogInternalSendConfig.createByRecorder(recorderId, true),
-      new EventLogInternalApplicationInfo(isUseTestStatisticsConfig(), isUseTestStatisticsSendEndpoint()),
-      listener
-    );
-  }
-
-  public static EventLogSettingsClient createExternalSettings(@NotNull String recorderId, boolean isTestConfig, boolean isTestSendEndpoint, long cacheTimeoutMs) {
-    return new EventLogUploadSettingsClient(recorderId, new EventLogInternalApplicationInfo(isTestConfig, isTestSendEndpoint), cacheTimeoutMs);
-  }
+  // phantom-idea: getEventLogStatisticsService and createExternalSettings are removed: Phantom has no statistics sender
 
   public static boolean isTeamcityDetected() {
     return Strings.isNotEmpty(System.getenv("TEAMCITY_VERSION"));

@@ -109,10 +109,11 @@ abstract class BaseJetBrainsExternalProductResourceUrls : ExternalProductResourc
   open val useInIdeEvaluationFeedback: Boolean
     get() = false
 
-  override val updateMetadataUrl: Url
-    get() = System.getProperty("idea.updates.url", "https://www.jetbrains.com/updates/updates.xml")
-      .let { Urls.newFromEncoded(it) }
-      .let { UpdateRequestParametersProvider.passUpdateParameters(it) }
+  // phantom-idea: no JetBrains update feed (it would only send the machine id); `-Didea.updates.url` sets one
+  override val updateMetadataUrl: Url?
+    get() = System.getProperty("idea.updates.url")
+      ?.let { Urls.newFromEncoded(it) }
+      ?.let { UpdateRequestParametersProvider.passUpdateParameters(it) }
 
   final override fun computePatchUrl(from: BuildNumber, to: BuildNumber): Url {
     val url = System.getProperty("idea.patches.url")?.let { Urls.newFromEncoded(it) } ?: basePatchDownloadUrl

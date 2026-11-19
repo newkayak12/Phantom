@@ -2,6 +2,8 @@
 package com.intellij.platform.feedback.impl
 
 import com.intellij.ide.RegionUrlMapper
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.Logger
@@ -116,6 +118,13 @@ fun submitFeedback(feedbackData: FeedbackRequestDataHolder,
                    onDone: () -> Unit,
                    onError: () -> Unit,
                    feedbackRequestType: FeedbackRequestType = FeedbackRequestType.TEST_REQUEST) {
+  // phantom-idea: feedback goes to forms-service.jetbrains.com (or its staging host) after a region-mapping fetch from
+  // www.jetbrains.com. Off by default; nothing is sent and neither callback runs, as for NO_REQUEST.
+  // -Dphantom.jetbrains.services=true sends it again.
+  if (!MarketplaceRequests.jetBrainsServicesEnabled) {
+    LOG.info("Feedback not sent: JetBrains services are off (-Dphantom.jetbrains.services=true turns them on)")
+    return
+  }
   ApplicationManager.getApplication().executeOnPooledThread {
     val urlOverride = System.getProperty(FEEDBACK_URL_OVERRIDE_PROPERTY)
     val feedbackUrl = when (feedbackRequestType) {

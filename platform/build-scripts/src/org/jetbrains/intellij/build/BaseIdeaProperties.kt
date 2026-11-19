@@ -26,7 +26,7 @@ val IDEA_BUNDLED_PLUGINS: PersistentList<String> = DEFAULT_BUNDLED_PLUGINS + per
   "intellij.repository.search",
   "intellij.maven.plugin",
   "intellij.gradle.plugin",
-  "intellij.android.gradle.declarative.lang.ide",
+  // phantom-idea: removed intellij.android.gradle.declarative.lang.ide (Android dropped from the bundle; android.gradle.dsl stays for Gradle)
   "intellij.android.gradle.dsl",
   "intellij.gradle.java.plugin",
   "intellij.vcs.git",
@@ -56,7 +56,7 @@ val IDEA_BUNDLED_PLUGINS: PersistentList<String> = DEFAULT_BUNDLED_PLUGINS + per
   "intellij.keymap.visualStudio",
   "intellij.keymap.netbeans",
   "intellij.performanceTesting",
-  "intellij.compose.ide.plugin",
+  // phantom-idea: removed intellij.compose.ide.plugin (Android dropped from the bundle)
 )
 
 val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
@@ -67,7 +67,8 @@ val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
   "lib/util_rt.jar" to "1.8",
   "lib/util-8.jar" to "1.8",
   "lib/external-system-rt.jar" to "1.8",
-  "plugins/java-coverage/lib/java-coverage-rt.jar" to "1.8",
+  // phantom-idea: coverage runtime at Phantom Code Coverage's path (plugins/coverage) instead of plugins/java-coverage
+  "plugins/coverage/lib/java-coverage-rt.jar" to "1.8", // Phantom Code Coverage, bundled from Phantom-plugins
   "plugins/junit/lib/junit-rt.jar" to "1.8",
   "plugins/junit/lib/junit5-rt.jar" to "1.8",
   "plugins/gradle-plugin/lib/gradle-tooling-extension-api.jar" to "1.8",
@@ -78,8 +79,8 @@ val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
   "plugins/maven-plugin/lib/artifact-resolver-m31.jar" to "1.8",
   "plugins/java/lib/sa-jdwp" to "",  // ignored
   "plugins/java/lib/rt/debugger-agent.jar" to "1.7",
-  "plugins/Groovy/lib/groovy-rt.jar" to "1.8",
-  "plugins/Groovy/lib/groovy-constants-rt.jar" to "1.8",
+  "plugins/groovy/lib/groovy-rt.jar" to "1.8", // Phantom Groovy, bundled from Phantom-plugins
+  "plugins/groovy/lib/groovy-constants-rt.jar" to "1.8",
 )
 
 fun configurePropertiesForAllEditionsOfIntelliJIdea(properties: JetBrainsProductProperties) {

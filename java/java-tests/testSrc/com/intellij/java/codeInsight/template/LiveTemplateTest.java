@@ -72,7 +72,7 @@ import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.testFramework.fixtures.CodeInsightTestUtil;
 import com.intellij.util.DocumentUtil;
 import com.intellij.util.containers.ContainerUtil;
-import com.jetbrains.fus.reporting.model.lion3.LogEvent;
+import com.intellij.internal.statistic.eventLog.LogEvent;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;

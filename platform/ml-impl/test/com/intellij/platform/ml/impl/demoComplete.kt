@@ -52,7 +52,7 @@ import com.intellij.platform.ml.session.environment
 import com.intellij.platform.ml.session.withNestedSessions
 import com.intellij.platform.ml.session.withPredictions
 import com.intellij.platform.ml.with
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.util.function.Consumer

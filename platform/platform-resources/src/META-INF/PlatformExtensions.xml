@@ -21,7 +21,7 @@
       serviceImplementation="com.intellij.openapi.editor.impl.EditorThreadingImpl"
     />
 
-    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+    <!-- phantom-idea: no "Report to JetBrains" for Phantom's errors -->
     <applicationService serviceInterface="com.intellij.openapi.diagnostic.UnhandledReportSinkService"
                         serviceImplementation="com.intellij.diagnostic.UnhandledReportSinkServiceImpl"/>
 
@@ -704,12 +704,10 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
                        order="after ProjectsWelcomeTab"/>
     <welcomeTabFactory id="PluginsWelcomeTab" implementation="com.intellij.openapi.wm.impl.welcomeScreen.PluginsTabFactory"
                        order="after CustomizeWelcomeTab"/>
-    <welcomeTabFactory id="LearnIdeWelcomeTab" implementation="com.intellij.openapi.wm.impl.welcomeScreen.LearnIdeTabFactory"
-                       order="after PluginsWelcomeTab"/>
+    <!-- phantom-idea: no Learn tab (courses and promotions); Help | Keyboard Shortcuts PDF and Tip of the Day stay in the Help menu -->
     <welcomeScreenCustomization id="defaultCustomization"
                                 implementation="com.intellij.openapi.wm.impl.welcomeScreen.WelcomeScreenDefaultCustomization"/>
 
-    <startPagePromoter implementation="com.intellij.openapi.wm.impl.welcomeScreen.TechInsightsLabPromoter"/>
     <statistics.counterUsagesCollector implementationClass="com.intellij.openapi.wm.impl.welcomeScreen.TechInsightsLabCollector"/>
 
     <statistics.counterUsagesCollector implementationClass="com.intellij.platform.ide.bootstrap.IdeStartupWizardCollector"/>
@@ -839,6 +837,15 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <applicationService serviceImplementation="com.intellij.ide.plugins.ExpiredPluginsState" preload="true"/>
 
     <postStartupActivity implementation="com.intellij.externalDependencies.impl.CheckProjectRequiredPluginsActivity"/>
+    <!-- phantom-idea: suggest plugins from GitHub plugin repositories for the libraries a project uses -->
+    <postStartupActivity implementation="dev.phantom.ide.plugins.PhantomPluginAdvisor"/>
+    <!-- phantom-idea: heap and file page cache sized for the machine, written to the user's .vmoptions -->
+    <postStartupActivity implementation="dev.phantom.ide.memory.PhantomMemorySizer"/>
+    <!-- phantom-idea: class data sharing archives of earlier builds deleted from the cache directory -->
+    <postStartupActivity implementation="dev.phantom.ide.memory.PhantomCdsArchiveCleaner"/>
+    <newProjectWizard.generator implementation="dev.phantom.ide.plugins.SpringBootPluginNewProjectWizard"/>
+    <notificationGroup id="Phantom Plugins" displayType="STICKY_BALLOON" isLogByDefault="true" bundle="messages.PhantomIdeBundle"
+                       key="notification.group.phantom.plugins"/>
     <projectConfigurable groupId="appearance" provider="com.intellij.externalDependencies.impl.ExternalDependenciesConfigurableProvider"
                          id="preferences.externalDependencies"
                          bundle="messages.IdeBundle"
@@ -1376,7 +1383,8 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
       implementation="com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkSettingsActionRegistryActionProvider"/>
 
     <registryKey key="jdk.auto.setup" defaultValue="true" description="Attempt to use local or downloadable SDK to configure project"/>
-    <registryKey key="jdk.updater" defaultValue="true" description="Check for JDK updates and suggest actions in notifications"/>
+    <!-- phantom-idea: JDK update check off by default (no automatic calls to JetBrains) -->
+    <registryKey key="jdk.updater" defaultValue="false" description="Check for JDK updates and suggest actions in notifications"/>
     <registryKey key="jdk.downloader" defaultValue="true" description="Suggest JDK downloads"/>
     <registryKey key="jdk.downloader.url" description="Custom URL to download the list of available JDKs" defaultValue=""/>
     <registryKey key="jdk.downloader.reuse.installed" defaultValue="true"
@@ -2054,8 +2062,10 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <registryKey key="ide.idle.memory.cleaner.enabled"
                  defaultValue="true"
                  description="Actively return memory to OS when the IDE becomes idle"/>
+    <!-- phantom-idea: 5 minutes instead of 5 seconds. The cleanup is a full GC pausing the IDE for up to a second; after 5 s it
+         ran on every switch to another app and paused the IDE as the user came back -->
     <registryKey key="ide.idle.memory.cleaner.delay"
-                 defaultValue="5000"
+                 defaultValue="300000"
                  description="A delay in milliseconds between the IDE becoming idle and the memory cleaning being performed"/>
     <registryKey key="ide.idle.memory.cleaner.enabled.page.cache.release"
                  defaultValue="false"
@@ -2074,6 +2084,8 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
    <usagePresentationProvider implementation="com.intellij.find.impl.UsageInfo2UsageAdapterPresentationProvider"/>
 
     <pluginRepositoryAuthProvider implementation="com.intellij.ide.plugins.auth.EnvironmentVariablePluginRepositoryAuthProvider" />
+    <!-- phantom-idea: GitHub token for private GitHub plugin repositories -->
+    <pluginRepositoryAuthProvider implementation="dev.phantom.ide.plugins.GitHubPluginRepositoryAuthProvider"/>
     <applicationService serviceInterface="com.intellij.auth.GenericAuthService"
                         serviceImplementation="com.intellij.auth.LocalGenericAuthService"
                         client="local"/>

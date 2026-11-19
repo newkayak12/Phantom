@@ -12,6 +12,7 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.util.PlatformUtils
+import dev.phantom.statistics.PhantomUsageStatistics
 import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
@@ -65,6 +66,10 @@ internal class StatisticsEventLogProvidersHolder(coroutineScope: CoroutineScope)
 
 
   private fun getAllEventLogProviders(): Sequence<StatisticsEventLoggerProvider> {
+    // phantom-idea: without -Dphantom.usage.statistics=true every recorder gets the no-op provider
+    if (!PhantomUsageStatistics.enabled) {
+      return emptySequence()
+    }
     val providers = EP_NAME.extensionsIfPointIsRegistered
     if (providers.isEmpty()) {
       return emptySequence()

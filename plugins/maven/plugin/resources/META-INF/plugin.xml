@@ -1,7 +1,8 @@
 <idea-plugin allow-bundled-update="true">
   <id>org.jetbrains.idea.maven</id>
-  <name>Maven</name>
-  <vendor>JetBrains</vendor>
+  <!-- phantom-idea: Maven Support, released by Phantom; the id stays for the plugins depending on it -->
+  <name>Maven Support</name>
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <category>Build Tools</category>
 
   <description><![CDATA[

@@ -260,17 +260,14 @@ internal class DefaultToolWindowLayoutBuilderImpl : DefaultToolWindowLayoutBuild
             contentUiType = ToolWindowDescriptor.ToolWindowContentUiType.COMBO
           }
           addOrUpdate("Commit") { weight = 0.25f }
-          addOrUpdate("Structure") {
-            weight = 0.25f
-            isSplit = true
-          }
+          // phantom-idea: Structure stays in More tool windows; Cmd+F12 shows the same as a popup
         }
         ToolWindowDescriptor.ToolWindowAnchor.RIGHT -> {
           addOrUpdate("Notifications") {
             weight = 0.25f
             contentUiType = ToolWindowDescriptor.ToolWindowContentUiType.COMBO
           }
-          addOrUpdate("AIAssistant") { weight = 0.25f }
+          // phantom-idea: no AI Assistant; Database, Gradle and Maven only exist where the project uses them
           addOrUpdate("Database") { weight = 0.25f }
           addOrUpdate("Gradle") { weight = 0.25f }
           addOrUpdate("Maven") { weight = 0.25f }
@@ -282,7 +279,7 @@ internal class DefaultToolWindowLayoutBuilderImpl : DefaultToolWindowLayoutBuild
           // Problems
           addOrUpdate("Problems View")
           addOrUpdate("Terminal")
-          addOrUpdate("Services")
+          // phantom-idea: Services stays in More tool windows until something runs in it
         }
       }
     }

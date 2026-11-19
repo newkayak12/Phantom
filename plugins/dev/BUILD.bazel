@@ -15,7 +15,6 @@ jvm_library(
         "//plugins/dev/intellij.dev:dev",
         "//plugins/dev/intellij.dev.codeInsight:codeInsight",
         "//plugins/dev/intellij.dev.psiViewer:psiViewer",
-        "//platform/statistics/devkit",
     ],
 )
 
@@ -34,7 +33,6 @@ jvm_library(
         "//plugins/dev/intellij.dev:dev_test_lib",
         "//plugins/dev/intellij.dev.codeInsight:codeInsight_test_lib",
         "//plugins/dev/intellij.dev.psiViewer:psiViewer_test_lib",
-        "//platform/statistics/devkit:devkit_test_lib",
     ],
 )
 ### auto-generated section `build intellij.dev.noJava.plugin.main` end

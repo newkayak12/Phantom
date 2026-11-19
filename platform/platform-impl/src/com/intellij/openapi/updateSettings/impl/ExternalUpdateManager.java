@@ -9,11 +9,10 @@ import com.intellij.util.system.OS;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 /// Represents a tool which manages IDE updates instead of a built-in update engine.
 public enum ExternalUpdateManager {
+  // phantom-idea: TOOLBOX is never detected (Toolbox App integration dropped); the Files/Path imports went with its detection
+  /// Never detected (Phantom has no Toolbox App integration); kept for the Android plugin, which compares against it
   TOOLBOX("Toolbox App"),
   SNAP("Snap"),
   FLATPAK("Flatpak"),
@@ -27,8 +26,8 @@ public enum ExternalUpdateManager {
       toolName = name;
     }
     else {
-      // historically, TB used 'ide.no.platform.update=true' to disable platform updates;
-      // an absence of its signature path means an abuse of the property by some external entity
+      // phantom-idea: comment reworded without the Toolbox App history; behavior unchanged
+      // 'ide.no.platform.update' names the tool, or is 'true' when it is not named
       name = System.getProperty("ide.no.platform.update");
       toolName = "true".equalsIgnoreCase(name) ? "(unknown)" : name;
     }
@@ -38,10 +37,8 @@ public enum ExternalUpdateManager {
   public static final @Nullable ExternalUpdateManager ACTUAL;
   static {
     var home = PathManager.getHomeDir().toString().replace('\\', '/');
-    var toolboxV2Path = System.getProperty("ide.managed.by.toolbox");
-    if (home.contains("/apps/") && home.contains("/ch-")) ACTUAL = TOOLBOX;
-    else if (toolboxV2Path != null && Files.exists(Path.of(toolboxV2Path)))ACTUAL = TOOLBOX;
-    else if (OS.CURRENT == OS.Linux && (home.startsWith("/snap/") || home.startsWith("/var/lib/snapd/snap/"))) ACTUAL = SNAP;
+    // phantom-idea: no Toolbox App detection (Toolbox apps folder or ide.managed.by.toolbox)
+    if (OS.CURRENT == OS.Linux && (home.startsWith("/snap/") || home.startsWith("/var/lib/snapd/snap/"))) ACTUAL = SNAP;
     else if (OS.CURRENT == OS.Linux && EnvironmentUtil.getValue("FLATPAK_ID") != null) ACTUAL = FLATPAK;
     else if (OS.CURRENT != OS.Windows && home.contains("/homebrew/")) ACTUAL = BREW;
     else if (System.getProperty("ide.no.platform.update") != null) ACTUAL = UNKNOWN;
@@ -52,6 +49,7 @@ public enum ExternalUpdateManager {
   /// Returns `true` when the update manager takes care of creating XDG desktop entries.
   @ApiStatus.Internal
   public static boolean isCreatingDesktopEntries() {
-    return ACTUAL == TOOLBOX || ACTUAL == SNAP || ACTUAL == FLATPAK;
+    // phantom-idea: TOOLBOX removed from the managers that create desktop entries
+    return ACTUAL == SNAP || ACTUAL == FLATPAK;
   }
 }

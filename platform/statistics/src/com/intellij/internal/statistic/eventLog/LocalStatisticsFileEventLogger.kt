@@ -4,9 +4,6 @@ package com.intellij.internal.statistic.eventLog
 import com.intellij.internal.statistic.eventLog.validator.IntellijSensitiveDataValidator
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEventAction
-import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
@@ -65,7 +62,7 @@ class LocalStatisticsFileEventLogger internal constructor(
             recorderVersion = recorderVersion,
             event = logEventAction,
           ).escapeExceptData()
-          val validatedEvent = validator.validateEvent(event)
+          val validatedEvent = validator.validateEvent(group, event) // phantom-idea: validated by the rules of the group's fields
           if (validatedEvent != null) {
             log(validatedEvent, System.currentTimeMillis())
           }

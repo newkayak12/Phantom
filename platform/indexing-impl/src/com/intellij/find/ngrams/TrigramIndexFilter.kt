@@ -6,6 +6,8 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.PlainTextFileType
+// phantom-idea: import for the library check below (text files in libraries are not indexed)
+import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.ThreeState
 import com.intellij.util.indexing.CustomizableExcludeExtensions
@@ -51,15 +53,24 @@ internal class TrigramIndexFilter : BaseFileTypeInputFilter(FileTypeSubstitution
 
     fileType.isBinary -> ThreeState.NO
 
-    fileType is PlainTextFileType -> ThreeState.fromBoolean(!FileBasedIndex.IGNORE_PLAIN_TEXT_FILES)
+    fileType is PlainTextFileType && FileBasedIndex.IGNORE_PLAIN_TEXT_FILES -> ThreeState.NO
 
-    ENABLE_EXTENSION_EXCLUDES && EXTENSION_EXCLUDES.hasExtensionForFileType(fileType) -> ThreeState.UNSURE //go through slowPathIfFileTypeHintUnsure()
+    // phantom-idea: every text file goes through the library check below, not only those with an exclude extension
+    ENABLE_EXTENSION_EXCLUDES -> ThreeState.UNSURE //go through slowPathIfFileTypeHintUnsure()
 
     else -> ThreeState.YES
   }
 
   override fun slowPathIfFileTypeHintUnsure(file: IndexedFile): Boolean {
     check(ENABLE_EXTENSION_EXCLUDES) { "ENABLE_EXTENSION_EXCLUDES must be true to reach this point" }
+
+    // phantom-idea: no text file in a library is indexed (Kotlin sources, XML, properties..., not only .java sources);
+    // Find in Files searches libraries without the index, as it already did for .java sources
+    val project = file.project
+    if (project != null) {
+      val fileIndex = ProjectFileIndex.getInstance(project)
+      if (fileIndex.isInLibrary(file.file) && !fileIndex.isInContent(file.file)) return false
+    }
 
     return !EXTENSION_EXCLUDES.shouldExcludeFile(file)
   }

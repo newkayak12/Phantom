@@ -1,11 +1,13 @@
 <component xmlns="http://jetbrains.org/intellij/schema/application-info">
-  <version eap="false" major="2026" minor="2.3"/>
-  <company name="JetBrains s.r.o." url="https://www.jetbrains.com"/>
+  <version eap="false" major="0" minor="0.0"/> <!-- phantom-idea: placeholder; phantom-build.sh passes the display version (YY, MM.DD of the build date) as -Dphantom.version.major/minor and the build writes it into the packaged copy -->
+  <company name="Phantom" url="https://github.com/newkayak12/Phantom"/> <!-- phantom-idea: the repository is newkayak12/Phantom -->
   <build number="IC-__BUILD__" date="__BUILD_DATE__" majorReleaseDate="20260716"/>
-  <logo url="/idea_community_logo.png"/>
-  <icon svg="/idea-ce.svg" svg-small="/idea-ce_16.svg"/>
-  <icon-eap svg="/idea-ce-eap.svg" svg-small="/idea-ce-eap_16.svg"/>
-  <names product="IDEA" fullname="IntelliJ IDEA" script="idea" motto="The Leading IDE for Professional Development in Java and Kotlin"/>
+  <logo url="/phantom_logo.png"/>
+  <icon svg="/phantom.svg" svg-small="/phantom_16.svg"/>
+  <icon-eap svg="/phantom-eap.svg" svg-small="/phantom-eap_16.svg"/>
+  <names product="Phantom" fullname="Phantom" script="phantom" motto="Built on the open-source IntelliJ Platform"/>
+
+  <default-laf light="Phantom Light" dark="Phantom Dark"/>
 
   <essential-plugin>com.intellij.java</essential-plugin>
   <essential-plugin>com.intellij.java.ide</essential-plugin>

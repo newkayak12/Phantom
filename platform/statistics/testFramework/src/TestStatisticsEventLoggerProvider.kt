@@ -2,7 +2,7 @@
 package com.intellij.internal.statistic
 
 import com.intellij.internal.statistic.eventLog.StatisticsEventLoggerProvider
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 
 class TestStatisticsEventLoggerProvider(recorder: String, val escapeChars: Boolean) : StatisticsEventLoggerProvider(
   recorder,

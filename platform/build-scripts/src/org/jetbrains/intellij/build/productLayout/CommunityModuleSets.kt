@@ -411,8 +411,7 @@ object CommunityModuleSets {
     embeddedModule("intellij.regexp")
     module("intellij.platform.langInjection")
     module("intellij.platform.langInjection.backend")
-    module("intellij.libraries.grpc")
-    module("intellij.libraries.grpc.netty.shaded")
+    // phantom-idea: no gRPC; only Grazie (replaced by the grammar plugin) and the process mediator, which no product includes, use it
     module("intellij.libraries.jspecify")
 
     moduleSet(vcs())

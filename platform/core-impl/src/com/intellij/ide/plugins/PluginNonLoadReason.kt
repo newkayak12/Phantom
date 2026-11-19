@@ -35,6 +35,21 @@ class PluginIsMarkedDisabled(
   override val shouldNotifyUser: Boolean = false
 }
 
+// phantom-idea: added PluginIsReplacedByAnotherPlugin: a plugin left out because a plugin keeping its id as an alias loads instead
+@ApiStatus.Internal
+class PluginIsReplacedByAnotherPlugin(
+  override val plugin: IdeaPluginDescriptor,
+  val replacement: IdeaPluginDescriptor,
+) : PluginNonLoadReason {
+  override val detailedMessage: @NlsContexts.DetailedDescription String
+    get() = CoreBundle.message("plugin.loading.error.long.replaced", plugin.name, replacement.name)
+  override val shortMessage: @NlsContexts.Label String
+    get() = CoreBundle.message("plugin.loading.error.short.replaced", replacement.name)
+  override val logMessage: @NonNls String
+    get() = "Plugin '${plugin.name}' (${plugin.pluginId}) is replaced by '${replacement.name}' (${replacement.pluginId})"
+  override val shouldNotifyUser: Boolean = false
+}
+
 @ApiStatus.Internal
 class PluginDependencyIsDisabled(
   override val plugin: IdeaPluginDescriptor,

@@ -10,9 +10,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
-import com.jetbrains.fus.reporting.model.lion3.LogEventAction
-import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.ApiStatus
 import java.util.concurrent.CompletableFuture
@@ -80,7 +77,7 @@ open class StatisticsFileEventLogger(
           event = LogEventAction(eventId, isState, eventData),
         )
           .also { if (escapeCharsInData) it.escape() else it.escapeExceptData() }
-        val validatedEvent = validator.validateEvent(event)
+        val validatedEvent = validator.validateEvent(group, event) // phantom-idea: validated by the rules of the group's fields
         if (validatedEvent != null) {
           log(validatedEvent, System.currentTimeMillis(), eventId, data)
         }

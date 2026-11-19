@@ -23,8 +23,15 @@ private val COMMON_VM_OPTIONS: List<String> = listOf(
   "-XX:+UnlockDiagnosticVMOptions",
   "-XX:TieredOldPercentage=100000",
   "-XX:+UseCompactObjectHeaders",  // expected to become the default in JBR 29
+  // phantom-idea: give unused heap back to the OS. A concurrent cycle after a minute without GC, and a heap kept within
+  // 20-40% free: 10-25% (979-1019 vs 1078-1204 MB footprint measured) kept the heap so tight that work after an idle
+  // spell started with a run of collections growing it back
+  "-XX:G1PeriodicGCInterval=60000",
+  "-XX:G1PeriodicGCSystemLoadThreshold=0",
+  "-XX:MinHeapFreeRatio=20",
+  "-XX:MaxHeapFreeRatio=40",
   "--sun-misc-unsafe-memory-access=allow",  // temporary option, to be removed before adopting JBR 29
-  "-ea",
+  // phantom-idea: no "-ea"; assertions cost CPU on every edit and index pass and only JetBrains' error reports read them
   "-Dsun.io.useCanonCaches=false",
   "-Dsun.java2d.metal=true",
   "-Djbr.catch.SIGABRT=true",

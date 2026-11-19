@@ -3,6 +3,8 @@ package org.jetbrains.intellij.build
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+// phantom-idea: added import for pluginModulesToPublish below (Kotlin is published as a zip, not bundled)
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import org.jetbrains.intellij.build.BuildPaths.Companion.COMMUNITY_ROOT
 import org.jetbrains.intellij.build.impl.createBuildContext
@@ -10,11 +12,35 @@ import org.jetbrains.intellij.build.impl.qodana.QodanaProductProperties
 import org.jetbrains.intellij.build.io.copyDir
 import org.jetbrains.intellij.build.io.copyFileToDir
 import org.jetbrains.intellij.build.kotlin.KotlinBinaries
+import org.jetbrains.intellij.build.kotlin.KotlinPluginBuilder
 import org.jetbrains.intellij.build.productLayout.CommunityModuleSets
 import org.jetbrains.intellij.build.productLayout.CommunityProductFragments
 import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
 import org.jetbrains.intellij.build.productLayout.productModules
+import java.nio.file.Files
 import java.nio.file.Path
+
+/** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
+
+// phantom-idea: published to the Phantom plugins repository instead of bundled
+private const val MAVEN_PLUGIN_MODULE = "intellij.maven.plugin"
+val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
+  "phantom.sync",
+  "phantom.theme",
+)
+
+/**
+ * phantom-idea: plugins built in Phantom-plugins and bundled in place of their IntelliJ originals. They have dev.phantom.* ids
+ * and keep the IntelliJ ids as aliases and the IntelliJ content module names, so the plugins and modules depending on them
+ * resolve to these. Mermaid is Phantom's own implementation (com.phantom.mermaid, no alias). phantom-build.sh unpacks them
+ * into out/phantom-plugins/<dir>; the originals are left out of the bundle.
+ */
+val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
+  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
+  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grammar", "terminal", "github", "junit", "properties",
+  "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images", "grid",
+  "git",
+)
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
   "intellij.tools.jps.build.standalone",
@@ -58,16 +84,87 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       "intellij.idea.community.customization",
     )
 
-    productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS + sequenceOf(
-      "intellij.javaFX.community"
-    )
+    // phantom-idea: no feature trainer ("Learn IDE Features" courses, Learn tool window), and no AI agent plumbing
+    // (MCP server for external agents, Agent Client Protocol); nothing bundled depends on either.
+    // No performanceTesting either: JetBrains' scripted performance-test runner, nothing for users.
+    // No DevKit runtime (internal PSI viewer and usage-stats tools), no Eclipse project import, no JavaFX
+    // (its Scene Builder tab downloads a kit from JetBrains).
+    // Bytecode Viewer, WebP and Modal Commit Interface are Phantom-plugins now (bytecode, webp, modal-commit).
+    // No GitLab integration (GitHub only); no Eclipse, Visual Studio or NetBeans keymaps (installable from Marketplace).
+    // No configurationScript: intellij.yaml project-configuration files; nothing bundled depends on it.
+    productLayout.bundledPluginModules = IDEA_BUNDLED_PLUGINS
+      .removing("intellij.featuresTrainer")
+      .removing("intellij.mcpserver")
+      .removing("intellij.performanceTesting")
+      .removing("intellij.platform.acp.plugin")
+      .removing("intellij.dev")
+      .removing("intellij.eclipse")
+      .removing("intellij.java.byteCodeViewer")
+      .removing("intellij.webp")
+      .removing("intellij.vcs.git.commit.modal")
+      .removing("intellij.vcs.gitlab")
+      .removing("intellij.keymap.eclipse")
+      .removing("intellij.keymap.visualStudio")
+      .removing("intellij.keymap.netbeans")
+      .removing("intellij.configurationScript")
+      // built in Phantom-plugins instead, see PHANTOM_PLUGINS_BUNDLED
+      .removing("intellij.toml")
+      .removing("intellij.yaml")
+      .removing("intellij.sh.plugin")
+      .removing("intellij.java.decompiler")
+      .removing("intellij.java.coverage")
+      .removing("intellij.textmate.plugin")
+      .removing("intellij.markdown")
+      .removing("intellij.mermaid")
+      .removing("intellij.copyright")
+      .removing("intellij.editorconfig.plugin")
+      .removing("intellij.html.tools")
+      .removing("intellij.testng")
+      .removing("intellij.java.i18n")
+      .removing("intellij.grazie")
+      .removing("intellij.terminal")
+      .removing("intellij.vcs.github")
+      .removing("intellij.junit")
+      .removing("intellij.properties")
+      .removing("intellij.repository.search")
+      .removing("intellij.json")
+      .removing("intellij.android.gradle.dsl")
+      .removing("intellij.groovy.scripting")
+      .removing("intellij.groovy")
+      .removing("intellij.groovy.live.templates")
+      .removing("intellij.platform.images")
+      .removing("intellij.grid.core.plugin")
+      .removing("intellij.vcs.git")
+      .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
+      .removing(MAVEN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
+    // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
+    // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
+    // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
+    // Maven likewise (51 MB): suggested when a project has a pom.xml. Its optional modules elsewhere (Gradle's Maven
+    // import, Kotlin's Maven support, Repository Search's common part) switch off without it.
+    productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE, MAVEN_PLUGIN_MODULE)
+
+    // phantom-idea: class data sharing. The JVM archives the loaded classes into $IDE_CACHE_DIR/<base><build>.jsa on the
+    // first exit after an install or update (about 25 s, about 370 MB) and maps it on later starts: "app initialization"
+    // 0.8-2.9 s instead of 2.3-3.9 s and the first smart mode 5-9 s instead of 14-19 s (phantom-bench.sh, Kotlin fixture).
+    // It replaces -Djava.system.class.loader=PathClassLoader, which the dynamic archive does not support.
+    enableCds = true
+
+    // phantom-idea: JetBrains' user agreements, privacy policies and consent lists are not Phantom's and are not shipped. The code
+    // reads them only for vendor JetBrains (EndUserAgreement, ConsentOptions) or tolerates their absence (LocalConsentOptions);
+    // eua.html stays in the source tree because the SBOM generator reads it.
+    productLayout.addPlatformSpec { layout, _ ->
+      layout.excludeFromModule("intellij.platform.resources", listOf(
+        "eua.html", "euaCommunity.html", "PrivacyPolicy.html", "privacyEap.html", "consents.json", "localConsents.json",
+      ))
+    }
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
-    productLayout.buildAllCompatiblePlugins = true
+    productLayout.buildAllCompatiblePlugins = false // phantom-idea: no separate plugin repository build
     productLayout.pluginLayouts = CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS + persistentListOf(
       JavaPluginLayout.javaPlugin(),
       CommunityRepositoryModules.groovyPlugin(),
-      CommunityRepositoryModules.androidPlugin(allPlatforms = true),
+      // phantom-idea: Android plugin removed from the default bundle
     )
 
     productLayout.skipUnresolvedContentModules = true
@@ -108,7 +205,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       JewelMavenArtifacts.validate(context, artifacts)
     }
 
-    versionCheckerConfig = CE_CLASS_VERSIONS
+    // Maven is published, not bundled, so its runtime jars are not in the distribution to check
+    versionCheckerConfig = CE_CLASS_VERSIONS.filterKeys { !it.startsWith("plugins/maven-plugin/") }
     baseDownloadUrl = "https://download.jetbrains.com/idea/"
     buildDocAuthoringAssets = true
 
@@ -118,7 +216,7 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
   }
 
   override val baseFileName: String
-    get() = "idea"
+    get() = "phantom"
 
   override fun getProductContentDescriptor(): ProductModulesContentSpec = productModules {
     include(intellijCommunityBaseFragment(platformPrefix))
@@ -140,6 +238,15 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
 
   protected open suspend fun bundleExternalPlugins(context: BuildContext, targetDirectory: Path) {}
 
+  // phantom-idea: a build without them would ship without YAML, Markdown and the rest, so a missing one fails the build
+  override suspend fun getAdditionalPluginPaths(context: BuildContext): List<Path> {
+    val root = context.paths.communityHomeDir.resolve("out/phantom-plugins")
+    val dirs = PHANTOM_PLUGINS_BUNDLED.map { root.resolve(it) }
+    val missing = dirs.filterNot { Files.isDirectory(it.resolve("lib")) }
+    check(missing.isEmpty()) { "Phantom-plugins builds missing (phantom-build.sh puts them in $root): $missing" }
+    return dirs
+  }
+
   override fun createWindowsCustomizer(projectHome: Path): WindowsDistributionCustomizer = ideaCommunityWindowsCustomizer(communityHomeDir)
 
   override fun createLinuxCustomizer(projectHome: Path): LinuxDistributionCustomizer = ideaCommunityLinuxCustomizer(communityHomeDir)
@@ -147,12 +254,14 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
   override fun createMacCustomizer(projectHome: Path): MacDistributionCustomizer = ideaCommunityMacCustomizer(communityHomeDir)
 
   override fun getSystemSelector(appInfo: ApplicationInfoProperties, buildNumber: String): String {
-    return "IdeaIC${appInfo.majorVersion}.${appInfo.minorVersionMainPart}"
+    return "PhantomIDEA" // phantom-idea: fixed so settings survive date-based version bumps
   }
 
-  override fun getBaseArtifactName(appInfo: ApplicationInfoProperties, buildNumber: String): String = "ideaIC-$buildNumber"
+  // Phantom's own build number when phantom-build.sh sets it (PH-261018.2 -> phantom-261018.2), else 262.261016 -> phantom-261016
+  override fun getBaseArtifactName(appInfo: ApplicationInfoProperties, buildNumber: String): String =
+    "phantom-" + (System.getProperty("phantom.build.number")?.takeIf { it.isNotBlank() }?.substringAfter('-') ?: buildNumber.substringAfter('.'))
 
-  override fun getOutputDirectoryName(appInfo: ApplicationInfoProperties): String = "idea-ce"
+  override fun getOutputDirectoryName(appInfo: ApplicationInfoProperties): String = "phantom-idea"
 }
 
 @Suppress("unused")
@@ -203,14 +312,12 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
   }
 
   include(CommunityProductFragments.javaIdeBaseFragment())
-  deprecatedInclude("intellij.idea.community.customization", "META-INF/tips-intellij-idea-community.xml")
+  // phantom-idea: no tips-intellij-idea-community.xml: Phantom ships no Tips of the Day content (the JetBrains tips-idea-ce library is not a dependency)
 
   module("intellij.platform.coverage")
   module("intellij.platform.coverage.agent")
   module("intellij.xml.xmlbeans")
-  module("intellij.platform.ide.newUiOnboarding")
-  module("intellij.platform.ide.newUsersOnboarding")
-  module("intellij.ide.startup.importSettings")
+  // phantom-idea: no onboarding tours, no settings import from other IDEs (intellij.ide.startup.importSettings)
   module("intellij.platform.customization.min")
   module("intellij.idea.customization.base")
   module("intellij.idea.customization.backend")
@@ -232,12 +339,9 @@ inline fun ideaCommunityWindowsCustomizer(
 ): WindowsDistributionCustomizer = windowsCustomizer(projectHome) {
   fileAssociations = listOf("java", "gradle", "groovy", "kt", "kts", "pom")
 
-  fullName { "IntelliJ IDEA Open Source" }
-  installDirNameHandler { "IntelliJ IDEA OSS" }
-
-  uninstallFeedbackUrl { appInfo ->
-    "https://www.jetbrains.com/idea/uninstall/?edition=IC-${appInfo.majorVersion}.${appInfo.minorVersion}"
-  }
+  // phantom-idea: Windows product and install folder name Phantom (rebrand); the JetBrains uninstall feedback page (uninstallFeedbackUrl) is removed
+  fullName { "Phantom" }
+  installDirNameHandler { "Phantom" }
 
   configure()
 }
@@ -246,12 +350,13 @@ inline fun ideaCommunityMacCustomizer(
   projectHome: Path,
   configure: MacCustomizerBuilder.() -> Unit = {}
 ): MacDistributionCustomizer = macCustomizer(projectHome) {
-  urlSchemes = listOf("idea")
+  // phantom-idea: macOS URL scheme phantom, bundle id dev.phantom.idea and "Phantom.app" instead of IntelliJ IDEA OSS (rebrand)
+  urlSchemes = listOf("phantom")
   associateIpr = true
   fileAssociations = FileAssociation.from("java", "groovy", "kt", "kts")
-  bundleIdentifier = "com.jetbrains.intellij.ce"
+  bundleIdentifier = "dev.phantom.idea"
 
-  rootDirectoryName { _, _ -> "IntelliJ IDEA OSS.app" }
+  rootDirectoryName { _, _ -> "Phantom.app" }
 
   executableFilePatterns { base, _, _, _ ->
     val kotlinExecutables = KotlinBinaries.kotlinCompilerExecutables
@@ -266,7 +371,8 @@ inline fun ideaCommunityLinuxCustomizer(
   configure: LinuxCustomizerBuilder.() -> Unit = {}
 ): LinuxDistributionCustomizer = linuxCustomizer(projectHome) {
 
-  rootDirectoryName { _, _ -> "idea-oss" }
+  // phantom-idea: Linux root folder phantom instead of idea-oss (rebrand)
+  rootDirectoryName { _, _ -> "phantom" }
 
   executableFilePatterns { base, _, _, _, _ ->
     base.plus(KotlinBinaries.kotlinCompilerExecutables).filterNot { it == "plugins/**/*.sh" }

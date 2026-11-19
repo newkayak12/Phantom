@@ -18,7 +18,7 @@
   <content namespace="jetbrains">
     <module name="intellij.vcs.github" loading="embedded"/>
     <module name="intellij.vcs.github.git"/>
-    <module name="intellij.vcs.github.ultimatePromo"/>
+    <!-- phantom-idea: removed the intellij.vcs.github.ultimatePromo content module (Ultimate promotion) -->
     <module name="intellij.vcs.github.tracker"/>
     <module name="intellij.vcs.github.json"/>
     <module name="intellij.vcs.github.ultimate.features"/>

@@ -5,7 +5,7 @@ import com.intellij.internal.statistic.eventLog.LogEventSerializer
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.util.io.delete
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
