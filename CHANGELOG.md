@@ -61,6 +61,7 @@
 - Phantom 코드의 사용자에게 보이는 문구 39개를 리소스 번들로 옮겼다. 문구는 그대로다. 새 번들 `PhantomIdeBundle`(`platform-impl`: GitHub 플러그인 토큰 액션·대화상자, 플러그인 추천 알림, Spring Boot 새 프로젝트 항목, 알림 그룹 이름 17개)과 `PhantomLangBundle`(`lang-impl`: Endpoints 도구 창과 액션, "Generate HTTP Request" 11개), 그리고 `IdeBundle`(`toolwindow.stripe.Endpoints`)과 `GithubBundle`(gh CLI·디바이스 플로 로그인 문구와 오류 10개)에 키를 더했다. `SetGitHubPluginToken` 액션은 `PlatformActions.xml` 끝의 자체 `<actions resource-bundle>` 블록으로 옮겼다. 고정 카테고리 중 맞는 것이 없어 가장 가까운 기능(Phantom 플러그인)에 적었다. 코드만 바꿨고 빌드와 테스트는 아직 하지 않았다(리뷰어의 빌드 대기). `GithubBundle`은 이 리포의 `plugins/github` 소스이고, 번들의 GitHub 플러그인은 ed67704350부터 Phantom-plugins가 빌드한 판이다 (a1313a347c, PR #2).
 
 ### 빌드·배포·서명
+- `product-info.json`의 `layout`이 Java·Gradle 플러그인의 모듈 jar 22개를 실제로 없는 `lib/modules/`에 있다고 적던 것을 배포본의 실제 jar(플러그인 레이아웃이 정한 이름 또는 `lib/<모듈>.jar`)로 고친다. Plugin Verifier 같은 도구가 그 플러그인을 읽지 못하던 문제다.
 - 릴리스 checkout과 Gradle wrapper 검증 액션을 커밋 SHA로 고정하고, wrapper 검증을 PR·main 변경에 맞췄다. GitHub Actions 의존성은 Dependabot이 주간 묶음 PR로 갱신한다.
 - Jewel의 YouTrack 토큰·단일 커밋 형식 검증은 업스트림 저장소에서만 실행하고, Phantom PR에는 포크의 커밋 규칙을 적용한다. Jewel 빌드·테스트 작업은 유지한다.
 - SonarQube가 찾은 품질 도구의 Git PATH 의존, 정렬 비교, 복잡도 문제를 수정했다 (PR #9).
