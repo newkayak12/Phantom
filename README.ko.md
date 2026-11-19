@@ -121,8 +121,8 @@ Apple Silicon macOS, 16 GB 이상 RAM, 첫 빌드용 여유 디스크 약 120 GB
 git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 # Android modules are still referenced by the build graph; fetch the matching tag
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
-# Bundled plugins are built from Phantom-plugins next to this checkout (or set PHANTOM_PLUGINS_REPO)
-git clone git@github.com:newkayak12/Phantom-plugins.git ../Phantom-plugins
+# Bundled plugins are downloaded from the phantom-libs release in build/phantom-plugins-bundle.txt
+# (PHANTOM_PLUGINS_REPO=<Phantom-plugins checkout> builds them from source instead)
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
