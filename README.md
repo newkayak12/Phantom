@@ -79,13 +79,13 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 
 | Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
 |---|---|---|
-| `phantom-sync`: Backup and Sync to your own git repository | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: beans, injection navigation, autowiring checks |
-| `phantom-theme`: Phantom Dark and Light | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` completion and docs |
-| Endpoints tool window (core; plugins fill it) | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
-| GitHub plugin repository support (core) | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
+| Endpoints tool window (core; plugins fill it) | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: beans, injection navigation, autowiring checks |
+| GitHub plugin repository support (core) | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` completion and docs |
+|  | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
+|  | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
 | | `grammar`, `terminal`, `github` | `http-client`: `.http` request files |
 | | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
-| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images` | |
+| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images`, `theme`, `sync` | |
 | | | `kotlin`: the Kotlin language plugin, built by each release of this repository |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |

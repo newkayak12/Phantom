@@ -20,14 +20,8 @@ import org.jetbrains.intellij.build.productLayout.productModules
 import java.nio.file.Files
 import java.nio.file.Path
 
-/** phantom-idea: bundled Phantom plugins. One line per plugin, so each can be switched off for A/B measurements. */
-
 // phantom-idea: published to the Phantom plugins repository instead of bundled
 private const val MAVEN_PLUGIN_MODULE = "intellij.maven.plugin"
-val PHANTOM_BUNDLED_PLUGINS: PersistentList<String> = persistentListOf(
-  "phantom.sync",
-  "phantom.theme",
-)
 
 /**
  * phantom-idea: plugins built in Phantom-plugins and bundled in place of their IntelliJ originals. They have dev.phantom.* ids
@@ -39,7 +33,7 @@ val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
   "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
   "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grammar", "terminal", "github", "junit", "properties",
   "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images", "grid",
-  "git",
+  "git", "theme", "sync",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -136,7 +130,7 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.grid.core.plugin")
       .removing("intellij.vcs.git")
       .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
-      .removing(MAVEN_PLUGIN_MODULE) + PHANTOM_BUNDLED_PLUGINS
+      .removing(MAVEN_PLUGIN_MODULE)
     // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
     // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
     // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
