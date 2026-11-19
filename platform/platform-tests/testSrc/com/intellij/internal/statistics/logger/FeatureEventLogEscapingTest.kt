@@ -11,7 +11,7 @@ import com.intellij.internal.statistic.eventLog.escape
 import com.intellij.internal.statistics.StatisticsTestEventFactory.newEvent
 import com.intellij.internal.statistics.StatisticsTestEventValidator.assertLogEventIsValid
 import com.intellij.internal.statistics.StatisticsTestEventValidator.isValid
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

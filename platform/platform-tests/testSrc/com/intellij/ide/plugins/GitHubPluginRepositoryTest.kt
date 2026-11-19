@@ -1,0 +1,111 @@
+// Copyright 2026 Phantom contributors. Use of this source code is governed by the Apache 2.0 license.
+package com.intellij.ide.plugins
+
+import com.intellij.ide.plugins.newui.PluginDtoModelBuilderFactory
+import dev.phantom.ide.plugins.GitHubPluginRepository
+import dev.phantom.ide.plugins.coordinatesOf
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.IOException
+
+class GitHubPluginRepositoryTest {
+  @Test
+  fun `accepts every spelling of a GitHub repository`() {
+    assertEquals("newkayak12/phantom-plugins", GitHubPluginRepository.normalize("newkayak12/phantom-plugins"))
+    assertEquals("newkayak12/phantom-plugins", GitHubPluginRepository.normalize(" github:newkayak12/phantom-plugins "))
+    assertEquals("newkayak12/phantom-plugins", GitHubPluginRepository.normalize("https://github.com/newkayak12/phantom-plugins.git"))
+    assertEquals("a/b@dev", GitHubPluginRepository.normalize("https://github.com/a/b/tree/dev"))
+    assertEquals("a/b.c@feature/x", GitHubPluginRepository.normalize("a/b.c@feature/x"))
+  }
+
+  @Test
+  fun `leaves plugin repository URLs alone`() {
+    assertNull(GitHubPluginRepository.normalize("https://plugins.example.com/updatePlugins.xml"))
+    assertNull(GitHubPluginRepository.normalize("plugins.example.com/repo"))
+    assertNull(GitHubPluginRepository.normalize("file:///tmp/plugins.xml"))
+  }
+
+  @Test
+  fun `metadata URL follows the branch`() {
+    assertEquals("https://raw.githubusercontent.com/a/b/HEAD/.phantom/marketplace.json", GitHubPluginRepository.parse("a/b")!!.metadataUrl)
+    assertEquals("https://raw.githubusercontent.com/a/b/dev/.phantom/marketplace.json", GitHubPluginRepository.parse("a/b@dev")!!.metadataUrl)
+  }
+
+  @Test
+  fun `reads plugins from marketplace json`() {
+    val json = """
+      { "name": "phantom-plugins",
+        "plugins": [
+          { "id": "dev.phantom.db", "name": "Phantom DB", "version": "0.2.0", "source": "./db",
+            "description": "SQL console", "category": "Database", "since": "262", "until": "262.*",
+            "depends": ["com.intellij.modules.platform"], "download": "db-0.2.0/phantom-db-0.2.0.zip",
+            "detect": ["org.postgresql:postgresql"] },
+          { "id": "x.y", "download": "https://example.com/x.zip" },
+          { "name": "no id, skipped", "download": "a/b.zip" } ] }
+    """.trimIndent()
+    val ref = GitHubPluginRepository.parse("newkayak12/phantom-plugins")!!
+    val models = GitHubPluginRepository.parseMetadata(json.byteInputStream(), ref, PluginDtoModelBuilderFactory)
+    assertEquals(listOf("dev.phantom.db", "x.y"), models.map { it.pluginId.idString })
+
+    val db = models[0]
+    assertEquals("Phantom DB", db.name)
+    assertEquals("0.2.0", db.version)
+    assertEquals("https://github.com/newkayak12/phantom-plugins/releases/download/db-0.2.0/phantom-db-0.2.0.zip", db.downloadUrl)
+    assertEquals("262", db.sinceBuild)
+    assertEquals("https://example.com/x.zip", models[1].downloadUrl)
+    assertEquals("newkayak12", models[1].vendor)
+
+    val detect = GitHubPluginRepository.parseDetect(json).single()
+    assertEquals("dev.phantom.db", detect.id)
+    assertEquals("Phantom DB", detect.name)
+    assertEquals(listOf("org.postgresql:postgresql"), detect.detect)
+  }
+
+  @Test
+  fun `file names detect plugins that are not libraries`() {
+    val json = """{"plugins": [{"id": "dev.phantom.kubernetes", "name": "Phantom Kubernetes", "detectFiles": ["Chart.yaml"]}, {"id": "none"}]}"""
+    val detect = GitHubPluginRepository.parseDetect(json).single()
+    assertEquals(emptyList<String>(), detect.detect)
+    assertEquals(listOf("Chart.yaml"), detect.files)
+  }
+
+  @Test(expected = IOException::class)
+  fun `rejects metadata without a plugins array`() {
+    GitHubPluginRepository.parseMetadata("{}".byteInputStream(), GitHubPluginRepository.parse("a/b")!!, PluginDtoModelBuilderFactory)
+  }
+
+  @Test
+  fun `only the Phantom repository is official`() {
+    assertTrue(GitHubPluginRepository.isOfficial("newkayak12/Phantom-plugins"))
+    assertTrue(GitHubPluginRepository.isOfficial("newkayak12/phantom-plugins"))
+    assertTrue(GitHubPluginRepository.isOfficial("https://github.com/newkayak12/phantom-plugins"))
+    assertFalse(GitHubPluginRepository.isOfficial("someone/phantom-plugins"))
+    assertFalse(GitHubPluginRepository.isOfficial(null))
+  }
+
+  @Test
+  fun `library names give group and artifact`() {
+    assertEquals("org.postgresql:postgresql", coordinatesOf("Gradle: org.postgresql:postgresql:42.7.3"))
+    assertEquals("com.h2database:h2", coordinatesOf("Maven: com.h2database:h2:2.2.224"))
+    assertNull(coordinatesOf("KotlinJavaRuntime"))
+    assertNull(coordinatesOf(null))
+  }
+
+  @Test
+  fun `private downloads go through the release asset API`() {
+    val releases = """[ { "tag_name": "db-0.1.0", "assets": [ { "name": "db-0.1.0.zip", "url": "https://api.github.com/repos/a/b/releases/assets/7" } ] } ]"""
+    val assets = GitHubPluginRepository.releaseAssets(releases)
+    assertEquals(mapOf("db-0.1.0/db-0.1.0.zip" to "https://api.github.com/repos/a/b/releases/assets/7"), assets)
+
+    val json = """{ "plugins": [ { "id": "dev.phantom.db", "download": "db-0.1.0/db-0.1.0.zip" }, { "id": "x", "download": "other/x.zip" } ] }"""
+    val ref = GitHubPluginRepository.parse("a/b")!!
+    val models = GitHubPluginRepository.parseMetadata(json.byteInputStream(), ref, PluginDtoModelBuilderFactory) { assets[it] }
+    assertEquals("https://api.github.com/repos/a/b/releases/assets/7", models[0].downloadUrl)
+    assertEquals("https://github.com/a/b/releases/download/other/x.zip", models[1].downloadUrl)
+    assertEquals("https://api.github.com/repos/a/b/contents/.phantom/marketplace.json", ref.apiMetadataUrl)
+    assertEquals("https://api.github.com/repos/a/b/contents/.phantom/marketplace.json?ref=dev", GitHubPluginRepository.parse("a/b@dev")!!.apiMetadataUrl)
+  }
+}

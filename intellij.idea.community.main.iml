@@ -61,7 +61,6 @@
     <orderEntry type="module" module-name="intellij.platform.debugger" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.debugger.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.xml.impl" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.ide.startup.importSettings" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.idea.community.customization" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.java.plugin" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.copyright" scope="RUNTIME" />
@@ -135,6 +134,9 @@
     <orderEntry type="module" module-name="intellij.searchEverywhereMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.marketplaceMl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.toml" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.sync" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.sync.core" scope="RUNTIME" />
+    <orderEntry type="module" module-name="phantom.theme" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.tracing.ide" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.notebooks.visualization" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.keymap.eclipse" scope="RUNTIME" />
@@ -151,7 +153,6 @@
     <orderEntry type="module" module-name="intellij.html.tools" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.ide.newUiOnboarding" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.ide.newUsersOnboarding" scope="RUNTIME" />
-    <orderEntry type="module" module-name="intellij.kotlin.onboarding.promoter" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.execution.process.elevation" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.gitlab.yaml" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.yaml" scope="RUNTIME" />

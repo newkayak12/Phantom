@@ -8,6 +8,7 @@ import com.intellij.platform.buildData.productInfo.CustomPropertyNames
 import com.intellij.platform.buildData.productInfo.ProductFlavorData
 import com.intellij.platform.buildData.productInfo.ProductInfoData
 import com.intellij.platform.buildData.productInfo.ProductInfoLaunchData
+import com.intellij.platform.buildData.productInfo.ProductInfoLayoutItem
 import com.intellij.platform.buildData.productInfo.ProductInfoLayoutItemKind
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -74,10 +75,36 @@ internal fun generateProductInfoJson(
     bundledPlugins = builtinModules?.plugins ?: emptyList(),
     fileExtensions = builtinModules?.fileExtensions ?: emptyList(),
     modules = (builtinModules?.layout?.asSequence() ?: emptySequence()).filter { it.kind == ProductInfoLayoutItemKind.pluginAlias }.map { it.name }.toList(),
-    layout = builtinModules?.layout ?: emptyList(),
+    // phantom-idea: list each jar where the distribution has it (see phantomDistributionClassPath)
+    layout = phantomDistributionClassPath(builtinModules?.layout ?: emptyList(), context),
     flavors = jbrFlavors + productFlavors,
   )
   return jsonEncoder.encodeToString<ProductInfoData>(json)
+}
+
+// phantom-idea: BundledPluginsLister runs the product from the development layout, where every content module has its own
+// lib/modules/<module>.jar. The distribution packs some of them elsewhere (Java's PSI and syntax as lib/<module>.jar, Gradle's
+// tooling modules under the names its plugin layout gives them), so product-info.json named files that do not exist, and tools
+// that read it (Plugin Verifier, the IntelliJ Platform Gradle Plugin) could not load those plugins. When the listed file is
+// missing, use the jar the plugin layout packs the module into, or lib/<module>.jar, whichever the distribution has.
+private fun phantomDistributionClassPath(layout: List<ProductInfoLayoutItem>, context: BuildContext): List<ProductInfoLayoutItem> {
+  val distAll = context.paths.distAllDir
+  val modulesDir = Regex("^(plugins/([^/]+)/lib)/modules/([^/]+)\\.jar$")
+  val packedJar = context.productProperties.productLayout.pluginLayouts.flatMap { plugin ->
+    plugin.includedModules.map { (plugin.directoryName to it.moduleName) to it.relativeOutputFile }
+  }.toMap()
+  return layout.map { item ->
+    val classPath = item.classPath.map { path ->
+      val match = modulesDir.find(path)
+      if (match == null || distAll.resolve(path).exists()) path
+      else {
+        val (libDir, pluginDir, module) = match.destructured
+        listOfNotNull(packedJar[pluginDir to module]?.let { "$libDir/$it" }, "$libDir/$module.jar")
+          .firstOrNull { distAll.resolve(it).exists() } ?: path
+      }
+    }
+    if (classPath == item.classPath) item else item.copy(classPath = classPath)
+  }
 }
 
 private fun getProjectLanguageLevel(context: BuildContext): Int? {

@@ -1,9 +1,5 @@
 package com.intellij.searchEverywhereMl.typos.models
 
-import ai.grazie.nlp.similarity.Levenshtein
-import ai.grazie.spell.lists.FrequencyMetadata
-import ai.grazie.spell.lists.WordList
-import com.intellij.grazie.utils.LinkedSet
 import com.intellij.searchEverywhereMl.typos.SearchEverywhereStringToken
 import com.intellij.searchEverywhereMl.typos.splitText
 import java.util.ArrayList
@@ -196,9 +192,6 @@ private class SharedIndexLanguageModelDictionary(
   override val allWords: Set<String>
     get() = eligibleWords
 
-  override val defaultFrequency: Int
-    get() = 0
-
   override val maxFrequency: Int by lazy(LazyThreadSafetyMode.PUBLICATION) {
     sharedIndex.maxDictionaryFrequency()
   }
@@ -207,12 +200,5 @@ private class SharedIndexLanguageModelDictionary(
     val tokenId = sharedIndex.tokenIdByWord(word) ?: return null
     return sharedIndex.dictionaryFrequency(tokenId).takeIf { it > 0 }
   }
-
-  override fun contains(word: String, caseSensitive: Boolean): Boolean =
-    allWords.any { it.startsWith(word, false) }
-
-  override fun suggest(word: String): LinkedSet<String> = allWords
-    .filterTo(LinkedHashSet()) {
-      Levenshtein.distance(it, word, LanguageModelDictionary.Companion.MAX_LEVENSHTEIN_DISTANCE + 1) <= LanguageModelDictionary.Companion.MAX_LEVENSHTEIN_DISTANCE
-    }
+  // phantom-idea: contains/suggest (closed Grazie WordList API) removed; ActionsSpeller does the lookup
 }

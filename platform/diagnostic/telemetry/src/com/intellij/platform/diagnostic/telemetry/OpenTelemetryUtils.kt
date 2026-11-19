@@ -59,11 +59,12 @@ object OpenTelemetryUtils {
     return PathManager.getLogDir().resolve(rawPath).toAbsolutePath()
   }
 
+  // phantom-idea: no metrics files unless a path is given (they were written every minute, ~100 MB in a few days)
   fun metricsCsvReportingPath(): Path? =
-    resolveMetricsReportingPath(System.getProperty("idea.diagnostic.opentelemetry.metrics.file", "telemetry/open-telemetry-metrics.csv"))
+    resolveMetricsReportingPath(System.getProperty("idea.diagnostic.opentelemetry.metrics.file", ""))
 
   fun metricsJsonReportingPath(): Path? =
-    resolveMetricsReportingPath(System.getProperty("idea.diagnostic.opentelemetry.meters.file.json", "telemetry/open-telemetry-meters.json"))
+    resolveMetricsReportingPath(System.getProperty("idea.diagnostic.opentelemetry.meters.file.json", ""))
 
   fun setupFileLimiterForMetrics(metricsReportingBasePath: Path): FileSetLimiter {
     val suffixDateFormat = System.getProperty("idea.diagnostic.opentelemetry.metrics.suffix-date-format", "yyyy-MM-dd-HH-mm-ss")

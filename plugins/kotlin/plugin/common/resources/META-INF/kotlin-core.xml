@@ -170,7 +170,7 @@
 
     <projectPathMacroContributor implementation="org.jetbrains.kotlin.idea.macros.KotlinBundledPathMacroContributor"/>
 
-    <backgroundPostStartupActivity implementation="org.jetbrains.kotlin.idea.update.KotlinPluginUpdateCheckerStartActivity"/>
+    <!-- phantom-idea: removed KotlinPluginUpdateCheckerStartActivity (it called plugins.jetbrains.com when a .kt file was edited) -->
     <postStartupActivity implementation="org.jetbrains.kotlin.idea.macros.KotlinBundledUsageDetector$MyStartupActivity"/>
     <postStartupActivity implementation="org.jetbrains.kotlin.idea.macros.KotlinBundledRefresher"/>
 
@@ -478,8 +478,7 @@
 
   <!-- Tips and Tricks -->
   <extensions defaultExtensionNs="com.intellij">
-    <tipAndTrick file="Kotlin.html"/>
-    <tipAndTrick file="Kotlin_project.html"/>
+    <!-- phantom-idea: Kotlin.html and Kotlin_project.html are not in this repository, so they are not registered -->
     <tipAndTrick file="Kotlin_mix.html"/>
     <tipAndTrick file="Kotlin_Java_convert.html"/>
   </extensions>

@@ -13,7 +13,7 @@
     <orderEntry type="library" name="kotlin-stdlib" level="project" />
     <orderEntry type="library" name="jetbrains-annotations" level="project" />
     <orderEntry type="module" module-name="intellij.platform.util.jdom" />
-    <orderEntry type="module" module-name="intellij.platform.statistics.uploader" />
+    <orderEntry type="module" module-name="intellij.platform.statistics.uploader" exported="" />
     <orderEntry type="module" module-name="intellij.platform.statistics.config" />
     <orderEntry type="module" module-name="intellij.libraries.fastutil" />
     <orderEntry type="module" module-name="intellij.platform.concurrency" />
@@ -44,7 +44,6 @@
     <orderEntry type="module" module-name="intellij.libraries.kotlinx.serialization.json" />
     <orderEntry type="module" module-name="intellij.libraries.kotlinx.serialization.core" />
     <orderEntry type="library" exported="" name="com.jetbrains.fus.reporting.fus-api" level="project" />
-    <orderEntry type="library" exported="" name="com.jetbrains.fus.reporting.ap.validation.all" level="project" />
     <orderEntry type="module" module-name="intellij.libraries.kotlinx.collections.immutable" />
   </component>
 </module>

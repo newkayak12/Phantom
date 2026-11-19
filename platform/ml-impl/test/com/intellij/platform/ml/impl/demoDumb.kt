@@ -22,7 +22,7 @@ import com.intellij.platform.ml.with
 import com.intellij.platform.ml.withConsiderations
 import com.intellij.platform.ml.withNestedDumbSessions
 import com.intellij.util.application
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import kotlinx.coroutines.runBlocking
 import java.util.function.Consumer
 

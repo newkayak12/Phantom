@@ -1,6 +1,7 @@
 <idea-plugin package="org.jetbrains.kotlin" xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
   <id>org.jetbrains.kotlin</id>
-  <name>Kotlin</name>
+  <!-- phantom-idea: Kotlin Support, released by Phantom; the id stays for the plugins depending on it -->
+  <name>Kotlin Support</name>
   <category>Languages</category>
   <description><![CDATA[
     Provides language support for Kotlin, a modern programming language designed to make developers happier.
@@ -13,7 +14,7 @@
   <version>@snapshot@</version>
 
   <!--suppress PluginXmlValidity -->
-  <vendor url="https://www.jetbrains.com">JetBrains</vendor>
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
 
   <dependencies>
     <!-- IJ/AS-DEPENDENCY-PLACEHOLDER -->

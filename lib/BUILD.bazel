@@ -710,21 +710,6 @@ jvm_import(
 )
 
 copy_file(
-    name = "com.jetbrains.fus.reporting/ap-validation-all-1.0.229.jar_copy",
-    src = "@com_jetbrains_fus_reporting-ap-validation-all-1_0_229_http//file",
-    out = "com.jetbrains.fus.reporting/ap-validation-all-1.0.229.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "com-jetbrains-fus-reporting-ap-validation-all",
-    jar = "@com_jetbrains_fus_reporting-ap-validation-all-1_0_229_http//file",
-    source_jar = "@com_jetbrains_fus_reporting-ap-validation-all-1_0_229-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-copy_file(
     name = "com.jetbrains.fus.reporting/fus-api-1.0.229.jar_copy",
     src = "@com_jetbrains_fus_reporting-fus-api-1_0_229_http//file",
     out = "com.jetbrains.fus.reporting/fus-api-1.0.229.jar",
@@ -2907,9 +2892,10 @@ jvm_import(
     visibility = ["//visibility:public"],
 )
 
+# phantom-idea: @gradle_api is built from Gradle's distribution (gradle-api.bzl), not downloaded from JetBrains; no sources jar
 copy_file(
     name = "org.jetbrains.intellij.deps/gradle-api-9.6.0.jar_copy",
-    src = "@org_jetbrains_intellij_deps-gradle-api-9_6_0_http//file",
+    src = "@gradle_api//file",
     out = "org.jetbrains.intellij.deps/gradle-api-9.6.0.jar",
     allow_symlink = True,
     visibility = ["//visibility:public"],
@@ -2917,8 +2903,7 @@ copy_file(
 
 jvm_import(
     name = "gradle",
-    jar = "@org_jetbrains_intellij_deps-gradle-api-9_6_0_http//file",
-    source_jar = "@org_jetbrains_intellij_deps-gradle-api-9_6_0-sources_http//file",
+    jar = "@gradle_api//file",
     visibility = ["//visibility:public"],
 )
 
@@ -5918,20 +5903,6 @@ jvm_import(
     name = "org_apache_httpcomponents-httpcore-4_4_16_http_import",
     jar = "@org_apache_httpcomponents-httpcore-4_4_16_http//file",
     source_jar = "@org_apache_httpcomponents-httpcore-4_4_16-sources_http//file",
-)
-
-copy_file(
-    name = "com.jetbrains.intellij.documentation/tips-intellij-idea-community-241.62.jar_copy",
-    src = "@com_jetbrains_intellij_documentation-tips-intellij-idea-community-241_62_http//file",
-    out = "com.jetbrains.intellij.documentation/tips-intellij-idea-community-241.62.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "idea-community-customization-tips-idea-ce",
-    jar = "@com_jetbrains_intellij_documentation-tips-intellij-idea-community-241_62_http//file",
-    visibility = ["//visibility:public"],
 )
 
 copy_file(
@@ -19930,20 +19901,6 @@ jvm_import(
     name = "search_everywhere_ml-tests-ai-grazie-model-swagger-annotations-jvm",
     jar = "@ai_grazie_model-swagger-annotations-jvm-0_8_256_http//file",
     source_jar = "@ai_grazie_model-swagger-annotations-jvm-0_8_256-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "search_everywhere_ml-typos-ai-grazie-spell-gec-engine-local-jvm",
-    jar = "@ai_grazie_spell-gec-spell-engine-local-0_9_2_http//file",
-    source_jar = "@ai_grazie_spell-gec-spell-engine-local-0_9_2-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "search_everywhere_ml-typos-tests-ai-grazie-spell-gec-engine-local-jvm",
-    jar = "@ai_grazie_spell-gec-spell-engine-local-0_9_2_http//file",
-    source_jar = "@ai_grazie_spell-gec-spell-engine-local-0_9_2-sources_http//file",
     visibility = ["//visibility:public"],
 )
 

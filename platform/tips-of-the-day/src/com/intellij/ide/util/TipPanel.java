@@ -136,6 +136,8 @@ final class TipPanel extends JPanel implements DoNotAskOption {
     centerPanel.add(Box.createRigidArea(new JBDimension(0, TipUiSettings.getFeedbackPanelTopIndent())));
     JPanel feedbackPanel = createFeedbackPanel();  // TODO: implement feedback sending
     centerPanel.add(feedbackPanel);
+    // phantom-idea: like/dislike only feeds a JetBrains server; hidden while registry tips.of.the.day.feedback is "nowhere" (Phantom default)
+    feedbackPanel.setVisible(ApplicationManager.getApplication().getService(TipsFeedback.class).isFeedbackSendingEnabled());
 
     add(centerPanel, BorderLayout.CENTER);
 

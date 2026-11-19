@@ -2,6 +2,8 @@
 package com.intellij.stats.completion.sender
 
 import com.intellij.ide.ApplicationActivity
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.internal.statistic.utils.StatisticsUploadAssistant
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
@@ -27,6 +29,10 @@ internal class SenderPreloadingActivity : ApplicationActivity {
   init {
     val app = ApplicationManager.getApplication()
     if (app.isUnitTestMode || app.isHeadlessEnvironment) {
+      throw ExtensionNotApplicableException.create()
+    }
+    // phantom-idea: completion logs go to resources.jetbrains.com; nothing runs unless -Dphantom.jetbrains.services=true
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) {
       throw ExtensionNotApplicableException.create()
     }
   }

@@ -3,11 +3,9 @@ package com.intellij.internal.statistic.eventLog.events.scheme
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.internal.statistic.config.SerializationHelper
-import com.intellij.internal.statistic.eventLog.validator.storage.persistence.EventLogTestMetadataPersistence
 import com.intellij.openapi.application.ApplicationStarter
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
-import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
 import java.nio.file.Path
 import java.util.Properties
 import kotlin.io.path.Path
@@ -113,24 +111,19 @@ internal class EventsSchemeBuilderAppStarter : ApplicationStarter {
       }
     }
 
-    val text = if (!testEventsScheme) {
-      val eventsScheme = EventsScheme(
-        System.getenv("INSTALLER_LAST_COMMIT_HASH"),
-        System.getenv("IDEA_BUILD_NUMBER"),
-        groups.filter { errors[it]?.isEmpty() ?: true }
-      )
-      logEnabledPlugins(pluginsFile)
-      SerializationHelper.serialize(eventsScheme)
+    // phantom-idea: the test-scheme output (`--testEventScheme=true`) used JetBrains' metadata model from the closed
+    // library com.jetbrains.fus.reporting:ap-validation-all, which Phantom does not ship
+    if (testEventsScheme) {
+      LOG.error("--testEventScheme is not supported in Phantom")
+      exitProcess(1)
     }
-    else {
-      val groupsDescriptor = EventGroupRemoteDescriptors()
-      for (group in groups) {
-        groupsDescriptor.groups.add(
-          EventLogTestMetadataPersistence.createGroupWithCustomRules(group.id, SerializationHelper.serialize(createValidationRules(group)))
-        )
-      }
-      SerializationHelper.serialize(groupsDescriptor)
-    }
+    val eventsScheme = EventsScheme(
+      System.getenv("INSTALLER_LAST_COMMIT_HASH"),
+      System.getenv("IDEA_BUILD_NUMBER"),
+      groups.filter { errors[it]?.isEmpty() ?: true }
+    )
+    logEnabledPlugins(pluginsFile)
+    val text = SerializationHelper.serialize(eventsScheme)
 
     if (outputFile != null) {
       outputFile.createParentDirectories().writeText(text)
@@ -140,29 +133,6 @@ internal class EventsSchemeBuilderAppStarter : ApplicationStarter {
     }
 
     exitProcess(0)
-  }
-
-  private fun createValidationRules(group: GroupDescriptor): EventGroupRemoteDescriptors.GroupRemoteRule? {
-    val eventIds = hashSetOf<String>()
-    val eventData = hashMapOf<String, MutableSet<String>>()
-    group.schema.forEach { event ->
-      eventIds.add(event.event)
-      event.fields.forEach { dataField ->
-        val validationRule = dataField.value
-        val validationRules = eventData[dataField.path]
-        if (validationRules == null) {
-          eventData[dataField.path] = validationRule.toHashSet()
-        }
-        else {
-          validationRules.addAll(validationRule)
-        }
-      }
-    }
-    return if (eventIds.isEmpty() && eventData.isEmpty()) null
-    else EventGroupRemoteDescriptors.GroupRemoteRule().apply {
-      event_id = eventIds
-      event_data = eventData
-    }
   }
 
   private fun logEnabledPlugins(pluginsFile: Path?) {

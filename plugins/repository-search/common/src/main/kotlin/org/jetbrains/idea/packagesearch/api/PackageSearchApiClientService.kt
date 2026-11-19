@@ -18,6 +18,8 @@ import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+// phantom-idea: import for failing Package Search requests before they leave (package-search.services.jetbrains.com)
+import io.ktor.client.request.HttpRequestPipeline
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,6 +38,8 @@ import org.jetbrains.packagesearch.api.v3.http.PackageSearchDefaultEndpoints
 import org.jetbrains.packagesearch.api.v3.http.PackageSearchEndpoints
 import org.jetbrains.packagesearch.api.v3.http.searchPackages
 import org.jetbrains.packagesearch.api.v3.search.jvmMavenPackages
+// phantom-idea: import for failing Package Search requests before they leave (package-search.services.jetbrains.com)
+import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.div
@@ -79,6 +83,15 @@ class PackageSearchApiClientService(val coroutineScope: CoroutineScope) : Dispos
     }
     install(UserAgent) {
       agent = intelliJ()
+    }
+  }
+
+  // phantom-idea: dependency completion here uses only the local Maven index, Gradle caches and project modules; this
+  // client of package-search.services.jetbrains.com is never asked by the bundled plugins. Fail any request before it
+  // leaves (ahead of HttpSend, so HttpRequestRetry does not retry it) in case a third-party plugin still asks for it.
+  init {
+    httpClient.requestPipeline.intercept(HttpRequestPipeline.Before) {
+      throw IOException("JetBrains Package Search is disabled in Phantom")
     }
   }
 

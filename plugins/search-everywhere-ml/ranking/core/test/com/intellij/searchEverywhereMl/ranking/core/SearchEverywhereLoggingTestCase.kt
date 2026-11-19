@@ -14,7 +14,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.searchEverywhereMl.MLSE_RECORDER_ID
 import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.PlatformTestUtil
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import java.util.concurrent.CompletableFuture
 import javax.swing.SwingUtilities
 

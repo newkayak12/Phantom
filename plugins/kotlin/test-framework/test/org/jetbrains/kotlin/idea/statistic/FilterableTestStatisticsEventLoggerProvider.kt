@@ -4,7 +4,7 @@ package org.jetbrains.kotlin.idea.statistic
 import com.intellij.internal.statistic.TestStatisticsEventLogger
 import com.intellij.internal.statistic.eventLog.EventLogGroup
 import com.intellij.internal.statistic.eventLog.StatisticsEventLoggerProvider
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import java.util.concurrent.CompletableFuture
 
 class FilterableTestStatisticsEventLoggerProvider(recorder: String = "FUS", eventIdFilter: (String) -> Boolean) : StatisticsEventLoggerProvider(recorder, 1, DEFAULT_SEND_FREQUENCY_MS, DEFAULT_MAX_FILE_SIZE_BYTES) {

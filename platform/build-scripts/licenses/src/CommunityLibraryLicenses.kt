@@ -1461,8 +1461,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("ai.grazie.spell.gec.engine.local"),
     jetbrainsLibrary("ai.grazie.spell.hunspell.en"),
     jetbrainsLibrary("cloud-config-client"),
-    jetbrainsLibrary("com.jetbrains.fus.reporting.ap.validation.all"),
-    jetbrainsLibrary("com.jetbrains.fus.reporting.fus-api"),
     jetbrainsLibrary("completion-log-events"),
     jetbrainsLibrary("completion-ranking-cpp-exp"),
     jetbrainsLibrary("completion-ranking-css-exp"),
@@ -1485,8 +1483,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("completion-ranking-sh-exp"),
     jetbrainsLibrary("completion-ranking-swift-exp"),
     jetbrainsLibrary("completion-ranking-typescript-exp"),
-    jetbrainsLibrary("debugger-agent"),
-    jetbrainsLibrary("debugger-memory-agent"),
     jetbrainsLibrary("download-pgp-verifier"),
     jetbrainsLibrary("file-prediction-model"),
     jetbrainsLibrary("find-action-model"),
@@ -1501,7 +1497,6 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("jetbrains.ai.completion.trigger.nes.polyglot"),jetbrainsLibrary("jetbrains.compose.components.ui.tooling.preview.desktop"),
     jetbrainsLibrary("jetbrains.compose.hot.reload.devtools.api"),
     jetbrainsLibrary("jetbrains.compose.hot.reload.gradle.idea"),
-    jetbrainsLibrary("jetbrains.intellij.deps.rwmutex.idea"),
     jetbrainsLibrary("jetbrains.kotlin.jps.plugin.classpath"),
     jetbrainsLibrary("jetbrains.ml.models.jetenry.inline.prompt.detection.model"),
     jetbrainsLibrary("jetbrains.ml.models.python.imports.ranking.model"),
@@ -1554,15 +1549,165 @@ object CommunityLibraryLicenses {
     jetbrainsLibrary("kotlinc.sam-with-receiver-compiler-plugin"),
     jetbrainsLibrary("kotlinc.scripting-compiler-plugin"),
     jetbrainsLibrary("kotlinc.symbol-light-classes"),
-    jetbrainsLibrary("kotlinx-collections-immutable"),
     jetbrainsLibrary("kotlinx-coroutines-debug"),
     jetbrainsLibrary("ml-completion-prev-exprs-models"),
-    jetbrainsLibrary("tcServiceMessages"),
     jetbrainsLibrary("terminal-completion-db-with-extensions"),
     jetbrainsLibrary("terminal-completion-spec"),
-    jetbrainsLibrary("tips-idea-ce"),
+    // phantom-idea: tips-idea-ce removed: Phantom ships no Tips of the Day content
     jetbrainsLibrary("tips-pycharm-community"),
     jetbrainsLibrary("workspace-model-codegen"),
+
+    // phantom-idea: libraries Phantom ships that the upstream list marks as JetBrains-own or leaves out (JetBrains group IDs and
+    // jars bundled inside another library are skipped by the generator). Kept at the end so the SBOM's first match by library
+    // name stays the parent entry.
+    LibraryLicense("JetBrains FUS reporting API", libraryName = "com.jetbrains.fus.reporting.fus-api",
+                   url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/fus/reporting/fus-api/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS)
+      .copyrightText("Copyright 2000-2026 JetBrains s.r.o."),
+    LibraryLicense("IntelliJ debugger agent", libraryName = "debugger-agent", url = "https://github.com/JetBrains/debugger-agent")
+      .apache("https://github.com/JetBrains/debugger-agent/blob/main/LICENSE.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS),
+    LibraryLicense("IntelliJ debugger memory agent", libraryName = "debugger-memory-agent", url = "https://github.com/JetBrains/debugger-memory-agent")
+      .apache("https://github.com/JetBrains/debugger-memory-agent/blob/master/LICENSE")
+      .suppliedByOrganizations(Suppliers.JETBRAINS),
+    LibraryLicense("IntelliJ read-write mutex", libraryName = "jetbrains.intellij.deps.rwmutex.idea",
+                   url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/rwmutex-idea/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS)
+      .copyrightText("Copyright 2016-2023 JetBrains s.r.o."),
+    LibraryLicense("TeamCity service messages", libraryName = "tcServiceMessages",
+                   url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/teamcity/serviceMessages/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      .suppliedByOrganizations(Suppliers.JETBRAINS)
+      .copyrightText("Copyright 2000-2024 JetBrains s.r.o."),
+    LibraryLicense("kotlinx.collections.immutable", libraryName = "kotlinx-collections-immutable", url = "https://github.com/Kotlin/kotlinx.collections.immutable")
+      .apache("https://github.com/Kotlin/kotlinx.collections.immutable/blob/master/LICENSE.txt"),
+    LibraryLicense("SSHJ (JetBrains's fork)", libraryName = "SSHJ", url = "https://github.com/hierynomus/sshj")
+      .apache("https://github.com/hierynomus/sshj/blob/master/LICENSE"),
+    LibraryLicense("ASN.1 One", libraryName = "SSHJ", transitiveDependency = true, version = "0.6.0", url = "https://github.com/hierynomus/asn-one")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("ed25519-java (EdDSA)", libraryName = "SSHJ", transitiveDependency = true, version = "0.3.0", url = "https://github.com/str4d/ed25519-java")
+      .public("https://creativecommons.org/publicdomain/zero/1.0/"),
+    LibraryLicense("Ktor Server CIO", libraryName = "ktor-server-cio-internal", url = "https://github.com/ktorio/ktor")
+      .apache("https://github.com/ktorio/ktor/blob/main/LICENSE"),
+    LibraryLicense("Typesafe Config", libraryName = "ktor-server-cio-internal", transitiveDependency = true, version = "1.4.5", url = "https://github.com/lightbend/config")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("json-smart", libraryName = "jsonpath", transitiveDependency = true, version = "2.6.0", url = "https://github.com/netplex/json-smart-v2")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("accessors-smart", libraryName = "jsonpath", transitiveDependency = true, version = "2.6.0", url = "https://github.com/netplex/json-smart-v2")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("JavaEWAH", libraryName = "jetbrains.intellij.deps.eclipse.jgit", transitiveDependency = true, version = "1.2.3", url = "https://github.com/lemire/javaewah")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Commons BeanUtils", libraryName = "opencsv", transitiveDependency = true, version = "1.11.0", url = "https://commons.apache.org/proper/commons-beanutils/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Eclipse Sisu Inject", libraryName = "maven-resolver-provider", transitiveDependency = true, version = "0.9.0.M3", url = "https://eclipse.dev/sisu/")
+      .eplV2("https://www.eclipse.org/legal/epl-v20.html"),
+    // phantom-idea: what the Gradle API jar (project library "Gradle", built from Gradle's distribution by lib/gradle-api.bzl)
+    // carries besides Gradle itself: Gradle's own dependencies, relocated by Gradle into org.gradle.internal.impldep, with
+    // the versions of Gradle 9.6.0 and the licenses its distribution's LICENSE names (the jar has that file as
+    // META-INF/LICENSE-gradle.txt). Update with the Gradle version.
+    LibraryLicense("Gradle File Events, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "0.2.8", url = "https://github.com/gradle/gradle-fileevents")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Native Platform (Gradle), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "0.22-milestone-29", url = "https://github.com/gradle/native-platform")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("JetBrains Java Annotations, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "24.0.1", url = "https://github.com/JetBrains/java-annotations")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Ant, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.10.17", url = "https://ant.apache.org/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("AWS SDK for Java (core, KMS, S3, STS, JMESPath), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.12.780", url = "https://github.com/aws/aws-sdk-java")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Commons Codec, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.18.0", url = "https://commons.apache.org/proper/commons-codec/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Commons Compress, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.26.1", url = "https://commons.apache.org/proper/commons-compress/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Commons IO, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.15.1", url = "https://commons.apache.org/proper/commons-io/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Commons Lang, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "3.20.0", url = "https://commons.apache.org/proper/commons-lang/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Error Prone annotations, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.42.0", url = "https://github.com/google/error-prone")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Guava (with failureaccess 1.0.3), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "33.4.6-jre", url = "https://github.com/google/guava")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("fastutil (minimized), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "8.5.2", url = "https://github.com/vigna/fastutil")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Google API Client, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.34.0", url = "https://github.com/googleapis/google-api-java-client")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Google Cloud Storage JSON API client, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "v1-rev20220705-1.32.1", url = "https://github.com/googleapis/google-api-java-client-services")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Google HTTP Client (with Apache v2 and Gson modules), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.42.2", url = "https://github.com/googleapis/google-http-java-client")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Google OAuth Client, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.34.1", url = "https://github.com/googleapis/google-oauth-java-client")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("gRPC Context, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.27.2", url = "https://github.com/grpc/grpc-java")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Gson, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.13.1", url = "https://github.com/google/gson")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache HttpClient, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "4.5.14", url = "https://hc.apache.org/httpcomponents-client-4.5.x/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache HttpCore, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "4.4.14", url = "https://hc.apache.org/httpcomponents-core-4.4.x/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Ivy, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.5.3", url = "https://ant.apache.org/ivy/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Jackson (annotations, core, databind, JDK 8 and JSR-310 datatypes), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.18.6", url = "https://github.com/FasterXML/jackson")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Jansi, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.4.2", url = "https://github.com/fusesource/jansi")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("JATL, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "0.2.3", url = "https://github.com/agentgt/jatl")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("JCTools, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "4.0.5", url = "https://github.com/JCTools/JCTools")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("jnr-constants (minimized), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "0.10.4", url = "https://github.com/jnr/jnr-constants")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Joda-Time, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.14.0", url = "https://github.com/JodaOrg/joda-time")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("kotlinx.coroutines, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.10.2", url = "https://github.com/Kotlin/kotlinx.coroutines")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("kotlinx.serialization (core, JSON), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.11.0", url = "https://github.com/Kotlin/kotlinx.serialization")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache Maven (builder support, model, repository metadata, settings, settings builder), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "3.9.5", url = "https://maven.apache.org/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Objenesis, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.6", url = "https://objenesis.org/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("OpenCensus (API, HTTP util), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "0.31.1", url = "https://github.com/census-instrumentation/opencensus-java")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Plexus Cipher, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.0", url = "https://github.com/codehaus-plexus/plexus-cipher")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Plexus Interpolation, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.26", url = "https://github.com/codehaus-plexus/plexus-interpolation")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Plexus Sec Dispatcher, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.0", url = "https://github.com/codehaus-plexus/plexus-sec-dispatcher")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Plexus Utils, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "3.6.1", url = "https://github.com/codehaus-plexus/plexus-utils")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("QDox, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.12.1", url = "https://github.com/paul-hammant/qdox")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("SnakeYAML, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.0", url = "https://bitbucket.org/snakeyaml/snakeyaml")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Apache MINA SSHD (OSGi, SFTP), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.15.0", url = "https://mina.apache.org/sshd-project/")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("tomlj, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.0.0", url = "https://github.com/tomlj/tomlj")
+      .apache("https://www.apache.org/licenses/LICENSE-2.0.txt"),
+    LibraryLicense("Kryo (with MinLog 1.2), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "2.24.0", url = "https://github.com/EsotericSoftware/kryo")
+      .newBsd("https://github.com/EsotericSoftware/kryo/blob/master/LICENSE.md"),
+    LibraryLicense("JSch (mwiede fork), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "0.2.16", url = "https://github.com/mwiede/jsch")
+      .newBsd("https://github.com/mwiede/jsch/blob/master/LICENSE.txt"),
+    LibraryLicense("ANTLR 4 Runtime, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "4.7.2", url = "https://github.com/antlr/antlr4")
+      .newBsd("https://github.com/antlr/antlr4/blob/dev/LICENSE.txt"),
+    LibraryLicense("Eclipse JGit (with SSH Apache and agent), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "7.2.1.202505142326-r", url = "https://github.com/eclipse-jgit/jgit")
+      .license("Eclipse Distribution License 1.0 (BSD 3-Clause)", "https://www.eclipse.org/org/documents/edl-v10.php", spdxIdentifier = "BSD-3-Clause"),
+    LibraryLicense("ASM (with Commons and Tree), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "9.9", url = "https://asm.ow2.io/")
+      .newBsd("https://asm.ow2.io/license.html"),
+    LibraryLicense("Bouncy Castle (bcpg, bcprov, bcutil), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.84", url = "https://www.bouncycastle.org")
+      .mit("https://www.bouncycastle.org/licence.html")
+      .suppliedByOrganizations("The Legion of the Bouncy Castle Inc."),
+    LibraryLicense("JCIFS, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.3.17", url = "https://www.jcifs.org/")
+      .lgpl21("https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"),
+    LibraryLicense("JNA (with JNA Platform), in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "5.17.0", url = "https://github.com/java-native-access/jna")
+      .lgpl21("https://github.com/java-native-access/jna/blob/master/LICENSE"),
+    LibraryLicense("dd-plist, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.27", url = "https://github.com/3breadt/dd-plist")
+      .mit("https://github.com/3breadt/dd-plist/blob/master/LICENSE.txt"),
+    LibraryLicense("jsoup, in Gradle", libraryName = "Gradle", transitiveDependency = true, version = "1.15.3", url = "https://jsoup.org/")
+      .mit("https://jsoup.org/license"),
   )
 }
 private fun ffmpegLibraryLicense(name: String): LibraryLicense {

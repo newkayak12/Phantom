@@ -25,7 +25,7 @@ import com.intellij.internal.statistics.StatisticsTestEventFactory.newStateEvent
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.testFramework.HeavyPlatformTestCase
 import com.intellij.testFramework.UsefulTestCase
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertTrue

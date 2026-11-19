@@ -1,6 +1,8 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.plugins;
 
+// phantom-idea: GitHub plugin repositories (.phantom/marketplace.json)
+import dev.phantom.ide.plugins.GitHubPluginRepository;
 import com.intellij.CommonBundle;
 import com.intellij.core.CoreBundle;
 import com.intellij.ide.BrowserUtil;
@@ -298,7 +300,10 @@ public final class PluginManagerMain {
 
   public static boolean checkThirdPartyPluginsAllowed(@NotNull Collection<? extends IdeaPluginDescriptor> descriptors) {
     var aliens =
-      ContainerUtil.filter(descriptors, descriptor -> !(descriptor.isBundled() || PluginManagerCore.isVendorTrusted(descriptor)));
+      ContainerUtil.filter(descriptors, descriptor -> !(descriptor.isBundled() || PluginManagerCore.isVendorTrusted(descriptor) ||
+                                                        // phantom-idea: plugins from the Phantom plugins repository
+                                                        descriptor instanceof PluginNode node &&
+                                                        GitHubPluginRepository.isOfficial(node.getRepositoryName())));
     if (aliens.isEmpty()) return true;
 
     var updateSettings = UpdateSettings.getInstance();

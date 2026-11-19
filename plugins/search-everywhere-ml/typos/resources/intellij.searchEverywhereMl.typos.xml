@@ -3,10 +3,8 @@
   <resource-bundle>messages.searchEverywhereMlTyposBundle</resource-bundle>
 
   <dependencies>
-    <plugin id="tanvd.grazi"/>
-    <module name="intellij.libraries.ai.grazie.spell.gec.engine.local"/>
+    <!-- phantom-idea: no Grazie dependency (plugin tanvd.grazi, Grazie core, the closed Grazie speller library); the module uses its own ActionsSpeller -->
     <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
-    <module name="intellij.grazie.core"/>
     <module name="intellij.platform.ml.impl"/>
     <!-- endregion -->
   </dependencies>

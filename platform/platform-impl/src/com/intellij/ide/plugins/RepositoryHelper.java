@@ -1,6 +1,8 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.plugins;
 
+// phantom-idea: GitHub plugin repositories (.phantom/marketplace.json)
+import dev.phantom.ide.plugins.GitHubPluginRepository;
 import com.intellij.configurationStore.XmlSerializer;
 import com.intellij.ide.IdeBundle;
 import com.intellij.ide.plugins.marketplace.MarketplaceRequests;
@@ -72,6 +74,11 @@ public final class RepositoryHelper {
 
     hosts.addAll(UpdateSettingsProvider.getRepositoriesFromProviders());
 
+    // phantom-idea: the Phantom plugins repository is always available; -Dphantom.plugins.official=false turns it off
+    if (!"false".equals(System.getProperty("phantom.plugins.official"))) {
+      hosts.add(GitHubPluginRepository.OFFICIAL);
+    }
+
     var pluginsUrl = System.getProperty(CUSTOM_BUILT_IN_PLUGIN_REPOSITORY_PROPERTY);
     if (pluginsUrl != null) {
       hosts.addAll(Arrays.asList(pluginsUrl.split(",")));
@@ -141,6 +148,20 @@ public final class RepositoryHelper {
     @Nullable ProgressIndicator indicator,
     @NotNull PluginUiModelBuilderFactory factory
   ) throws IOException {
+    // phantom-idea: a GitHub repository (`owner/repo`) describes its plugins in .phantom/marketplace.json
+    var gitHub = GitHubPluginRepository.parse(repositoryUrl);
+    if (gitHub != null) {
+      if (indicator != null) {
+        indicator.setText2(IdeBundle.message("progress.connecting.to.plugin.manager", gitHub.getHost()));
+      }
+      var message = IdeBundle.message("progress.downloading.list.of.plugins", gitHub.getHost());
+      if (indicator != null) {
+        indicator.setText(message);
+      }
+      var models = GitHubPluginRepository.load(gitHub, factory, indicator);
+      return process(models, build != null ? build : PluginManagerCore.getBuildNumber(), repositoryUrl);
+    }
+
     Path pluginListFile;
     Url url;
     if (repositoryUrl == null) {
@@ -148,7 +169,7 @@ public final class RepositoryHelper {
         LOG.error("Using deprecated API for getting plugins from Marketplace");
       }
       var base = MarketplaceCustomizationService.getInstance().getPluginsListUrl();
-      url = Urls.newFromEncoded(base).addParameters(Map.of("uuid", PluginDownloader.getMarketplaceDownloadsUUID()));
+      url = Urls.newFromEncoded(base); // phantom-idea: no device id (uuid) parameter
       pluginListFile = Paths.get(PathManager.getPluginsPath(), PLUGIN_LIST_FILE);
     }
     else {

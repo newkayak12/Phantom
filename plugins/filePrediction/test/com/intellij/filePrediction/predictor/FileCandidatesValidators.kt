@@ -3,7 +3,7 @@ package com.intellij.filePrediction.predictor
 
 import com.intellij.internal.statistic.TestStatisticsEventsValidator
 import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 
 internal abstract class TestFileCandidatesValidator : TestStatisticsEventsValidator {
   override fun validateAll(events: List<LogEvent>) {

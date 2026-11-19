@@ -64,6 +64,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+// phantom-idea: imports for the Phantom changes to the startup error dialog below
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.intellij.ide.BootstrapBundle.message;
 import static java.util.Objects.requireNonNullElse;
@@ -172,28 +175,38 @@ public final class StartupErrorReporter {
     try {
       var messageObj = prepareMessage(message);
       var close = message("bootstrap.error.option.close");
-      var iconUrl = StartupErrorReporter.class.getResource("/images/questionSign.png");
-      var learnMore = iconUrl != null ? new JLabel(new ImageIcon(iconUrl)) : new JLabel("?");
-      learnMore.setToolTipText(message("bootstrap.error.option.support"));
-      learnMore.setCursor(new Cursor(Cursor.HAND_CURSOR));
-      learnMore.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-          supportCenter();
-        }
-      });
+      // phantom-idea: no support link to JetBrains unless one is given with -Dij.startup.error.support.url
+      var supportUrl = System.getProperty(SUPPORT_URL_PROPERTY);
+      JLabel learnMore = null;
+      if (supportUrl != null) {
+        var iconUrl = StartupErrorReporter.class.getResource("/images/questionSign.png");
+        learnMore = iconUrl != null ? new JLabel(new ImageIcon(iconUrl)) : new JLabel("?");
+        learnMore.setToolTipText(message("bootstrap.error.option.support"));
+        learnMore.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        learnMore.addMouseListener(new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            supportCenter(supportUrl);
+          }
+        });
+      }
       if (error != null) {
-        var options = new Object[]{close, message("bootstrap.error.option.reset"), message("bootstrap.error.option.report"), learnMore};
+        var reset = message("bootstrap.error.option.reset");
+        var report = message("bootstrap.error.option.report");
+        var optionList = new ArrayList<Object>(List.of(close, reset));
+        // phantom-idea: the default handler sends the error and logs to JetBrains; offer it only with -Dphantom.jetbrains.services=true
+        if (Boolean.getBoolean("phantom.jetbrains.services") || System.getProperty(HANDLER_CLASS_PROPERTY) != null) optionList.add(report);
+        if (learnMore != null) optionList.add(learnMore);
+        var options = optionList.toArray();
         var choice = JOptionPane.showOptionDialog(
           JOptionPane.getRootFrame(), messageObj, title, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]
         );
-        switch (choice) {
-          case 1 -> cleanStart();
-          case 2 -> reportProblem(error);
-        }
+        var chosen = choice >= 0 ? options[choice] : null;
+        if (reset.equals(chosen)) cleanStart();
+        else if (report.equals(chosen)) reportProblem(error);
       }
       else {
-        var options = new Object[]{close, learnMore};
+        var options = learnMore != null ? new Object[]{close, learnMore} : new Object[]{close};
         JOptionPane.showOptionDialog(
           JOptionPane.getRootFrame(), messageObj, title, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]
         );
@@ -206,9 +219,9 @@ public final class StartupErrorReporter {
     }
   }
 
-  private static void supportCenter() {
+  // phantom-idea: the support URL is passed in; there is no jb.gg default
+  private static void supportCenter(String url) {
     try {
-      var url = System.getProperty(SUPPORT_URL_PROPERTY, "https://jb.gg/ide/critical-startup-errors");
       Desktop.getDesktop().browse(new URI(url));
     }
     catch (Throwable t) {

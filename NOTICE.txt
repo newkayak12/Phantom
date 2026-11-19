@@ -1,3 +1,69 @@
+Phantom
+Copyright 2026 Phantom contributors
+
+This product is a modified version of IntelliJ IDEA Community Edition
+(https://github.com/JetBrains/intellij-community).
 This software includes code from IntelliJ IDEA
 Copyright (C) JetBrains s.r.o.
 https://www.jetbrains.com/idea/
+Licensed under the Apache License, Version 2.0 (LICENSE.txt).
+
+Files changed by Phantom contributors are marked with "phantom-idea:" comments.
+
+Third-party software included in this product is listed, with its licenses, in
+the license/ folder and in third-party-libraries.html of the distribution. The license/ folder also holds the full
+texts of the GPL 2.0 with the Classpath Exception, GPL 3.0, LGPL 2.1, LGPL 3.0, EPL 1.0, EPL 2.0, MPL 2.0, CDDL 1.1,
+SIL OFL 1.1 and CC BY 2.5 (JCIP Annotations) licenses named there. Libraries inside the bundled plugins built in
+Phantom-plugins (https://github.com/newkayak12/Phantom-plugins) are listed in the META-INF folder of each plugin's
+jar (THIRD-PARTY-NOTICES).
+
+Components that are not Java libraries, or are bundled inside another library, and are therefore not in
+third-party-libraries.html:
+  Fonts in the bundled Java runtime (jbr/.../lib/fonts): JetBrains Mono, Inter, Fira Code, Source Code Pro and
+    Inconsolata under the SIL Open Font License 1.1; Droid and Roboto under the Apache License 2.0
+  Windows only: OpenConsole.exe and conpty.dll (Microsoft Terminal, https://github.com/microsoft/terminal, MIT),
+    winpty.dll and winpty-agent.exe (https://github.com/rprichard/winpty, MIT)
+  Inside the Gradle API jar (plugins/gradle-plugin/lib/gradle-api-<version>.jar, built from the Gradle distribution
+    of that version): Gradle's own dependencies, which Gradle relocates into org.gradle.internal.impldep. They are
+    listed with their licenses (Apache 2.0, BSD 3-Clause, Eclipse Distribution License 1.0, Bouncy Castle (MIT), MIT,
+    LGPL 2.1) in that jar's META-INF/gradle/LICENSE (Gradle's LICENSE) and in third-party-libraries.html.
+
+The distribution also includes the following components under the GNU General Public License, version 2, with the
+Classpath Exception. Their complete corresponding source code is available at:
+  JetBrains Runtime (the bundled Java runtime, jbr/): https://github.com/JetBrains/JetBrainsRuntime
+    the source of the build in a release is tag jbr-release-<runtimeBuild>, with runtimeBuild from
+    build/dependencies/dependencies.properties (25.0.4.1b508.41: tag jbr-release-25.0.4.1b508.41)
+  jb-jdi: https://github.com/JetBrains/intellij-deps-jdi
+  sa-jdwp: https://github.com/JetBrains/jdk-sa-jdwp
+  java-compatibility: https://github.com/JetBrains/intellij-deps-java-compatibility
+
+These components are under the GNU Lesser General Public License 2.1, the Mozilla Public License 2.0, the Eclipse
+Public License 1.0 or 2.0, or the Common Development and Distribution License 1.1, unmodified; their source code is
+available at:
+  LGPL 2.1: Trove4j (JetBrains's fork) https://github.com/JetBrains/intellij-deps-trove4j,
+    java-atk-wrapper https://github.com/JetBrains/intellij-deps-java-atk-wrapper,
+    swingx https://central.sonatype.com/artifact/org.swinglabs/swingx-core/1.6.2-2 (sources jar),
+    LanguageTool (in bundled plugins) https://github.com/JetBrains/languagetool
+  MPL 2.0: Rhino https://github.com/mozilla/rhino
+  EPL: Eclipse JDT Core https://github.com/eclipse-jdt/eclipse.jdt.core, LSP4J https://github.com/eclipse/lsp4j,
+    Xtext https://github.com/eclipse/xtext, MVStore https://github.com/h2database/h2database,
+    pty4j https://github.com/JetBrains/pty4j, Eclipse Sisu Inject https://github.com/eclipse-sisu/sisu-project
+  CDDL 1.1: JAXB https://github.com/javaee/jaxb-v2, JavaBeans Activation Framework https://github.com/javaee/activation,
+    Common Annotations https://github.com/javaee/javax.annotation
+  LGPL 2.1, inside the Gradle API jar with their packages renamed by Gradle (relocated to org.gradle.internal.impldep):
+    JCIFS 1.3.17 https://www.jcifs.org/ (sources jar: jcifs:jcifs:1.3.17 on Maven Central),
+    JNA 5.17.0 and JNA Platform 5.17.0 (LGPL 2.1 or Apache 2.0) https://github.com/java-native-access/jna (sources jars on Maven Central);
+    the relocation is part of Gradle's build: https://services.gradle.org/distributions/gradle-9.6.0-src.zip
+  In the bundled plugins built in Phantom-plugins:
+    LGPL: openregex 1.1.1 https://github.com/knowitall/openregex
+    LGPL 2.1: english-pos-dict 0.6 https://github.com/languagetool-org/english-pos-dict
+    EPL 2.0: JaCoCo 0.8.15 https://github.com/jacoco/jacoco
+Versions are listed in third-party-libraries.html.
+
+For all components above, on request, Phantom contributors provide a copy of that source code, at no more than the cost of making it, for three
+years after the release that included it: open an issue at https://github.com/newkayak12/Phantom/issues.
+To make a request, or for any other question about these notices, contact the Phantom maintainers through that
+issue tracker; say which release and which component you need.
+
+Phantom is not affiliated with, sponsored or endorsed by JetBrains s.r.o.
+JetBrains, IntelliJ and IntelliJ IDEA are trademarks of JetBrains s.r.o.

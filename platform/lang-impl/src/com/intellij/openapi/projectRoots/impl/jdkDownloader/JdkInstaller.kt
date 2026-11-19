@@ -340,9 +340,21 @@ abstract class JdkInstallerBase {
     indicator?.text2 = ProjectBundle.message("progress.text2.downloading.jdk")
     // TODO Sanitize `archiveFileName` in a way that it doesn't replace `.` with `_`. `FileUtil.sanitizeFileName` can't be applied here.
     val downloadFile = Path.of(PathManager.getTempPath(), "jdk-${System.nanoTime()}-${item.archiveFileName}")
+    // phantom-idea: a foojay item names the vendor's URL and SHA-256 only in its package info, and not its archive's root folder
+    val isFoojayItem = FoojayJdkList.isFoojayItem(item)
+    var downloadUrl = item.url
+    var sha256 = item.sha256
     try {
       try {
-        HttpRequests.request(item.url)
+        if (isFoojayItem) {
+          FoojayJdkList.resolveDownload(item).let { (url, checksum) -> downloadUrl = url; sha256 = checksum }
+          if (!downloadUrl.startsWith("https://", ignoreCase = true)) {
+            JdkDownloaderLogger.logFailed(JdkDownloaderLogger.DownloadFailure.WrongProtocol)
+            logFailed = true
+            error("URL must use https:// protocol, but was: $downloadUrl")
+          }
+        }
+        HttpRequests.request(downloadUrl)
           .productNameAsUserAgent()
           .saveToFile(downloadFile.toFile(), indicator)
 
@@ -359,7 +371,8 @@ abstract class JdkInstallerBase {
       }
 
       val sizeDiff = runCatching { Files.size(downloadFile) - item.archiveSize }.getOrNull()
-      if (sizeDiff != 0L) {
+      // phantom-idea: a size listed by foojay is not the vendor's word; the vendor's SHA-256 below checks a foojay download
+      if (sizeDiff != 0L && !isFoojayItem) {
         JdkDownloaderLogger.logFailed(JdkDownloaderLogger.DownloadFailure.IncorrectFileSize)
         logFailed = true
         throw RuntimeException("The downloaded ${item.fullPresentationText} has incorrect file size,\n" +
@@ -369,11 +382,12 @@ abstract class JdkInstallerBase {
 
       val actualHashCode =
         runCatching { com.google.common.io.Files.asByteSource(downloadFile.toFile()).hash(Hashing.sha256()).toString() }.getOrNull()
-      if (!actualHashCode.equals(item.sha256, ignoreCase = true)) {
+      // phantom-idea: checks the vendor's SHA-256 for a foojay item (sha256 above), the feed's otherwise
+      if (!actualHashCode.equals(sha256, ignoreCase = true)) {
         JdkDownloaderLogger.logFailed(JdkDownloaderLogger.DownloadFailure.ChecksumMismatch)
         throw RuntimeException("Failed to verify SHA-256 checksum for ${item.fullPresentationText}\n\n" +
                                "The actual value is ${actualHashCode ?: "unknown"},\n" +
-                               "but expected ${item.sha256} was expected\n" +
+                               "but expected $sha256 was expected\n" +
                                "Check your internet connection and try again later")
       }
 
@@ -381,15 +395,16 @@ abstract class JdkInstallerBase {
       indicator?.text2 = ProjectBundle.message("progress.text2.unpacking.jdk")
 
       try {
+        val packageRootPrefix = if (isFoojayItem) FoojayJdkList.detectPackageRoot(item, downloadFile) else item.packageRootPrefix // phantom-idea
         if (eel != null && eel.descriptor !is LocalEelDescriptor) {
           val targetDirEel = targetDir.asEelPath()
-          unpackJdkOnEel(eel, downloadFile, targetDirEel, item.packageRootPrefix)
+          unpackJdkOnEel(eel, downloadFile, targetDirEel, packageRootPrefix)
         }
         else {
           item.packageType.openDecompressor(downloadFile)
             .entryFilter { indicator?.checkCanceled(); true }
             .let {
-              val fullMatchPath = item.packageRootPrefix.trim('/')
+              val fullMatchPath = packageRootPrefix.trim('/')
               if (fullMatchPath.isBlank()) it else it.removePrefixPath(fullMatchPath)
             }
             .extract(targetDir)

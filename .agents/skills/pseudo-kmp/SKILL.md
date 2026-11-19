@@ -148,7 +148,7 @@ internal fun getCharsPlatformSpecificJvm(
 
 ## After Editing
 
-1. Run `./build/jpsModelToBazel.cmd` after modifying any `.iml` files.
+1. Run `./build/jpsModelToBazelCommunityOnly.cmd` after modifying any `.iml` files (the only generator script in this repository; `./build/jpsModelToBazel.cmd` does not exist here). It has not been confirmed to run in this fork. <!-- phantom-idea: upstream names ./build/jpsModelToBazel.cmd, which this repository does not have -->
 2. Run `MultiplatformModuleStructureTest` to validate module structure:
    ```bash
    ./tests.cmd --module tests.ideaProjectStructure --test com.intellij.ideaProjectStructure.fast.MultiplatformModuleStructureTest

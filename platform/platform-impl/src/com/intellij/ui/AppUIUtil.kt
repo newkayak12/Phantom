@@ -376,7 +376,8 @@ object AppUIUtil {
   @JvmStatic
   fun loadConsentsForEditing(): List<Consent> {
     val options = ConsentOptions.getInstance()
-    var result = options.consents.first
+    // phantom-idea: copy, because non-JetBrains vendors get an immutable consent list and removeIf below would throw
+    var result: MutableList<Consent> = ArrayList(options.consents.first)
     if (options.isEAP) {
       val statConsent = options.defaultUsageStatsConsent
       val errorAutoReportConsent = when {

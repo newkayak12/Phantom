@@ -186,10 +186,11 @@ object CommunityRepositoryModules {
       spec.withModule("intellij.gradle.toolingProxy", "gradle-tooling-proxy.jar")
       spec.withModule("intellij.gradle.toolingExtension", "gradle-tooling-extension-api.jar")
       spec.withModule("intellij.gradle.toolingExtension.impl", "gradle-tooling-extension-impl.jar")
-      spec.withModule("intellij.libraries.groovy", "groovy.jar")
-      spec.withModule("intellij.libraries.groovy.ant", "groovy-ant.jar")
+      // phantom-idea: no second copy of Groovy (groovy.jar, 20 MB) and none of groovy-ant.jar and Ant (lib/ant). The IDE side
+      // needs Groovy only for the tooling proxy's class path (GRADLE_TOOLING_EXTENSION_PROXY_CLASSES), and takes it from the
+      // intellij.libraries.groovy module of Groovy Scripting (intellij.gradle.xml depends on it); groovy-ant and Ant are only
+      // used by the tooling extension inside the Gradle daemon, which has its own (the JPS builder packs Ant in gradle-jps.jar)
       spec.withProjectLibrary("Gradle", LibraryPackMode.STANDALONE_SEPARATE)
-      spec.withProjectLibrary("Ant", "ant", LibraryPackMode.STANDALONE_SEPARATE)
     },
     pluginAuto(listOf("intellij.gradle.java.plugin", "intellij.gradle.java", "intellij.gradle.jps")) {
       it.excludeProjectLibrary("Ant")

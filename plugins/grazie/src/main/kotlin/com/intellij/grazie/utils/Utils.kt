@@ -5,6 +5,8 @@ import ai.grazie.gec.model.problem.ProblemFix
 import ai.grazie.nlp.langs.LanguageISO
 import com.intellij.grazie.GrazieConfig
 import com.intellij.ide.plugins.PluginManagerCore
+// phantom-idea: import for the jetBrainsServicesEnabled gate below
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -74,6 +76,8 @@ internal fun <T> runBlockingModalProcess(
 
 val isPromotionAllowed: Boolean
   get() {
+    // phantom-idea: the promoted Grazie Cloud is off unless -Dphantom.jetbrains.services=true, so don't offer it
+    if (!MarketplaceRequests.jetBrainsServicesEnabled) return false
     if (ApplicationInfoEx.getInstanceEx().isVendorJetBrains) return true
     val pluginId = PluginId.getId("com.intellij.marketplace")
     return PluginManagerCore.isLoaded(pluginId)

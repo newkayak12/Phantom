@@ -1,7 +1,8 @@
 <idea-plugin allow-bundled-update="true">
   <id>com.intellij.modules.jcef</id>
   <name>Web Browser (JCEF)</name>
-  <vendor>JetBrains</vendor>
+  <!-- phantom-idea: Phantom modified this plugin, so Phantom (not JetBrains) is its vendor -->
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <category>Other Tools</category>
   <description><![CDATA[
     Provides web browser integration based on JCEF, a framework for embedding Chromium-based browsers in Java applications.

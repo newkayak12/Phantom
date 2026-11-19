@@ -44,6 +44,10 @@ public final class LibrariesDownloadAssistant {
   }
 
   private static Artifact @Nullable [] getDownloadServiceVersions(@NotNull String id) {
+    // phantom-idea: the version list would come from www.jetbrains.com/idea/download-assistant.xml and frameworks.jetbrains.com
+    // (LibrariesDownloadConnectionService) as soon as a wizard or dialog shows it; use the bundled list (localUrls) instead
+    // unless -Dphantom.jetbrains.services=true. ide-core can't see MarketplaceRequests, so the property is read directly.
+    if (!Boolean.getBoolean("phantom.jetbrains.services")) return null;
     final URL url = createVersionsUrl(id);
     if (url == null) return null;
     final Artifacts allArtifacts = deserialize(url);

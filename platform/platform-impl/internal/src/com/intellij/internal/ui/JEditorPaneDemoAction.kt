@@ -1,7 +1,6 @@
 // Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.internal.ui
 
-import com.intellij.internal.statistic.eventLog.util.StringUtil
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.Document
@@ -46,7 +45,7 @@ internal class JEditorPaneDemoAction : DumbAwareAction("HTML Rendering Playgroun
         UIUtil.doNotScrollToCaret(myView)
 
         var html = Preferences.userRoot().get(PREFERENCE_KEY, "")
-        if (StringUtil.isEmpty(html)) html = DEFAULT_HTML
+        if (html.isNullOrEmpty()) html = DEFAULT_HTML // phantom-idea: StringUtil came from the ap-validation-all library
 
         val editorFactory: EditorFactory? = EditorFactory.getInstance()
         val editorDocument: Document = editorFactory!!.createDocument(html)

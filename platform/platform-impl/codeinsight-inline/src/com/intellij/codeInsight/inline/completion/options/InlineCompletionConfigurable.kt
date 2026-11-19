@@ -53,17 +53,15 @@ class InlineCompletionConfigurable : BoundCompositeConfigurable<UnnamedConfigura
   }
 
   private fun Panel.noCompletionPlugins() {
+    // phantom-idea: no "JetBrains AI Assistant" ad; the hint only points to a bundled Full Line plugin
+    if (PluginManager.getPlugins().none { it.isBundled && it.name.lowercase().contains("full line") }) return
     row {
       icon(AllIcons.General.BalloonInformation).align(AlignY.TOP)
 
       data class PluginInfo(val name: @Nls String, val action: HyperlinkEventAction, val suffix: @Nls String = "")
 
       val plugins = buildList {
-        val aiaPluginInfo = PluginInfo(
-          name = ApplicationBundle.message("ml.completion.advise.aia.name"),
-          action = HyperlinkEventAction { e -> openPluginInSearch(e, includingMarketplace = true) }
-        )
-        add(aiaPluginInfo)
+        // phantom-idea: removed the JetBrains AI Assistant entry; the hint lists only a bundled Full Line plugin
         val fullLinePlugin = PluginManager.getPlugins().firstOrNull {
           it.isBundled && it.name.lowercase().contains("full line")
         }

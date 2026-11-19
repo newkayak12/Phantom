@@ -25,13 +25,38 @@ fun PluginInitializationContext.resolveIdConflicts(
     ?.let { return it }
   // slow path: there are conflicts
   val toExclude = HashSet<PluginMainDescriptor>()
-  compatiblePlugins.resolveConflicts(essentialPlugins) { plugin, reason ->
+  // phantom-idea: plugins replaced by an alias-keeping plugin are excluded first; the remaining id conflicts are resolved as upstream
+  compatiblePlugins.excludeReplacedPlugins(essentialPlugins) { plugin, reason ->
+    onPluginExcluded(plugin, reason)
+    toExclude.add(plugin)
+  }
+  compatiblePlugins.filter { it !in toExclude }.resolveConflicts(essentialPlugins) { plugin, reason ->
     onPluginExcluded(plugin, reason)
     toExclude.add(plugin)
   }
   val filteredPlugins = compatiblePlugins.filter { it !in toExclude }
   return UnambiguousPluginSet.tryBuild(filteredPlugins)
          ?: error("failed to build unambiguous plugin set after conflict resolution")
+}
+
+/**
+ * phantom-idea: a plugin that keeps another plugin's id as an alias replaces it (Phantom-plugins' builds of IntelliJ plugins,
+ * e.g. dev.phantom.toml with the alias org.toml.lang). With both installed, only the replacement loads: the replaced
+ * plugin is left out instead of both being excluded over the id, and its dependents resolve to the replacement.
+ */
+private fun List<PluginMainDescriptor>.excludeReplacedPlugins(
+  essentialPlugins: Set<PluginId>,
+  exclude: (PluginMainDescriptor, PluginNonLoadReason) -> Unit,
+) {
+  val byId = associateBy { it.pluginId }
+  for (replacement in this) {
+    for (alias in replacement.pluginAliases) {
+      val replaced = byId[alias] ?: continue
+      if (replaced !== replacement && replaced.pluginId !in essentialPlugins) {
+        exclude(replaced, PluginIsReplacedByAnotherPlugin(replaced, replacement))
+      }
+    }
+  }
 }
 
 // we use both plugin ids and content module ids here

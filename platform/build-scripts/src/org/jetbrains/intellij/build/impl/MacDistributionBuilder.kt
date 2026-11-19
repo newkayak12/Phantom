@@ -194,6 +194,7 @@ class MacDistributionBuilder(
 
       val runtimeDir = context.bundledRuntime.extract(os = OsFamily.MACOS, arch = arch, libc = MacLibcImpl.DEFAULT)
       updateExecutablePermissions(runtimeDir, executableFileMatchers)
+      createCompactHeadersCdsArchive(runtimeDir, arch, context)  // phantom-idea: base CDS archive for -XX:+UseCompactObjectHeaders
 
       if (context.isMacCodeSignEnabled) {
         /**
@@ -568,7 +569,8 @@ class MacDistributionBuilder(
       outputFile = macAppDir.resolve("Info.plist"),
       placeholder = "@@",
       values = listOf(
-        Pair("build", context.fullBuildNumber),
+        // phantom-idea: Info.plist build is Phantom's own build number (PH-<YYMMDD>.<N>)
+        Pair("build", phantomBuildNumber(context)),
         Pair("doc_types", docTypes ?: ""),
         Pair("executable", context.productProperties.baseFileName),
         Pair("icns", targetIcnsFileName),
@@ -594,7 +596,8 @@ class MacDistributionBuilder(
             Pair("bundle_name", fullName),
             Pair("version", version),
             Pair("year", todayYear),
-            Pair("build", context.fullBuildNumber)
+            // phantom-idea: Info.plist build is Phantom's own build number (PH-<YYMMDD>.<N>)
+            Pair("build", phantomBuildNumber(context))
           )
         )
       }

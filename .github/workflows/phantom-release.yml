@@ -1,0 +1,62 @@
+# Builds Phantom for Apple silicon and Windows x64 and publishes the DMG, the Windows installer and the Windows zip
+# as a GitHub release (tag v<YY>.<MM>.<DD>.<N>).
+#   Actions → Phantom release → Run workflow (optional notes). Not on tag pushes: phantom-release.sh pushes the tag
+#   itself, so a tag trigger would build every release twice.
+# Runs on a self-hosted runner on the owner's Mac (labels self-hosted, macOS, ARM64; see tools/phantom-runner-setup.sh):
+# a GitHub-hosted macOS runner has 7 GB of memory and too little disk for this monorepo build, and its minutes count
+# ten times against a private repository's quota. Windows is cross-built on the same Mac (macOS aarch64 and Windows x64
+# only), and phantom-build.sh removes the .sit
+# archives and out/phantom-idea/temp afterwards. The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it
+# with the "Phantom Local" certificate where it is installed, so no signing secret is stored on GitHub.
+name: Phantom release
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: "Release notes (default: commits since the previous release)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phantom-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # the release notes list the commits since the previous release tag
+          fetch-depth: 200
+          fetch-tags: true
+          # the checkout stays between runs, so the build's caches stay warm
+          clean: false
+
+      # phantom-release.sh publishes Kotlin and marketplace.json to the Phantom-plugins checkout next to this one (the
+      # build itself downloads the bundled plugins from phantom-libs). That repository is private and the job's token
+      # only reads this one, so the runner's own git credentials (the owner's SSH key) clone it; it stays between runs
+      # like this checkout and is reset to main each time.
+      - name: Phantom-plugins checkout
+        run: |
+          plugins="$GITHUB_WORKSPACE/../Phantom-plugins"
+          # github-newkayak: the SSH host alias for the owner's key, where ~/.ssh/config has one
+          host=github.com
+          [[ "$(ssh -G github-newkayak | awk '/^hostname /{print $2}')" == github.com ]] && host=github-newkayak
+          if [[ ! -d "$plugins/.git" ]]; then
+            git clone "git@$host:newkayak12/Phantom-plugins.git" "$plugins"
+          fi
+          git -C "$plugins" fetch origin main
+          git -C "$plugins" reset --hard origin/main
+          git -C "$plugins" clean -fdq
+          git -C "$plugins" log -1 --format='Phantom-plugins %h %s'
+
+      - name: Build and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ inputs.notes }}
+        run: ./phantom-release.sh

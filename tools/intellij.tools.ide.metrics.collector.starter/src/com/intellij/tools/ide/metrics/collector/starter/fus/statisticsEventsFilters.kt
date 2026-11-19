@@ -1,6 +1,6 @@
 package com.intellij.tools.ide.metrics.collector.starter.fus
 
-import com.jetbrains.fus.reporting.model.lion3.LogEvent
+import com.intellij.internal.statistic.eventLog.LogEvent
 
 
 fun <T> LogEvent.getDataFromEvent(dataFilter: (Map.Entry<String, Any>) -> Boolean): Map<String, T> {

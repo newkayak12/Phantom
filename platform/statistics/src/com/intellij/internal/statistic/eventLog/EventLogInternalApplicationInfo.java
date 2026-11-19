@@ -1,7 +1,6 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.internal.statistic.eventLog;
 
-import com.intellij.internal.statistic.eventLog.connection.EventLogStatisticsService;
 import com.intellij.internal.statistic.eventLog.connection.metadata.StatsConnectionSettings;
 import com.intellij.internal.statistic.eventLog.validator.storage.persistence.EventLogMetadataSettingsPersistence;
 import com.intellij.openapi.application.ApplicationInfo;
@@ -17,7 +16,7 @@ public class EventLogInternalApplicationInfo implements EventLogApplicationInfo 
   public static final String EVENT_LOG_SETTINGS_REGION_CODE = "not_set";
 
   private static final DataCollectorDebugLogger LOG =
-    new InternalDataCollectorDebugLogger(Logger.getInstance(EventLogStatisticsService.class));
+    new InternalDataCollectorDebugLogger(Logger.getInstance(EventLogInternalApplicationInfo.class)); // phantom-idea: no sender class
 
   private final boolean myIsTestSendEndpoint;
   private final boolean myIsTestConfig;

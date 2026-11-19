@@ -21,8 +21,8 @@ jvm_library(
     visibility = ["//visibility:public"],
     exports = [
         # do not sort,
+        "//platform/statistics/uploader",
         "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
     ],
     deps = [
         # do not sort,
@@ -60,7 +60,6 @@ jvm_library(
         "//libraries/kotlinx/serialization/json",
         "//libraries/kotlinx/serialization/core",
         "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
         "//libraries/kotlinx/collections-immutable:libraries-kotlinx-collections-immutable",
     ],
 )
@@ -76,8 +75,9 @@ jvm_library(
     visibility = ["//visibility:public"],
     exports = [
         # do not sort,
+        "//platform/statistics/uploader",
+        "//platform/statistics/uploader:uploader_test_lib",
         "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
     ],
     runtime_deps = [
         # do not sort,
@@ -140,11 +140,7 @@ jvm_library(
     ),
     module_name = "intellij.platform.statistics.tests",
     visibility = ["//visibility:public"],
-    exports = [
-        # do not sort,
-        "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
-    ],
+    exports = ["@lib//:com-jetbrains-fus-reporting-fus-api"],
 )
 
 jvm_library(
@@ -163,11 +159,7 @@ jvm_library(
         "//platform/statistics:statistics_test_lib",
     ],
     visibility = ["//visibility:public"],
-    exports = [
-        # do not sort,
-        "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
-    ],
+    exports = ["@lib//:com-jetbrains-fus-reporting-fus-api"],
     runtime_deps = [
         # do not sort,
         ":statistics-tests",
@@ -236,7 +228,6 @@ jvm_library(
         "//libraries/kotlinx/serialization/core",
         "//libraries/kotlinx/serialization/core:core_test_lib",
         "@lib//:com-jetbrains-fus-reporting-fus-api",
-        "@lib//:com-jetbrains-fus-reporting-ap-validation-all",
         "//libraries/kotlinx/collections-immutable:libraries-kotlinx-collections-immutable",
         "//libraries/kotlinx/collections-immutable:libraries-kotlinx-collections-immutable_test_lib",
     ],

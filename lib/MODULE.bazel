@@ -20,6 +20,18 @@ http_jvm_lib(
     url = "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-compose-compiler-plugin/2.1.0/kotlin-compose-compiler-plugin-2.1.0.jar",
 )
 
+# phantom-idea: the Gradle API jar is built from Gradle's distribution (gradle-api.bzl) instead of downloaded from
+# JetBrains' intellij-dependencies repository (org.jetbrains.intellij.deps:gradle-api, which jps-to-bazel would put in
+# the section below). Version: gradleApiVersion in build/dependencies/dependencies.properties.
+gradle_api = use_repo_rule("//:gradle-api.bzl", "gradle_api")
+
+gradle_api(
+    name = "gradle_api",
+    distribution_sha256 = "bbaeb2fef8710818cf0e261201dab964c572f92b942812df0c3620d62a529a01",
+    sha256 = "7601c945af46c14a3c6fc0d7dab250092816ed0ed3054e3efc76083ccfc1cfd0",
+    version = "9.6.0",
+)
+
 ### auto-generated section `maven libs` start
 http_file(
     name = "com_android_tools_build-aapt2-proto-8_1_0-10154469_http",
@@ -341,20 +353,6 @@ http_file(
     downloaded_file_path = "gitignore-2026.04.09-1517-sources.jar",
     sha256 = "79cdf3715327a46f1650749ea13efbf4d2fd6afa7a7b7ccb7ff92422928a18e5",
     url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/patronus/gitignore/2026.04.09-1517/gitignore-2026.04.09-1517-sources.jar",
-)
-
-http_file(
-    name = "com_jetbrains_fus_reporting-ap-validation-all-1_0_229_http",
-    downloaded_file_path = "ap-validation-all-1.0.229.jar",
-    sha256 = "b02d4c38b8fae8c828fe548216d43373738f4439912e62d50a576c9f83cdc325",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/fus/reporting/ap-validation-all/1.0.229/ap-validation-all-1.0.229.jar",
-)
-
-http_file(
-    name = "com_jetbrains_fus_reporting-ap-validation-all-1_0_229-sources_http",
-    downloaded_file_path = "ap-validation-all-1.0.229-sources.jar",
-    sha256 = "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/fus/reporting/ap-validation-all/1.0.229/ap-validation-all-1.0.229-sources.jar",
 )
 
 http_file(
@@ -2231,20 +2229,6 @@ http_file(
     downloaded_file_path = "dd-plist-1.28-sources.jar",
     sha256 = "42f755c3f5ae9cd40caa74884315e41a9eeab78744bceeb4e820c75e79e8b53a",
     url = "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2/com/googlecode/plist/dd-plist/1.28/dd-plist-1.28-sources.jar",
-)
-
-http_file(
-    name = "org_jetbrains_intellij_deps-gradle-api-9_6_0_http",
-    downloaded_file_path = "gradle-api-9.6.0.jar",
-    sha256 = "4db7e13a2cf5ecf2eb45bf1bb71df7b56cdf4f835da49ef02cd03f1a798f9f9a",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/gradle-api/9.6.0/gradle-api-9.6.0.jar",
-)
-
-http_file(
-    name = "org_jetbrains_intellij_deps-gradle-api-9_6_0-sources_http",
-    downloaded_file_path = "gradle-api-9.6.0-sources.jar",
-    sha256 = "e85277d7d3d4aa34e0bb8412167920cac64b37342d12e7caa7aab7dc30d434bd",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/gradle-api/9.6.0/gradle-api-9.6.0-sources.jar",
 )
 
 http_file(
@@ -4702,13 +4686,6 @@ http_file(
     downloaded_file_path = "httpcore-4.4.16-sources.jar",
     sha256 = "705f8cf3671093b6c1db16bbf6971a7ef400e3819784f1af53e5bc3e67b5a9a0",
     url = "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16-sources.jar",
-)
-
-http_file(
-    name = "com_jetbrains_intellij_documentation-tips-intellij-idea-community-241_62_http",
-    downloaded_file_path = "tips-intellij-idea-community-241.62.jar",
-    sha256 = "e46de060e29f3d060de5a9dab21711ff4d376e4b2a7e96d332415df60b7d77c8",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/com/jetbrains/intellij/documentation/tips-intellij-idea-community/241.62/tips-intellij-idea-community-241.62.jar",
 )
 
 http_file(

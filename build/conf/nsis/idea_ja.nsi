@@ -14,7 +14,8 @@ LangString update_context_menu_label ${LANG_JAPANESE} '"フォルダーをプロ
 LangString create_associations_group ${LANG_JAPANESE} "関連付けの作成"
 ; Rider-specific
 LangString additional_features ${LANG_JAPANESE} "追加機能"
-LangString install_etw_service ${LANG_JAPANESE} "JetBrains ETW Host Service のインストール"
+; phantom-idea: no JetBrains name in the installer
+LangString install_etw_service ${LANG_JAPANESE} "ETW Host Service のインストール"
 LangString windows_defender_exclusions ${LANG_JAPANESE} "Rider を Microsoft Defender の除外設定に追加"
 
 ; Uninstall options page

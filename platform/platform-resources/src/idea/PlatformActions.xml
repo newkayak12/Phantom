@@ -1765,7 +1765,7 @@
     <action id="CopyPathWithLineNumber" class="com.intellij.ide.actions.CopyFileWithLineNumberPathProvider"/>
     <action id="CopyContentRootPath" class="com.intellij.ide.actions.CopyContentRootPathProvider"/>
     <action id="CopySourceRootPath" class="com.intellij.ide.actions.CopySourceRootPathProvider"/>
-    <action id="CopyTBXReference" class="com.intellij.ide.actions.CopyTBXReferenceProvider" icon="AllIcons.Nodes.Toolbox"/>
+    <!-- phantom-idea: removed the CopyTBXReference action (Toolbox App integration dropped) -->
 
     <group id="CopyReferencePopupGroup" class="com.intellij.ide.actions.CopyReferencePopup" popup="true">
       <group id="CopyFileReference">
@@ -1777,9 +1777,8 @@
         <reference ref="CopySourceRootPath"/>
       </group>
       <separator/>
-      <group id="CopyExternalReferenceGroup">
-        <reference ref="CopyTBXReference"/>
-      </group>
+      <!-- phantom-idea: CopyExternalReferenceGroup is left empty; its only entry was CopyTBXReference -->
+      <group id="CopyExternalReferenceGroup"/>
       <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyPaths"/>
       <add-to-group group-id="EditorTabPopupMenu" anchor="after" relative-to-action="CopyPaths"/>
     </group>
@@ -1973,6 +1972,11 @@
       <reference ref="ToggleMinimapScaleMode"/>
       <reference ref="DisableMinimap"/>
     </group>
+  </actions>
+
+  <!-- phantom-idea: token for private GitHub plugin repositories -->
+  <actions resource-bundle="messages.PhantomIdeBundle">
+    <action class="dev.phantom.ide.plugins.SetGitHubPluginTokenAction" id="Phantom.SetGitHubPluginToken"/>
   </actions>
 
   <applicationListeners>
