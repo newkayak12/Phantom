@@ -4,7 +4,7 @@
 #   ./phantom-release.sh               build with phantom-build.sh, check the app, release
 #   ./phantom-release.sh --no-build    release the DMG (and Windows files, if built) phantom-build.sh produced last
 #   NOTES="..." ./phantom-release.sh   release notes (default: the commits since the previous release tag)
-# Kotlin and Maven are not bundled: the build zips them for this platform build, and the release publishes each to the
+# Kotlin and Maven are not bundled: the build (PHANTOM_PUBLISH_PLUGINS=1) zips them for this platform build, and the release publishes each to the
 # Phantom plugins repository (the Phantom-plugins checkout next to this one, or PHANTOM_PLUGINS_REPO) as release
 # kotlin-262.<YYMMDD> / maven-262.<YYMMDD>, and points its marketplace.json entry there.
 # Tag: v<YY>.<MM>.<DD>.<N> for build PH-<YYMMDD>.<N>. The DMG's app is ad-hoc signed; phantom-install.sh re-signs it
@@ -21,7 +21,7 @@ if [[ "${1:-}" != "--no-build" ]]; then
     last="$(git ls-remote --tags origin "refs/tags/v$today.*" | sed -E 's#.*refs/tags/v[0-9.]+\.([0-9]+)$#\1#' | sort -n | tail -1)"
     export PHANTOM_BUILD_SEQ=$(( ${last:-0} + 1 ))
   fi
-  ./phantom-build.sh
+  PHANTOM_PUBLISH_PLUGINS=1 ./phantom-build.sh
 fi
 build="$(cat out/phantom-build-number)"          # PH-261018.2
 day="${build#PH-}"; day="${day%%.*}"; n="${build##*.}"
