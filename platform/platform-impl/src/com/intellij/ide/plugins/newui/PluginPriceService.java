@@ -1,6 +1,7 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.plugins.newui;
 
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests;
 import com.intellij.ide.plugins.marketplace.utils.MarketplaceUrls;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -109,6 +110,8 @@ public final class PluginPriceService {
   }
 
   private static @Nullable Object getPluginPricesJsonObject() throws IOException {
+    // phantom-idea: no JetBrains Marketplace calls unless -Dphantom.jetbrains.services=true
+    if (!MarketplaceRequests.getJetBrainsServicesEnabled()) return null;
     Url url = Urls.newFromEncoded(MarketplaceUrls.getPluginManagerUrl() + "/geo/files/prices");
     return HttpRequests.request(url).throwStatusCodeException(false).productNameAsUserAgent().connect(request -> {
       URLConnection connection = request.getConnection();
