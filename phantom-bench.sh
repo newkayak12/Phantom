@@ -111,6 +111,7 @@ run_once() {
   fi
   jcmd "$pid" GC.run >/dev/null
   jcmd "$pid" GC.heap_info > "$dir/heap.txt"
+  jcmd "$pid" GC.class_histogram > "$dir/histogram.txt"
   jcmd "$pid" PerfCounter.print > "$dir/perfcounters.txt"
   footprint -p "$pid" > "$dir/footprint.txt" 2>&1 || true
 

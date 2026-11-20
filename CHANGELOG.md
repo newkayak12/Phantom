@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- `phantom-bench.sh`가 실행마다 GC 직후의 class histogram(`histogram.txt`)도 저장한다. 두 빌드의 heap 차이를 클래스 단위로 비교할 수 있고, 이것으로 local-shared-index 키 맵이 heap 약 146MB를 쓰는 것을 찾았다(Phantom-plugins #46에서 76MB 줄임).
+
 - 플러그인 호환성 검사가 번들 플러그인의 content module 의존성(Java PSI, 테스트 러너, 구조 뷰 등)을 Plugin Verifier에 해당 번들 플러그인 의존성으로 알려 주도록 하고, 라이브러리의 선택 기능 때문에 생기는 오탐만 이유와 함께 무시 목록에 올렸다. coverage 0.1.3(rt jar의 중복 plugin.xml 제거)과 json 0.1.2(final 메서드 오버라이드로 보고되던 이름 충돌 해소)를 새 번들(`phantom-plugins-2a9d27d645`)에 담았다. (PR #40 후속)
 
 - 저장소 품질 검사를 매주 실행하고 서비스 설정·권한·실패 확인 절차를 제품 README와 분리한 운영 문서에 정리했다.
