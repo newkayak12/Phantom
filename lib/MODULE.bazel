@@ -15465,11 +15465,12 @@ http_file(
     url = "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.50.3.0/sqlite-jdbc-3.50.3.0-sources.jar",
 )
 
+# phantom-idea: libsqliteij built from github.com/newkayak12/phantom-libs/tree/main/sqlite-native (SQLite 3.54.1); JetBrains' 3.42.0-jb.1 has no published JNI source
 http_file(
-    name = "org_sqlite-native-3_42_0-jb_1_http",
-    downloaded_file_path = "native-3.42.0-jb.1.jar",
-    sha256 = "491c4ae84a1bad34c85624682a80def4f3a3a0fb9d517121d05c2dfeb94966f8",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/sqlite/native/3.42.0-jb.1/native-3.42.0-jb.1.jar",
+    name = "org_sqlite-native-3_54_1-phantom1_http",
+    downloaded_file_path = "sqlite-native-3.54.1-phantom1.jar",
+    sha256 = "6b5a01fc1057fbd2b22781c6f978335fe0d0faddd1c549a52d4255890e17e9dc",
+    url = "https://github.com/newkayak12/phantom-libs/releases/download/sqlite-native-3.54.1-phantom1/sqlite-native-3.54.1-phantom1.jar",
 )
 
 http_file(
