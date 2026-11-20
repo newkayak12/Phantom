@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- Maven 아티팩트 단계를 끈다(`mavenArtifacts`를 비워 빌드가 단계를 건너뜀). Phantom은 Maven 아티팩트를 게시하지 않고 phantom-build.sh가 결과를 지웠다. 일반 빌드 목록이 715개에서 676개 모듈로 준다. 게시 빌드 목록은 TEST 범위로만 닿는 모듈의 라이브러리를 넣지 않는다. patronus codeowners는 빌드 도구 자체(`platform/build-scripts` → `testFramework.core` → codeowners)가 컴파일에 써서 남는다.
+
 - 일반 빌드 목록이 모듈의 TEST 범위 의존을 따라가지 않는다(797 → 715 모듈). 일반 빌드가 Grazie 라이브러리 54개(JetBrains 소유, 라이선스 없음)를 더는 받지 않고, 받는 JetBrains 호스팅 파일이 8개(completion-ranking 2, terminal completion 2, patronus 3, 보류 1)로 준다. standalone JPS의 테스트 jar 모듈 2개는 이름으로 넣는다. Grazie는 게시 빌드(Kotlin의 Grazie 연동)만 받는다. 일반·게시 빌드 content report는 이전과 같다.
 
 - 라이선스 없는 JetBrains 파일 5개를 빌드에서 뺐다. 완성 순위 ML 모델 `completion-ranking-java`·`-kotlin`·`-sh`는 앱에 이미 안 들어가던 것이라 읽는 클래스(`JavaMLRankingProvider`·`KotlinMLRankingProvider`·`ShMLRankingProvider`)와 그 테스트까지 지웠다. 터미널 `completion-db-with-extensions`의 JSON 모델 클래스는 Phantom-plugins terminal의 자체 클래스(`dev.phantom.terminal.completion.spec`, Apache-2.0)로 바꿨고, `completion-spec` jar는 같은 API 소스가 `plugins/terminal/completion`에 이미 있어 의존만 뺐다. 일반 빌드 타깃 빌드가 통과하고 다섯 파일을 받지 않는다.

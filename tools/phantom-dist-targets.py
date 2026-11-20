@@ -3,8 +3,7 @@
 
 Upstream compiles every production and test module of the repository (ALL_COMMUNITY_TARGETS, about 4,100 targets: Python,
 Android, plugins Phantom doesn't ship, and all tests). Phantom's build needs the modules that end up in the distribution,
-the modules it publishes as Maven artifacts (MAVEN_ARTIFACTS_ADDITIONAL_MODULES, the Jewel standalone modules and the
-Maven tool modules), the modules of the standalone JPS build, and their module dependencies other than test ones: the build
+the modules of the standalone JPS build (Phantom builds no Maven artifacts), and their module dependencies other than test ones: the build
 looks up the output jar of each of them in its runfiles, and likewise the jars of their libraries (not all 1,200 library
 targets: those would fetch about 110 more JetBrains-hosted files no part of Phantom uses). Only production targets are
 built, no tests. Test dependencies would bring in modules only tests use, Grazie's 54 JetBrains-owned libraries among
@@ -36,20 +35,12 @@ with zipfile.ZipFile(report) as z:
       # a library packed on its own names its library and the module that holds it (withModuleLibrary)
       names += re.findall(r"^\s*(?:module|library): ([A-Za-z][\w.\-]*)\s*$", text, re.M)
       (published_seeds if name == "non-bundled-plugins.yaml" else seeds).update(names)
-maven = re.search(r"MAVEN_ARTIFACTS_ADDITIONAL_MODULES[^=]*= persistentListOf\((.*?)\)", (build_src / "IdeaCommunityProperties.kt").read_text(), re.S)
-seeds.update(re.findall(r'"([\w.]+)"', maven.group(1)))
-jewel = re.search(r"val STANDALONE[^=]*= persistentHashMapOf\((.*?)\)", (build_src / "JewelMavenArtifacts.kt").read_text(), re.S)
-seeds.update(re.findall(r'"([\w.]+)" to', jewel.group(1)))
-# The standalone JPS build and the tool modules the Maven step adds
+# The standalone JPS build
 jps_builder = (build_src / "CommunityStandaloneJpsBuilder.kt").read_text()
 seeds.update(re.findall(r'withModule\("([\w.]+)"', jps_builder))
 # and the modules of its jps-build-test jar
 for names in re.findall(r"moduleNames = listOf\((.*?)\)", jps_builder, re.S):
   seeds.update(re.findall(r'"([\w.]+)"', names))
-tools = re.search(r"fun getToolModules\(\)[^=]*= listOf\((.*?)\)", (root / "platform/build-scripts/src/org/jetbrains/intellij/build/impl/mavenArtifactBuilder.kt").read_text(), re.S)
-seeds.update(re.findall(r'"([\w.]+)"', tools.group(1)))
-# Libraries the build looks up by name for its own steps: Dokka for the javadoc of the Maven artifacts (impl/maven/Dokka.kt)
-seeds.add("intellij.libraries.dokka")
 
 imls = {Path(p).stem: root / p for p in re.findall(r'filepath="\$PROJECT_DIR\$/([^"]+\.iml)"', (root / ".idea/modules.xml").read_text())}
 # Names in the report that are not modules are project libraries, added with their jars below
@@ -72,7 +63,10 @@ else:
   published_seeds = set(published_file.read_text().split())
 
 modules = closure(seeds, False)
+# The published plugins' layout resolves through test dependencies too (it looks up platform.testFramework's jar), but
+# only the modules reached without them need their libraries (otherwise testFramework.core would bring in patronus)
 published = closure(published_seeds, True) - modules
+published_with_libraries = closure(published_seeds, False) - modules
 
 targets_data = json.loads(targets_json.read_text())
 known, project_libraries = targets_data["modules"], targets_data["projectLibraries"]
@@ -96,7 +90,8 @@ targets = sorted(set(targets).union(*(project_libraries[n]["jarTargets"] for n i
 # the Kotlin compiler distribution the Kotlin plugin unpacks into kotlinc/ (kotlin/KotlinPluginBuilder.kt), looked up by name
 published_libraries = {t for n in published_seeds | {"kotlinc.kotlin-dist"} if n not in imls and n in project_libraries
                        for t in project_libraries[n]["jarTargets"]}
-published_targets = sorted((set(targets_of(published, True)) | published_libraries) - set(targets))
+published_modules_only = {t for m in published - published_with_libraries if m in known for t in known[m]["productionTargets"]}
+published_targets = sorted((set(targets_of(published_with_libraries, True)) | published_modules_only | published_libraries) - set(targets))
 
 def bzl_list(name, items):
   return f"{name} = [\n" + "".join(f'    "{t}",\n' for t in items) + "]\n"
