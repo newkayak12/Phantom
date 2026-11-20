@@ -32,6 +32,10 @@ public final class LogUploader {
   }
 
   public static @NotNull String uploadFile(@NotNull Path file, @NotNull String fileName) throws IOException {
+    // phantom-idea: logs go to a JetBrains server; upload nothing unless -Dphantom.jetbrains.services=true
+    if (!Boolean.getBoolean("phantom.jetbrains.services")) {
+      throw new IOException("Log uploads to JetBrains are off; run with -Dphantom.jetbrains.services=true to upload");
+    }
     try (var client = PlatformHttpClient.client()) {
       var requestObj = JSON.std.asString(Map.of(
         "filename", fileName,

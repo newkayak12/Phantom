@@ -216,6 +216,7 @@ object ITNProxy {
 
   @Throws(Exception::class)
   internal suspend fun sendError(error: ErrorBean, postUrl: URI?): Long {
+    checkJetBrainsServicesEnabled()
     val context = currentCoroutineContext()
     val request = createRequest(error.event, error)
     val response = post(resolveReportEndpoint(postUrl), request)
@@ -228,9 +229,17 @@ object ITNProxy {
   @JvmStatic
   @Throws(Exception::class)
   fun sendError(event: IdeaLoggingEvent): Long {
+    checkJetBrainsServicesEnabled()
     val request = createRequest(event, errorBean = null)
     val response = post(resolveReportEndpoint(postUrl = null), request)
     return handleResponse(response)
+  }
+
+  // phantom-idea: every report endpoint is a JetBrains host; send nothing unless -Dphantom.jetbrains.services=true
+  private fun checkJetBrainsServicesEnabled() {
+    if (!java.lang.Boolean.getBoolean("phantom.jetbrains.services")) {
+      throw IllegalStateException("Error reports to JetBrains are off; run with -Dphantom.jetbrains.services=true to send them")
+    }
   }
 
   private fun resolveReportEndpoint(postUrl: URI?): Endpoint = when {
