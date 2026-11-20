@@ -5,7 +5,9 @@ Upstream compiles every production and test module of the repository (ALL_COMMUN
 Android, plugins Phantom doesn't ship, and all tests). Phantom's build needs the modules that end up in the distribution,
 the modules it publishes as Maven artifacts (MAVEN_ARTIFACTS_ADDITIONAL_MODULES, the Jewel standalone modules and the
 Maven tool modules), the modules of the standalone JPS build, and their module dependencies of any scope: the build
-looks up the output jar of each of them in its runfiles. Only production targets are built, no tests. The list of
+looks up the output jar of each of them in its runfiles, and likewise the jars of their libraries (not all 1,200 library
+targets: those would fetch about 110 more JetBrains-hosted files no part of Phantom uses). Only production targets are
+built, no tests. The list of
 distribution modules comes from the content report of a finished build:
   tools/phantom-dist-targets.py out/phantom-idea/artifacts/content-report.zip [bazel-targets.json]
 bazel-targets.json defaults to bazel-bin/build/bazel-targets.json. Run it after a change to the bundled plugins or
@@ -14,7 +16,7 @@ modules; a build that misses a module fails with "Unable to find dependency '<ta
 The plugins Phantom publishes instead of bundling (Kotlin, Maven: pluginModulesToPublish) are built only by
 //build:i_build_target_published (phantom-build.sh with PHANTOM_PUBLISH_PLUGINS=1, which phantom-release.sh sets). Their
 extra targets go to PHANTOM_PUBLISHED_TARGETS. A report of such a build lists them in non-bundled-plugins.yaml and
-refreshes build/phantom-published-modules.txt; a report of a normal build has none, and the file is reused.
+refreshes build/phantom-published-modules.txt (their modules and libraries); a report of a normal build has none, and the file is reused.
 """
 import json, re, sys, zipfile
 from pathlib import Path
@@ -28,7 +30,10 @@ seeds, published_seeds = set(), set()
 with zipfile.ZipFile(report) as z:
   for name in z.namelist():
     if name.endswith(".yaml"):
-      names = re.findall(r"^\s*- name: ([A-Za-z][\w.\-]*)\s*$", z.read(name).decode(), re.M)
+      text = z.read(name).decode()
+      names = re.findall(r"^\s*- name: ([A-Za-z][\w.\-]*)\s*$", text, re.M)
+      # a library packed on its own names its library and the module that holds it (withModuleLibrary)
+      names += re.findall(r"^\s*(?:module|library): ([A-Za-z][\w.\-]*)\s*$", text, re.M)
       (published_seeds if name == "non-bundled-plugins.yaml" else seeds).update(names)
 maven = re.search(r"MAVEN_ARTIFACTS_ADDITIONAL_MODULES[^=]*= persistentListOf\((.*?)\)", (build_src / "IdeaCommunityProperties.kt").read_text(), re.S)
 seeds.update(re.findall(r'"([\w.]+)"', maven.group(1)))
@@ -38,9 +43,11 @@ seeds.update(re.findall(r'"([\w.]+)" to', jewel.group(1)))
 seeds.update(re.findall(r'withModule\("([\w.]+)"', (build_src / "CommunityStandaloneJpsBuilder.kt").read_text()))
 tools = re.search(r"fun getToolModules\(\)[^=]*= listOf\((.*?)\)", (root / "platform/build-scripts/src/org/jetbrains/intellij/build/impl/mavenArtifactBuilder.kt").read_text(), re.S)
 seeds.update(re.findall(r'"([\w.]+)"', tools.group(1)))
+# Libraries the build looks up by name for its own steps: Dokka for the javadoc of the Maven artifacts (impl/maven/Dokka.kt)
+seeds.add("intellij.libraries.dokka")
 
 imls = {Path(p).stem: root / p for p in re.findall(r'filepath="\$PROJECT_DIR\$/([^"]+\.iml)"', (root / ".idea/modules.xml").read_text())}
-# Names in the report that are not modules are project libraries; //build:i_build_target keeps all library targets
+# Names in the report that are not modules are project libraries, added with their jars below
 def closure(start):
   modules, todo = set(), [m for m in start if m in imls]
   while todo:
@@ -54,17 +61,35 @@ def closure(start):
 
 published_file = root / "build/phantom-published-modules.txt"
 if published_seeds:
-  published_file.write_text("".join(f"{m}\n" for m in sorted(m for m in published_seeds if m in imls)))
+  published_file.write_text("".join(f"{m}\n" for m in sorted(published_seeds)))
 else:
   published_seeds = set(published_file.read_text().split())
 
 modules = closure(seeds)
 published = closure(published_seeds) - modules
 
-known = json.loads(targets_json.read_text())["modules"]
+targets_data = json.loads(targets_json.read_text())
+known, project_libraries = targets_data["modules"], targets_data["projectLibraries"]
 def targets_of(ms):
-  return sorted({t for m in ms if m in known for t in known[m]["productionTargets"]})
-targets, published_targets = targets_of(modules), targets_of(published)
+  targets = set()
+  for m in ms:
+    if m not in known:
+      continue
+    targets.update(known[m]["productionTargets"])
+    # The jars of its libraries, of any scope like the module dependencies: the build looks each of them up in its
+    # runfiles ("Unable to determine dependency path '@lib//:...jar'")
+    for name in re.findall(r'<orderEntry type="library"[^>]* name="([^"]+)" level="project"', imls[m].read_text()):
+      targets.update(project_libraries[name]["jarTargets"])
+    for library in known[m]["moduleLibraries"].values():
+      targets.update(library["jarTargets"])
+  return sorted(targets)
+targets = targets_of(modules)
+# libraries the layout adds by name (withProjectLibrary), not through a module
+targets = sorted(set(targets).union(*(project_libraries[n]["jarTargets"] for n in seeds if n not in imls and n in project_libraries)))
+# the Kotlin compiler distribution the Kotlin plugin unpacks into kotlinc/ (kotlin/KotlinPluginBuilder.kt), looked up by name
+published_libraries = {t for n in published_seeds | {"kotlinc.kotlin-dist"} if n not in imls and n in project_libraries
+                       for t in project_libraries[n]["jarTargets"]}
+published_targets = sorted((set(targets_of(published)) | published_libraries) - set(targets))
 
 def bzl_list(name, items):
   return f"{name} = [\n" + "".join(f'    "{t}",\n' for t in items) + "]\n"
@@ -76,5 +101,5 @@ out.write_text(
   + "\n# The further targets of the plugins Phantom publishes instead of bundling (//build:i_build_target_published).\n"
   + bzl_list("PHANTOM_PUBLISHED_TARGETS", published_targets)
 )
-print(f"{out.relative_to(root)}: {len(targets)} targets for {len(modules)} modules,"
+print(f"{out.relative_to(root)}: {len(targets)} targets for {len(modules)} modules and their libraries,"
       f" {len(published_targets)} more for {len(published)} published modules")

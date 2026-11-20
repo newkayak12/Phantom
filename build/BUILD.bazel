@@ -81,9 +81,10 @@ alias(
 java_binary(
     name = "i_build_target",
     add_opens = INTELLIJ_ADD_OPENS,
-    # phantom-idea: only the modules in the distribution (tools/phantom-dist-targets.py), not ALL_COMMUNITY_TARGETS: no
-    # tests, no Python or Android modules, no plugins Phantom doesn't ship. Bazel builds their dependencies on its own.
-    data = PHANTOM_DIST_TARGETS + ALL_LIBRARY_COMMUNITY_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
+    # phantom-idea: only the modules in the distribution and their library jars (tools/phantom-dist-targets.py), not
+    # ALL_COMMUNITY_TARGETS and ALL_LIBRARY_COMMUNITY_TARGETS: no tests, no Python or Android modules, no plugins Phantom
+    # doesn't ship, no libraries only those use. Bazel builds their dependencies on its own.
+    data = PHANTOM_DIST_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
     jvm_flags = [
         "-Dintellij.build.bazel.targets.json.file=$(rlocationpath %s)" % BAZEL_TARGETS_JSON_COMMUNITY,
     ],
@@ -96,7 +97,7 @@ java_binary(
 java_binary(
     name = "i_build_target_published",
     add_opens = INTELLIJ_ADD_OPENS,
-    data = PHANTOM_DIST_TARGETS + PHANTOM_PUBLISHED_TARGETS + ALL_LIBRARY_COMMUNITY_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
+    data = PHANTOM_DIST_TARGETS + PHANTOM_PUBLISHED_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
     jvm_flags = [
         "-Dintellij.build.bazel.targets.json.file=$(rlocationpath %s)" % BAZEL_TARGETS_JSON_COMMUNITY,
         "-Dphantom.publish.plugins=true",
