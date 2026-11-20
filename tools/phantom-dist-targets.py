@@ -44,11 +44,11 @@ for names in re.findall(r"moduleNames = listOf\((.*?)\)", jps_builder, re.S):
 
 imls = {Path(p).stem: root / p for p in re.findall(r'filepath="\$PROJECT_DIR\$/([^"]+\.iml)"', (root / ".idea/modules.xml").read_text())}
 # Names in the report that are not modules are project libraries, added with their jars below
-def closure(start, test_dependencies):
+def closure(start, test_dependencies, skip=None):
   modules, todo = set(), [m for m in start if m in imls]
   while todo:
     m = todo.pop()
-    if m in modules or m not in imls:
+    if m in modules or m not in imls or (skip and m.startswith(skip)):
       continue
     modules.add(m)
     for name, attrs in re.findall(r'<orderEntry type="module" module-name="([^"]+)"([^>]*)>', imls[m].read_text()):
@@ -63,9 +63,11 @@ else:
   published_seeds = set(published_file.read_text().split())
 
 modules = closure(seeds, False)
-# The published plugins' layout resolves through test dependencies too (it looks up platform.testFramework's jar), but
-# only the modules reached without them need their libraries (otherwise testFramework.core would bring in patronus)
-published = closure(published_seeds, True) - modules
+# The published plugins' layout resolves plugin.xml includes through test dependencies too, so their list follows them,
+# except into JetBrains' code owner modules and the IDE metrics benchmark that uses them (test tooling without descriptors;
+# they need the unlicensed patronus libraries). Only modules
+# reached without test dependencies get their libraries.
+published = closure(published_seeds, True, skip=("intellij.codeowners", "intellij.tools.ide.metrics.benchmark")) - modules
 published_with_libraries = closure(published_seeds, False) - modules
 
 targets_data = json.loads(targets_json.read_text())

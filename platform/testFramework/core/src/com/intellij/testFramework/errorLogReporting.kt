@@ -10,8 +10,6 @@ internal fun ErrorLog.reportAsFailures() {
   }
 }
 
-private var codeOwnerResolutionFailed = false
-
 // Avoid changing the test name!
 // TeamCity remembers failures by the test name.
 // Changing the test name results in effectively new failed tests being reported,
@@ -21,13 +19,8 @@ private var codeOwnerResolutionFailed = false
 internal fun logAsTeamcityTestFailure(error: LoggedError) {
   val message = findMessage(error)
   val stackTraceContent = error.stackTraceToString()
-  val owner = if (codeOwnerResolutionFailed) null
-  else runCatching {
-    TestLoggerFactory.getCurrentTestClass()?.let { codeOwnerResolver?.getOwnerGroupName(it) }
-  }.onFailure {
-    codeOwnerResolutionFailed = true
-    println(it)
-  }.getOrNull()
+  // phantom-idea: no code owner (the resolver needs JetBrains' unlicensed patronus codeowners library)
+  val owner: String? = null
 
   val testName = message ?: "Error logged without message"
   TeamCityReporter.reportTestLifecycle(testName, TeamCityReporter.TestOutcome.FAILED, message ?: "", stackTraceContent, owner,
