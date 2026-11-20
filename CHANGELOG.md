@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 라이선스 없는 JetBrains 파일 5개를 빌드에서 뺐다. 완성 순위 ML 모델 `completion-ranking-java`·`-kotlin`·`-sh`는 앱에 이미 안 들어가던 것이라 읽는 클래스(`JavaMLRankingProvider`·`KotlinMLRankingProvider`·`ShMLRankingProvider`)와 그 테스트까지 지웠다. 터미널 `completion-db-with-extensions`의 JSON 모델 클래스는 Phantom-plugins terminal의 자체 클래스(`dev.phantom.terminal.completion.spec`, Apache-2.0)로 바꿨고, `completion-spec` jar는 같은 API 소스가 `plugins/terminal/completion`에 이미 있어 의존만 뺐다. 일반 빌드 타깃 빌드가 통과하고 다섯 파일을 받지 않는다.
+
 - 빌드가 쓰는 JetBrains 전용 오픈소스 라이브러리 69개와 sources jar 64개(133개)를 phantom-libs 릴리스 `jetbrains-hosted-4`에서 받는다(Kotlin 컴파일러·분석 jar, LanguageTool 6.8.27, Hunspell 사전, Apache-2.0 포크들). 원본 URL에서 받은 sha256과 업로드 뒤 sha256이 133개 모두 고정값과 같고, JetBrains 호스트를 막은 채 133개 저장소를 모두 받았다. 일반 빌드 목록은 TEST 범위 라이브러리를 빼서(studio-test-platform 등) 받는 JetBrains 호스팅 파일이 62개(Grazie 53, JetBrains 소유·라이선스 없음 8, 보류 1)로 줄고, 게시 빌드는 2개 더 받는다. 남은 파일은 라이선스가 없거나 JetBrains 소유라 미러하지 않았다.
 
 - 빌드 타깃의 `data`에서 라이브러리 타깃 전체(`ALL_LIBRARY_COMMUNITY_TARGETS`, 1,209개)를 빼고, 배포 모듈과 게시 플러그인(Kotlin·Maven)이 쓰는 라이브러리 jar만 넣는다. `tools/phantom-dist-targets.py`가 모듈의 라이브러리, content report의 `module:`·`library:` 항목, 빌드가 이름으로 찾는 라이브러리(Dokka, `kotlinc.kotlin-dist`)를 목록에 더한다. 일반 빌드가 받는 JetBrains 호스팅 파일이 200개에서 91개로 줄고(게시 빌드는 43개 더), 95개는 어느 빌드도 받지 않는다. content report는 일반·게시 빌드 모두 이전과 같다. 쓰지 않는 `swcdn.apple.com` → JetBrains 미러 rewrite 규칙도 지웠다.

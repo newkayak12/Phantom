@@ -31,7 +31,6 @@ jvm_library(
         "//platform/platform-impl:ide-impl",
         "//plugins/completion-ml-ranking",
         "//platform/platform-impl/internal",
-        "@lib//:kotlin-completion-ml-completion-ranking-kotlin",
         "//plugins/kotlin/base/code-insight",
     ],
 )
