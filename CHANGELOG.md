@@ -17,7 +17,7 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
-- Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계)
+- Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계, PR #52)
 
 - 원본 브랜드 그림(`community-resources/phantom-brand-src`, PNG 3장 3.1MB)과 아이콘·스플래시를 만드는 `compose.swift`를 phantom-libs의 `brand/`로 옮겼다. README 로고는 그 주소를 쓴다. 앱에 들어가는 아이콘과 스플래시는 그대로다. (#40 4단계)
 
