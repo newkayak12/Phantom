@@ -1,6 +1,6 @@
 # Phantom-plugins zips that phantom-build.sh bundles: release assets of newkayak12/phantom-libs, written by
-# tools/phantom-plugins-bundle.sh from Phantom-plugins 2a9d27d645f0be2dbd8d4e396487d464459bd8f6
-tag phantom-plugins-2a9d27d645
+# tools/phantom-plugins-bundle.sh from Phantom-plugins 917b1dfd8acd747f040102cc626f410cddbdd076
+tag phantom-plugins-917b1dfd8a
 04d5cc6bd17aaab921b28a5a9bf58d485edb8de43ff6fa61df7d8475fe3f14dc  toml-0.1.0.zip
 581754368055ae3a5f81b461f430da1ce3bec8b1e70469679b68fd3678760d38  yaml-0.1.0.zip
 6211be5214ee7ea07744afe5e98ece1e9d3f1728605da83268d259b71af57cfe  sh-0.1.0.zip
@@ -31,3 +31,6 @@ dbb44ad2abf6a71ac815c1b4fd203ab183b32103d1e3bcc3d00d228b85d8c7a0  grid-0.1.0.zip
 455def26757a86e0b76268d46dea689f222d770e86ade0470f7d6eb41ae5c589  git-0.1.0.zip
 f5b35adb99fbe2c16e165bb53e2c01bf6dcb219952cea33b5b5162dc57c18cd4  theme-0.1.0.zip
 8c849179752779d1bba1308e236b1cd2983bbb0ffa1d6f4e17c09f80cbdd54d9  sync-0.1.0.zip
+1dfd1ed27b7fa5b098ece063591648cb7dc89e960c2bdf551bbbc93482e3d605  navbar-0.1.0.zip
+43133d6ebc3eb007828500ec38431d7f53c3d19e31cef03705f8977a7b1b02b7  recentfiles-0.1.0.zip
+09995f5e6d95cd9615ca224ce84ed72cbba949b314bdea0eb0d6e21621effba3  serviceview-0.1.0.zip
