@@ -108,6 +108,7 @@
 - Gradle 플러그인의 Gradle API jar(`gradle-api-9.6.0.jar`)를 JetBrains 저장소(packages.jetbrains.team의 `org.jetbrains.intellij.deps:gradle-api`)에서 받지 않고, services.gradle.org의 Gradle 9.6.0 배포본(Gradle이 공개한 sha256으로 확인)으로 빌드할 때 직접 만든다(`lib/gradle-api.bzl`, IntelliJ의 `build/dependencies/gradle-api-deps` 레시피와 같은 내용, 결과 sha256 고정). 클래스 파일은 JetBrains 것과 같고 Gradle의 LICENSE·NOTICE가 `META-INF/gradle/`에 더 들어간다.
 - Gradle 플러그인에서 중복 Groovy(`groovy.jar`, 20 MB)와 `groovy-ant.jar`, `lib/ant/`를 뺐다. Groovy는 Groovy Scripting의 `intellij.libraries.groovy` 모듈을 쓴다.
 - Gradle API jar 안의 Gradle 의존성(`org.gradle.internal.impldep`, JCIFS·JNA LGPL 2.1 포함)을 `NOTICE.txt`와 서드파티 목록(`CommunityLibraryLicenses.kt`)에 적었다.
+- 번들한 Phantom-plugins zip이 Phantom 빌드와 호환되는지 확인하는 `tools/phantom-plugin-compat.sh`와 `phantom-plugin-compat` workflow를 더했다. phantom-libs에서 받은 zip의 sha256, since/until-build, 필수 의존성을 정적으로 확인하고 JetBrains IntelliJ Plugin Verifier(Apache 2.0)를 Phantom.app에 돌려, 호환성 문제가 있으면 실패한다. 알려진 오탐은 `build/phantom-plugin-compat-ignore.txt`에 사유와 함께 적는다. v26.11.19.2 기준으로는 30개 중 14개 플러그인에서 문제가 보고된다(Java·구조 뷰·테스트 플러그인 클래스 해석 실패, coverage 설명자 중복 등). (PR #45)
 
 ### 벤치마크
 - 정적 게이트 `compare`가 baseline 앱의 빌드 날짜(빌드 번호 `262.<YYMMDD>`)보다 번들 목록 `IdeaCommunityProperties.kt`의 마지막 커밋이 늦으면 stderr에 `STALE BASELINE`을 쓰고, 회귀가 없어도 종료 코드 2로 끝난다. 지금의 `static-baseline.json`(26.10.27)은 이 검사에 걸린다. 빌드된 앱이 있어야 다시 만들 수 있어 파일은 그대로 두고 (e29d855fff, PR #4).

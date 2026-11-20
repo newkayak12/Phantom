@@ -1,0 +1,47 @@
+# Proves the Phantom-plugins zips Phantom bundles (build/phantom-plugins-bundle.txt) are compatible with a Phantom build:
+# since/until-build, dependencies and JetBrains' open-source IntelliJ Plugin Verifier against the release DMG.
+# The same check runs locally: tools/phantom-plugin-compat.sh [Phantom.app|.dmg].
+name: Phantom plugin compatibility
+
+on:
+  pull_request:
+    paths:
+      - build/phantom-plugins-bundle.txt
+      - build/phantom-plugin-compat-ignore.txt
+      - build/src/org/jetbrains/intellij/build/IdeaCommunityProperties.kt
+      - tools/phantom-plugin-compat.sh
+      - .github/workflows/phantom-plugin-compat.yml
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Phantom release tag to verify against (default: latest release)"
+        required: false
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phantom-plugin-compat-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compat:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Check bundled plugins against the Phantom DMG
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PHANTOM_RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: tools/phantom-plugin-compat.sh
