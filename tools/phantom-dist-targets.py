@@ -4,10 +4,11 @@
 Upstream compiles every production and test module of the repository (ALL_COMMUNITY_TARGETS, about 4,100 targets: Python,
 Android, plugins Phantom doesn't ship, and all tests). Phantom's build needs the modules that end up in the distribution,
 the modules it publishes as Maven artifacts (MAVEN_ARTIFACTS_ADDITIONAL_MODULES, the Jewel standalone modules and the
-Maven tool modules), the modules of the standalone JPS build, and their module dependencies of any scope: the build
+Maven tool modules), the modules of the standalone JPS build, and their module dependencies other than test ones: the build
 looks up the output jar of each of them in its runfiles, and likewise the jars of their libraries (not all 1,200 library
 targets: those would fetch about 110 more JetBrains-hosted files no part of Phantom uses). Only production targets are
-built, no tests. The list of
+built, no tests. Test dependencies would bring in modules only tests use, Grazie's 54 JetBrains-owned libraries among
+them. The list of
 distribution modules comes from the content report of a finished build:
   tools/phantom-dist-targets.py out/phantom-idea/artifacts/content-report.zip [bazel-targets.json]
 bazel-targets.json defaults to bazel-bin/build/bazel-targets.json. Run it after a change to the bundled plugins or
@@ -40,7 +41,11 @@ seeds.update(re.findall(r'"([\w.]+)"', maven.group(1)))
 jewel = re.search(r"val STANDALONE[^=]*= persistentHashMapOf\((.*?)\)", (build_src / "JewelMavenArtifacts.kt").read_text(), re.S)
 seeds.update(re.findall(r'"([\w.]+)" to', jewel.group(1)))
 # The standalone JPS build and the tool modules the Maven step adds
-seeds.update(re.findall(r'withModule\("([\w.]+)"', (build_src / "CommunityStandaloneJpsBuilder.kt").read_text()))
+jps_builder = (build_src / "CommunityStandaloneJpsBuilder.kt").read_text()
+seeds.update(re.findall(r'withModule\("([\w.]+)"', jps_builder))
+# and the modules of its jps-build-test jar
+for names in re.findall(r"moduleNames = listOf\((.*?)\)", jps_builder, re.S):
+  seeds.update(re.findall(r'"([\w.]+)"', names))
 tools = re.search(r"fun getToolModules\(\)[^=]*= listOf\((.*?)\)", (root / "platform/build-scripts/src/org/jetbrains/intellij/build/impl/mavenArtifactBuilder.kt").read_text(), re.S)
 seeds.update(re.findall(r'"([\w.]+)"', tools.group(1)))
 # Libraries the build looks up by name for its own steps: Dokka for the javadoc of the Maven artifacts (impl/maven/Dokka.kt)
@@ -48,15 +53,16 @@ seeds.add("intellij.libraries.dokka")
 
 imls = {Path(p).stem: root / p for p in re.findall(r'filepath="\$PROJECT_DIR\$/([^"]+\.iml)"', (root / ".idea/modules.xml").read_text())}
 # Names in the report that are not modules are project libraries, added with their jars below
-def closure(start):
+def closure(start, test_dependencies):
   modules, todo = set(), [m for m in start if m in imls]
   while todo:
     m = todo.pop()
     if m in modules or m not in imls:
       continue
     modules.add(m)
-    # All scopes: the build resolves plugin.xml includes through every module dependency, TEST ones too
-    todo.extend(re.findall(r'<orderEntry type="module" module-name="([^"]+)"', imls[m].read_text()))
+    for name, attrs in re.findall(r'<orderEntry type="module" module-name="([^"]+)"([^>]*)>', imls[m].read_text()):
+      if test_dependencies or 'scope="TEST"' not in attrs:
+        todo.append(name)
   return modules
 
 published_file = root / "build/phantom-published-modules.txt"
@@ -65,8 +71,8 @@ if published_seeds:
 else:
   published_seeds = set(published_file.read_text().split())
 
-modules = closure(seeds)
-published = closure(published_seeds) - modules
+modules = closure(seeds, False)
+published = closure(published_seeds, True) - modules
 
 targets_data = json.loads(targets_json.read_text())
 known, project_libraries = targets_data["modules"], targets_data["projectLibraries"]
