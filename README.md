@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="community-resources/phantom-brand-src/phantom-black.png" alt="Phantom" width="180">
+  <img src="https://raw.githubusercontent.com/newkayak12/phantom-libs/main/brand/phantom-black.png" alt="Phantom" width="180">
 </p>
 
 <h1 align="center">Phantom</h1>
