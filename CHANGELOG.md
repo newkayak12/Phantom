@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 원본 브랜드 그림(`community-resources/phantom-brand-src`, PNG 3장 3.1MB)과 아이콘·스플래시를 만드는 `compose.swift`를 phantom-libs의 `brand/`로 옮겼다. README 로고는 그 주소를 쓴다. 앱에 들어가는 아이콘과 스플래시는 그대로다. (#40 4단계)
+
 - `phantom-bench.sh`가 실행마다 GC 직후의 class histogram(`histogram.txt`)도 저장한다. 두 빌드의 heap 차이를 클래스 단위로 비교할 수 있고, 이것으로 local-shared-index 키 맵이 heap 약 146MB를 쓰는 것을 찾았다(Phantom-plugins #46에서 76MB 줄임).
 
 - 플러그인 호환성 검사가 번들 플러그인의 content module 의존성(Java PSI, 테스트 러너, 구조 뷰 등)을 Plugin Verifier에 해당 번들 플러그인 의존성으로 알려 주도록 하고, 라이브러리의 선택 기능 때문에 생기는 오탐만 이유와 함께 무시 목록에 올렸다. coverage 0.1.3(rt jar의 중복 plugin.xml 제거)과 json 0.1.2(final 메서드 오버라이드로 보고되던 이름 충돌 해소)를 새 번들(`phantom-plugins-2a9d27d645`)에 담았다. (PR #40 후속)
