@@ -158,6 +158,9 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       layout.excludeFromModule("intellij.platform.resources", listOf(
         "eua.html", "euaCommunity.html", "PrivacyPolicy.html", "privacyEap.html", "consents.json", "localConsents.json",
       ))
+      // phantom-idea: JetBrains' usage statistics schemes and dictionaries (FUS and other recorders, 11 MB) only serve the
+      // statistics Phantom does not collect
+      layout.excludeFromModule("intellij.idea.community.customization", "event-log-metadata/**")
     }
 
     productLayout.prepareCustomPluginRepositoryForPublishedPlugins = false
