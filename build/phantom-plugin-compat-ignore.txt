@@ -1,0 +1,4 @@
+# Known false positives of tools/phantom-plugin-compat.sh (Plugin Verifier problems), one per line:
+#   <plugin id or *> | <text the verifier's problem title contains> | <reason>
+# Never list a real incompatibility here; fix the plugin or the IDE build instead.
+* | Usage of FUS internal API | Vendor policy check, not a runtime break: the plugins that report it (git, terminal, yaml) are Phantom-plugins' copies of IntelliJ modules and call the internal usage-statistics API of the same platform build they are bundled with; the classes resolve in the IDE.
