@@ -23,7 +23,7 @@
     <module name="intellij.maven.model" loading="embedded"/>
     <module name="intellij.maven" loading="embedded"/>
     <module name="intellij.maven.profiler"/>
-    <module name="intellij.maven.proofreading"/>
+    <!-- phantom-idea: intellij.maven.proofreading left out; it needs Grazie, which Phantom doesn't bundle (Phantom-plugins grammar replaces it), and JetBrains' unlicensed ai.grazie libraries -->
     <module name="intellij.maven.performanceTesting"/>
     <module name="intellij.maven.errorProne.compiler"/>
     <module name="intellij.maven.groovy"/>

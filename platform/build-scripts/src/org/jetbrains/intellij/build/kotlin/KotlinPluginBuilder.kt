@@ -91,7 +91,7 @@ abstract class KotlinPluginBuilder(val kind : KotlinPluginKind = System.getPrope
       "intellij.kotlin.gradle.codeInsight.groovy",
       "intellij.kotlin.gradle.codeInsight.toml",
       "intellij.kotlin.native",
-      "intellij.kotlin.grazie",
+      // phantom-idea: intellij.kotlin.grazie left out; it needs Grazie, which Phantom doesn't bundle (Phantom-plugins grammar replaces it), and JetBrains' unlicensed ai.grazie libraries
       "intellij.kotlin.runConfigurations.jvm",
       "intellij.kotlin.runConfigurations.junit",
       "intellij.kotlin.runConfigurations.testng",

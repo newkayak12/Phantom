@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 게시하는 Kotlin·Maven 플러그인에서 Grazie 연동 모듈(`intellij.kotlin.grazie`, `intellij.maven.proofreading`)을 뺀다. Phantom은 Grazie를 번들하지 않아(Phantom-plugins grammar가 대체) 두 모듈은 원래 로드되지 않았다. 게시 빌드 목록은 Grazie 모듈로 들어가지 않고, 어느 빌드도 `ai.grazie` 라이브러리를 받지 않는다. 게시 빌드 content report에서 빠진 것은 두 모듈뿐이다.
+
 - 테스트 프레임워크(`platform/testFramework/core`)가 실패 보고에 코드 소유자를 붙이지 않는다(`codeOwnerResolver` 제거). 소유자 해석기가 JetBrains 소유의 라이선스 없는 patronus codeowners를 썼다. 게시 빌드 목록은 테스트 의존을 따라가되 코드 소유자 모듈과 IDE metrics benchmark로는 들어가지 않는다. 일반·게시 빌드 어디서도 patronus를 받지 않고, 일반 빌드가 받는 JetBrains 호스팅 파일은 보류 중인 java_tools_windows 하나다. content report는 이전과 같다.
 
 - Maven 아티팩트 단계를 끈다(`mavenArtifacts`를 비워 빌드가 단계를 건너뜀). Phantom은 Maven 아티팩트를 게시하지 않고 phantom-build.sh가 결과를 지웠다. 일반 빌드 목록이 715개에서 676개 모듈로 준다. 게시 빌드 목록은 TEST 범위로만 닿는 모듈의 라이브러리를 넣지 않는다. patronus codeowners는 빌드 도구 자체(`platform/build-scripts` → `testFramework.core` → codeowners)가 컴파일에 써서 남는다.
