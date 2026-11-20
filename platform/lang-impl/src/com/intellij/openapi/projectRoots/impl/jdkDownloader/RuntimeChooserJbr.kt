@@ -1,6 +1,7 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.openapi.projectRoots.impl.jdkDownloader
 
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.lang.LangBundle
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ModalityState
@@ -17,6 +18,9 @@ internal data class RuntimeChooserDownloadableItem(val item: JdkItem) : RuntimeC
 }
 
 internal fun RuntimeChooserModel.fetchAvailableJbrs() {
+  // phantom-idea: the runtime list comes from download.jetbrains.com; without -Dphantom.jetbrains.services=true the
+  // chooser offers only the bundled runtime and local JDKs
+  if (!MarketplaceRequests.jetBrainsServicesEnabled) return
   object : Task.Backgroundable(null, LangBundle.message("progress.title.choose.ide.runtime.downloading.jetbrains.runtime.list")) {
     override fun run(indicator: ProgressIndicator) {
       val builds = service<RuntimeChooserJbrListDownloader>()
