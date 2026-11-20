@@ -164,9 +164,89 @@ runtime_dir=""
 for jbr in "$ide_root/jbr/Contents/Home" "$ide_root/jbr"; do
   if [[ -d "$jbr/lib" ]]; then runtime_dir="$jbr"; break; fi
 done
+# The verifier resolves a plugin's <dependencies><module name="..."/> to a module of the IDE but loads that module's classes
+# only for plugin dependencies, so the content modules of bundled plugins (Java's intellij.java.psi, the test runner's
+# intellij.platform.testRunner, the structure view ...) look unresolved although the IDE runs them. The runtime makes a
+# module's classes visible to every plugin that depends on it, so the zips are verified in a copy that also names the
+# bundled plugin owning each module it depends on (found through product-info.json: the module's jar sits in the
+# plugin's directory). Only <plugin id/> lines are added; no class or file of the zip changes.
+verify_zips="$work/verify-zips"
+python3 -I - "$info" "$zips" "$verify_zips" <<'PY'
+import glob, io, json, os, re, sys, zipfile
+import xml.etree.ElementTree as ET
+
+info_path, src_dir, dst_dir = sys.argv[1:4]
+info = json.load(open(info_path))
+layout = {e["name"]: e for e in info.get("layout", []) if "name" in e}
+
+def plugin_dir(entry):
+    for cp in entry.get("classPath", []):
+        m = re.match(r"(plugins/[^/]+)/", cp)
+        if m:
+            return m.group(1)
+    return None
+
+dir_to_plugin = {}
+for e in layout.values():
+    if e["kind"] == "plugin" and plugin_dir(e):
+        dir_to_plugin.setdefault(plugin_dir(e), e["name"])
+
+def owner(module):
+    e = layout.get(module)
+    if not e or e["kind"] != "moduleV2":
+        return None
+    return dir_to_plugin.get(plugin_dir(e))
+
+os.makedirs(dst_dir, exist_ok=True)
+for zpath in sorted(glob.glob(os.path.join(src_dir, "*.zip"))):
+    with zipfile.ZipFile(zpath) as z:
+        jars = {}
+        main = None
+        mods = set()
+        for n in z.namelist():
+            if re.fullmatch(r"[^/]+/lib/[^/]+\.jar", n):
+                jar = zipfile.ZipFile(io.BytesIO(z.read(n)))
+                jars[n] = jar
+                for jn in jar.namelist():
+                    if jn == "META-INF/plugin.xml" or re.fullmatch(r"(META-INF/)?[^/]+\.xml", jn):
+                        try:
+                            root = ET.fromstring(jar.read(jn))
+                        except ET.ParseError:
+                            continue
+                        if root.tag != "idea-plugin":
+                            continue
+                        if jn == "META-INF/plugin.xml" and (main is None or root.findtext("id")):
+                            main = (n, root)
+                        for d in root.findall("dependencies/module"):
+                            mods.add(d.get("name"))
+        own = main[1].findtext("id").strip()
+        declared = {d.get("id") for d in main[1].findall("dependencies/plugin")}
+        declared |= {d.text.strip() for d in main[1].findall("depends") if d.text}
+        add = sorted({owner(m) for m in mods} - {None, own} - declared)
+        out = os.path.join(dst_dir, os.path.basename(zpath))
+        if not add:
+            open(out, "wb").write(open(zpath, "rb").read()); continue
+        line = "".join(f'<plugin id="{p}"/>' for p in add)
+        def patch(xml):
+            if "<dependencies>" in xml:
+                return xml.replace("<dependencies>", "<dependencies>" + line, 1)
+            return xml.replace("</idea-plugin>", f"<dependencies>{line}</dependencies></idea-plugin>")
+        newjar = io.BytesIO()
+        with zipfile.ZipFile(newjar, "w", zipfile.ZIP_DEFLATED) as nj:
+            for item in jars[main[0]].infolist():
+                data = jars[main[0]].read(item.filename)
+                if item.filename == "META-INF/plugin.xml":
+                    data = patch(data.decode("utf-8")).encode("utf-8")
+                nj.writestr(item.filename, data)
+        with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as o:
+            for item in z.infolist():
+                data = newjar.getvalue() if item.filename == main[0] else z.read(item.filename)
+                o.writestr(item.filename, data)
+        print(f"  {os.path.basename(zpath)}: verified with the module owners {', '.join(add)} added as dependencies")
+PY
 export work jar ide_root reports runtime_dir
 # shellcheck disable=SC2016  # expanded by the inner shell
-printf '%s\0' "$zips"/*.zip | xargs -0 -P "${PHANTOM_COMPAT_JOBS:-4}" -n1 bash -c '
+printf '%s\0' "$verify_zips"/*.zip | xargs -0 -P "${PHANTOM_COMPAT_JOBS:-4}" -n1 bash -c '
   name="$(basename "$1" .zip)"
   cd "$work" && java -Dplugin.verifier.home.dir="$work/verifier-home-$name" -jar "$jar" check-plugin "$1" "$ide_root" ${runtime_dir:+-runtime-dir "$runtime_dir"} -offline \
     -verification-reports-dir "$reports/$name" > "$work/verifier-$name.log" 2>&1 || echo "$name" >> "$work/verifier-crashed"
