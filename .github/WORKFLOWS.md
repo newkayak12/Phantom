@@ -12,6 +12,7 @@ Service setup and troubleshooting: [SERVICES.md](SERVICES.md). Repository qualit
 | [Labels](workflows/phantom-labels.yml) | Synchronizes [labels](labels.json) and labels issues and PRs. |
 | [Linked issues](workflows/phantom-close-linked-issues.yml) | Closes linked issues after merge to main. Use `Closes #123` in the PR. |
 | [Wrapper validation](workflows/Gradle_wrappers_validation.yml) | Checks Gradle wrapper JARs. |
+| [Plugin compatibility](workflows/phantom-plugin-compat.yml) | Checks the bundled Phantom-plugins zips (sha256, since/until-build, dependencies, IntelliJ Plugin Verifier) against a Phantom DMG: on related PRs, on release, weekly. Same check locally: `tools/phantom-plugin-compat.sh`. |
 | [Release](workflows/phantom-release.yml) | Manual product build and release. |
 
 Coverage reports measure [the repository quality tool](../tools/phantom-quality.mjs), not the IDE. Run its tests with `node --test tools/phantom-quality.test.mjs`. For platform changes, run the affected IDE tests locally.
