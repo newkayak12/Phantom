@@ -47,6 +47,8 @@
 - Phantom이 고친 번들 플러그인 네 개(Java `com.intellij.java`, Git `Git4Idea`, Gradle `com.intellij.gradle`, JCEF)의 `<vendor>`를 JetBrains에서 Phantom(https://github.com/newkayak12/Phantom)으로 바꿨다. d2faebf601 이후 변경이 그 플러그인의 모듈에 닿는지로 골랐고, 고치지 않은 나머지 13개(Grid Core, platform-* 등)는 JetBrains 그대로다. vendor가 JetBrains인지에 따라 달라지는 코드를 확인했다: 번들 플러그인끼리 파일 형식이 겹칠 때의 우선순위(`ConflictingFileTypeMappingTracker`)는 지금 번들에 겹치는 확장자가 없어 영향이 없고, 바뀌는 것은 오류 보고 대화상자의 "외부 플러그인" 안내, 설정 내보내기 목록의 항목 이름(리소스 번들 없는 플러그인), 통계(꺼져 있음) 정도다 (4807eaa716, PR #12).
 
 ### 번들 구성
+- JCEF를 144(Chromium 144.0.7559)에서 150(Chromium 150.0.7871.129)으로 올렸다. 그 사이의 Chromium 보안 수정을 받는다. 업스트림 263 라인이 쓰는 빌드(`jcefBuild=263-b21`)이며 API 버전(1.21)은 그대로다. JCEF jar는 phantom-libs의 `jetbrains-hosted-3`에 미러했다. (PR #43)
+- 앱에 들어가는 JGit 6.6.1(jb)과 ini4j 0.5.5-2를 보안 패치한 빌드로 바꿨다. JGit은 CVE-2025-4949(XXE, `ManifestParser`·`AmazonS3`), ini4j는 CVE-2022-41404(`fetch()`의 무한 변수 치환)를 고친다. 바뀐 클래스만 원래 jar에 바꿔 넣은 파일을 phantom-libs의 `phantom-patched-1` 릴리스에서 받는다(패치와 해시는 phantom-libs의 PATCHED.csv, patches/). (PR #43)
 - `phantom-theme`과 `phantom-sync`를 이 저장소에서 빌드하지 않고 Phantom-plugins의 `theme`·`sync`를 phantom-libs 릴리스에서 받아 번들한다. 플러그인 ID(`dev.phantom.theme`, `dev.phantom.sync`)는 그대로라 기존 설정이 유지된다 (PR #42).
 - 쓰는 곳이 없는 gRPC 라이브러리 두 개(`intellij.libraries.grpc`, `intellij.libraries.grpc.netty.shaded`, 약 34MB)를 앱에서 뺀다. 쓰던 Grazie는 grammar 플러그인으로 바뀌었고, 프로세스 mediator는 어느 제품에도 들어가지 않는다.
 - 이모지 선택기(`intellij.emojipicker`, 리소스 약 10MB)를 앱에서 뺀다. 리눅스에서만 켜지는 기능이라 Phantom이 빌드하는 macOS와 Windows에서는 쓰이지 않는다. (PR #41)

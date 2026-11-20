@@ -5367,11 +5367,12 @@ http_file(
     url = "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2/com/jetbrains/format-ripper/format-ripper/1.3.0/format-ripper-1.3.0-sources.jar",
 )
 
+# phantom-idea: patched for CVE-2025-4949 (github.com/newkayak12/phantom-libs, PATCHED.csv); the file name in Bazel stays the original one
 http_file(
     name = "org_jetbrains_intellij_deps-org_eclipse_jgit-6_6_1_202309021850-r-jb-202510311356_http",
     downloaded_file_path = "org.eclipse.jgit-6.6.1.202309021850-r-jb-202510311356.jar",
-    sha256 = "a36daede93f146973abf54462040963846e919e09a922302210c875337e36d3d",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/org.eclipse.jgit/6.6.1.202309021850-r-jb-202510311356/org.eclipse.jgit-6.6.1.202309021850-r-jb-202510311356.jar",
+    sha256 = "b23ae904fd6a8812de872a74990ece89afdbb4af83be2a89025930710587b86f",
+    url = "https://github.com/newkayak12/phantom-libs/releases/download/phantom-patched-1/org.eclipse.jgit-6.6.1.202309021850-r-jb-202510311356-phantom1.jar",
 )
 
 http_file(
@@ -5381,11 +5382,12 @@ http_file(
     url = "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2/com/googlecode/javaewah/JavaEWAH/1.2.3/JavaEWAH-1.2.3.jar",
 )
 
+# phantom-idea: patched for CVE-2025-4949 (github.com/newkayak12/phantom-libs, PATCHED.csv); the file name in Bazel stays the original one
 http_file(
     name = "org_jetbrains_intellij_deps-org_eclipse_jgit-6_6_1_202309021850-r-jb-202510311356-sources_http",
     downloaded_file_path = "org.eclipse.jgit-6.6.1.202309021850-r-jb-202510311356-sources.jar",
-    sha256 = "dd0ea0af8c7b15235abfe25ca77ecc77bdcf22bbb1ba4052b3cf5e370d77c4b0",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/org.eclipse.jgit/6.6.1.202309021850-r-jb-202510311356/org.eclipse.jgit-6.6.1.202309021850-r-jb-202510311356-sources.jar",
+    sha256 = "9d43903487490ffc0ee353782651f774ee23ba4a5c630c9e7b4c9bace7579c5a",
+    url = "https://github.com/newkayak12/phantom-libs/releases/download/phantom-patched-1/org.eclipse.jgit-6.6.1.202309021850-r-jb-202510311356-phantom1-sources.jar",
 )
 
 http_file(
@@ -8846,18 +8848,20 @@ http_file(
     url = "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2/org/imgscalr/imgscalr-lib/4.2/imgscalr-lib-4.2-sources.jar",
 )
 
+# phantom-idea: patched for CVE-2022-41404 (github.com/newkayak12/phantom-libs, PATCHED.csv); the file name in Bazel stays the original one
 http_file(
     name = "org_jetbrains_intellij_deps-ini4j-0_5_5-2_http",
     downloaded_file_path = "ini4j-0.5.5-2.jar",
-    sha256 = "6d342a8599aed6e2871c638c87e2533647d6a32aec1e0feaa871133ae21517a4",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/ini4j/0.5.5-2/ini4j-0.5.5-2.jar",
+    sha256 = "afda385923f945ed86007db62d2cad3441d4fff366820af2f27b231143b4f8f7",
+    url = "https://github.com/newkayak12/phantom-libs/releases/download/phantom-patched-1/ini4j-0.5.5-2-phantom1.jar",
 )
 
+# phantom-idea: patched for CVE-2022-41404 (github.com/newkayak12/phantom-libs, PATCHED.csv); the file name in Bazel stays the original one
 http_file(
     name = "org_jetbrains_intellij_deps-ini4j-0_5_5-2-sources_http",
     downloaded_file_path = "ini4j-0.5.5-2-sources.jar",
-    sha256 = "babe6eec1943f77eb82d67f1fb3010ae3e20cd135d70d9dbc69f33117fd07b39",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/ini4j/0.5.5-2/ini4j-0.5.5-2-sources.jar",
+    sha256 = "b8f68d331e9117234421f8bbb88cc6f1372202c371be9453fd87e054552cc18c",
+    url = "https://github.com/newkayak12/phantom-libs/releases/download/phantom-patched-1/ini4j-0.5.5-2-phantom1-sources.jar",
 )
 
 http_file(
@@ -9197,17 +9201,17 @@ http_file(
 )
 
 http_file(
-    name = "org_jetbrains_intellij_deps_jcef-jcef-144_0_15-g72717cf-chromium-144_0_7559_172-api-1_21-262-b37_http",
-    downloaded_file_path = "jcef-144.0.15-g72717cf-chromium-144.0.7559.172-api-1.21-262-b37.jar",
-    sha256 = "1899c0290d492ecb45ff2e12b9fbf63e52b262e989d55da8eb40812bf8a06030",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jcef/jcef/144.0.15-g72717cf-chromium-144.0.7559.172-api-1.21-262-b37/jcef-144.0.15-g72717cf-chromium-144.0.7559.172-api-1.21-262-b37.jar",
+    name = "org_jetbrains_intellij_deps_jcef-jcef-150_0_14-g7c1aa68-chromium-150_0_7871_129-api-1_21-263-b21_http",
+    downloaded_file_path = "jcef-150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b21.jar",
+    sha256 = "864f67221aadb02f33c445fae1db8669020e26ff788c93c104eacdeaca8cff18",
+    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jcef/jcef/150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b21/jcef-150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b21.jar",
 )
 
 http_file(
-    name = "org_jetbrains_intellij_deps_jcef-jcef-144_0_15-g72717cf-chromium-144_0_7559_172-api-1_21-262-b37-sources_http",
-    downloaded_file_path = "jcef-144.0.15-g72717cf-chromium-144.0.7559.172-api-1.21-262-b37-sources.jar",
-    sha256 = "d6bdb53acf704f3208eaf3c50cc6c8847b71631bc01642c3d14a03bd22005496",
-    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jcef/jcef/144.0.15-g72717cf-chromium-144.0.7559.172-api-1.21-262-b37/jcef-144.0.15-g72717cf-chromium-144.0.7559.172-api-1.21-262-b37-sources.jar",
+    name = "org_jetbrains_intellij_deps_jcef-jcef-150_0_14-g7c1aa68-chromium-150_0_7871_129-api-1_21-263-b21-sources_http",
+    downloaded_file_path = "jcef-150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b21-sources.jar",
+    sha256 = "1b34f10f0ae7ccb492ca9a69fa2789c9ff05d52d815414b0c7cc38fe79ae7c37",
+    url = "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jcef/jcef/150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b21/jcef-150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b21-sources.jar",
 )
 
 http_file(
