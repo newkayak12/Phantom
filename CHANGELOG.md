@@ -33,6 +33,7 @@
 
 - 일반 빌드가 Kotlin·Maven 플러그인을 컴파일하지 않는다. 두 zip은 `PHANTOM_PUBLISH_PLUGINS=1`(phantom-release.sh가 켬)일 때만 새 타깃 `//build:i_build_target_published`로 만든다. 일반 빌드 타깃은 983개에서 795개가 되고, YAML 플러그인(`plugins/yaml`)도 Kotlin 쪽 사슬로만 필요해 빠진다. `tools/phantom-dist-targets.py`는 두 목록(`PHANTOM_DIST_TARGETS`, `PHANTOM_PUBLISHED_TARGETS`)을 쓰고, 게시 플러그인 모듈은 `build/phantom-published-modules.txt`에 둔다. (#40 4단계)
 - Plugins 창이 JetBrains Marketplace(plugins.jetbrains.com)를 부르지 않는다. 검색, 상세 정보, 리뷰, 로고, 가격, 설치된 Marketplace 플러그인의 업데이트 확인이 모두 해당된다. 목록에는 Phantom 플러그인 저장소와 사용자가 추가한 저장소만 나온다. `-Dphantom.jetbrains.services=true`로 다시 켤 수 있다. 기존에는 Marketplace 탭을 열면 JetBrains에서 목록을 가져왔다. (PR #55)
+- 번들 repository-search를 0.1.2로 올렸다. JetBrains Package Search 클라이언트와, JetBrains 전용 저장소에서만 받을 수 있던 라이브러리 7개를 뺐다(Phantom-plugins #51). 번들 `phantom-plugins-5fb6dda5e6`. (PR #56)
 
 - Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계, PR #52)
 
