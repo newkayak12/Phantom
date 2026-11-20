@@ -38,6 +38,7 @@
 
 - Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계, PR #52)
 - 오류 리포트(ea-report·exceptions.marketplace.jetbrains.com)와 로그 업로드(uploads.jetbrains.com)를 보내는 마지막 지점(`ITNProxy.sendError`, `LogUploader.uploadFile`)에서 `-Dphantom.jetbrains.services=true`가 없으면 막는다. 마켓 플러그인이 JetBrains 리포터를 등록해도 오류 창에 Report 버튼이 나오지 않는다. 기존에는 버튼을 누르면 JetBrains로 보냈다.
+- 오류 리포트(ea-report·exceptions.marketplace.jetbrains.com)와 로그 업로드(uploads.jetbrains.com)를 보내는 마지막 지점(`ITNProxy.sendError`, `LogUploader.uploadFile`)에서 `-Dphantom.jetbrains.services=true`가 없으면 막는다. 마켓 플러그인이 JetBrains 리포터를 등록해도 오류 창에 Report 버튼이 나오지 않는다. 기존에는 버튼을 누르면 JetBrains로 보냈다. (PR #53)
 
 - 원본 브랜드 그림(`community-resources/phantom-brand-src`, PNG 3장 3.1MB)과 아이콘·스플래시를 만드는 `compose.swift`를 phantom-libs의 `brand/`로 옮겼다. README 로고는 그 주소를 쓴다. 앱에 들어가는 아이콘과 스플래시는 그대로다. (#40 4단계)
 
