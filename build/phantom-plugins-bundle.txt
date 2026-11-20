@@ -1,6 +1,6 @@
 # Phantom-plugins zips that phantom-build.sh bundles: release assets of newkayak12/phantom-libs, written by
-# tools/phantom-plugins-bundle.sh from Phantom-plugins 917b1dfd8acd747f040102cc626f410cddbdd076
-tag phantom-plugins-917b1dfd8a
+# tools/phantom-plugins-bundle.sh from Phantom-plugins e80947bbfb2433791ae7c7b7247d424c1bb28a9d
+tag phantom-plugins-e80947bbfb
 04d5cc6bd17aaab921b28a5a9bf58d485edb8de43ff6fa61df7d8475fe3f14dc  toml-0.1.0.zip
 581754368055ae3a5f81b461f430da1ce3bec8b1e70469679b68fd3678760d38  yaml-0.1.0.zip
 6211be5214ee7ea07744afe5e98ece1e9d3f1728605da83268d259b71af57cfe  sh-0.1.0.zip
@@ -34,3 +34,4 @@ f5b35adb99fbe2c16e165bb53e2c01bf6dcb219952cea33b5b5162dc57c18cd4  theme-0.1.0.zi
 1dfd1ed27b7fa5b098ece063591648cb7dc89e960c2bdf551bbbc93482e3d605  navbar-0.1.0.zip
 43133d6ebc3eb007828500ec38431d7f53c3d19e31cef03705f8977a7b1b02b7  recentfiles-0.1.0.zip
 09995f5e6d95cd9615ca224ce84ed72cbba949b314bdea0eb0d6e21621effba3  serviceview-0.1.0.zip
+eb763c8c684119a2dd9cd8f5ae80b2ce585b36c447d2d8f57c2952c559405f46  endpoints-0.1.0.zip

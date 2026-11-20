@@ -33,7 +33,7 @@ val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
   "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
   "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grammar", "terminal", "github", "junit", "properties",
   "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images", "grid",
-  "git", "theme", "sync", "navbar", "recentfiles", "serviceview",
+  "git", "theme", "sync", "navbar", "recentfiles", "serviceview", "endpoints",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
