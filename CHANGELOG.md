@@ -50,8 +50,8 @@
 
 ### 번들 구성
 - Navbar, Recent Files, Services View 플랫폼 플러그인을 IntelliJ 원본 대신 Phantom-plugins가 만든 판(`dev.phantom.navbar`, `dev.phantom.recentfiles`, `dev.phantom.serviceview`, IntelliJ ID는 별칭, 콘텐츠 모듈 이름은 그대로)으로 번들한다. 셋 다 IDE의 Java·Gradle·Kotlin 모듈이 컴파일할 때 쓰지 않아 IDE 소스에서 떼어낼 수 있는 것들이다. `.removing`으로 원본을 빼고 `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 더했다.
-  번들은 `phantom-plugins-917b1dfd8a`(33개)로 바꿨다.
-- 배포 빌드(`//build:i_build_target`)가 저장소의 모든 production·test 모듈 타깃 4,148개(Python, Android, 배포하지 않는 플러그인과 모든 테스트 포함) 대신, 배포에 들어가는 모듈과 Maven·standalone JPS 모듈, 그리고 그 모듈 의존성의 production 타깃 983개만 컴파일한다. 목록은 `tools/phantom-dist-targets.py`가 content report로 `build/phantom_dist_targets.bzl`에 쓴다. `bazel clean` 뒤 빌드한 결과의 content report와 앱 파일 1,431개가 이전과 같다.
+  번들은 `phantom-plugins-917b1dfd8a`(33개)로 바꿨다. (PR #49)
+- 배포 빌드(`//build:i_build_target`)가 저장소의 모든 production·test 모듈 타깃 4,148개(Python, Android, 배포하지 않는 플러그인과 모든 테스트 포함) 대신, 배포에 들어가는 모듈과 Maven·standalone JPS 모듈, 그리고 그 모듈 의존성의 production 타깃 983개만 컴파일한다. 목록은 `tools/phantom-dist-targets.py`가 content report로 `build/phantom_dist_targets.bzl`에 쓴다. `bazel clean` 뒤 빌드한 결과의 content report와 앱 파일 1,431개가 이전과 같다. (PR #49)
 - SQLite 네이티브 라이브러리(`libsqliteij`)를 JetBrains의 3.42.0-jb.1 대신 phantom-libs에서 소스로 빌드한 SQLite 3.54.1 빌드로 바꿨다. JetBrains는 JNI 소스를 공개하지 않아 SQLite 3.42 이후의 보안 수정을 받을 수 없었다. JNI 부분은 xerial/sqlite-jdbc를 바탕으로 새로 작성했고 `//platform/sqlite:sqlite-tests_test` 7개가 통과한다. JPS 라이브러리 정의(`.idea/libraries/sqlite_native.xml`)도 같은 좌표로 맞췄다. 배포 빌드가 이 정의에서 jar 이름을 가져오기 때문이다. 이 라이브러리는 기본값이 꺼진 VCS 로그 SQLite 저장소(`vcs.log.index.sqlite.storage`)만 쓴다. (PR #46)
 - JCEF를 144(Chromium 144.0.7559)에서 150(Chromium 150.0.7871.129)으로 올렸다. 그 사이의 Chromium 보안 수정을 받는다. 업스트림 263 라인이 쓰는 빌드(`jcefBuild=263-b21`)이며 API 버전(1.21)은 그대로다. JCEF jar는 phantom-libs의 `jetbrains-hosted-3`에 미러했다. (PR #43)
 - 앱에 들어가는 JGit 6.6.1(jb)과 ini4j 0.5.5-2를 보안 패치한 빌드로 바꿨다. JGit은 CVE-2025-4949(XXE, `ManifestParser`·`AmazonS3`), ini4j는 CVE-2022-41404(`fetch()`의 무한 변수 치환)를 고친다. 바뀐 클래스만 원래 jar에 바꿔 넣은 파일을 phantom-libs의 `phantom-patched-1` 릴리스에서 받는다(패치와 해시는 phantom-libs의 PATCHED.csv, patches/). (PR #43)
