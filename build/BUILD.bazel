@@ -1,3 +1,4 @@
+load(":phantom_dist_targets.bzl", "PHANTOM_DIST_TARGETS")
 load("@jps_dynamic_deps_community//:targets.bzl", "ALL_COMMUNITY_IML_TARGETS", "ALL_COMMUNITY_TARGETS", "ALL_LIBRARY_COMMUNITY_TARGETS", "ALL_PRODUCTION_COMMUNITY_TARGETS", "ALL_TEST_COMMUNITY_TARGETS", "BAZEL_TARGETS_JSON_COMMUNITY", "JPS_TO_BAZEL_TREAT_KOTLIN_DEV_VERSION_AS_SNAPSHOT")
 load("@rules_java//java:defs.bzl", "java_binary")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
@@ -80,7 +81,9 @@ alias(
 java_binary(
     name = "i_build_target",
     add_opens = INTELLIJ_ADD_OPENS,
-    data = ALL_COMMUNITY_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
+    # phantom-idea: only the modules in the distribution (tools/phantom-dist-targets.py), not ALL_COMMUNITY_TARGETS: no
+    # tests, no Python or Android modules, no plugins Phantom doesn't ship. Bazel builds their dependencies on its own.
+    data = PHANTOM_DIST_TARGETS + ALL_LIBRARY_COMMUNITY_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
     jvm_flags = [
         "-Dintellij.build.bazel.targets.json.file=$(rlocationpath %s)" % BAZEL_TARGETS_JSON_COMMUNITY,
     ],
