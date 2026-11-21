@@ -102,8 +102,10 @@ private val objectMapper: ObjectMapper by lazy {
 class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginInfoProvider {
   companion object {
     /**
-     * phantom-idea: the IDE does not call JetBrains' plugin servers on its own (broken-plugin list, plugin id lists,
-     * feature suggestions). Browsing the Marketplace tab still works; `-Dphantom.jetbrains.services=true` turns the rest back on.
+     * phantom-idea: the IDE does not call JetBrains' plugin servers (plugins.jetbrains.com) at all: no broken-plugin list,
+     * plugin id lists or feature suggestions, and no JetBrains Marketplace search, details, reviews or updates in the Plugins
+     * dialog, which lists the Phantom plugins repository and custom repositories only. `-Dphantom.jetbrains.services=true`
+     * turns all of it back on.
      */
     @JvmStatic
     val jetBrainsServicesEnabled: Boolean
@@ -201,6 +203,8 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
       throwExceptions: Boolean = false,
       sendMachineId: Boolean,
     ): List<IdeCompatibleUpdate> {
+      // phantom-idea: no JetBrains Marketplace updates unless -Dphantom.jetbrains.services=true
+      if (!jetBrainsServicesEnabled) return emptyList()
       LOG.info("Looking for the last compatible plugin updates for:\n$allIds\n" +
                "send machine ID: $sendMachineId")
 
@@ -302,6 +306,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
       buildNumber: BuildNumber? = null,
       throwExceptions: Boolean = false,
     ): List<NearestUpdate> {
+      if (!jetBrainsServicesEnabled) return emptyList() // phantom-idea: see jetBrainsServicesEnabled
       try {
         if (ids.isEmpty()) return emptyList()
 
@@ -680,6 +685,8 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
 
   @Throws(IOException::class)
   fun executePluginSearch(query: String, count: Int, includeUpgradeToCommercialIde: Boolean): List<PluginUiModel> {
+    // phantom-idea: no JetBrains Marketplace search unless -Dphantom.jetbrains.services=true
+    if (!jetBrainsServicesEnabled) return emptyList()
     val activeProductCode = ApplicationInfoImpl.getShadowInstanceImpl().build.productCode
     val suggestedIdeCode = PluginAdvertiserService.getSuggestedCommercialIdeCode(activeProductCode)
     // phantom-idea: production builds list only plugins Phantom can install
@@ -765,6 +772,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   }
 
   private fun getAllPluginsVendors(): Set<String> {
+    if (!jetBrainsServicesEnabled) return emptySet() // phantom-idea: see jetBrainsServicesEnabled
     try {
       return HttpRequests
         .request(MarketplaceUrls.getSearchAggregationUrl("organizations"))
@@ -782,6 +790,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   }
 
   private fun getAllPluginsTags(): Set<String> {
+    if (!jetBrainsServicesEnabled) return emptySet() // phantom-idea: see jetBrainsServicesEnabled
     try {
       return HttpRequests
         .request(MarketplaceUrls.getSearchAggregationUrl("tags"))
@@ -816,6 +825,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
     pluginUiModel: PluginUiModel,
     indicator: ProgressIndicator? = null,
   ): PluginUiModel? {
+    if (!jetBrainsServicesEnabled) return pluginUiModel // phantom-idea: see jetBrainsServicesEnabled
     val externalPluginId = pluginUiModel.externalPluginId ?: return pluginUiModel
     val externalUpdateId = pluginUiModel.externalUpdateId ?: return pluginUiModel
 
@@ -851,6 +861,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   @RequiresBackgroundThread
   @RequiresReadLockAbsence
   internal fun loadPluginMetadata(externalPluginId: String): IntellijPluginMetadata? {
+    if (!jetBrainsServicesEnabled) return null // phantom-idea: see jetBrainsServicesEnabled
     try {
       return readOrUpdateFile(
         Paths.get(PathManager.getPluginTempPath(), "plugin-meta", "${externalPluginId}.json"),
@@ -890,6 +901,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   }
 
   fun getCompatibleUpdateByModule(module: String): PluginId? {
+    if (!jetBrainsServicesEnabled) return null // phantom-idea: see jetBrainsServicesEnabled
     try {
       val params = mapOf(
         "build" to ApplicationInfoImpl.orFromPluginCompatibleBuild(null),
@@ -923,6 +935,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
 
   @RequiresBackgroundThread
   private fun loadJetBrainsMarketplacePlugins(indicator: ProgressIndicator? = null) {
+    if (!jetBrainsServicesEnabled) return // phantom-idea: see jetBrainsServicesEnabled
     if (jetbrainsPluginsIds.get() != null) return
 
     try {
@@ -1016,6 +1029,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
     }
 
   private fun loadExtensionsForIdes() {
+    if (!jetBrainsServicesEnabled) return // phantom-idea: see jetBrainsServicesEnabled
     if (extensionsFromServer != null) return
 
     try {
@@ -1061,6 +1075,7 @@ class MarketplaceRequests(private val coroutineScope: CoroutineScope) : PluginIn
   @RequiresBackgroundThread
   @RequiresReadLockAbsence
   fun loadPluginReviews(pluginId: PluginId, page: Int): List<PluginReviewComment>? {
+    if (!jetBrainsServicesEnabled) return null // phantom-idea: see jetBrainsServicesEnabled
     try {
       return HttpRequests.request(MarketplaceUrls.getPluginReviewsUrl(pluginId, page))
         .setHeadersViaTuner()

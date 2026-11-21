@@ -315,6 +315,8 @@ private fun tryLoadJarIcons(
 }
 
 private fun downloadOrCheckUpdateFile(idPlugin: String, file: Path, theme: String) {
+  // phantom-idea: no logo downloads from the JetBrains Marketplace unless -Dphantom.jetbrains.services=true
+  if (!MarketplaceRequests.jetBrainsServicesEnabled) return
   try {
     val url = MarketplaceUrls.getPluginManagerUrl() + "/api/icon?pluginId=" +
               URLUtil.encodeURIComponent(idPlugin) + theme
