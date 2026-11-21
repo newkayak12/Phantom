@@ -49,6 +49,8 @@
 - 얕은(shallow) git 클론에서는 정적 baseline의 나이 검사를 건너뛰고 stderr에 안내(`git fetch --unshallow`)를 쓴다. 얕은 클론에서는 가장 오래 받은 커밋이 번들 목록의 마지막 변경으로 보여 모든 baseline이 `STALE`(종료 코드 2)로 나왔다 (aadcfe0bc7, PR #5).
 
 ### 문서
+
+- Product DSL 지침 경로와 한·영 README, 개발·빌드 가이드의 번들 구성 및 Kotlin·Maven ZIP 배포 안내를 갱신했다.
 - 위 네 커밋(6e71ed80c4, 048852ca23, a1313a347c, 5185f60295)에 맞춰 `README.md`, `README.ko.md`, `docs/phantom/`의 문서를 고쳤다. 네 변경이 빌드·테스트 전이라는 점을 문서에 함께 적었다 (64dc82b3f2, PR #2).
 - 문서가 기준으로 삼던 be60914099 뒤 main에 들어온 네 커밋(9229667cc7, a199380d7d, 60ea243e02, 04dba66c3a)을 `README.md`, `README.ko.md`, `AGENTS.md`, `docs/phantom/`의 현행 문서에 반영했다. 번들 구성(빼는 업스트림 모듈 21개, Phantom-plugins에서 빌드해 넣는 8개), Phantom-plugins 체크아웃이 필요한 빌드 절차와 릴리스 워크플로, 플러그인 별칭 대체(FORK-DELTA 3.12절), 밀린 `경로:줄`, 포크 델타 숫자(d2faebf601..64dc82b3f2)를 고치고 현행 문서의 기준 커밋을 64dc82b3f2로 바꿨다. 숫자는 그때 값이고 지금은 아래 항목의 값이다 (d65bc7d02d, PR #2).
 - 없는 `./build/jpsModelToBazel.cmd`를 가리키던 안내를 이 리포의 유일한 생성기 `./build/jpsModelToBazelCommunityOnly.cmd`로 고쳤다(AGENTS.md와 같은 문구, 이 포크에서 도는지는 미확인). 대상: `.ai/guide.md`, `.ai/tool-permissions.json`, `.agents/skills`와 `.claude/skills`의 module-dependencies, pseudo-kmp, testing-internals, module-set-pluginization, extract-module, `plugins/maven/.ai/index.md`, `build/libraries-dashboard`. Kotlin `projectModelUpdater.kt`는 ultimate 루트가 있을 때만 그 경로를 부르므로 그대로 두었다. (303c4a933a, PR #4)
