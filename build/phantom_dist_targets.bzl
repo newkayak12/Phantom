@@ -1089,9 +1089,6 @@ PHANTOM_DIST_TARGETS = [
 
 # The further targets of the plugins Phantom publishes instead of bundling (//build:i_build_target_published).
 PHANTOM_PUBLISHED_TARGETS = [
-    "@community//.ownership/monorepo-resolver:codeowners-monorepo-resolver.jar",
-    "@community//.ownership/runtime-resolver:codeowners-runtime-resolver.jar",
-    "@community//.ownership:codeowners.jar",
     "@community//RegExpSupport:regexp-tests.jar",
     "@community//fleet/test-runtime:test-runtime.jar",
     "@community//images:images-tests.jar",
@@ -1383,9 +1380,6 @@ PHANTOM_PUBLISHED_TARGETS = [
     "@community//plugins/yaml/backend:backend.jar",
     "@community//plugins/yaml:yaml.jar",
     "@community//tools/apiDump:apiDump.jar",
-    "@community//tools/intellij.tools.ide.metrics.benchmark:ide-metrics-benchmark.jar",
-    "@community//tools/intellij.tools.ide.metrics.collector:ide-metrics-collector.jar",
-    "@community//tools/intellij.tools.ide.util.common:ide-util-common.jar",
     "@lib//:ai.grazie.api/api-gateway-api-jvm-0.8.256.jar",
     "@lib//:ai.grazie.api/api-gateway-client-jvm-0.8.256.jar",
     "@lib//:ai.grazie.auth.product/auth-product-model-jvm-0.8.256.jar",
