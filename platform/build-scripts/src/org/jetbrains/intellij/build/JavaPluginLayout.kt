@@ -29,9 +29,6 @@ object JavaPluginLayout {
 
       spec.withResourceArchive("../jdkAnnotations", "lib/resources/jdkAnnotations.jar")
 
-      // phantom-idea: JetBrains' completion-ranking-java model has no license; leave it out (Java completion falls back to the default order)
-      spec.excludeModuleLibrary("completion-ranking-java", "intellij.java.impl")
-
       addition?.invoke(spec)
     }
   }

@@ -912,9 +912,6 @@
                                    implementationClass="com.intellij.codeInsight.completion.ml.JavaContextFeaturesProvider"/>
     <completion.ml.elementFeatures language="JAVA"
                                    implementationClass="com.intellij.codeInsight.completion.ml.JavaElementFeaturesProvider"/>
-    <!-- phantom-idea: JavaMLRankingProvider unregistered; its model (completion-ranking-java) is not shipped because it has no license
-    <completion.ml.model implementation="com.intellij.codeInsight.completion.ml.JavaMLRankingProvider"/>
-    -->
     <joinLinesHandler implementation="com.intellij.codeInsight.editorActions.NestedIfJoinLinesHandler"/>
     <joinLinesHandler implementation="com.intellij.codeInsight.editorActions.BlockJoinLinesHandler"/>
     <joinLinesHandler implementation="com.intellij.codeInsight.editorActions.CaseJoinLinesHandler"/>
