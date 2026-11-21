@@ -79,16 +79,3 @@ use_repo(maven, "j2b_maven")
 
 bazel_dep(name = "rules_python", version = "1.7.0")
 
-# Use custom remote_java_tools_windows with vc_redist .dll files due to https://github.com/bazelbuild/rules_java/issues/316
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-    name = "remote_java_tools_windows_with_vc_redist",
-    sha256 = "82203dfae9f75a268e5e0e643ce5696a7c035ce9626938601fb410ee11849b1b",
-    url = "https://packages.jetbrains.team/files/p/ij/intellij-build-dependencies/rules-java/java_tools_windows-v19.0-with-vc_redist.zip",
-)
-
-override_repo(
-    use_extension("@rules_java//java:extensions.bzl", "toolchains"),
-    remote_java_tools_windows = "remote_java_tools_windows_with_vc_redist",
-)
