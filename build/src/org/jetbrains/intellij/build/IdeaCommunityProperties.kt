@@ -170,13 +170,9 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
 
     productLayout.skipUnresolvedContentModules = true
 
-    mavenArtifacts.forIdeModules = true
-    mavenArtifacts.additionalModules += MAVEN_ARTIFACTS_ADDITIONAL_MODULES
-    mavenArtifacts.squashedModules += persistentListOf(
-      "intellij.platform.util.base",
-      "intellij.platform.util.base.multiplatform",
-      "intellij.platform.util.zip",
-    )
+    // phantom-idea: no Maven artifacts (forIdeModules, additionalModules = MAVEN_ARTIFACTS_ADDITIONAL_MODULES, squashedModules
+    // stay empty, so the build skips the step). Phantom publishes none, phantom-build.sh deleted the output, and the step
+    // compiled test frameworks whose dependencies include JetBrains-owned libraries (patronus codeowners).
     mavenArtifacts.validateForMavenCentralPublication = { module ->
       JewelMavenArtifacts.isPublishedJewelModule(module) || JewelMavenArtifacts.isPublishedPlatformDependency(module)
     }
