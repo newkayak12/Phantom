@@ -118,6 +118,7 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 
 - [CHANGELOG.md](CHANGELOG.md): 릴리스별 변경
 - [PRIVACY.ko.md](PRIVACY.ko.md): Phantom이 수집하는 것(없음)과 접속하는 곳
+- [PERFORMANCE.ko.md](PERFORMANCE.ko.md): IntelliJ IDEA Ultimate 대비 시작 시간과 메모리
 
 ## 업스트림과 상표
 
