@@ -39,7 +39,7 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그
 - "Report to JetBrains" 오류 전송과 기본 IDE 업데이트 피드(`-Didea.updates.url`을 주면 되살아난다).
 
 **줄인 것**
-- 업스트림 번들 플러그인 40개를 뺐다. 14개는 그냥 뺐고(Learn, MCP 서버, ACP, 내부 개발자 도구, Eclipse 가져오기, GitLab, 추가 키맵 등), 25개는 Phantom-plugins에서 빌드한 판으로 바꿨으며(TOML, YAML, Shell Script, Decompiler, Coverage, TextMate, Markdown, Mermaid, Copyright, EditorConfig, HTML Tools, TestNG, Java I18n, Grazie, Terminal, GitHub), Kotlin은 대신 릴리스마다 별도 zip으로 Phantom 플러그인 저장소에 올린다(Kotlin이나 Gradle Kotlin DSL 스크립트를 쓰는 프로젝트에 설치를 제안한다). Android와 Compose도 뺐다. 소스는 업스트림 병합을 위해 남긴다.
+- TextMate와 Images 등은 Phantom-plugins 빌드로 교체한다. Kotlin Support와 Maven Support는 릴리스마다 Phantom 플러그인 저장소에 별도 ZIP으로 게시한다. 업스트림 병합을 위해 원본 소스는 보존한다.
 - 이 페이지에 적은 변경 일부는 번들이 이제 Phantom-plugins 빌드로 가져오는 플러그인의 이 리포지토리 소스에 있다(GitHub 로그인, Grazie Cloud, 터미널 Junie 에이전트, YAML "Try Ultimate", ShellCheck 다운로드). 그 빌드에 이 변경이 들어 있는지는 확인하지 않았다.
 - Marketplace 목록은 JetBrains가 게시한 플러그인을 보여 주지 않는다(Phantom이 유지하는 것은 자체 판을 둔다). 소스 실행, internal 모드, `-Dphantom.marketplace.showAll=true`이면 보인다.
 - JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 피드백 양식, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.
@@ -78,7 +78,7 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 
 ## 플러그인
 
-백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 그중 26개는 대체하는 업스트림 플러그인 대신 번들에 들어간다. Mermaid(Phantom 자체 구현)를 뺀 나머지는 업스트림 플러그인 ID를 별칭으로 가지므로 원본에 의존하는 플러그인도 그대로 해석된다.
+백엔드 기능은 별도 리포지토리 [newkayak12/Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에 있고, 모든 Phantom 빌드가 이곳을 플러그인 저장소로 등록한다. 프로젝트가 해당 라이브러리를 쓰면 IDE가 플러그인 설치를 한 번 제안한다. Settings | Plugins에서 직접 설치해도 된다. 번들 플러그인 버전은 `build/phantom-plugins-bundle.txt`에 기록한다.
 
 | 번들, 이 리포지토리에서 빌드 | 번들, Phantom-plugins에서 빌드 | Phantom-plugins에서 필요할 때 설치 |
 |---|---|---|
@@ -108,7 +108,7 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 ./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
 ```
 
-`phantom-build.sh`는 먼저 그 26개 플러그인을 Phantom-plugins의 Gradle 래퍼로 빌드해 `out/phantom-plugins/`에 푼다. 체크아웃이나 플러그인 zip이 없으면 멈춘다. 첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생긴다. 번들하지 않는 Kotlin·Maven 플러그인은 `PHANTOM_PUBLISH_PLUGINS=1`(phantom-release.sh가 켬)일 때만 그 안의 `*-plugins/` 폴더에 zip으로 생기고, 그 밖의 빌드는 두 플러그인의 타깃 약 190개를 건너뛴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `048852ca23`)은 아직 빌드하거나 테스트하지 않았다.
+`phantom-build.sh`는 phantom-libs에서 지정된 버전의 플러그인 ZIP을 받는다. `PHANTOM_PLUGINS_REPO`를 지정하면 해당 체크아웃에서 빌드한다. 첫 빌드는 약 2시간, 이후 빌드는 몇 분 걸린다. 결과물은 `out/phantom-idea/artifacts/`에 생긴다. 번들하지 않는 Kotlin·Maven 플러그인은 `PHANTOM_PUBLISH_PLUGINS=1`(phantom-release.sh가 켬)일 때만 그 안의 `*-plugins/` 폴더에 zip으로 생기고, 그 밖의 빌드는 두 플러그인의 타깃 약 190개를 건너뛴다. 빌드는 더는 추적 파일을 고치지 않는다. `phantom-build.sh`가 표시 버전을 `-Dphantom.version.major`, `-Dphantom.version.minor`로 넘기고, 추적 중인 `IdeaApplicationInfo.xml`에는 자리표시자(`0` / `0.0`)가 남는다. 그래서 소스에서 실행한 IDE나 `installers.cmd`를 직접 실행한 결과는 버전 0.0으로 보인다. 이 변경(커밋 `048852ca23`)은 아직 빌드하거나 테스트하지 않았다.
 
 버전 체계: 표시 버전 `YY.MM.DD`, 빌드 번호 `PH-<YYMMDD>.<N>`, 그리고 플랫폼 262용 플러그인이 계속 로드되도록 남긴 내부 플랫폼 빌드 `262.<YYMMDD>`.
 
