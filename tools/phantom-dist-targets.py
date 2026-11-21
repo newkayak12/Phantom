@@ -70,26 +70,27 @@ published = closure(published_seeds) - modules
 
 targets_data = json.loads(targets_json.read_text())
 known, project_libraries = targets_data["modules"], targets_data["projectLibraries"]
-def targets_of(ms):
+def targets_of(ms, test_libraries):
   targets = set()
   for m in ms:
     if m not in known:
       continue
     targets.update(known[m]["productionTargets"])
-    # The jars of its libraries, of any scope like the module dependencies: the build looks each of them up in its
+    # The jars of its libraries (test ones only for the published plugins: Kotlin packs kotlin-test-junit): the build looks each of them up in its
     # runfiles ("Unable to determine dependency path '@lib//:...jar'")
-    for name in re.findall(r'<orderEntry type="library"[^>]* name="([^"]+)" level="project"', imls[m].read_text()):
-      targets.update(project_libraries[name]["jarTargets"])
+    for attrs, name in re.findall(r'<orderEntry type="library"([^>]*) name="([^"]+)" level="project"', imls[m].read_text()):
+      if test_libraries or 'scope="TEST"' not in attrs:
+        targets.update(project_libraries[name]["jarTargets"])
     for library in known[m]["moduleLibraries"].values():
       targets.update(library["jarTargets"])
   return sorted(targets)
-targets = targets_of(modules)
+targets = targets_of(modules, False)
 # libraries the layout adds by name (withProjectLibrary), not through a module
 targets = sorted(set(targets).union(*(project_libraries[n]["jarTargets"] for n in seeds if n not in imls and n in project_libraries)))
 # the Kotlin compiler distribution the Kotlin plugin unpacks into kotlinc/ (kotlin/KotlinPluginBuilder.kt), looked up by name
 published_libraries = {t for n in published_seeds | {"kotlinc.kotlin-dist"} if n not in imls and n in project_libraries
                        for t in project_libraries[n]["jarTargets"]}
-published_targets = sorted((set(targets_of(published)) | published_libraries) - set(targets))
+published_targets = sorted((set(targets_of(published, True)) | published_libraries) - set(targets))
 
 def bzl_list(name, items):
   return f"{name} = [\n" + "".join(f'    "{t}",\n' for t in items) + "]\n"
