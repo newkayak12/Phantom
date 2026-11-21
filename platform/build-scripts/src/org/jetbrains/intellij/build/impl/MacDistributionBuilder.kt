@@ -195,6 +195,7 @@ class MacDistributionBuilder(
       val runtimeDir = context.bundledRuntime.extract(os = OsFamily.MACOS, arch = arch, libc = MacLibcImpl.DEFAULT)
       updateExecutablePermissions(runtimeDir, executableFileMatchers)
       createCompactHeadersCdsArchive(runtimeDir, arch, context)  // phantom-idea: base CDS archive for -XX:+UseCompactObjectHeaders
+      buildAotCache(osAndArchSpecificDistPath, runtimeDir, arch)  // phantom-idea: lib/phantom.aot, see PhantomAotCache.kt
 
       if (context.isMacCodeSignEnabled) {
         /**
@@ -263,6 +264,53 @@ class MacDistributionBuilder(
       else {
         buildForArch(arch, macZip, macZipProductInfoJson, macZipWithoutRuntime, macZipWithoutRuntimeProductInfoJson)
       }
+    }
+  }
+
+  /** phantom-idea: the architectures whose app carries [PHANTOM_AOT_CACHE]; their product-info.json passes it instead of the CDS archive */
+  private val aotCacheArchs: MutableSet<JvmArchitecture> = java.util.concurrent.ConcurrentHashMap.newKeySet()
+
+  @OptIn(ExperimentalPathApi::class)
+  private suspend fun buildAotCache(osAndArchSpecificDistPath: Path, runtimeDir: Path, arch: JvmArchitecture) {
+    val cacheFile = osAndArchSpecificDistPath.resolve(PHANTOM_AOT_CACHE)
+    Files.deleteIfExists(cacheFile)
+    if (context.isLanguageServer) return
+    val workDir = context.paths.tempDir.resolve("aot-${arch.dirName}")
+    withContext(Dispatchers.IO) {
+      workDir.deleteRecursively()
+      workDir.createDirectories()
+    }
+    if (System.getProperty("phantom.aot.cache", "true").toBoolean()) {
+      unsealJars(context.bootClassPathJarNames.map { context.paths.distAllDir.resolve("lib/$it") })
+    }
+    // a runnable app to train on: the same layout as the .dmg, without the CDS arguments
+    val zip = workDir.resolve("training.zip")
+    buildMacZip(
+      macDistributionBuilder = this,
+      targetFile = zip,
+      zipRoot = getMacZipRoot(customizer, context),
+      arch = arch,
+      productJson = generateProductJson(arch = arch, withRuntime = true, context = context, jvmArgs = ::withoutCds),
+      directories = listOf(context.paths.distAllDir, osAndArchSpecificDistPath, runtimeDir),
+      extraFiles = context.getDistFiles(OsFamily.MACOS, arch, MacLibcImpl.DEFAULT),
+      includeRuntime = true,
+      compressionLevel = Deflater.NO_COMPRESSION,
+    )
+    val unpacked = workDir.resolve("app")
+    context.runProcess(args = listOf("ditto", "-x", "-k", zip.toString(), unpacked.toString()))
+    // The JVM takes the cache only for jars with the size and modification time it was made with. makedmg.sh sets every file
+    // in the .dmg to the build date (SOURCE_DATE_EPOCH) with `touch -t`, which has minute precision.
+    withContext(Dispatchers.IO) {
+      val buildMinute = java.nio.file.attribute.FileTime.from(context.options.buildDateInSeconds / 60 * 60, java.util.concurrent.TimeUnit.SECONDS)
+      unpacked.walk().forEach { Files.setLastModifiedTime(it, buildMinute) }
+    }
+    val appDir = unpacked.resolve(customizer.getRootDirectoryName(context.applicationInfo, context.buildNumber))
+    if (createPhantomAotCache(appDir, cacheFile, arch, workDir, context)) {
+      aotCacheArchs.add(arch)
+    }
+    withContext(Dispatchers.IO) {
+      Files.deleteIfExists(zip)
+      unpacked.deleteRecursively()
     }
   }
 
@@ -406,7 +454,12 @@ class MacDistributionBuilder(
 
   override fun isRuntimeBundled(file: Path): Boolean = !file.name.contains(NO_RUNTIME_SUFFIX)
 
-  private suspend fun generateProductJson(arch: JvmArchitecture, withRuntime: Boolean, context: BuildContext): String {
+  private suspend fun generateProductJson(
+    arch: JvmArchitecture,
+    withRuntime: Boolean,
+    context: BuildContext,
+    jvmArgs: (List<String>) -> List<String> = { if (withRuntime && arch in aotCacheArchs) withAotCache(it) else it },  // phantom-idea: PhantomAotCache.kt
+  ): String {
     val toRoot = if (context.isLanguageServer) "" else "../"
     return generateProductInfoJson(
       relativePathToBin = "${toRoot}bin",
@@ -419,7 +472,7 @@ class MacDistributionBuilder(
           javaExecutablePath = if (withRuntime) "${toRoot}jbr/Contents/Home/bin/java" else null,
           vmOptionsFilePath = "${toRoot}bin/${context.productProperties.baseFileName}.vmoptions",
           bootClassPathJarNames = context.bootClassPathJarNames,
-          additionalJvmArguments = context.getAdditionalJvmArguments(OsFamily.MACOS, arch),
+          additionalJvmArguments = jvmArgs(context.getAdditionalJvmArguments(OsFamily.MACOS, arch)),
           mainClass = context.ideMainClassName,
           stdioRedirectArg = context.productProperties.stdioRedirectArg,
           customCommands = run {

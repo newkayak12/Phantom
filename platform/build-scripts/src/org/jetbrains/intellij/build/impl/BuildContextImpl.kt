@@ -463,7 +463,10 @@ class BuildContextImpl internal constructor(
 
     if (productProperties.enableCds) {
       val cacheDir = if (os == OsFamily.WINDOWS) "%IDE_CACHE_DIR%\\" else $$"$IDE_CACHE_DIR/"
-      jvmArgs.add("-XX:SharedArchiveFile=${cacheDir}${productProperties.baseFileName}${buildNumber}.jsa")
+      // phantom-idea: buildNumber is 262.<YYMMDD> for every build of a day; the archive of another build is not replaced, it
+      // blocks -XX:+AutoCreateSharedArchive, so the name also takes the build's counter (PH-<YYMMDD>.<N>, phantom-build.sh)
+      val buildCounter = System.getProperty("phantom.build.number")?.substringAfterLast('.', "")?.takeIf { it.isNotEmpty() }
+      jvmArgs.add("-XX:SharedArchiveFile=${cacheDir}${productProperties.baseFileName}${buildNumber}${buildCounter?.let { ".$it" } ?: ""}.jsa")
       jvmArgs.add("-XX:+AutoCreateSharedArchive")
     }
     else {

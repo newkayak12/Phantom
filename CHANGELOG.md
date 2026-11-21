@@ -21,6 +21,12 @@
 
 - Windows에서 빌드할 때 쓰는 Bazel `java_tools_windows`를 JetBrains가 VC++ 런타임 DLL을 넣어 다시 묶은 판(`packages.jetbrains.team`) 대신 rules_java 기본값(같은 v19.0, mirror.bazel.build·GitHub)에서 받는다. 루트와 `platform/build-scripts/bazel`의 `MODULE.bazel`에서 덮어쓰기를 지웠다. Windows 빌드 머신에는 Microsoft VC++ 재배포 패키지가 깔려 있어야 한다(rules_java#316). macOS에서 만드는 Windows 설치 파일과는 관계없고, 이제 어느 빌드도 JetBrains 호스팅 파일을 받지 않는다.
 
+- macOS 앱에 AOT 캐시(`Contents/lib/phantom.aot`, JDK 25 `-XX:AOTCache`)를 넣는다. 빌드가 만든 앱으로 작은 Java 프로젝트를 여는 학습 실행을 돌리고(`-XX:AOTMode=record`), 기록한 것으로 캐시를 만든다(`PhantomAotCache.kt`). 이 앱은 런처의 동적 CDS 인자 대신 `-XX:AOTCache`로 시작한다. 9,878개 파일 프로젝트에서 시작부터 프로젝트가 열릴 때까지가 동적 CDS 1.88초에서 1.62초로 줄었다(5회 중앙값). 다른 위치(`/Applications`)로 옮긴 앱에서 캐시를 쓸 수 있게 boot classpath jar 두 개(`intellij.libraries.jbr.jar`, `intellij.libraries.xz.jar`)의 `Sealed`를 뺀다. 빌드는 복제한 앱으로 `-XX:AOTMode=on` 시작을 확인하고, 실패하면 캐시를 넣지 않는다. 빌드 머신과 OS·아키텍처가 다르거나 학습 실행이 실패하면 캐시 없이 이전처럼 동적 CDS를 쓴다. `-Dphantom.aot.cache=false`로 끌 수 있다. 앱 크기가 약 250MB 늘어난다.
+
+- `makedmg.sh`가 DMG 파일 시각을 맞출 때 분 자리에 월을 넣던 것(`date +%Y%m%d%H%m`)을 `%M`으로 고친다.
+
+- 동적 CDS 아카이브 이름에 그날의 빌드 순번을 붙인다(`phantom262.261121.2.jsa`). 같은 날 빌드가 이름(`phantom262.<YYMMDD>.jsa`)을 같이 써서, 다른 빌드가 남긴 아카이브가 있으면 런처가 새 아카이브를 만들지 못하고 기본 아카이브만으로 시작했다. AOT 캐시로 시작하는 macOS 앱은 시작 후 이전 빌드들의 `.jsa`를 모두 지운다.
+
 - 게시하는 Kotlin·Maven 플러그인에서 Grazie 연동 모듈(`intellij.kotlin.grazie`, `intellij.maven.proofreading`)을 뺀다. Phantom은 Grazie를 번들하지 않아(Phantom-plugins grammar가 대체) 두 모듈은 원래 로드되지 않았다. 게시 빌드 목록은 Grazie 모듈로 들어가지 않고, 어느 빌드도 `ai.grazie` 라이브러리를 받지 않는다. 게시 빌드 content report에서 빠진 것은 두 모듈뿐이다.
 
 - 테스트 프레임워크(`platform/testFramework/core`)가 실패 보고에 코드 소유자를 붙이지 않는다(`codeOwnerResolver` 제거). 소유자 해석기가 JetBrains 소유의 라이선스 없는 patronus codeowners를 썼다. 게시 빌드 목록은 테스트 의존을 따라가되 코드 소유자 모듈과 IDE metrics benchmark로는 들어가지 않는다. 일반·게시 빌드 어디서도 patronus를 받지 않고, 일반 빌드가 받는 JetBrains 호스팅 파일은 보류 중인 java_tools_windows 하나다. content report는 이전과 같다.
