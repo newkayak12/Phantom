@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 일반 빌드가 Kotlin·Maven 플러그인을 컴파일하지 않는다. 두 zip은 `PHANTOM_PUBLISH_PLUGINS=1`(phantom-release.sh가 켬)일 때만 새 타깃 `//build:i_build_target_published`로 만든다. 일반 빌드 타깃은 983개에서 795개가 되고, YAML 플러그인(`plugins/yaml`)도 Kotlin 쪽 사슬로만 필요해 빠진다. `tools/phantom-dist-targets.py`는 두 목록(`PHANTOM_DIST_TARGETS`, `PHANTOM_PUBLISHED_TARGETS`)을 쓰고, 게시 플러그인 모듈은 `build/phantom-published-modules.txt`에 둔다. (#40 4단계)
+
 - Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계, PR #52)
 
 - 원본 브랜드 그림(`community-resources/phantom-brand-src`, PNG 3장 3.1MB)과 아이콘·스플래시를 만드는 `compose.swift`를 phantom-libs의 `brand/`로 옮겼다. README 로고는 그 주소를 쓴다. 앱에 들어가는 아이콘과 스플래시는 그대로다. (#40 4단계)

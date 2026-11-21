@@ -1,4 +1,4 @@
-load(":phantom_dist_targets.bzl", "PHANTOM_DIST_TARGETS")
+load(":phantom_dist_targets.bzl", "PHANTOM_DIST_TARGETS", "PHANTOM_PUBLISHED_TARGETS")
 load("@jps_dynamic_deps_community//:targets.bzl", "ALL_COMMUNITY_IML_TARGETS", "ALL_COMMUNITY_TARGETS", "ALL_LIBRARY_COMMUNITY_TARGETS", "ALL_PRODUCTION_COMMUNITY_TARGETS", "ALL_TEST_COMMUNITY_TARGETS", "BAZEL_TARGETS_JSON_COMMUNITY", "JPS_TO_BAZEL_TREAT_KOTLIN_DEV_VERSION_AS_SNAPSHOT")
 load("@rules_java//java:defs.bzl", "java_binary")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
@@ -86,6 +86,20 @@ java_binary(
     data = PHANTOM_DIST_TARGETS + ALL_LIBRARY_COMMUNITY_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
     jvm_flags = [
         "-Dintellij.build.bazel.targets.json.file=$(rlocationpath %s)" % BAZEL_TARGETS_JSON_COMMUNITY,
+    ],
+    main_class = "OpenSourceCommunityInstallersBuildTarget",
+    runtime_deps = [":build"],
+)
+
+# phantom-idea: the same build plus the plugins Phantom publishes instead of bundling (Kotlin, Maven), for releases
+# (phantom-build.sh with PHANTOM_PUBLISH_PLUGINS=1)
+java_binary(
+    name = "i_build_target_published",
+    add_opens = INTELLIJ_ADD_OPENS,
+    data = PHANTOM_DIST_TARGETS + PHANTOM_PUBLISHED_TARGETS + ALL_LIBRARY_COMMUNITY_TARGETS + [BAZEL_TARGETS_JSON_COMMUNITY],
+    jvm_flags = [
+        "-Dintellij.build.bazel.targets.json.file=$(rlocationpath %s)" % BAZEL_TARGETS_JSON_COMMUNITY,
+        "-Dphantom.publish.plugins=true",
     ],
     main_class = "OpenSourceCommunityInstallersBuildTarget",
     runtime_deps = [":build"],

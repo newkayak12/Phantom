@@ -139,7 +139,11 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
     // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
     // Maven likewise (51 MB): suggested when a project has a pom.xml. Its optional modules elsewhere (Gradle's Maven
     // import, Kotlin's Maven support, Repository Search's common part) switch off without it.
-    productLayout.pluginModulesToPublish = persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE, MAVEN_PLUGIN_MODULE)
+    // Only //build:i_build_target_published (-Dphantom.publish.plugins=true, phantom-build.sh with PHANTOM_PUBLISH_PLUGINS=1)
+    // builds them: they are about 190 of the build's 980 targets, and a build that doesn't release them skips those.
+    productLayout.pluginModulesToPublish =
+      if (System.getProperty("phantom.publish.plugins").toBoolean()) persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE, MAVEN_PLUGIN_MODULE)
+      else persistentSetOf()
 
     // phantom-idea: class data sharing. The JVM archives the loaded classes into $IDE_CACHE_DIR/<base><build>.jsa on the
     // first exit after an install or update (about 25 s, about 370 MB) and maps it on later starts: "app initialization"
