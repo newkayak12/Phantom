@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 한·영 README의 번들 플러그인 조달 및 Kotlin·Maven 배포 설명과 Product DSL 작업 지침 경로를 갱신했다.
+
 - Windows에서 빌드할 때 쓰는 Bazel `java_tools_windows`를 JetBrains가 VC++ 런타임 DLL을 넣어 다시 묶은 판(`packages.jetbrains.team`) 대신 rules_java 기본값(같은 v19.0, mirror.bazel.build·GitHub)에서 받는다. 루트와 `platform/build-scripts/bazel`의 `MODULE.bazel`에서 덮어쓰기를 지웠다. Windows 빌드 머신에는 Microsoft VC++ 재배포 패키지가 깔려 있어야 한다(rules_java#316). macOS에서 만드는 Windows 설치 파일과는 관계없고, 이제 어느 빌드도 JetBrains 호스팅 파일을 받지 않는다.
 
 - 게시하는 Kotlin·Maven 플러그인에서 Grazie 연동 모듈(`intellij.kotlin.grazie`, `intellij.maven.proofreading`)을 뺀다. Phantom은 Grazie를 번들하지 않아(Phantom-plugins grammar가 대체) 두 모듈은 원래 로드되지 않았다. 게시 빌드 목록은 Grazie 모듈로 들어가지 않고, 어느 빌드도 `ai.grazie` 라이브러리를 받지 않는다. 게시 빌드 content report에서 빠진 것은 두 모듈뿐이다.
