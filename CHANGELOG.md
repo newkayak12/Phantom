@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- Bazel downloader 허용 목록에 `swcdn.apple.com`을 넣는다. llvm 툴체인의 macOS SDK(`@llvm//osx:macos_sdk`)를 Apple Command Line Tools 패키지에서 받는데 막혀 있어서, 저장소 캐시가 없는 깨끗한 머신(GitHub 호스팅 runner 등)에서는 빌드가 분석 단계에서 실패했다. 빌드에만 쓰고 앱에는 들어가지 않는다.
+
 - 한·영 README의 번들 플러그인 조달 및 Kotlin·Maven 배포 설명과 Product DSL 작업 지침 경로를 갱신했다.
 
 - Windows에서 빌드할 때 쓰는 Bazel `java_tools_windows`를 JetBrains가 VC++ 런타임 DLL을 넣어 다시 묶은 판(`packages.jetbrains.team`) 대신 rules_java 기본값(같은 v19.0, mirror.bazel.build·GitHub)에서 받는다. 루트와 `platform/build-scripts/bazel`의 `MODULE.bazel`에서 덮어쓰기를 지웠다. Windows 빌드 머신에는 Microsoft VC++ 재배포 패키지가 깔려 있어야 한다(rules_java#316). macOS에서 만드는 Windows 설치 파일과는 관계없고, 이제 어느 빌드도 JetBrains 호스팅 파일을 받지 않는다.
