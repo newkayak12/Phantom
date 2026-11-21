@@ -200,7 +200,7 @@
     <module name="intellij.kotlin.coverage"/>
     <module name="intellij.kotlin.i18n"/>
     <module name="intellij.kotlin.git"/>
-    <module name="intellij.kotlin.grazie"/>
+    <!-- phantom-idea: intellij.kotlin.grazie left out; it needs Grazie, which Phantom doesn't bundle (Phantom-plugins grammar replaces it), and JetBrains' unlicensed ai.grazie libraries -->
     <module name="intellij.kotlin.gradle.tooling"/>
     <module name="intellij.kotlin.lombok"/>
     <module name="intellij.kotlin.maven"/>
