@@ -148,7 +148,8 @@ jobs:
           GIT_NO_LAZY_FETCH=1 git cat-file --batch-check='%(objectname)' < "$objects" \
             | awk '$2 == "missing" { print $1 }' > "$missing"
           if [[ -s "$missing" ]]; then
-            git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $header" \
+            # noop negotiation: with the usual "have" lines GitHub leaves out blobs of commits the clone already has
+            git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $header" -c fetch.negotiationAlgorithm=noop \
               fetch --no-tags --no-write-fetch-head --filter=blob:none --stdin origin < "$missing"
           fi
           GIT_NO_LAZY_FETCH=1 git cat-file --batch-check='%(objectname)' < "$objects" \
