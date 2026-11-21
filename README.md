@@ -115,6 +115,7 @@ To edit or debug the platform, open this checkout's root as the existing project
 
 - [CHANGELOG.md](CHANGELOG.md): changes per release
 - [PRIVACY.md](PRIVACY.md): what Phantom collects (nothing) and what it connects to
+- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against IntelliJ IDEA Ultimate
 
 ## Upstream and trademarks
 
