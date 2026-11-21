@@ -65,10 +65,13 @@ else:
 modules = closure(seeds, False)
 # The published plugins' layout resolves plugin.xml includes through test dependencies too, so their list follows them,
 # except into JetBrains' code owner modules and the IDE metrics benchmark that uses them (test tooling without descriptors;
-# they need the unlicensed patronus libraries). Only modules
+# they need the unlicensed patronus libraries) and into Grazie, which Phantom doesn't ship (its ai.grazie libraries are
+# unlicensed; tests reach it through java.i18n and java.tests). Only modules
 # reached without test dependencies get their libraries.
-published = closure(published_seeds, True, skip=("intellij.codeowners", "intellij.tools.ide.metrics.benchmark")) - modules
-published_with_libraries = closure(published_seeds, False) - modules
+published_skip = ("intellij.codeowners", "intellij.tools.ide.metrics.benchmark", "intellij.grazie", "intellij.kotlin.grazie",
+                  "intellij.libraries.ai.grazie")
+published = closure(published_seeds, True, published_skip) - modules
+published_with_libraries = closure(published_seeds, False, published_skip) - modules
 
 targets_data = json.loads(targets_json.read_text())
 known, project_libraries = targets_data["modules"], targets_data["projectLibraries"]
