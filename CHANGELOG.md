@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 빌드 타깃의 `data`에서 라이브러리 타깃 전체(`ALL_LIBRARY_COMMUNITY_TARGETS`, 1,209개)를 빼고, 배포 모듈과 게시 플러그인(Kotlin·Maven)이 쓰는 라이브러리 jar만 넣는다. `tools/phantom-dist-targets.py`가 모듈의 라이브러리, content report의 `module:`·`library:` 항목, 빌드가 이름으로 찾는 라이브러리(Dokka, `kotlinc.kotlin-dist`)를 목록에 더한다. 일반 빌드가 받는 JetBrains 호스팅 파일이 200개에서 91개로 줄고(게시 빌드는 43개 더), 95개는 어느 빌드도 받지 않는다. content report는 일반·게시 빌드 모두 이전과 같다. 쓰지 않는 `swcdn.apple.com` → JetBrains 미러 rewrite 규칙도 지웠다.
+
 - 일반 빌드가 Kotlin·Maven 플러그인을 컴파일하지 않는다. 두 zip은 `PHANTOM_PUBLISH_PLUGINS=1`(phantom-release.sh가 켬)일 때만 새 타깃 `//build:i_build_target_published`로 만든다. 일반 빌드 타깃은 983개에서 795개가 되고, YAML 플러그인(`plugins/yaml`)도 Kotlin 쪽 사슬로만 필요해 빠진다. `tools/phantom-dist-targets.py`는 두 목록(`PHANTOM_DIST_TARGETS`, `PHANTOM_PUBLISHED_TARGETS`)을 쓰고, 게시 플러그인 모듈은 `build/phantom-published-modules.txt`에 둔다. (#40 4단계)
 
 - Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계, PR #52)
