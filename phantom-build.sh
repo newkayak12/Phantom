@@ -10,6 +10,9 @@
 #                                        built for IntelliJ Platform 262 keep loading; never shown as Phantom's version)
 # PHANTOM_BUILD_SEQ=<N> fixes N (CI passes its run number); otherwise it comes from out/phantom-build-seq.
 # The build number goes to out/phantom-build-number for phantom-release.sh.
+# PHANTOM_PUBLISH_PLUGINS=1 also builds the Kotlin and Maven zips Phantom publishes instead of bundling
+#   (artifacts/<product code>-plugins, //build:i_build_target_published); phantom-release.sh sets it. Without it the
+#   build skips their ~190 targets.
 set -euo pipefail
 root="$(cd "$(dirname "$0")"; pwd)"
 d="$(date +%y%m%d)"; yy="${d:0:2}"; mm="${d:2:2}"; dd="${d:4:2}"
@@ -66,7 +69,12 @@ for zip in "${zips[@]}"; do
   [[ -f "$zip" ]] || { echo "no $zip"; exit 1; }
   unzip -q "$zip" -d "$root/out/phantom-plugins"
 done
-nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 \
+if [[ "${PHANTOM_PUBLISH_PLUGINS:-0}" != 0 ]]; then
+  build_target=("$root/build/run_build_target.sh" "$root" //build:i_build_target_published)
+else
+  build_target=("$root/installers.cmd")
+fi
+nice -n 10 "${build_target[@]}" -Dintellij.build.target.os=current -Dintellij.build.target.arch=aarch64 \
   -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" -Dphantom.version.major="$yy" -Dphantom.version.minor="$mm.$dd" "$@"
 
 # Keep out/ from growing by gigabytes per build: the .sit archives and temp are intermediates, older DMGs are superseded
@@ -83,7 +91,8 @@ if [[ "${PHANTOM_WINDOWS:-1}" != 0 ]]; then
   # The Windows build cleans out/phantom-idea like any build (leftovers of the macOS one make it fail), so the DMG
   # waits outside it
   mv "$dmg"* "$root/out/"
-  nice -n 10 "$root/installers.cmd" -Dintellij.build.target.os=windows -Dintellij.build.target.arch=x64 \
+  # (the same build target: it cleans out/phantom-idea, so the Kotlin and Maven zips a release needs come from this run)
+  nice -n 10 "${build_target[@]}" -Dintellij.build.target.os=windows -Dintellij.build.target.arch=x64 \
     -Dbuild.number="262.$d" -Dphantom.build.number="$phantom" -Dphantom.version.major="$yy" -Dphantom.version.minor="$mm.$dd" "$@"
   mv "$root/out/$(basename "$dmg")"* "$artifacts/"
   ls "$artifacts/phantom-$d.$n".exe "$artifacts/phantom-$d.$n".win.zip >/dev/null \
