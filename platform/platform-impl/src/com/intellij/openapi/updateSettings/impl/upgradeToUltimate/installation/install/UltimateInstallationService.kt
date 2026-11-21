@@ -3,6 +3,7 @@ package com.intellij.openapi.updateSettings.impl.upgradeToUltimate.installation.
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -208,7 +209,10 @@ internal class UltimateInstallationService(
 
 internal class TryUltimateActionHandler : OpenAnotherToolHandler {
   override fun isApplicable(project: Project?, suggestedIde: SuggestedIde, pluginId: PluginId?): Boolean {
-    return Registry.`is`("ide.try.ultimate.automatic.installation")
+    // phantom-idea: the automatic install downloads the IDE from download.jetbrains.com; without
+    // -Dphantom.jetbrains.services=true, Try Ultimate only opens the download page in the browser
+    return MarketplaceRequests.jetBrainsServicesEnabled
+           && Registry.`is`("ide.try.ultimate.automatic.installation")
            && project != null
            && canBeAutoInstalled(suggestedIde)
   }
