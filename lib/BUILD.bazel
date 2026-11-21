@@ -6488,21 +6488,6 @@ jvm_import(
 )
 
 copy_file(
-    name = "org.jetbrains.intellij.deps.completion/completion-ranking-java-0.9.3.jar_copy",
-    src = "@org_jetbrains_intellij_deps_completion-completion-ranking-java-0_9_3_http//file",
-    out = "org.jetbrains.intellij.deps.completion/completion-ranking-java-0.9.3.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "java-impl-completion-ranking-java",
-    jar = "@org_jetbrains_intellij_deps_completion-completion-ranking-java-0_9_3_http//file",
-    source_jar = "@org_jetbrains_intellij_deps_completion-completion-ranking-java-0_9_3-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-copy_file(
     name = "org.apache.ant/ant-1.7.1.jar_copy",
     src = "@org_apache_ant-ant-1_7_1_http//file",
     out = "org.apache.ant/ant-1.7.1.jar",
@@ -7667,21 +7652,6 @@ java_library(
     neverlink = True,
     visibility = ["//visibility:public"],
     exports = [":kotlin-compiler-embeddable"],
-)
-
-copy_file(
-    name = "org.jetbrains.intellij.deps.completion/completion-ranking-kotlin-0.4.0.jar_copy",
-    src = "@org_jetbrains_intellij_deps_completion-completion-ranking-kotlin-0_4_0_http//file",
-    out = "org.jetbrains.intellij.deps.completion/completion-ranking-kotlin-0.4.0.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "kotlin-completion-ml-completion-ranking-kotlin",
-    jar = "@org_jetbrains_intellij_deps_completion-completion-ranking-kotlin-0_4_0_http//file",
-    source_jar = "@org_jetbrains_intellij_deps_completion-completion-ranking-kotlin-0_4_0-sources_http//file",
-    visibility = ["//visibility:public"],
 )
 
 copy_file(
@@ -20079,57 +20049,6 @@ jvm_import(
     name = "tasks-core-commons-discovery",
     jar = "@commons-discovery-commons-discovery-0_4_http//file",
     source_jar = "@commons-discovery-commons-discovery-0_4-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-copy_file(
-    name = "org.jetbrains.intellij.deps.completion/completion-ranking-sh-0.0.2.jar_copy",
-    src = "@org_jetbrains_intellij_deps_completion-completion-ranking-sh-0_0_2_http//file",
-    out = "org.jetbrains.intellij.deps.completion/completion-ranking-sh-0.0.2.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "terminal-completion-ranking-sh",
-    jar = "@org_jetbrains_intellij_deps_completion-completion-ranking-sh-0_0_2_http//file",
-    source_jar = "@org_jetbrains_intellij_deps_completion-completion-ranking-sh-0_0_2-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-copy_file(
-    name = "org.jetbrains.terminal/completion-spec-0.7.0.jar_copy",
-    src = "@org_jetbrains_terminal-completion-spec-0_7_0_http//file",
-    out = "org.jetbrains.terminal/completion-spec-0.7.0.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "terminal-completion-terminal-completion-spec",
-    jar = "@org_jetbrains_terminal-completion-spec-0_7_0_http//file",
-    source_jar = "@org_jetbrains_terminal-completion-spec-0_7_0-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "terminal-completion-tests-terminal-completion-spec",
-    jar = "@org_jetbrains_terminal-completion-spec-0_7_0_http//file",
-    source_jar = "@org_jetbrains_terminal-completion-spec-0_7_0-sources_http//file",
-    visibility = ["//visibility:public"],
-)
-
-copy_file(
-    name = "org.jetbrains.terminal/completion-db-with-extensions-0.7.0.jar_copy",
-    src = "@org_jetbrains_terminal-completion-db-with-extensions-0_7_0_http//file",
-    out = "org.jetbrains.terminal/completion-db-with-extensions-0.7.0.jar",
-    allow_symlink = True,
-    visibility = ["//visibility:public"],
-)
-
-jvm_import(
-    name = "terminal-terminal-completion-db-with-extensions",
-    jar = "@org_jetbrains_terminal-completion-db-with-extensions-0_7_0_http//file",
     visibility = ["//visibility:public"],
 )
 
