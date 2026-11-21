@@ -17,6 +17,13 @@ class CdsArchivesTest {
   }
 
   @Test
+  fun `with an AOT cache every archive of the product goes, with or without the build counter`() {
+    val files = listOf("phantom262.261120.jsa", "phantom262.261121.2.jsa", "phantom-cds-test.jsa", "phantomX.jsa",
+                       "idea262.261116.jsa", "phantom262.261120.log", "index").map(dir::resolve)
+    assertEquals(listOf("phantom262.261120.jsa", "phantom262.261121.2.jsa").map(dir::resolve), CdsArchives.all("phantom", files))
+  }
+
+  @Test
   fun `an archive name without a prefix deletes nothing`() {
     val current = dir.resolve("262.jsa")
     assertEquals(emptyList<Path>(), CdsArchives.stale(current, listOf(dir.resolve("261.jsa"))))

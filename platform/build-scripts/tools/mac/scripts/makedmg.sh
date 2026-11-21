@@ -104,7 +104,8 @@ rm "$MOUNT_POINT/DSStorePlaceHolder"
 generate_DS_Store "$1"
 
 if [[ -n ${SOURCE_DATE_EPOCH+x} ]]; then
-  timestamp=$(date -r "$SOURCE_DATE_EPOCH" +%Y%m%d%H%m)
+  # phantom-idea: %M (minutes), not %m (month), which gave every file the hour of the build and the month as its minutes
+  timestamp=$(date -r "$SOURCE_DATE_EPOCH" +%Y%m%d%H%M)
   log "Updating access and modification times for files and symbolic links in $RESULT_DMG to $timestamp"
   find "$MOUNT_POINT" -exec touch -amht "$timestamp" '{}' \;
 fi
