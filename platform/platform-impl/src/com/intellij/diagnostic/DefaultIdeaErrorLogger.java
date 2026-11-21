@@ -7,6 +7,7 @@ import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.ProblematicPluginInfo;
 import com.intellij.openapi.diagnostic.ProblematicPluginInfoBasedOnDescriptor;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +47,11 @@ public final class DefaultIdeaErrorLogger {
     List<ErrorReportSubmitter> reporters;
     try {
       reporters = ErrorReportSubmitter.EP_NAME.getExtensionList();
+      // phantom-idea: ITNReporter and JetBrainsMarketplaceErrorReportSubmitter send to JetBrains, which ITNProxy blocks
+      // unless -Dphantom.jetbrains.services=true; leave them out so the error dialog shows no Report button that cannot work
+      if (!Boolean.getBoolean("phantom.jetbrains.services")) {
+        reporters = ContainerUtil.filter(reporters, reporter -> !(reporter instanceof ITNReporter));
+      }
     }
     catch (Throwable ignored) {
       return null;

@@ -37,6 +37,9 @@
 - JetBrains 사용 통계의 이벤트 스키마와 사전(`event-log-metadata/`, 11MB)을 앱에서 뺐다. Phantom은 통계를 모으지 않아 쓰지 않던 파일이다. (PR #58)
 
 - Endpoints 도구 창을 본체(`platform/lang-impl`의 `dev.phantom.ide.endpoints`와 `PhantomLangBundle`)에서 빼고 Phantom-plugins의 Phantom Endpoints(`dev.phantom.endpoints`, Phantom-plugins #48)로 번들한다. 도구 창 id(`Endpoints`)와 동작은 그대로다. `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 `endpoints`를 더했다. (#40 1단계, PR #52)
+- 오류 리포트(ea-report·exceptions.marketplace.jetbrains.com)와 로그 업로드(uploads.jetbrains.com)를 보내는 마지막 지점(`ITNProxy.sendError`, `LogUploader.uploadFile`)에서 `-Dphantom.jetbrains.services=true`가 없으면 막는다. 마켓 플러그인이 JetBrains 리포터를 등록해도 오류 창에 Report 버튼이 나오지 않는다. 기존에는 버튼을 누르면 JetBrains로 보냈다.
+- 오류 리포트(ea-report·exceptions.marketplace.jetbrains.com)와 로그 업로드(uploads.jetbrains.com)를 보내는 마지막 지점(`ITNProxy.sendError`, `LogUploader.uploadFile`)에서 `-Dphantom.jetbrains.services=true`가 없으면 막는다. 마켓 플러그인이 JetBrains 리포터를 등록해도 오류 창에 Report 버튼이 나오지 않는다. 기존에는 버튼을 누르면 JetBrains로 보냈다. (PR #53)
+- Try Ultimate가 IDE를 download.jetbrains.com에서 받아 자동 설치하던 기본 동작과, Choose Boot Java Runtime 창이 JetBrains Runtime 목록을 받아오던 동작을 같은 게이트 뒤로 옮겼다. 게이트가 없으면 Try Ultimate는 브라우저로 다운로드 페이지만 열고, 런타임 창에는 번들 런타임과 로컬 JDK만 나온다. (PR #53)
 
 - 원본 브랜드 그림(`community-resources/phantom-brand-src`, PNG 3장 3.1MB)과 아이콘·스플래시를 만드는 `compose.swift`를 phantom-libs의 `brand/`로 옮겼다. README 로고는 그 주소를 쓴다. 앱에 들어가는 아이콘과 스플래시는 그대로다. (#40 4단계)
 
