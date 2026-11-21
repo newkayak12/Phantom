@@ -30,12 +30,14 @@ jobs:
           echo "memory $(( $(sysctl -n hw.memsize) / 1073741824 )) GB"
           df -h /
 
-      # Xcode versions other than the selected one, Android SDK, .NET and the tool cache: the build needs none of them
+      # Xcode versions other than the selected one, Android SDK and .NET: the build needs none of them. The tool cache
+      # stays: JAVA_HOME points into it, and Bazel builds gradle-api with that JDK
       - name: Free disk
         run: |
           keep="$(xcode-select -p | sed 's#/Contents/Developer$##')"
           for x in /Applications/Xcode*.app; do [[ "$x" == "$keep" ]] || sudo rm -rf "$x"; done
-          sudo rm -rf "$HOME/Library/Android" /usr/local/share/dotnet "$HOME/.dotnet" "$RUNNER_TOOL_CACHE"/* || true
+          sudo rm -rf "$HOME/Library/Android" /usr/local/share/dotnet "$HOME/.dotnet" || true
+          echo "JAVA_HOME=$JAVA_HOME"
           df -h /
 
       # The build graph still references the Android modules (README, Build from source)
