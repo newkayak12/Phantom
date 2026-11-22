@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- DMG를 만들 때 `hdiutil create`가 "Resource busy"로 실패하면 최대 5번까지 다시 시도한다. GitHub 호스팅 macOS runner에서 가끔 나는 오류로, 한 시간 넘게 컴파일한 릴리스 빌드가 이 한 번 때문에 실패했다.
+
 - 배포 빌드 대상 목록에 Windows 실행 파일을 만드는 `launcher-generator`를 넣었다. macOS 빌드 보고서로 만든 목록에 빠져 있어서, 이전 빌드 결과가 없는 깨끗한 머신(GitHub 호스팅 runner)에서는 Windows 빌드가 실패했다.
 
 - 릴리스 workflow가 self-hosted runner 대신 GitHub 호스팅 macOS runner(macos-15)에서 DMG와 Windows 설치 파일을 빌드하고 릴리스한다. 캐시 없이 DMG만 70분에 빌드됐다(#72). Phantom-plugins 쪽 Kotlin·Maven 릴리스는 secret `PHANTOM_PLUGINS_TOKEN`이 있을 때만 한다. 없으면 본체만 릴리스하고 두 플러그인은 빌드하지 않는다(`PHANTOM_RELEASE_PLUGINS=0`). 시험용 workflow와 `tools/phantom-runner-setup.sh`는 지웠다.

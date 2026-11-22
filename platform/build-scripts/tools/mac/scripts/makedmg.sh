@@ -81,7 +81,15 @@ dd if=/dev/zero of="${EXPLODED}/DSStorePlaceHolder" bs=1024 count=10240
 stat "${EXPLODED}/DSStorePlaceHolder"
 
 log "Creating unpacked r/w disk image ${VOLNAME}..."
-hdiutil create -srcfolder "${EXPLODED}" -volname "$VOLNAME" -anyowners -nospotlight -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW "$TEMP_DMG"
+# phantom-idea: retried. On GitHub-hosted macOS runners hdiutil create fails now and then with "Resource busy" (the
+# disk arbitration of the VM), which failed a whole release build after an hour of compiling
+for attempt in 1 2 3 4 5; do
+  rm -f "$TEMP_DMG"
+  hdiutil create -srcfolder "${EXPLODED}" -volname "$VOLNAME" -anyowners -nospotlight -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW "$TEMP_DMG" && break
+  [ "$attempt" -lt 5 ] || exit 1
+  log "hdiutil create failed (attempt $attempt), retrying in $((attempt * 10)) s..."
+  sleep $((attempt * 10))
+done
 
 # check if the image already mounted
 if [ -d "$MOUNT_POINT" ]; then
