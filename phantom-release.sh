@@ -42,6 +42,9 @@ codesign -d "$app/Contents/MacOS/phantom" 2>/dev/null
 file "$app/Contents/MacOS/phantom" | grep -q "arm64"
 shown="$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app/Contents/Info.plist")"
 [[ "$shown" == "$build" ]] || { echo "Info.plist says $shown, expected $build"; exit 1; }
+# the third-party list of this build, for the Kotlin and Maven zips below (the dist trees are deleted after the build)
+notices="$(mktemp -d)"
+cp "$app/Contents/license/third-party-libraries.html" "$app/Contents/license/third-party-libraries.json" "$notices/"
 hdiutil detach "$mnt" -quiet; trap - EXIT; rmdir "$mnt"
 
 # Windows x64, when phantom-build.sh built it: an NSIS installer, and a zip whose product-info.json reports this
@@ -102,6 +105,36 @@ pbranch="release/phantom-$version"
 pwork="$(mktemp -d)/phantom-plugins"
 git -C "$plugins_repo" worktree add -q -B "$pbranch" "$pwork" origin/main
 
+# Copies plugin zip $1 to $2 with what Apache 2.0 section 4 asks of a work built from modified IntelliJ sources: the
+# license, a NOTICE saying so, and the third-party libraries with their license texts. They go in the plugin's folder
+# $3 (so an installed plugin keeps them); $4 is the plugin's title.
+with_notices() {
+  local zip="$1" out="$2" dir="$3" title="$4" stage
+  stage="$(mktemp -d)"
+  mkdir -p "$stage/$dir/license"
+  cp LICENSE.txt "$stage/$dir/"
+  cp license/*.txt "$notices"/third-party-libraries.* "$stage/$dir/license/"
+  cat > "$stage/$dir/NOTICE.txt" <<NOTICE
+Phantom $title plugin
+Copyright 2026 Phantom contributors
+
+This is the $title plugin of IntelliJ IDEA Community Edition (https://github.com/JetBrains/intellij-community),
+built by Phantom from its sources as modified by Phantom contributors (changed files are marked with "phantom-idea:"
+comments; https://github.com/newkayak12/Phantom). It is not published or endorsed by JetBrains.
+This software includes code from IntelliJ IDEA
+Copyright (C) JetBrains s.r.o.
+https://www.jetbrains.com/idea/
+Licensed under the Apache License, Version 2.0 (LICENSE.txt).
+
+Third-party libraries in this plugin are listed, with their licenses and where to get their sources, in
+license/third-party-libraries.html (and .json), the list of the whole Phantom $version build this plugin was built
+with. The license/ folder holds the full texts of the licenses named there other than Apache 2.0.
+NOTICE
+  cp "$zip" "$out"
+  (cd "$stage" && zip -qr "$root/$out" "$dir")
+  rm -rf "$stage"
+}
+
 # $1 zip, $2 descriptor jar in it, $3 tag prefix and asset name, $4 title, then the entry's JSON fields (ENTRY)
 publish() {
   local zip="$1" jar="$2" name="$3" title="$4"
@@ -113,7 +146,7 @@ publish() {
   if ! pgh release view "$tag" -R "$prepo" >/dev/null 2>&1; then
     git -C "$plugins_repo" tag -f "$tag" origin/main
     git -C "$plugins_repo" push -q -f origin "refs/tags/$tag"
-    cp "$zip" "out/$asset"
+    with_notices "$zip" "out/$asset" "${jar%%/*}" "$title"
     pgh release create "$tag" "out/$asset" -R "$prepo" --verify-tag --title "$title $pversion for Phantom 262.$day" \
       --notes "The IntelliJ $title plugin built with Phantom $version ($build), for Phantom builds from 262.$day."
     rm -f "out/$asset"
