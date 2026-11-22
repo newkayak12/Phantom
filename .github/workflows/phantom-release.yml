@@ -6,9 +6,10 @@
 # keeps no Bazel cache, and the DMG alone built from scratch in 70 minutes with 79 GB of disk left (#72). Windows is
 # cross-built on the same runner. The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it with the
 # "Phantom Local" certificate where it is installed, so no signing secret is stored on GitHub.
-# Secret PHANTOM_PLUGINS_TOKEN (.github/SERVICES.md, Release credentials): a fine-grained token for Phantom-plugins only
-# (Contents and Pull requests: write). phantom-release.sh releases Kotlin and Maven there and merges the marketplace.json
-# pull request with it; the job's own token releases this repository and cannot reach the private Phantom-plugins.
+# Optional secret PHANTOM_PLUGINS_TOKEN (.github/SERVICES.md, Release credentials): a fine-grained token for
+# Phantom-plugins only (Contents and Pull requests: write). With it phantom-release.sh also builds Kotlin and Maven,
+# releases them there and merges the marketplace.json pull request; without it only Phantom is released (the job's own
+# token cannot reach the private Phantom-plugins) and the marketplace keeps the previous Kotlin and Maven.
 name: Phantom release
 
 on:
@@ -35,7 +36,11 @@ jobs:
     steps:
       - name: Token
         run: |
-          [[ -n "$PHANTOM_PLUGINS_TOKEN" ]] || { echo "::error::secret PHANTOM_PLUGINS_TOKEN is not set"; exit 1; }
+          if [[ -z "$PHANTOM_PLUGINS_TOKEN" ]]; then
+            echo "::notice::no PHANTOM_PLUGINS_TOKEN: releasing Phantom only, without Kotlin and Maven"
+            echo "PHANTOM_RELEASE_PLUGINS=0" >> "$GITHUB_ENV"
+            exit 0
+          fi
           GH_TOKEN="$PHANTOM_PLUGINS_TOKEN" gh api repos/newkayak12/Phantom-plugins --jq '"Phantom-plugins push: \(.permissions.push)"'
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,6 +65,7 @@ jobs:
       # phantom-release.sh publishes Kotlin and marketplace.json through the Phantom-plugins checkout next to this one
       # (the build itself downloads the bundled plugins from phantom-libs); git reaches it with PHANTOM_PLUGINS_TOKEN
       - name: Phantom-plugins checkout
+        if: env.PHANTOM_RELEASE_PLUGINS != '0'
         run: |
           # shellcheck disable=SC2016 # the helper expands the token when git runs it
           git config --global credential.https://github.com/newkayak12/Phantom-plugins.git.helper \

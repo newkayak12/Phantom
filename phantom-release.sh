@@ -6,7 +6,8 @@
 #   NOTES="..." ./phantom-release.sh   release notes (default: the commits since the previous release tag)
 # Kotlin and Maven are not bundled: the build (PHANTOM_PUBLISH_PLUGINS=1) zips them for this platform build, and the release publishes each to the
 # Phantom plugins repository (the Phantom-plugins checkout next to this one, or PHANTOM_PLUGINS_REPO) as release
-# kotlin-262.<YYMMDD> / maven-262.<YYMMDD>, and points its marketplace.json entry there.
+# kotlin-262.<YYMMDD> / maven-262.<YYMMDD>, and points its marketplace.json entry there. PHANTOM_RELEASE_PLUGINS=0 skips
+# them (neither built nor published; the marketplace keeps the previous release's), as CI does without PHANTOM_PLUGINS_TOKEN.
 # Tag: v<YY>.<MM>.<DD>.<N> for build PH-<YYMMDD>.<N>. The DMG's app is ad-hoc signed; phantom-install.sh re-signs it
 # with the local "Phantom Local" certificate on the machine that installs it. The Windows files are unsigned, so
 # SmartScreen warns on the first run.
@@ -21,7 +22,7 @@ if [[ "${1:-}" != "--no-build" ]]; then
     last="$(git ls-remote --tags origin "refs/tags/v$today.*" | sed -E 's#.*refs/tags/v[0-9.]+\.([0-9]+)$#\1#' | sort -n | tail -1)"
     export PHANTOM_BUILD_SEQ=$(( ${last:-0} + 1 ))
   fi
-  PHANTOM_PUBLISH_PLUGINS=1 ./phantom-build.sh
+  PHANTOM_PUBLISH_PLUGINS="${PHANTOM_RELEASE_PLUGINS:-1}" ./phantom-build.sh
 fi
 build="$(cat out/phantom-build-number)"          # PH-261018.2
 day="${build#PH-}"; day="${day%%.*}"; n="${build##*.}"
@@ -63,10 +64,12 @@ published_zip() {
   [[ -n "$z" ]] && unzip -Z1 "$z" "$2" >/dev/null || { echo "no $1 plugin zip after the build" >&2; return 1; }
   echo "$z"
 }
-kotlin="$(published_zip Kotlin Kotlin/lib/kotlin-plugin.jar)"
-maven="$(published_zip maven-plugin maven-plugin/lib/maven-plugin.jar)"
-plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
-[[ -f "$plugins_repo/.phantom/marketplace.json" ]] || { echo "no Phantom-plugins checkout at $plugins_repo"; exit 1; }
+if [[ "${PHANTOM_RELEASE_PLUGINS:-1}" != 0 ]]; then
+  kotlin="$(published_zip Kotlin Kotlin/lib/kotlin-plugin.jar)"
+  maven="$(published_zip maven-plugin maven-plugin/lib/maven-plugin.jar)"
+  plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
+  [[ -f "$plugins_repo/.phantom/marketplace.json" ]] || { echo "no Phantom-plugins checkout at $plugins_repo"; exit 1; }
+fi
 
 if [[ -z "${NOTES:-}" ]]; then
   previous="$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)"
@@ -84,6 +87,7 @@ repo="$(git remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)#
 # as a draft first: the release only appears once every file (the DMG is ~800 MB) has finished uploading
 gh release create "$tag" "${assets[@]}" -R "$repo" --verify-tag --draft --title "Phantom $version ($build)" --notes "$NOTES"
 gh release edit "$tag" -R "$repo" --draft=false
+[[ "${PHANTOM_RELEASE_PLUGINS:-1}" != 0 ]] || { echo "Kotlin and Maven skipped (PHANTOM_RELEASE_PLUGINS=0)"; exit 0; }
 
 # Kotlin and Maven for this platform build in the Phantom plugins repository: a release holding each zip, and the
 # marketplace.json entry pointing at it (since this build: each is compiled against this exact platform)
