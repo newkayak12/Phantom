@@ -142,9 +142,8 @@ object RemoteCommunicatorHolder : SettingsSyncEventListener {
   fun getAvailableProviders(): List<SettingsSyncCommunicatorProvider> {
     val extensionList = arrayListOf<SettingsSyncCommunicatorProvider>()
     extensionList.addAll(getAvailableSyncProviders())
-    if (extensionList.find { it.providerCode == DEFAULT_PROVIDER_CODE } == null) {
-      extensionList.add(DelegatingDefaultCommunicatorProvider)
-    }
+    // phantom-idea: no JetBrains account placeholder; it offered to download the JetBrains "Backup and Sync" plugin from the
+    // JetBrains Marketplace. Only installed providers (Phantom's Git repository provider) are listed.
     return extensionList.sortedBy { it.providerCode } // always show providers in the same order
   }
 
