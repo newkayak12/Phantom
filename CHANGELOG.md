@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 릴리스 workflow가 self-hosted runner 대신 GitHub 호스팅 macOS runner(macos-15)에서 DMG와 Windows 설치 파일을 빌드하고 릴리스한다. 캐시 없이 DMG만 70분에 빌드됐다(#72). Phantom-plugins 쪽 Kotlin·Maven 릴리스는 secret `PHANTOM_PLUGINS_TOKEN`으로 한다. 시험용 workflow와 `tools/phantom-runner-setup.sh`는 지웠다.
+
 - Bazel downloader 허용 목록에 `swcdn.apple.com`을 넣는다. llvm 툴체인의 macOS SDK(`@llvm//osx:macos_sdk`)를 Apple Command Line Tools 패키지에서 받는데 막혀 있어서, 저장소 캐시가 없는 깨끗한 머신(GitHub 호스팅 runner 등)에서는 빌드가 분석 단계에서 실패했다. Apple이 고정된 패키지 주소를 내려(403) llvm 모듈의 두 번째 주소인 web.archive.org 사본(같은 sha256)도 허용한다. 빌드에만 쓰고 앱에는 들어가지 않는다.
 
 - 한·영 README의 번들 플러그인 조달 및 Kotlin·Maven 배포 설명과 Product DSL 작업 지침 경로를 갱신했다.

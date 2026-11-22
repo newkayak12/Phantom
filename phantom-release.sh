@@ -87,6 +87,9 @@ gh release edit "$tag" -R "$repo" --draft=false
 
 # Kotlin and Maven for this platform build in the Phantom plugins repository: a release holding each zip, and the
 # marketplace.json entry pointing at it (since this build: each is compiled against this exact platform)
+# gh for the Phantom plugins repository: CI passes a token scoped to it in PHANTOM_PLUGINS_TOKEN (its GH_TOKEN only
+# reaches this repository); locally gh's own login reaches both
+pgh() { if [[ -n "${PHANTOM_PLUGINS_TOKEN:-}" ]]; then GH_TOKEN="$PHANTOM_PLUGINS_TOKEN" gh "$@"; else gh "$@"; fi; }
 prepo="$(git -C "$plugins_repo" remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
 # main there takes changes only through pull requests: the entries are committed on a release branch in a worktree of
 # its own (the checkout in $plugins_repo is left as it is), then merged by a pull request below
@@ -103,11 +106,11 @@ publish() {
   pversion="$(unzip -p "$tmp" META-INF/plugin.xml | awk -F'[<>]' '$2 == "version" && !v { v = $3 } END { print v }')"
   rm -f "$tmp"
   [[ -n "$pversion" ]] || { echo "no version in the $title plugin.xml"; exit 1; }
-  if ! gh release view "$tag" -R "$prepo" >/dev/null 2>&1; then
+  if ! pgh release view "$tag" -R "$prepo" >/dev/null 2>&1; then
     git -C "$plugins_repo" tag -f "$tag" origin/main
     git -C "$plugins_repo" push -q -f origin "refs/tags/$tag"
     cp "$zip" "out/$asset"
-    gh release create "$tag" "out/$asset" -R "$prepo" --verify-tag --title "$title $pversion for Phantom 262.$day" \
+    pgh release create "$tag" "out/$asset" -R "$prepo" --verify-tag --title "$title $pversion for Phantom 262.$day" \
       --notes "The IntelliJ $title plugin built with Phantom $version ($build), for Phantom builds from 262.$day."
     rm -f "out/$asset"
   fi
@@ -139,9 +142,9 @@ ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Maven Support", "category": "
 # --admin merges without waiting for the pull request checks (the ruleset lets admins bypass them in pull requests only)
 if [[ -n "$(git -C "$pwork" log --oneline origin/main..HEAD)" ]]; then
   git -C "$pwork" push -q -f origin "HEAD:refs/heads/$pbranch"
-  gh pr create -R "$prepo" --base main --head "$pbranch" --title "Kotlin and Maven for Phantom 262.$day" \
+  pgh pr create -R "$prepo" --base main --head "$pbranch" --title "Kotlin and Maven for Phantom 262.$day" \
     --body "marketplace.json entries for the Kotlin and Maven releases built with Phantom $version ($build)."
-  gh pr merge "$pbranch" -R "$prepo" --squash --admin --delete-branch
+  pgh pr merge "$pbranch" -R "$prepo" --squash --admin --delete-branch
 fi
 git -C "$plugins_repo" worktree remove --force "$pwork"
 git -C "$plugins_repo" branch -q -D "$pbranch" 2>/dev/null || true
