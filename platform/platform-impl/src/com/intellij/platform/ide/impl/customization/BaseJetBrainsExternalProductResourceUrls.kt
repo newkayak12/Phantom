@@ -109,11 +109,13 @@ abstract class BaseJetBrainsExternalProductResourceUrls : ExternalProductResourc
   open val useInIdeEvaluationFeedback: Boolean
     get() = false
 
-  // phantom-idea: no JetBrains update feed (it would only send the machine id); `-Didea.updates.url` sets one
+  // phantom-idea: no JetBrains update feed (it would only send the machine id). The feed is updates.xml of the latest Phantom
+  // release (phantom-release.sh uploads it), fetched without request parameters; `-Didea.updates.url` sets another one
   override val updateMetadataUrl: Url?
     get() = System.getProperty("idea.updates.url")
       ?.let { Urls.newFromEncoded(it) }
       ?.let { UpdateRequestParametersProvider.passUpdateParameters(it) }
+      ?: Urls.newFromEncoded("https://github.com/newkayak12/Phantom/releases/latest/download/updates.xml")
 
   final override fun computePatchUrl(from: BuildNumber, to: BuildNumber): Url {
     val url = System.getProperty("idea.patches.url")?.let { Urls.newFromEncoded(it) } ?: basePatchDownloadUrl
