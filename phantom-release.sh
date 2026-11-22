@@ -87,6 +87,24 @@ git tag -f "$tag" HEAD
 git push -q -f origin "refs/tags/$tag"
 # this checkout is a fork of intellij-community; name the repository, or gh picks the upstream
 repo="$(git remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
+# the update feed: the IDE reads updates.xml of the latest release (BaseJetBrainsExternalProductResourceUrls.updateMetadataUrl)
+# and offers this build to older PH builds, with a Download button that opens the release page. Windows builds carry no
+# PH product code, so they find no product in it and are not offered updates.
+feed="$(mktemp -d)/updates.xml"
+cat > "$feed" <<EOF
+<products>
+  <product name="Phantom">
+    <code>PH</code>
+    <channel id="PH-RELEASE" name="Phantom releases" status="release" licensing="release" url="https://github.com/$repo/releases">
+      <build number="$day.$n" version="$version" releaseDate="20$day">
+        <message>Phantom $version is available.</message>
+        <button name="Download" url="https://github.com/$repo/releases/tag/$tag" download="true"/>
+      </build>
+    </channel>
+  </product>
+</products>
+EOF
+assets+=("$feed")
 # as a draft first: the release only appears once every file (the DMG is ~800 MB) has finished uploading
 gh release create "$tag" "${assets[@]}" -R "$repo" --verify-tag --draft --title "Phantom $version ($build)" --notes "$NOTES"
 gh release edit "$tag" -R "$repo" --draft=false
