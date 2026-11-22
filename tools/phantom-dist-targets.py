@@ -41,6 +41,9 @@ seeds.update(re.findall(r'withModule\("([\w.]+)"', jps_builder))
 # and the modules of its jps-build-test jar
 for names in re.findall(r"moduleNames = listOf\((.*?)\)", jps_builder, re.S):
   seeds.update(re.findall(r'"([\w.]+)"', names))
+# The launcher generator the Windows build runs to patch the .exe launchers (WindowsDistributionBuilder.patchLauncher); a
+# macOS build's report does not list it, and without it the Windows build fails on a machine with no older runfiles
+seeds.add("intellij.tools.launcherGenerator")
 
 imls = {Path(p).stem: root / p for p in re.findall(r'filepath="\$PROJECT_DIR\$/([^"]+\.iml)"', (root / ".idea/modules.xml").read_text())}
 # Names in the report that are not modules are project libraries, added with their jars below
