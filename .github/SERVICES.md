@@ -32,8 +32,6 @@ Fork PRs run tests without upload credentials. Missing configuration fails trust
 
 ## Release credentials
 
-The current release workflow uses the owner's trusted self-hosted runner and its Git credentials to retrieve bundled artifacts. Do not attach this runner to arbitrary PR execution.
-
-The separate, pending cross-repository publishing change requires `PHANTOM_PLUGINS_TOKEN` in Phantom, scoped to **Phantom-plugins → Contents: write and Pull requests: write**. It is not part of the current analysis configuration. Do not copy an interactive personal token into CI as a substitute. The ordinary `GITHUB_TOKEN` is restricted to its own repository.
+The release workflow runs on a GitHub-hosted macOS runner. It releases this repository with the job's `GITHUB_TOKEN` and needs `PHANTOM_PLUGINS_TOKEN` in Phantom, a fine-grained token scoped to **Phantom-plugins → Contents: write and Pull requests: write**, to release Kotlin and Maven there and merge the marketplace.json pull request. Do not copy an interactive personal token into CI as a substitute. The ordinary `GITHUB_TOKEN` is restricted to its own repository.
 
 See [workflow checks](WORKFLOWS.md) for the maintained jobs.

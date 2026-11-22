@@ -13,7 +13,6 @@ Service setup and troubleshooting: [SERVICES.md](SERVICES.md). Repository qualit
 | [Linked issues](workflows/phantom-close-linked-issues.yml) | Closes linked issues after merge to main. Use `Closes #123` in the PR. |
 | [Wrapper validation](workflows/Gradle_wrappers_validation.yml) | Checks Gradle wrapper JARs. |
 | [Plugin compatibility](workflows/phantom-plugin-compat.yml) | Checks the bundled Phantom-plugins zips (sha256, since/until-build, dependencies, IntelliJ Plugin Verifier) against a Phantom DMG: on related PRs, on release, weekly. Same check locally: `tools/phantom-plugin-compat.sh`. |
-| [Release](workflows/phantom-release.yml) | Manual product build and release. |
-| [Hosted macOS build trial](workflows/phantom-hosted-build.yml) | Manual: tries the DMG build on a GitHub-hosted macOS runner and records disk and memory; no release. |
+| [Release](workflows/phantom-release.yml) | Manual: builds the DMG and Windows installer on a GitHub-hosted macOS runner and releases them, with Kotlin and Maven in Phantom-plugins. Needs secret `PHANTOM_PLUGINS_TOKEN`. |
 
 Coverage reports measure [the repository quality tool](../tools/phantom-quality.mjs), not the IDE. Run its tests with `node --test tools/phantom-quality.test.mjs`. For platform changes, run the affected IDE tests locally.
