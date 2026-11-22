@@ -1,6 +1,7 @@
 <idea-plugin allow-bundled-update="true">
   <id>com.jetbrains.sh</id>
-  <vendor>JetBrains</vendor>
+  <!-- phantom-idea: Phantom modified this plugin, so Phantom (not JetBrains) is its vendor -->
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <name>Shell Script</name>
   <category>Languages</category>
 

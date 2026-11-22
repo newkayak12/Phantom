@@ -1,7 +1,8 @@
 <idea-plugin>
   <id>org.jetbrains.idea.reposearch</id>
   <name>Artifacts Repository Search</name>
-  <vendor>JetBrains</vendor>
+  <!-- phantom-idea: Phantom modified this plugin, so Phantom (not JetBrains) is its vendor -->
+  <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <category>Build Tools</category>
   <description><![CDATA[
     Provides API for artifact search such as Maven/Gradle dependencies.
