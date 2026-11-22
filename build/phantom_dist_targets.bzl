@@ -656,6 +656,7 @@ PHANTOM_DIST_TARGETS = [
     "@community//plugins/xpath:xpath.jar",
     "@community//spellchecker/xml:xml.jar",
     "@community//spellchecker:spellchecker.jar",
+    "@community//tools/launcher-generator:launcher-generator.jar",
     "@community//uast/uast-common-ide:ide.jar",
     "@community//uast/uast-common:uast.jar",
     "@community//uast/uast-java-ide:java-uast-ide.jar",
