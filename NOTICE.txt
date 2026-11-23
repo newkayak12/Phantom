@@ -43,7 +43,7 @@ available at:
   LGPL 2.1: Trove4j (JetBrains's fork) https://github.com/JetBrains/intellij-deps-trove4j,
     java-atk-wrapper https://github.com/JetBrains/intellij-deps-java-atk-wrapper,
     swingx https://central.sonatype.com/artifact/org.swinglabs/swingx-core/1.6.2-2 (sources jar),
-    LanguageTool (in bundled plugins) https://github.com/JetBrains/languagetool
+    LanguageTool 6.8.27 (JetBrains's build, in the bundled Phantom Grammar plugin) https://github.com/JetBrains/languagetool
   MPL 2.0: Rhino https://github.com/mozilla/rhino
   EPL: Eclipse JDT Core https://github.com/eclipse-jdt/eclipse.jdt.core, LSP4J https://github.com/eclipse/lsp4j,
     Xtext https://github.com/eclipse/xtext, MVStore https://github.com/h2database/h2database,
@@ -58,7 +58,9 @@ available at:
     LGPL: openregex 1.1.1 https://github.com/knowitall/openregex
     LGPL 2.1: english-pos-dict 0.6 https://github.com/languagetool-org/english-pos-dict
     EPL 2.0: JaCoCo 0.8.15 https://github.com/jacoco/jacoco
-Versions are listed in third-party-libraries.html.
+Versions of the IDE's own libraries are listed in license/third-party-libraries.html. That list does not cover the
+bundled plugins built in Phantom-plugins: each of their jars lists its libraries, versions and licenses in
+META-INF/THIRD-PARTY-NOTICES.txt.
 
 For all components above, on request, Phantom contributors provide a copy of that source code, at no more than the cost of making it, for three
 years after the release that included it: open an issue at https://github.com/newkayak12/Phantom/issues.
