@@ -1,6 +1,8 @@
 # Builds Phantom for Apple silicon and publishes the DMG as a GitHub release (tag v<YY>.<MM>.<DD>.<N>), with Kotlin and
 # Maven released in Phantom-plugins. Once that release is out, a second job builds the Windows x64 installer and zip
-# from the release tag and adds them to it, so a Windows failure never holds back the macOS release.
+# from the release tag and adds them to it, so a Windows failure never holds back the macOS release. When the Windows
+# job fails, re-run only that job ("Re-run failed jobs"), or run this workflow with windows_tag set to the release tag:
+# it then skips the macOS release and only builds and adds the Windows files.
 #   Actions → Phantom release → Run workflow (optional notes). Not on tag pushes: phantom-release.sh pushes the tag
 #   itself, so a tag trigger would build every release twice.
 # Runs on a GitHub-hosted macOS runner (free for this public repository): macos-15 has 3 cores and 7 GB of memory and
@@ -19,6 +21,9 @@ on:
       notes:
         description: "Release notes (default: commits since the previous release)"
         required: false
+      windows_tag:
+        description: "Only build Windows for this existing release (v<YY>.<MM>.<DD>.<N>); skips the macOS release"
+        required: false
 
 permissions:
   contents: write
@@ -29,6 +34,7 @@ concurrency:
 
 jobs:
   release:
+    if: inputs.windows_tag == ''
     runs-on: macos-15
     timeout-minutes: 360
     outputs:
@@ -107,14 +113,17 @@ jobs:
 
   windows:
     needs: release
+    # after a successful macOS release, or alone for an existing release (the skipped release job would skip it too)
+    if: always() && (needs.release.result == 'success' || inputs.windows_tag != '')
     runs-on: macos-15
     timeout-minutes: 360
     env:
       GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.windows_tag || needs.release.outputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.release.outputs.tag }}
+          ref: ${{ env.TAG }}
 
       - name: Free disk
         run: |
@@ -134,7 +143,7 @@ jobs:
           EOF
 
       - name: Build Windows and add it to the release
-        run: ./phantom-release.sh --windows "${{ needs.release.outputs.tag }}"
+        run: ./phantom-release.sh --windows "$TAG"
 
       - name: Disk at the end
         if: always()
