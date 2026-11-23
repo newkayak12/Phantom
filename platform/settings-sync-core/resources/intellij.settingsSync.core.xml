@@ -1,7 +1,6 @@
 <idea-plugin visibility="public" package="com.intellij.settingsSync.core">
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <plugin id="Git4Idea"/>
     <module name="intellij.libraries.jackson3"/>
     <module name="intellij.libraries.jackson3.databind"/>
     <module name="intellij.libraries.jackson3.module.kotlin"/>
@@ -31,7 +30,6 @@
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.platform.vcs.log"/>
     <module name="intellij.platform.vcs.log.impl"/>
-    <module name="intellij.vcs.git.backend"/>
   </dependencies>
   <!-- endregion -->
   <extensions defaultExtensionNs="com.intellij">
@@ -66,8 +64,6 @@
 
     <registryKey key="settingsSync.ui.new.toolwindow.show" defaultValue="true"
                  description="Use new toolwindow to display Backup and Sync history."/>
-    <toolWindow id="Backup and Sync History" secondary="false" icon="AllIcons.Toolwindows.SettingSync" anchor="left"
-                factoryClass="com.intellij.settingsSync.core.git.SettingsHistoryToolWindowFactory"/>
     <applicationSettings service="com.intellij.settingsSync.core.SettingsSyncLocalSettings"/>
     <applicationSettings service="com.intellij.settingsSync.core.SettingsSyncSettings"/>
   </extensions>
@@ -103,7 +99,6 @@
       <add-to-group group-id="ExportImportGroup" anchor="last"/>
     </action>
 
-    <action class="com.intellij.settingsSync.core.git.SettingsSyncHistoryAction" id="settingsSync.history" icon="AllIcons.Vcs.History" />
 
   </actions>
 
