@@ -54,6 +54,7 @@ public class ReferenceCompletionTest extends CompletionTestBase {
   @Override
   protected void tuneFixture(JavaModuleFixtureBuilder moduleBuilder) {
     moduleBuilder.addJdk(TestUtils.getMockJdkHome());
+    TestUtils.addGroovy10(moduleBuilder); // phantom-idea: Groovy 1.0 was in the removed mock JDK's jre/lib
   }
 
 }
