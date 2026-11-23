@@ -1,13 +1,17 @@
-# Builds Phantom for Apple silicon and publishes the DMG as a GitHub release (tag v<YY>.<MM>.<DD>.<N>), with Kotlin and
-# Maven released in Phantom-plugins. Once that release is out, a second job builds the Windows x64 installer and zip
-# from the release tag and adds them to it, so a Windows failure never holds back the macOS release. When the Windows
-# job fails, re-run only that job ("Re-run failed jobs"), or run this workflow with windows_tag set to the release tag:
-# it then skips the macOS release and only builds and adds the Windows files.
+# Builds Phantom for Apple silicon and Windows x64 and publishes them as one GitHub release (tag v<YY>.<MM>.<DD>.<N>),
+# with Kotlin and Maven released in Phantom-plugins. Jobs:
+#   prepare          picks the tag (phantom-release.sh --next-tag), so both builds carry the same version
+#   macos            builds the DMG and releases it (tag, release with the DMG and updates.xml, Kotlin and Maven)
+#   windows-build    builds the Windows installer and zip at the same time, on a runner of its own, as an artifact
+#   windows-publish  adds them to the release once both are done
+# A Windows failure never holds back or repeats the macOS release: re-run the failed jobs ("Re-run failed jobs"), or run
+# this workflow with windows_tag set to the release tag, which skips prepare and macos and only builds and adds the
+# Windows files. A macOS failure publishes nothing, so the Windows build is simply dropped.
 #   Actions → Phantom release → Run workflow (optional notes). Not on tag pushes: phantom-release.sh pushes the tag
 #   itself, so a tag trigger would build every release twice.
-# Runs on a GitHub-hosted macOS runner (free for this public repository): macos-15 has 3 cores and 7 GB of memory and
+# Runs on GitHub-hosted macOS runners (free for this public repository): macos-15 has 3 cores and 7 GB of memory and
 # keeps no Bazel cache, and the DMG alone built from scratch in 70 minutes with 79 GB of disk left (#72). Windows is
-# cross-built on a runner of its own (phantom-release.sh --windows). The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it with the
+# cross-built on macOS. The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it with the
 # "Phantom Local" certificate where it is installed, so no signing secret is stored on GitHub.
 # Optional secret PHANTOM_PLUGINS_TOKEN (.github/SERVICES.md, Release credentials): a fine-grained token for
 # Phantom-plugins only (Contents and Pull requests: write). With it phantom-release.sh also builds Kotlin and Maven,
@@ -33,12 +37,27 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  prepare:
     if: inputs.windows_tag == ''
-    runs-on: macos-15
-    timeout-minutes: 360
+    runs-on: ubuntu-24.04
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
+      day: ${{ steps.tag.outputs.day }}
+      seq: ${{ steps.tag.outputs.seq }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Next tag
+        id: tag
+        run: |
+          tag="$(./phantom-release.sh --next-tag)"   # v26.11.23.1
+          v="${tag#v}"
+          { echo "tag=$tag"; echo "day=$(cut -d. -f1-3 <<< "$v" | tr -d .)"; echo "seq=${v##*.}"; } >> "$GITHUB_OUTPUT"
+          echo "::notice::release $tag"
+
+  macos:
+    needs: prepare
+    runs-on: macos-15
+    timeout-minutes: 360
     env:
       GH_TOKEN: ${{ github.token }}
       PHANTOM_PLUGINS_TOKEN: ${{ secrets.PHANTOM_PLUGINS_TOKEN }}
@@ -93,37 +112,32 @@ jobs:
       - name: Build and release
         env:
           NOTES: ${{ inputs.notes }}
+          DAY: ${{ needs.prepare.outputs.day }}
+          SEQ: ${{ needs.prepare.outputs.seq }}
         run: |
           # the marketplace.json commit in the Phantom-plugins worktree
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           ( while sleep 600; do echo "[$(date +%H:%M)] $(df -h / | tail -1 | awk '{print "disk free",$4}'); $(memory_pressure | tail -1)"; done ) &
-          PHANTOM_WINDOWS=0 ./phantom-release.sh
-
-      - name: Release tag
-        id: tag
-        run: |
-          build="$(cat out/phantom-build-number)"   # PH-261123.1
-          day="${build#PH-}"; day="${day%%.*}"
-          echo "tag=v${day:0:2}.${day:2:2}.${day:4:2}.${build##*.}" >> "$GITHUB_OUTPUT"
+          PHANTOM_WINDOWS=0 PHANTOM_BUILD_DAY="$DAY" PHANTOM_BUILD_SEQ="$SEQ" ./phantom-release.sh
 
       - name: Disk at the end
         if: always()
         run: df -h /
 
-  windows:
-    needs: release
-    # after a successful macOS release, or alone for an existing release (the skipped release job would skip it too)
-    if: always() && (needs.release.result == 'success' || inputs.windows_tag != '')
+  windows-build:
+    needs: prepare
+    # with prepare, or alone for an existing release (windows_tag; prepare is skipped then)
+    if: always() && (needs.prepare.result == 'success' || inputs.windows_tag != '')
     runs-on: macos-15
     timeout-minutes: 360
     env:
-      GH_TOKEN: ${{ github.token }}
-      TAG: ${{ inputs.windows_tag || needs.release.outputs.tag }}
+      TAG: ${{ inputs.windows_tag || needs.prepare.outputs.tag }}
     steps:
+      # the commit the macOS job releases (its tag does not exist yet), or the existing release's tag
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ inputs.windows_tag || github.sha }}
 
       - name: Free disk
         run: |
@@ -142,9 +156,36 @@ jobs:
           common --local_resources=memory=HOST_RAM*.5 --local_resources=cpu=HOST_CPUS
           EOF
 
-      - name: Build Windows and add it to the release
-        run: ./phantom-release.sh --windows "$TAG"
+      - name: Build Windows
+        run: ./phantom-release.sh --windows-build "$TAG"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows
+          path: |
+            out/phantom-idea/artifacts/phantom-*.exe
+            out/phantom-idea/artifacts/phantom-*.win.zip
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
 
       - name: Disk at the end
         if: always()
         run: df -h /
+
+  windows-publish:
+    needs: [prepare, macos, windows-build]
+    # once the macOS release is out (or, with windows_tag, already was) and the Windows build succeeded
+    if: always() && needs.windows-build.result == 'success' && (needs.macos.result == 'success' || inputs.windows_tag != '')
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.windows_tag || needs.prepare.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: windows
+          path: out/phantom-idea/artifacts
+      - name: Add Windows to the release
+        run: ./phantom-release.sh --windows-upload "$TAG"
