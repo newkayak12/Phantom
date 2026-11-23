@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 릴리스 워크플로가 macOS DMG를 먼저 릴리스하고, 그 릴리스가 성공하면 별도 job이 릴리스 태그에서 Windows 설치 프로그램과 zip을 빌드해 같은 릴리스에 올린다. Windows 빌드가 실패해도 macOS 릴리스는 나가고, 실패한 Windows job만 다시 돌리거나 워크플로를 `windows_tag`에 릴리스 태그를 넣어 실행하면 macOS는 건너뛰고 Windows만 빌드해 올린다. 로컬에서는 `./phantom-release.sh --windows <태그>`로 같은 일을 한다. (PR #92)
+
 - macOS 앱 제자리 업데이트(#91)의 교체 스크립트가 Kotlin 문자열 템플릿으로 읽혀 IDE가 컴파일되지 않던 것을 고쳤다(`$$"""`). (PR #93)
 
 - Help > About의 저작권 표기가 "Copyright © 2000–현재 Phantom"으로 나와 JetBrains의 저작권을 Phantom 것으로 보였다. 이제 "Copyright © 2000–현재 JetBrains s.r.o. and contributors" 줄을 따로 두고, Phantom 줄은 2026년부터로 적는다.

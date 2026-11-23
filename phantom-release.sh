@@ -4,6 +4,9 @@
 #   ./phantom-release.sh               build with phantom-build.sh, check the app, release
 #   ./phantom-release.sh --no-build    release the DMG (and Windows files, if built) phantom-build.sh produced last
 #   NOTES="..." ./phantom-release.sh   release notes (default: the commits since the previous release tag)
+#   ./phantom-release.sh --windows v<YY>.<MM>.<DD>.<N>
+#                                      build the Windows installer and zip of that release from this checkout (its tag)
+#                                      and add them to the release; CI runs it after the macOS release succeeded
 # Kotlin and Maven are not bundled: the build (PHANTOM_PUBLISH_PLUGINS=1) zips them for this platform build, and the release publishes each to the
 # Phantom plugins repository (the Phantom-plugins checkout next to this one, or PHANTOM_PLUGINS_REPO) as release
 # kotlin-262.<YYMMDD> / maven-262.<YYMMDD>, and points its marketplace.json entry there. PHANTOM_RELEASE_PLUGINS=0 skips
@@ -14,6 +17,31 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")"; pwd)"
 cd "$root"
+# this checkout is a fork of intellij-community; name the repository, or gh picks the upstream
+repo="$(git remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
+
+# Windows x64 files: an NSIS installer, and a zip whose product-info.json reports version $3 and platform build 262.$4
+# (the Windows files carry no PH- number)
+check_windows() {
+  file "$1" | grep -q "Nullsoft Installer"
+  local info; info="$(unzip -p "$2" product-info.json)"
+  grep -q "\"version\": *\"$3\"" <<< "$info" && grep -q "\"buildNumber\": *\"262.$4\"" <<< "$info" \
+    || { echo "$2 does not report $3 (262.$4)"; exit 1; }
+}
+
+if [[ "${1:-}" == "--windows" ]]; then
+  tag="${2:?usage: $0 --windows v<YY>.<MM>.<DD>.<N>}"
+  [[ "$tag" =~ ^v([0-9]{2})\.([0-9]{2})\.([0-9]{2})\.([0-9]+)$ ]] || { echo "not a release tag: $tag"; exit 1; }
+  day="${BASH_REMATCH[1]}${BASH_REMATCH[2]}${BASH_REMATCH[3]}"; n="${BASH_REMATCH[4]}"
+  [[ "$(git rev-parse HEAD)" == "$(git rev-parse "$tag^{commit}")" ]] || { echo "HEAD is not $tag"; exit 1; }
+  gh release view "$tag" -R "$repo" >/dev/null
+  PHANTOM_MACOS=0 PHANTOM_WINDOWS=1 PHANTOM_BUILD_DAY="$day" PHANTOM_BUILD_SEQ="$n" ./phantom-build.sh
+  exe="out/phantom-idea/artifacts/phantom-$day.$n.exe"
+  zip="out/phantom-idea/artifacts/phantom-$day.$n.win.zip"
+  check_windows "$exe" "$zip" "${day:0:2}.${day:2:2}.${day:4:2}" "$day"
+  gh release upload "$tag" "$exe" "$zip" -R "$repo" --clobber
+  exit 0
+fi
 
 if [[ "${1:-}" != "--no-build" ]]; then
   # N continues after today's released builds, so a release never reuses a number (local and CI builds alike)
@@ -53,10 +81,7 @@ assets=("$dmg")
 exe="out/phantom-idea/artifacts/phantom-$day.$n.exe"
 zip="out/phantom-idea/artifacts/phantom-$day.$n.win.zip"
 if [[ -f "$exe" || -f "$zip" ]]; then
-  file "$exe" | grep -q "Nullsoft Installer"
-  info="$(unzip -p "$zip" product-info.json)"
-  grep -q "\"version\": *\"$version\"" <<< "$info" && grep -q "\"buildNumber\": *\"262.$day\"" <<< "$info" \
-    || { echo "$zip does not report $version (262.$day)"; exit 1; }
+  check_windows "$exe" "$zip" "$version" "$day"
   assets+=("$exe" "$zip")
 fi
 
@@ -85,8 +110,6 @@ git merge-base --is-ancestor HEAD origin/main || { echo "HEAD is not on origin/m
 # .github/workflows
 git tag -f "$tag" HEAD
 git push -q -f origin "refs/tags/$tag"
-# this checkout is a fork of intellij-community; name the repository, or gh picks the upstream
-repo="$(git remote get-url origin | sed -E 's#^(git@[^:]+:|https://github.com/)##; s#\.git$##')"
 # the update feed: the IDE reads updates.xml of the latest release (BaseJetBrainsExternalProductResourceUrls.updateMetadataUrl)
 # and offers this build to older PH builds, with a Download button that opens the release page. Windows builds carry no
 # PH product code, so they find no product in it and are not offered updates.

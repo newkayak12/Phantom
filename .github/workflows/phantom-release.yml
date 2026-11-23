@@ -1,10 +1,13 @@
-# Builds Phantom for Apple silicon and Windows x64 and publishes the DMG, the Windows installer and the Windows zip
-# as a GitHub release (tag v<YY>.<MM>.<DD>.<N>), with Kotlin and Maven released in Phantom-plugins.
+# Builds Phantom for Apple silicon and publishes the DMG as a GitHub release (tag v<YY>.<MM>.<DD>.<N>), with Kotlin and
+# Maven released in Phantom-plugins. Once that release is out, a second job builds the Windows x64 installer and zip
+# from the release tag and adds them to it, so a Windows failure never holds back the macOS release. When the Windows
+# job fails, re-run only that job ("Re-run failed jobs"), or run this workflow with windows_tag set to the release tag:
+# it then skips the macOS release and only builds and adds the Windows files.
 #   Actions → Phantom release → Run workflow (optional notes). Not on tag pushes: phantom-release.sh pushes the tag
 #   itself, so a tag trigger would build every release twice.
 # Runs on a GitHub-hosted macOS runner (free for this public repository): macos-15 has 3 cores and 7 GB of memory and
 # keeps no Bazel cache, and the DMG alone built from scratch in 70 minutes with 79 GB of disk left (#72). Windows is
-# cross-built on the same runner. The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it with the
+# cross-built on a runner of its own (phantom-release.sh --windows). The DMG holds an ad-hoc signed app; phantom-install.sh re-signs it with the
 # "Phantom Local" certificate where it is installed, so no signing secret is stored on GitHub.
 # Optional secret PHANTOM_PLUGINS_TOKEN (.github/SERVICES.md, Release credentials): a fine-grained token for
 # Phantom-plugins only (Contents and Pull requests: write). With it phantom-release.sh also builds Kotlin and Maven,
@@ -18,6 +21,9 @@ on:
       notes:
         description: "Release notes (default: commits since the previous release)"
         required: false
+      windows_tag:
+        description: "Only build Windows for this existing release (v<YY>.<MM>.<DD>.<N>); skips the macOS release"
+        required: false
 
 permissions:
   contents: write
@@ -28,8 +34,11 @@ concurrency:
 
 jobs:
   release:
+    if: inputs.windows_tag == ''
     runs-on: macos-15
     timeout-minutes: 360
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
     env:
       GH_TOKEN: ${{ github.token }}
       PHANTOM_PLUGINS_TOKEN: ${{ secrets.PHANTOM_PLUGINS_TOKEN }}
@@ -89,7 +98,52 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           ( while sleep 600; do echo "[$(date +%H:%M)] $(df -h / | tail -1 | awk '{print "disk free",$4}'); $(memory_pressure | tail -1)"; done ) &
-          ./phantom-release.sh
+          PHANTOM_WINDOWS=0 ./phantom-release.sh
+
+      - name: Release tag
+        id: tag
+        run: |
+          build="$(cat out/phantom-build-number)"   # PH-261123.1
+          day="${build#PH-}"; day="${day%%.*}"
+          echo "tag=v${day:0:2}.${day:2:2}.${day:4:2}.${build##*.}" >> "$GITHUB_OUTPUT"
+
+      - name: Disk at the end
+        if: always()
+        run: df -h /
+
+  windows:
+    needs: release
+    # after a successful macOS release, or alone for an existing release (the skipped release job would skip it too)
+    if: always() && (needs.release.result == 'success' || inputs.windows_tag != '')
+    runs-on: macos-15
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.windows_tag || needs.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Free disk
+        run: |
+          keep="$(xcode-select -p | sed 's#/Contents/Developer$##')"
+          for x in /Applications/Xcode*.app; do [[ "$x" == "$keep" ]] || sudo rm -rf "$x"; done
+          sudo rm -rf "$HOME/Library/Android" /usr/local/share/dotnet "$HOME/.dotnet" || true
+          df -h /
+
+      - name: Android checkout
+        run: git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
+
+      - name: Bazel limits
+        run: |
+          cat > .bazelrc-user.bazelrc <<'EOF'
+          common --jobs=HOST_CPUS --worker_max_multiplex_instances=JvmCompile=HOST_CPUS
+          common --local_resources=memory=HOST_RAM*.5 --local_resources=cpu=HOST_CPUS
+          EOF
+
+      - name: Build Windows and add it to the release
+        run: ./phantom-release.sh --windows "$TAG"
 
       - name: Disk at the end
         if: always()

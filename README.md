@@ -102,7 +102,7 @@ git clone git@github.com:newkayak12/Phantom.git phantom-idea && cd phantom-idea
 git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
 # Bundled plugins are downloaded from the phantom-libs release in build/phantom-plugins-bundle.txt
 # (PHANTOM_PLUGINS_REPO=<Phantom-plugins checkout> builds them from source instead)
-./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build
+./phantom-build.sh   # PHANTOM_WINDOWS=0 skips the Windows build, PHANTOM_MACOS=0 the macOS one
 ```
 
 `phantom-build.sh` downloads the pinned plugin archives from phantom-libs. Set `PHANTOM_PLUGINS_REPO` to build them from a local checkout instead. The first build takes about 2 hours; later builds take minutes. Output goes to `out/phantom-idea/artifacts/`. The unbundled Kotlin and Maven plugins are built only with `PHANTOM_PUBLISH_PLUGINS=1` (`phantom-release.sh` sets it), as zips under the `*-plugins/` folder; without it the build skips their ~190 targets. The build no longer modifies tracked files: `phantom-build.sh` passes the display version as `-Dphantom.version.major` and `-Dphantom.version.minor`, and the tracked `IdeaApplicationInfo.xml` keeps a placeholder (`0` / `0.0`). So the IDE run from sources, or `installers.cmd` run directly, shows version 0.0. This change (commit `048852ca23`) has not been built or tested yet.
