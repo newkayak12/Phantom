@@ -1,0 +1,9 @@
+Libraries in this plugin that the list above does not name (it is generated from the IDE's own content, and this
+plugin is not bundled):
+- Vavr 0.10.4 and Vavr Match 0.10.4 (lib/vavr.jar), https://github.com/vavr-io/vavr: Apache License 2.0
+  (LICENSE.txt). IntelliJ's library table marks Vavr as MIT, which later Vavr versions use; the 0.10.4 release's
+  LICENSE file and POM are Apache 2.0.
+- javax.inject 1 (lib/javax-inject.jar), https://github.com/javax-inject/javax-inject: Apache License 2.0.
+- The Kotlin compiler and its compiler plugins (lib/kotlinc.*.jar and the kotlinc/ folder),
+  https://github.com/JetBrains/kotlin: Apache License 2.0; kotlinc/license holds the compiler's own NOTICE and the
+  licenses of the libraries it contains.

@@ -39,7 +39,7 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그
 - "Report to JetBrains" 오류 전송과 기본 IDE 업데이트 피드(`-Didea.updates.url`을 주면 되살아난다).
 
 **줄인 것**
-- TextMate와 Images 등은 Phantom-plugins 빌드로 교체한다. Kotlin Support와 Maven Support는 릴리스마다 Phantom 플러그인 저장소에 별도 ZIP으로 게시한다. 업스트림 병합을 위해 원본 소스는 보존한다.
+- TextMate와 Images 등은 Phantom-plugins 빌드로 교체한다. Phantom for Kotlin과 Phantom for Apache Maven은 릴리스마다 Phantom 플러그인 저장소에 별도 ZIP으로 게시한다. 업스트림 병합을 위해 원본 소스는 보존한다.
 - 이 페이지에 적은 변경 일부는 번들이 이제 Phantom-plugins 빌드로 가져오는 플러그인의 이 리포지토리 소스에 있다(GitHub 로그인, Grazie Cloud, 터미널 Junie 에이전트, YAML "Try Ultimate", ShellCheck 다운로드). 그 빌드에 이 변경이 들어 있는지는 확인하지 않았다.
 - Marketplace 목록은 JetBrains가 게시한 플러그인을 보여 주지 않는다(Phantom이 유지하는 것은 자체 판을 둔다). 소스 실행, internal 모드, `-Dphantom.marketplace.showAll=true`이면 보인다.
 - JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 피드백 양식, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.

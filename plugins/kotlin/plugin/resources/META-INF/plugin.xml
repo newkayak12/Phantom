@@ -1,7 +1,7 @@
 <idea-plugin package="org.jetbrains.kotlin" xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
   <id>org.jetbrains.kotlin</id>
-  <!-- phantom-idea: Kotlin Support, released by Phantom; the id stays for the plugins depending on it -->
-  <name>Kotlin Support</name>
+  <!-- phantom-idea: Phantom for Kotlin, released by Phantom (not the Kotlin trademark owner); the id stays for the plugins depending on it -->
+  <name>Phantom for Kotlin</name>
   <category>Languages</category>
   <description><![CDATA[
     Provides language support for Kotlin, a modern programming language designed to make developers happier.

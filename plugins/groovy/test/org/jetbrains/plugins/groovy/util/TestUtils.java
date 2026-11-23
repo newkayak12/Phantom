@@ -24,7 +24,9 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiVariable;
 import com.intellij.psi.ResolveResult;
 import com.intellij.psi.impl.PsiManagerEx;
+import com.intellij.testFramework.IdeaTestUtil;
 import com.intellij.testFramework.RunAll;
+import com.intellij.testFramework.builders.JavaModuleFixtureBuilder;
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture;
 import com.intellij.util.CollectConsumer;
 import com.intellij.util.IncorrectOperationException;
@@ -59,9 +61,16 @@ public abstract class TestUtils {
   public static final String END_MARKER = "<end>";
   public static final String GROOVY_JAR = "groovy-all.jar";
 
+  // phantom-idea: the GPL+CE java/mockJDK-1.7, not the Sun JDK 5 copy upstream keeps in testdata/mockJDK, whose sources
+  // are marked "SUN PROPRIETARY/CONFIDENTIAL". That copy also held Groovy 1.0, now testdata/lib/groovy-1.0.jar
+  // (BSD-style license, META-INF/LICENSE.txt in the jar), see addGroovy10.
   @NotNull
   public static String getMockJdkHome() {
-    return getAbsoluteTestDataPath() + "/mockJDK";
+    return IdeaTestUtil.getMockJdk17Path().getPath();
+  }
+
+  public static void addGroovy10(@NotNull JavaModuleFixtureBuilder<?> moduleBuilder) {
+    moduleBuilder.addLibraryJars("groovy-1.0", getAbsoluteTestDataPath() + "/lib", "groovy-1.0.jar");
   }
 
   public static PsiFile createPseudoPhysicalGroovyFile(final Project project, final String text) throws IncorrectOperationException {
