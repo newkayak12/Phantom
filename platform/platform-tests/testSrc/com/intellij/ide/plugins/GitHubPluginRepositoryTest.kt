@@ -72,6 +72,23 @@ class GitHubPluginRepositoryTest {
     assertEquals(listOf("Chart.yaml"), detect.files)
   }
 
+  @Test
+  fun `an older IDE gets the newest release that runs on it`() {
+    val plugin = kotlinx.serialization.json.Json.parseToJsonElement("""
+      { "id": "dev.phantom.terminal", "version": "0.3.0", "since": "262.261123", "until": "262.*", "download": "terminal-0.3.0/terminal-0.3.0.zip",
+        "versions": [ { "version": "0.2.0", "since": "262.261113", "until": "262.*", "download": "terminal-0.2.0/terminal-0.2.0.zip" },
+                      { "version": "0.1.0", "since": "262", "until": "262.261112", "download": "terminal-0.1.0/terminal-0.1.0.zip" } ] }
+      """.trimIndent()) as kotlinx.serialization.json.JsonObject
+    fun versionFor(build: String?) =
+      (GitHubPluginRepository.compatibleRelease(plugin, build?.let { com.intellij.openapi.util.BuildNumber.fromString(it) })["version"]
+        as kotlinx.serialization.json.JsonPrimitive).content
+    assertEquals("0.3.0", versionFor("262.261123"))
+    assertEquals("0.2.0", versionFor("262.261122"))
+    assertEquals("0.1.0", versionFor("262.261100"))
+    assertEquals("0.3.0", versionFor("263.1"))  // nothing fits: the entry, shown as incompatible
+    assertEquals("0.3.0", versionFor(null))
+  }
+
   @Test(expected = IOException::class)
   fun `rejects metadata without a plugins array`() {
     GitHubPluginRepository.parseMetadata("{}".byteInputStream(), GitHubPluginRepository.parse("a/b")!!, PluginDtoModelBuilderFactory)

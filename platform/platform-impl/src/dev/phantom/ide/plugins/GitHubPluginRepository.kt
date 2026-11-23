@@ -1,7 +1,9 @@
 // Copyright 2026 Phantom contributors. Use of this source code is governed by the Apache 2.0 license.
 package dev.phantom.ide.plugins
 
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.newui.PluginUiModel
+import com.intellij.openapi.util.BuildNumber
 import com.intellij.ide.plugins.newui.PluginUiModelBuilderFactory
 import com.intellij.openapi.extensions.PluginId
 import kotlinx.serialization.json.Json
@@ -31,6 +33,8 @@ import java.io.InputStream
  *                  "detect": ["org.postgresql:postgresql"], "detectFiles": ["Chart.yaml"] } ] }
  * ```
  * `download` is either an https URL or `<release tag>/<asset name>` of the same repository's GitHub Releases.
+ * An entry may list earlier releases in `versions` (see [compatibleRelease]); an IDE gets the newest release whose since/until
+ * range holds its build.
  * `detect` lists library coordinates whose presence in a project makes the IDE suggest the plugin; `detectFiles` lists file
  * names that do the same (for tools that are not libraries, such as Helm charts).
  */
@@ -140,7 +144,28 @@ object GitHubPluginRepository {
       throw IOException("${ref.host}: $METADATA_PATH is not valid JSON", e)
     } ?: throw IOException("${ref.host}: $METADATA_PATH must be a JSON object")
     val plugins = root["plugins"] as? JsonArray ?: throw IOException("${ref.host}: $METADATA_PATH has no \"plugins\" array")
-    return plugins.mapNotNull { (it as? JsonObject)?.let { plugin -> toModel(plugin, ref, factory, resolveAsset) } }
+    val build = runCatching { PluginManagerCore.buildNumber }.getOrNull()
+    return plugins.mapNotNull { (it as? JsonObject)?.let { plugin -> toModel(compatibleRelease(plugin, build), ref, factory, resolveAsset) } }
+  }
+
+  /**
+   * The release of [plugin] to offer an IDE of [build]: the entry itself, or else the first of its optional `versions` (earlier
+   * releases, newest first, each with its own `version`, `since`, `until`, `download` and optionally `changeNotes`) whose
+   * since/until range holds [build]. So an older Phantom gets the newest release that runs on it, not one it cannot install. A build
+   * no release fits gets the entry itself, which the plugin manager shows as incompatible.
+   */
+  @JvmStatic
+  fun compatibleRelease(plugin: JsonObject, build: BuildNumber?): JsonObject {
+    val versions = plugin["versions"] as? JsonArray ?: return plugin
+    if (build == null || fits(plugin, build)) return plugin
+    val older = versions.firstNotNullOfOrNull { (it as? JsonObject)?.takeIf { release -> fits(release, build) } } ?: return plugin
+    return JsonObject(plugin + older)
+  }
+
+  private fun fits(release: JsonObject, build: BuildNumber): Boolean {
+    val since = release.string("since")?.let { BuildNumber.fromString(it) }
+    val until = release.string("until")?.let { BuildNumber.fromString(it) }
+    return (since == null || build >= since) && (until == null || build <= until)
   }
 
   /** A plugin that asks to be suggested for projects using one of [detect] (`group:artifact`) or containing one of [files]. */
