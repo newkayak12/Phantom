@@ -17,6 +17,24 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- Help > About의 저작권 표기가 "Copyright © 2000–현재 Phantom"으로 나와 JetBrains의 저작권을 Phantom 것으로 보였다. 이제 "Copyright © 2000–현재 JetBrains s.r.o. and contributors" 줄을 따로 두고, Phantom 줄은 2026년부터로 적는다.
+
+- Phantom이 고친 번들 플러그인 Artifacts Repository Search, IDE Features Trainer, Shell Script, Completion Stats Collector의 vendor를 git4idea처럼 JetBrains에서 Phantom으로 바꿨다.
+
+- classic UI 테마 이름 "IntelliJ"와 "IntelliJ Light"를 "Classic Light"와 "Classic Bright"로 바꿨다. 색 구성표 "IntelliJ Light"의 표시 이름도 "Classic Bright"다. 테마와 구성표 id는 그대로라 기존 설정은 유지된다.
+
+- Groovy 테스트 데이터에서 Sun JDK 5 사본(`plugins/groovy/testdata/mockJDK`, 소스에 "SUN PROPRIETARY/CONFIDENTIAL" 표기, 라이선스 없음)을 지웠다. 테스트는 GPL+CE인 `java/mockJDK-1.7`을 쓰고, 그 안에 있던 Groovy 1.0은 `testdata/lib`로 옮겨 라이브러리로 붙인다.
+
+- Kotlin·Maven 플러그인 이름을 "Kotlin Support"·"Maven Support"에서 "Phantom for Kotlin"·"Phantom for Apache Maven"으로 바꿨다. 플러그인 id는 그대로다.
+
+- `license/`에 목록에 나오지만 전문이 없던 라이선스(MIT, BSD 2/3-Clause, Unicode 3.0, zlib, EDL 1.0, JDOM, Codehaus classworlds, CC0)를 넣었다. 배포판과 Kotlin·Maven ZIP에 함께 들어간다. Kotlin ZIP의 NOTICE에는 IDE 목록에 없는 vavr, javax.inject, Kotlin 컴파일러를 적는다(`build/phantom-plugin-notices/`). 라이브러리 표에 MIT로 잘못 적힌 vavr 0.10.x는 Apache 2.0으로 고쳤다.
+
+- NOTICE.txt에서 Phantom-plugins 번들 플러그인의 라이브러리 버전은 third-party-libraries.html이 아니라 각 jar의 `META-INF/THIRD-PARTY-NOTICES.txt`에 있다고 고쳐 적고, LanguageTool 버전(6.8.27)을 넣었다.
+
+- jar에 남아 있던 IntelliJ IDEA·PyCharm·Toolbox 로고 SVG 3개를 중립 자리표시자로 바꿨다. 새 프로젝트 마법사의 Spring Boot 아이콘은 Spring 잎 모양 대신 Phantom-plugins와 같은 원과 화살표 그림이다.
+
+- Bazel downloader가 더 쓰지 않는 `native-3.42.0-jb.1`과 `tips-intellij-idea-community-241.62`를 phantom-libs로 돌리지 않는다.
+
 - DMG를 만들 때 `hdiutil create`가 "Resource busy"로 실패하면 최대 5번까지 다시 시도한다. GitHub 호스팅 macOS runner에서 가끔 나는 오류로, 한 시간 넘게 컴파일한 릴리스 빌드가 이 한 번 때문에 실패했다.
 
 - 배포 빌드 대상 목록에 Windows 실행 파일을 만드는 `launcher-generator`를 넣었다. macOS 빌드 보고서로 만든 목록에 빠져 있어서, 이전 빌드 결과가 없는 깨끗한 머신(GitHub 호스팅 runner)에서는 Windows 빌드가 실패했다.

@@ -125,7 +125,8 @@ git -C "$plugins_repo" worktree add -q -B "$pbranch" "$pwork" origin/main
 
 # Copies plugin zip $1 to $2 with what Apache 2.0 section 4 asks of a work built from modified IntelliJ sources: the
 # license, a NOTICE saying so, and the third-party libraries with their license texts. They go in the plugin's folder
-# $3 (so an installed plugin keeps them); $4 is the plugin's title.
+# $3 (so an installed plugin keeps them); $4 is the plugin's title. Libraries only the plugin has are not in the IDE's
+# list: build/phantom-plugin-notices/$3.txt names them and is appended to the NOTICE.
 with_notices() {
   local zip="$1" out="$2" dir="$3" title="$4" stage
   stage="$(mktemp -d)"
@@ -148,6 +149,9 @@ Third-party libraries in this plugin are listed, with their licenses and where t
 license/third-party-libraries.html (and .json), the list of the whole Phantom $version build this plugin was built
 with. The license/ folder holds the full texts of the licenses named there other than Apache 2.0.
 NOTICE
+  if [[ -f "build/phantom-plugin-notices/$dir.txt" ]]; then
+    { echo; cat "build/phantom-plugin-notices/$dir.txt"; } >> "$stage/$dir/NOTICE.txt"
+  fi
   cp "$zip" "$out"
   (cd "$stage" && zip -qr "$root/$out" "$dir")
   rm -rf "$stage"
@@ -189,7 +193,7 @@ ENTRY='{"id": "org.jetbrains.kotlin", "name": "Phantom for Kotlin", "category": 
   "depends": ["com.intellij.modules.java"],
   "detect": ["org.jetbrains.kotlin:kotlin-stdlib"], "detectFiles": ["build.gradle.kts", "settings.gradle.kts"]}' \
   publish "$kotlin" Kotlin/lib/kotlin-plugin.jar Kotlin Kotlin
-ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Phantom for Maven", "category": "Build Tools",
+ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Phantom for Apache Maven", "category": "Build Tools",
   "description": "Apache Maven projects: import and sync of pom.xml, the Maven tool window, running goals, pom.xml editing and completion, repositories and indexes. IntelliJ'"'"'s Maven plugin (Apache 2.0) built with each Phantom release; not bundled, since Gradle projects never use it. org.jetbrains.idea.maven stays its id, so plugins depending on Maven keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
   "depends": ["com.intellij.modules.java"], "detectFiles": ["pom.xml"]}' \
   publish "$maven" maven-plugin/lib/maven-plugin.jar Maven Maven

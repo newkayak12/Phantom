@@ -56,7 +56,7 @@ abstract class JetBrainsProductProperties : ProductProperties() {
       "JetBrains", "JetBrains s.r.o.",
       "JetBrains, Google",
       "JetBrains Experimental", "JetBrains-Experimental",
-      // phantom-idea: Kotlin Support (plugins/kotlin/plugin/resources/META-INF/plugin.xml) is published by Phantom
+      // phantom-idea: Phantom for Kotlin (plugins/kotlin/plugin/resources/META-INF/plugin.xml) is published by Phantom
       "Phantom",
     )
   }

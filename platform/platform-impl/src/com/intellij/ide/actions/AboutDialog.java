@@ -254,6 +254,8 @@ public final class AboutDialog extends DialogWrapper {
     box.add(openSourceSoftware);
 
     var year = Integer.toString(LocalDate.now().getYear());
+    // phantom-idea: the platform code is JetBrains' (2000 on); the company line below covers only Phantom's changes (2026 on)
+    box.add(label(IdeBundle.message("about.box.copyright.upstream", year), getDefaultTextFont()));
     var copyright = hyperlinkLabel(IdeBundle.message("about.box.copyright", appInfo.getCopyrightStart(), year, appInfo.getCompanyName()));
     copyright.addHyperlinkListener(new HyperlinkAdapter() {
       @Override
