@@ -36,7 +36,7 @@ Each line is backed by a commit; file-level detail is in [CHANGELOG.md](CHANGELO
 - "Report to JetBrains" error submission and the default IDE update feed (`-Didea.updates.url` brings it back).
 
 **Trimmed**
-- Phantom replaces upstream plugins such as TextMate and Images with Phantom-plugins builds. Each release publishes Kotlin Support and Maven Support separately to the Phantom plugin store. Upstream sources stay available for merges.
+- Phantom replaces upstream plugins such as TextMate and Images with Phantom-plugins builds. Each release publishes Phantom for Kotlin and Phantom for Apache Maven separately to the Phantom plugin store. Upstream sources stay available for merges.
 - Some changes listed on this page live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try Ultimate", the ShellCheck download). Whether those builds carry them was not checked.
 - The Marketplace listing leaves out plugins JetBrains publishes (Phantom ships its own versions of the ones it keeps); running from sources, internal mode or `-Dphantom.marketplace.showAll=true` shows them.
 - Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
