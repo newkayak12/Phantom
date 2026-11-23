@@ -1384,8 +1384,9 @@ object CommunityLibraryLicenses {
       .newBsd("https://github.com/unitsofmeasurement/uom-lib/blob/master/LICENSE")
       .suppliedByPersons("Jean-Marie Dautelle", "Werner Keil"),
 
+    // phantom-idea: the versions used (0.10.x) are Apache 2.0 (their LICENSE and POM); Vavr moved to MIT only later
     LibraryLicense(name = "vavr", libraryName = "vavr", url = "https://vavr.io/")
-      .mit("https://github.com/vavr-io/vavr/blob/master/LICENSE")
+      .apache("https://github.com/vavr-io/vavr/blob/v0.10.4/LICENSE")
       .suppliedByPersons("Daniel Dietrich"),
 
     LibraryLicense(libraryName = "Velocity", url = "https://velocity.apache.org/")
