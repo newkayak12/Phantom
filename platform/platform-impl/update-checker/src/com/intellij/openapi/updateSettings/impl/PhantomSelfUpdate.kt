@@ -135,7 +135,8 @@ object PhantomSelfUpdate {
     return script
   }
 
-  private val SCRIPT = """
+  // $$: the shell variables in the script are not Kotlin string templates
+  private val SCRIPT = $$"""
     |#!/bin/zsh
     |# Phantom self-update (PhantomSelfUpdate): run by the restarter once the IDE has quit. Replaces the app bundle with the
     |# DMG's copy; on any failure the old app stays. Exits 0 either way, so the restarter starts whichever app is in place.
