@@ -145,6 +145,10 @@ jobs:
             platform/platform-impl/src/dev/phantom/ \
             platform/lang-impl/src/dev/phantom/ \
             | awk '{ sub(/^\?/, "", $1); print $1 }' > "$objects"
+          # Sonar's changed-file scan reads the .gitattributes of every directory a change touches
+          for commit in HEAD $(git for-each-ref --format="%(objectname)" refs/remotes/origin); do
+            git ls-tree -r "$commit" | awk '$4 ~ /(^|\/)\.gitattributes$/ { print $3 }'
+          done | sort -u >> "$objects"
           GIT_NO_LAZY_FETCH=1 git cat-file --batch-check='%(objectname)' < "$objects" \
             | awk '$2 == "missing" { print $1 }' > "$missing"
           if [[ -s "$missing" ]]; then
