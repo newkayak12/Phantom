@@ -1,40 +1,14 @@
 package com.intellij.settingsSync.core.communicator
 
-import com.intellij.icons.AllIcons
-import com.intellij.ide.plugins.DynamicPlugins.loadPlugin
-import com.intellij.ide.plugins.IdeaPluginDescriptorImpl
-import com.intellij.ide.plugins.PluginEnabler
-import com.intellij.ide.plugins.PluginInstaller
-import com.intellij.ide.plugins.PluginManagerCore
-import com.intellij.ide.plugins.PluginXmlPathResolver
-import com.intellij.ide.plugins.loadDescriptor
-import com.intellij.ide.plugins.loadDescriptorFromArtifact
-import com.intellij.ide.plugins.marketplace.MarketplaceRequests
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.updateSettings.impl.PluginDownloader
 import com.intellij.openapi.util.Disposer
-import com.intellij.platform.ide.progress.ModalTaskOwner
-import com.intellij.platform.ide.progress.TaskCancellation
-import com.intellij.platform.ide.progress.withModalProgress
-import com.intellij.settingsSync.core.RestartForPluginInstall
-import com.intellij.settingsSync.core.SettingsSyncBundle.message
 import com.intellij.settingsSync.core.SettingsSyncEventListener
 import com.intellij.settingsSync.core.SettingsSyncEvents
 import com.intellij.settingsSync.core.SettingsSyncLocalSettings
 import com.intellij.settingsSync.core.SettingsSyncRemoteCommunicator
 import com.intellij.settingsSync.core.SettingsSyncSettings
-import com.intellij.settingsSync.core.auth.SettingsSyncAuthService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
-import org.jetbrains.annotations.Nls
-import java.awt.Component
-import java.nio.file.Path
 
 @ApiStatus.Internal
 object RemoteCommunicatorHolder : SettingsSyncEventListener {
@@ -142,8 +116,8 @@ object RemoteCommunicatorHolder : SettingsSyncEventListener {
   fun getAvailableProviders(): List<SettingsSyncCommunicatorProvider> {
     val extensionList = arrayListOf<SettingsSyncCommunicatorProvider>()
     extensionList.addAll(getAvailableSyncProviders())
-    // phantom-idea: no JetBrains account placeholder; it offered to download the JetBrains "Backup and Sync" plugin from the
-    // JetBrains Marketplace. Only installed providers (Phantom's Git repository provider) are listed.
+    // phantom-idea: no JetBrains account placeholder (it downloaded the JetBrains "Backup and Sync" and licensing plugins from the
+    // JetBrains Marketplace, and its code is gone); only installed providers (Phantom's Git repository provider) are listed
     return extensionList.sortedBy { it.providerCode } // always show providers in the same order
   }
 
@@ -166,152 +140,5 @@ object RemoteCommunicatorHolder : SettingsSyncEventListener {
   private fun getCurrentProvider(): SettingsSyncCommunicatorProvider? {
     val providerCode = SettingsSyncLocalSettings.getInstance().providerCode ?: return null
     return getProvider(providerCode)
-  }
-
-  private object DummyAuthService : SettingsSyncAuthService {
-    override val providerCode = DEFAULT_PROVIDER_CODE
-    override val providerName = "JetBrains"
-    override val icon = AllIcons.Ultimate.IdeaUltimatePromo
-
-    private suspend fun showErrorMessage(message: @Nls String, title: @Nls String, parentComponent: Component?) {
-      withContext(Dispatchers.EDT) {
-        if (parentComponent != null) {
-          Messages.showInfoMessage(parentComponent, message, title)
-        }
-        else {
-          Messages.showInfoMessage(message, title)
-        }
-      }
-    }
-
-    private suspend fun enableIfDisabled(pluginId: PluginId): Boolean {
-      if (PluginManagerCore.isPluginInstalled(pluginId) && PluginManagerCore.isDisabled(pluginId)) {
-        val descriptor = PluginManagerCore.getPlugin(pluginId) as? IdeaPluginDescriptorImpl
-        return withContext(Dispatchers.EDT) {
-          if (descriptor != null) {
-            if (!PluginEnabler.getInstance().enable(listOf(descriptor))) {
-              logger.error("Cannot enable ${pluginId} plugin")
-              return@withContext false
-            }
-            return@withContext true
-          }
-          else {
-            logger.error("Cannot find ${pluginId} plugin descriptor")
-            return@withContext false
-          }
-        }
-      }
-      return true
-    }
-
-    override suspend fun login(parentComponent: Component?): SettingsSyncUserData? {
-      val marketplacePluginId = PluginId.getId("com.intellij.marketplace")
-      val settingsSyncPluginId = PluginId.getId("com.intellij.settingsSync")
-
-      // TODO load fails now because marketplace plugin requires restart
-      if (!enableIfDisabled(marketplacePluginId) || !enableIfDisabled(settingsSyncPluginId)) {
-        showErrorMessage(message("settings.jba.enable.plugin.required.text"), message("settings.jba.enable.plugin.required.title"), parentComponent)
-        return null
-      }
-
-      val downloaders = hashMapOf<PluginId, PluginDownloader>()
-      withModalProgress(ModalTaskOwner.guess(),
-                        message("settings.jba.plugin.download"),
-                        TaskCancellation.cancellable()) {
-        val pluginUpdates = MarketplaceRequests.getLastCompatiblePluginUpdate(setOf(marketplacePluginId, settingsSyncPluginId))
-        for (update in pluginUpdates) {
-          val pluginDescriptor = MarketplaceRequests.loadPluginDescriptor(update.pluginId, update)
-          val downloader = PluginDownloader.createDownloader(pluginDescriptor)
-          if (downloader.prepareToInstall(null)) {
-            downloaders[downloader.id] = downloader
-          }
-        }
-      }
-      var installSuccessful: Boolean = withContext(Dispatchers.EDT) {
-        if (!PluginManagerCore.isPluginInstalled(marketplacePluginId)) {
-          val marketplacePluginDownloader = downloaders[marketplacePluginId] ?: let{
-            logger.error("Cannot download plugin '${marketplacePluginId.idString}' from marketplace!")
-            return@withContext false
-          }
-          val marketplacePluginFile = marketplacePluginDownloader.getFilePath()
-          val targetFile = PluginInstaller.unpackPlugin(marketplacePluginFile, Path.of(PathManager.getPluginsPath()))
-
-          val targetDescriptor = loadDescriptor(targetFile, false, PluginXmlPathResolver.DEFAULT_PATH_RESOLVER) ?: let {
-            logger.error("No descriptor found in marketplace plugin")
-            return@withContext false
-          }
-
-          targetDescriptor.ownClassPath = getJars(targetFile.parent)
-          // TODO load fails now because marketplace plugin requires restart
-          if (!loadPlugin(targetDescriptor)) {
-            logger.error("Cannot load marketplace plugin")
-            return@withContext false
-          }
-          SettingsSyncEvents.getInstance().fireRestartRequired(RestartForPluginInstall(setOf(marketplacePluginDownloader.pluginName)))
-        }
-
-        if (!PluginManagerCore.isPluginInstalled(settingsSyncPluginId)) {
-          val syncPluginDownloader = downloaders[settingsSyncPluginId] ?: let{
-            logger.error("Cannot download plugin '${settingsSyncPluginId.idString}' from marketplace!")
-            return@withContext false
-          }
-
-          val syncPluginFile = syncPluginDownloader.getFilePath()
-          val syncPluginDescriptor = loadDescriptorFromArtifact(syncPluginFile, null) ?: let {
-            logger.error("Cannot load plugin descriptor for ${settingsSyncPluginId.idString}")
-            return@withContext false
-          }
-          if (!PluginInstaller.installAndLoadDynamicPlugin(syncPluginFile, null, syncPluginDescriptor)) {
-            logger.error("Cannot load plugin ${settingsSyncPluginId.idString}")
-            return@withContext false
-          }
-        }
-        return@withContext true
-      }
-      if (!installSuccessful) {
-        showErrorMessage(message("settings.jba.plugin.required.text"), message("settings.jba.plugin.required.title"), parentComponent)
-        return null
-      }
-
-      val defaultProvider = getAvailableSyncProviders().find { it.providerCode == DEFAULT_PROVIDER_CODE }
-                            ?: return null
-      DelegatingDefaultCommunicatorProvider.delegate = defaultProvider
-      return defaultProvider.authService.login(parentComponent)
-    }
-
-    private fun getJars(basePath: Path): List<Path> {
-      val jars = arrayListOf<Path>()
-      basePath.toFile().walk().forEach {
-        if (it.isFile && it.extension == "jar") {
-          jars.add(it.toPath())
-        }
-      }
-      return jars
-    }
-
-    override fun getUserData(userId: String): SettingsSyncUserData? = null
-    override fun getAvailableUserAccounts(): List<SettingsSyncUserData> = emptyList()
-  }
-
-  private object DummyDefaultCommunicatorProvider : SettingsSyncCommunicatorProvider {
-    override val providerCode: String
-      get() = DEFAULT_PROVIDER_CODE
-    override val authService = DummyAuthService
-
-    override fun createCommunicator(userId: String): SettingsSyncRemoteCommunicator? {
-      return null
-    }
-  }
-
-  private object DelegatingDefaultCommunicatorProvider : SettingsSyncCommunicatorProvider {
-    override val providerCode = DEFAULT_PROVIDER_CODE
-    var delegate: SettingsSyncCommunicatorProvider = DummyDefaultCommunicatorProvider
-
-    override val authService: SettingsSyncAuthService
-      get() = delegate.authService
-
-    override fun createCommunicator(userId: String): SettingsSyncRemoteCommunicator? {
-      return delegate.createCommunicator(userId)
-    }
   }
 }
