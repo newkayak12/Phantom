@@ -67,6 +67,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
+import dev.phantom.ide.plugins.GitHubPluginRepository
 import java.io.IOException
 import java.util.function.Consumer
 import java.util.function.Predicate
@@ -288,19 +289,20 @@ internal class MarketplacePluginsTab @RequiresEdt constructor(
         if (allDescriptors != null) {
           val groupName = IdeBundle.message("plugins.configurable.repository.0", host)
           LOG.info("Marketplace tab: '" + groupName + "' group load started")
+          // phantom-idea: the group shows the first plugins by name, not the first ones of the repository's list (which then were
+          // sorted), and Phantom's own repository shows all of them: its 60-odd plugins were behind "Show All" but for nine
+          val official = GitHubPluginRepository.isOfficial(host)
           addGroup(
             groups,
             groupName,
             PluginsGroupType.CUSTOM_REPOSITORY,
             "/repository:\"" + host + "\"",
-            allDescriptors,
-            Predicate { group ->
-              PluginsGroup.sortByName(group.getModels())
-              allDescriptors.size > ITEMS_PER_GROUP
-            },
+            allDescriptors.sortedBy { it.name?.lowercase() },
+            Predicate { !official && allDescriptors.size > ITEMS_PER_GROUP },
             model.errors,
             model.installedPlugins,
             model.installationStates,
+            limit = if (official) Int.MAX_VALUE else ITEMS_PER_GROUP,
           )
         }
       }
@@ -601,6 +603,7 @@ internal class MarketplacePluginsTab @RequiresEdt constructor(
     errors: Map<PluginId, List<HtmlChunk>>,
     installedPlugins: Map<PluginId, PluginUiModel>,
     installationStates: Map<PluginId, PluginInstallationState>,
+    limit: Int = ITEMS_PER_GROUP,  // phantom-idea: how many plugins the group shows
   ) {
     val group = PluginsGroup(name, type)
     group.getPreloadedModel().setErrors(errors)
@@ -608,7 +611,7 @@ internal class MarketplacePluginsTab @RequiresEdt constructor(
     group.getPreloadedModel().setPluginInstallationStates(installationStates)
     var i = 0
     val iterator = customPlugins.iterator()
-    while (iterator.hasNext() && i < ITEMS_PER_GROUP) {
+    while (iterator.hasNext() && i < limit) {
       group.addModel(iterator.next())
       i++
     }
