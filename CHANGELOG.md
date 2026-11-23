@@ -17,7 +17,7 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
-- macOS 앱 제자리 업데이트(#91)의 교체 스크립트가 Kotlin 문자열 템플릿으로 읽혀 IDE가 컴파일되지 않던 것을 고쳤다(`$$"""`).
+- macOS 앱 제자리 업데이트(#91)의 교체 스크립트가 Kotlin 문자열 템플릿으로 읽혀 IDE가 컴파일되지 않던 것을 고쳤다(`$$"""`). (PR #93)
 
 - Help > About의 저작권 표기가 "Copyright © 2000–현재 Phantom"으로 나와 JetBrains의 저작권을 Phantom 것으로 보였다. 이제 "Copyright © 2000–현재 JetBrains s.r.o. and contributors" 줄을 따로 두고, Phantom 줄은 2026년부터로 적는다.
 
