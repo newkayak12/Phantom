@@ -276,6 +276,17 @@ public final class PlatformUpdateDialog extends AbstractUpdateDialog {
       };
       updateButton.setEnabled(!myWriteProtected);
     }
+    else if (PhantomSelfUpdate.canUpdate(myPlatformUpdate.getNewBuild())) {
+      // phantom-idea: no patches; the macOS app replaces itself with the release's DMG (PhantomSelfUpdate)
+      var newBuild = myPlatformUpdate.getNewBuild();
+      updateButton = new AbstractAction(IdeBundle.message("updates.download.and.restart.button")) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          close(OK_EXIT_CODE);
+          PhantomSelfUpdate.downloadAndRestart(myProject, newBuild);
+        }
+      };
+    }
     else {
       var downloadUrl = myPlatformUpdate.getNewBuild().getDownloadUrl();
       if (downloadUrl != null) {
