@@ -10,7 +10,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.wm.IdeFrame
-import com.intellij.settingsSync.core.communicator.RemoteCommunicatorHolder
 import com.intellij.settingsSync.core.migration.migrateIfNeeded
 import com.intellij.settingsSync.core.statistics.SettingsSyncEventsStatistics
 import com.intellij.util.concurrency.AppExecutorUtil
@@ -43,8 +42,6 @@ internal class SettingsSynchronizerApplicationInitializedListener : ApplicationA
         }
       }
     }
-
-    setProviderCodeAndUserId()
 
     serviceAsync<SettingsSyncEvents>().addListener(settingsSyncEventListener)
 
@@ -82,16 +79,8 @@ internal class SettingsSynchronizerApplicationInitializedListener : ApplicationA
     LocalHostNameProvider.initialize()
   }
 
-  private fun setProviderCodeAndUserId() {
-    if (!SettingsSyncSettings.getInstance().syncEnabled)
-      return
-    if (SettingsSyncLocalSettings.getInstance().providerCode.isNullOrBlank()) {
-      SettingsSyncLocalSettings.getInstance().providerCode = RemoteCommunicatorHolder.DEFAULT_PROVIDER_CODE
-    }
-    if (SettingsSyncLocalSettings.getInstance().userId.isNullOrBlank()) {
-      SettingsSyncLocalSettings.getInstance().userId = RemoteCommunicatorHolder.DEFAULT_USER_ID
-    }
-  }
+  // phantom-idea: no setProviderCodeAndUserId, which made a sync enabled before providers existed use the JetBrains account
+  // provider ("jba"); Phantom has no such provider, so such a sync stays without one until you log in again
 }
 
 @Service

@@ -1,6 +1,6 @@
 package com.intellij.settingsSync.core.plugins
 
-import com.intellij.ide.plugins.marketplace.MarketplaceRequests
+import com.intellij.ide.plugins.RepositoryHelper
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.diagnostic.logger
@@ -90,12 +90,13 @@ internal open class SettingsSyncPluginInstallerImpl(private val notifyErrors: Bo
     }
   }
 
+  // phantom-idea: synced plugins come from the plugin repositories (the Phantom plugins repository and the ones added in
+  // Settings | Plugins), not from the JetBrains Marketplace
   open internal fun createDownloaders(pluginIds: Collection<PluginId>): List<PluginDownloader> {
-    val compatibleUpdates = MarketplaceRequests.getLastCompatiblePluginUpdate(pluginIds.toSet())
+    val ids = pluginIds.toSet()
     val retval = arrayListOf<PluginDownloader>()
-    for (update in compatibleUpdates) {
-      val pluginDescriptor = MarketplaceRequests.loadPluginDescriptor(update.pluginId, update)
-      val downloader = PluginDownloader.createDownloader(pluginDescriptor)
+    for (pluginNode in RepositoryHelper.loadPluginsFromCustomRepositories(null).filter { it.pluginId in ids }) {
+      val downloader = PluginDownloader.createDownloader(pluginNode)
       if (downloader.prepareToInstall(null)) {
         retval.add(downloader)
       }

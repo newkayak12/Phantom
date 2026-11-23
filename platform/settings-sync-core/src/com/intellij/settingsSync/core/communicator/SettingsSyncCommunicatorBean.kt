@@ -33,13 +33,10 @@ fun getSyncProviderPoint(): ExtensionPoint<SettingsSyncCommunicatorBean> {
 fun getAvailableSyncProviders(): List<SettingsSyncCommunicatorProvider> {
   return PROVIDER_EP.extensionList
     .filter {
+      // phantom-idea: only providers Phantom bundles (or their updates); was also any plugin developed by JetBrains or by a
+      // vendor JetBrains trusts, such as JetBrains' own account provider
       val plugin = it.pluginDescriptor
-      val vendorName = plugin.vendor ?: plugin.organization ?: ""
-
-      plugin.isBundled
-      || PluginManagerCore.isUpdatedBundledPlugin(plugin)
-      || PluginManagerCore.isDevelopedByJetBrains(plugin)
-      || PluginManagerCore.isVendorItemTrusted(vendorName)
+      plugin.isBundled || PluginManagerCore.isUpdatedBundledPlugin(plugin)
     }
     .map { bean -> bean.instance }
     .filter { it.isAvailable() }
