@@ -4,9 +4,14 @@
 #   ./phantom-release.sh               build with phantom-build.sh, check the app, release
 #   ./phantom-release.sh --no-build    release the DMG (and Windows files, if built) phantom-build.sh produced last
 #   NOTES="..." ./phantom-release.sh   release notes (default: the commits since the previous release tag)
+#   ./phantom-release.sh --next-tag    print the tag the next release gets (v<YY>.<MM>.<DD>.<N>)
 #   ./phantom-release.sh --windows v<YY>.<MM>.<DD>.<N>
 #                                      build the Windows installer and zip of that release from this checkout (its tag)
-#                                      and add them to the release; CI runs it after the macOS release succeeded
+#                                      and add them to the release
+#   ./phantom-release.sh --windows-build TAG / --windows-upload TAG
+#                                      the two halves of --windows, as CI runs them: the build alongside the macOS
+#                                      release (before the tag exists), the upload once that release is out
+# PHANTOM_BUILD_DAY=<YYMMDD> and PHANTOM_BUILD_SEQ=<N> fix the release's number (CI passes --next-tag's to both builds).
 # Kotlin and Maven are not bundled: the build (PHANTOM_PUBLISH_PLUGINS=1) zips them for this platform build, and the release publishes each to the
 # Phantom plugins repository (the Phantom-plugins checkout next to this one, or PHANTOM_PLUGINS_REPO) as release
 # kotlin-262.<YYMMDD> / maven-262.<YYMMDD>, and points its marketplace.json entry there. PHANTOM_RELEASE_PLUGINS=0 skips
@@ -29,26 +34,41 @@ check_windows() {
     || { echo "$2 does not report $3 (262.$4)"; exit 1; }
 }
 
-if [[ "${1:-}" == "--windows" ]]; then
-  tag="${2:?usage: $0 --windows v<YY>.<MM>.<DD>.<N>}"
-  [[ "$tag" =~ ^v([0-9]{2})\.([0-9]{2})\.([0-9]{2})\.([0-9]+)$ ]] || { echo "not a release tag: $tag"; exit 1; }
-  day="${BASH_REMATCH[1]}${BASH_REMATCH[2]}${BASH_REMATCH[3]}"; n="${BASH_REMATCH[4]}"
-  [[ "$(git rev-parse HEAD)" == "$(git rev-parse "$tag^{commit}")" ]] || { echo "HEAD is not $tag"; exit 1; }
-  gh release view "$tag" -R "$repo" >/dev/null
-  PHANTOM_MACOS=0 PHANTOM_WINDOWS=1 PHANTOM_BUILD_DAY="$day" PHANTOM_BUILD_SEQ="$n" ./phantom-build.sh
-  exe="out/phantom-idea/artifacts/phantom-$day.$n.exe"
-  zip="out/phantom-idea/artifacts/phantom-$day.$n.win.zip"
-  check_windows "$exe" "$zip" "${day:0:2}.${day:2:2}.${day:4:2}" "$day"
-  gh release upload "$tag" "$exe" "$zip" -R "$repo" --clobber
-  exit 0
-fi
+# N continues after today's released builds, so a release never reuses a number (local and CI builds alike)
+next_tag() {
+  local today last
+  today="$(date +%y.%m.%d)"
+  last="$(git ls-remote --tags origin "refs/tags/v$today.*" | sed -E 's#.*refs/tags/v[0-9.]+\.([0-9]+)$#\1#' | sort -n | tail -1)"
+  echo "v$today.$(( ${last:-0} + 1 ))"
+}
+if [[ "${1:-}" == "--next-tag" ]]; then next_tag; exit 0; fi
+
+case "${1:-}" in
+  --windows|--windows-build|--windows-upload)
+    mode="$1"
+    tag="${2:?usage: $0 $1 v<YY>.<MM>.<DD>.<N>}"
+    [[ "$tag" =~ ^v([0-9]{2})\.([0-9]{2})\.([0-9]{2})\.([0-9]+)$ ]] || { echo "not a release tag: $tag"; exit 1; }
+    day="${BASH_REMATCH[1]}${BASH_REMATCH[2]}${BASH_REMATCH[3]}"; n="${BASH_REMATCH[4]}"
+    exe="out/phantom-idea/artifacts/phantom-$day.$n.exe"
+    zip="out/phantom-idea/artifacts/phantom-$day.$n.win.zip"
+    if [[ "$mode" == --windows ]]; then
+      [[ "$(git rev-parse HEAD)" == "$(git rev-parse "$tag^{commit}")" ]] || { echo "HEAD is not $tag"; exit 1; }
+      gh release view "$tag" -R "$repo" >/dev/null
+    fi
+    if [[ "$mode" != --windows-upload ]]; then
+      PHANTOM_MACOS=0 PHANTOM_WINDOWS=1 PHANTOM_BUILD_DAY="$day" PHANTOM_BUILD_SEQ="$n" ./phantom-build.sh
+    fi
+    check_windows "$exe" "$zip" "${day:0:2}.${day:2:2}.${day:4:2}" "$day"
+    if [[ "$mode" != --windows-build ]]; then
+      gh release upload "$tag" "$exe" "$zip" -R "$repo" --clobber
+    fi
+    exit 0;;
+esac
 
 if [[ "${1:-}" != "--no-build" ]]; then
-  # N continues after today's released builds, so a release never reuses a number (local and CI builds alike)
   if [[ -z "${PHANTOM_BUILD_SEQ:-}" ]]; then
-    today="$(date +%y.%m.%d)"
-    last="$(git ls-remote --tags origin "refs/tags/v$today.*" | sed -E 's#.*refs/tags/v[0-9.]+\.([0-9]+)$#\1#' | sort -n | tail -1)"
-    export PHANTOM_BUILD_SEQ=$(( ${last:-0} + 1 ))
+    tag="$(next_tag)"
+    export PHANTOM_BUILD_SEQ="${tag##*.}"
   fi
   PHANTOM_PUBLISH_PLUGINS="${PHANTOM_RELEASE_PLUGINS:-1}" ./phantom-build.sh
 fi
