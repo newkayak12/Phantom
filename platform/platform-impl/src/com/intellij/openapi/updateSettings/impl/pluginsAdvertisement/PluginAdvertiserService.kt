@@ -460,7 +460,8 @@ open class PluginAdvertiserServiceImpl(
 
       Pair(messagePresentation, notificationActions)
     }
-    else if (bundledPlugins.isNotEmpty() && !isIgnoreIdeSuggestion) {
+    // phantom-idea: no offer to install another JetBrains IDE unless JetBrains services are on
+    else if (bundledPlugins.isNotEmpty() && !isIgnoreIdeSuggestion && MarketplaceRequests.jetBrainsServicesEnabled) {
       IdeBundle.message(
         "plugins.advertiser.ultimate.features.detected",
         bundledPlugins.joinToString()
