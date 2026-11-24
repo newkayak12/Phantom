@@ -28,7 +28,7 @@ data class RepositoryCheckouts(val base: CheckoutEntry? = null, val worktrees: L
  */
 @ApiStatus.Experimental
 @Service(Service.Level.APP)
-class PhantomCheckouts internal constructor(private val file: Path) {
+class PhantomCheckouts(private val file: Path) {
   @Suppress("unused")
   constructor() : this(PathManager.getSystemDir().resolve("phantom/checkouts.json"))
 
@@ -53,7 +53,7 @@ class PhantomCheckouts internal constructor(private val file: Path) {
   }
 
   @Synchronized
-  internal fun update(commonDir: String, path: String, id: String, role: CheckoutRole) {
+  fun update(commonDir: String, path: String, id: String, role: CheckoutRole) {
     val all = load()
     val entry = CheckoutEntry(path, id)
     val current = all[commonDir] ?: RepositoryCheckouts()

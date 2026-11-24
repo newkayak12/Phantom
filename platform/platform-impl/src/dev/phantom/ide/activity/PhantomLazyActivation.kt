@@ -49,7 +49,7 @@ class PhantomLazyActivationBean : LazyExtensionInstance<PhantomLazyActivation>()
 
   override fun getImplementationClassName(): String? = implementation
 
-  internal fun matches(trigger: LazyTrigger): Boolean = when (trigger) {
+  fun matches(trigger: LazyTrigger): Boolean = when (trigger) {
     is LazyTrigger.File -> split(fileExtensions).any { it.equals(trigger.extension, ignoreCase = true) }
     is LazyTrigger.Action -> trigger.id in split(actions)
     is LazyTrigger.ToolWindow -> trigger.id in split(toolWindows)
