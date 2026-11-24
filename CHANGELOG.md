@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- `phantom-bench-report.py`가 JSON 문서 여러 개가 이어 붙은 시작 보고서 파일도 읽는다. 이전에는 "Extra data" 오류로 벤치 요약이 실패했다. 같은 벤치로 `-XX:CICompilerCount=4`를 재 보니 기본값 2보다 첫 smart mode가 1.9-2.7 s에서 3.1-4.3 s로 느려져 기본값을 그대로 둔다.
+
 - 릴리스 워크플로가 macOS와 Windows를 동시에 빌드한다. `prepare`가 태그 번호를 먼저 정해 두 빌드가 같은 버전을 쓰고, Windows 파일은 macOS 릴리스가 나온 뒤에 올린다. macOS가 실패하면 아무것도 배포하지 않고, Windows가 실패하면 macOS 릴리스는 그대로 두고 Windows만 다시 돌린다. 걸리는 시간은 macOS 빌드 하나 정도로 줄어든다.
 
 - 릴리스 워크플로가 macOS DMG를 먼저 릴리스하고, 그 릴리스가 성공하면 별도 job이 릴리스 태그에서 Windows 설치 프로그램과 zip을 빌드해 같은 릴리스에 올린다. Windows 빌드가 실패해도 macOS 릴리스는 나가고, 실패한 Windows job만 다시 돌리거나 워크플로를 `windows_tag`에 릴리스 태그를 넣어 실행하면 macOS는 건너뛰고 Windows만 빌드해 올린다. 로컬에서는 `./phantom-release.sh --windows <태그>`로 같은 일을 한다. (PR #92)
