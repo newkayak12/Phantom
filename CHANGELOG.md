@@ -31,7 +31,7 @@
 
 - Groovy 테스트 데이터에서 Sun JDK 5 사본(`plugins/groovy/testdata/mockJDK`, 소스에 "SUN PROPRIETARY/CONFIDENTIAL" 표기, 라이선스 없음)을 지웠다. 테스트는 GPL+CE인 `java/mockJDK-1.7`을 쓰고, 그 안에 있던 Groovy 1.0은 `testdata/lib`로 옮겨 라이브러리로 붙인다.
 
-- Kotlin·Maven 플러그인 이름을 "Kotlin Support"·"Maven Support"에서 "Phantom for Kotlin"·"Phantom for Apache Maven"으로 바꿨다. 플러그인 id는 그대로다.
+- Kotlin·Maven 플러그인 이름을 "Kotlin Support"·"Maven Support"에서 "Support for Kotlin"·"Support for Apache Maven"으로 바꿨다. 상표는 "for" 뒤에만 써서 무엇을 지원하는지 설명하는 데만 쓰고, Phantom 이름을 앞세우지 않는다. 플러그인 id는 그대로다.
 
 - `license/`에 목록에 나오지만 전문이 없던 라이선스(MIT, BSD 2/3-Clause, Unicode 3.0, zlib, EDL 1.0, JDOM, Codehaus classworlds, CC0)를 넣었다. 배포판과 Kotlin·Maven ZIP에 함께 들어간다. Kotlin ZIP의 NOTICE에는 IDE 목록에 없는 vavr, javax.inject, Kotlin 컴파일러를 적는다(`build/phantom-plugin-notices/`). 라이브러리 표에 MIT로 잘못 적힌 vavr 0.10.x는 Apache 2.0으로 고쳤다.
 

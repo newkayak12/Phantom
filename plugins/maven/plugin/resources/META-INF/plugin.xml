@@ -1,7 +1,7 @@
 <idea-plugin allow-bundled-update="true">
   <id>org.jetbrains.idea.maven</id>
-  <!-- phantom-idea: Phantom for Apache Maven, released by Phantom (not the ASF); the id stays for the plugins depending on it -->
-  <name>Phantom for Apache Maven</name>
+  <!-- phantom-idea: Support for Apache Maven, released by Phantom (not the ASF); the id stays for the plugins depending on it -->
+  <name>Support for Apache Maven</name>
   <vendor url="https://github.com/newkayak12/Phantom">Phantom</vendor>
   <category>Build Tools</category>
 
