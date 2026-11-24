@@ -231,12 +231,12 @@ PY
   git -C "$pwork" diff --quiet || git -C "$pwork" commit -q -am "$title $pversion for Phantom 262.$day"
 }
 
-ENTRY='{"id": "org.jetbrains.kotlin", "name": "Phantom for Kotlin", "category": "Languages",
+ENTRY='{"id": "org.jetbrains.kotlin", "name": "Support for Kotlin", "category": "Languages",
   "description": "Kotlin language support: editing, inspections, refactorings, debugging and Gradle Kotlin DSL scripts. IntelliJ'"'"'s Kotlin plugin (Apache 2.0) built with each Phantom release; not bundled, since Java-only projects never use it. org.jetbrains.kotlin stays its id, so plugins depending on Kotlin keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
   "depends": ["com.intellij.modules.java"],
   "detect": ["org.jetbrains.kotlin:kotlin-stdlib"], "detectFiles": ["build.gradle.kts", "settings.gradle.kts"]}' \
   publish "$kotlin" Kotlin/lib/kotlin-plugin.jar Kotlin Kotlin
-ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Phantom for Apache Maven", "category": "Build Tools",
+ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Support for Apache Maven", "category": "Build Tools",
   "description": "Apache Maven projects: import and sync of pom.xml, the Maven tool window, running goals, pom.xml editing and completion, repositories and indexes. IntelliJ'"'"'s Maven plugin (Apache 2.0) built with each Phantom release; not bundled, since Gradle projects never use it. org.jetbrains.idea.maven stays its id, so plugins depending on Maven keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
   "depends": ["com.intellij.modules.java"], "detectFiles": ["pom.xml"]}' \
   publish "$maven" maven-plugin/lib/maven-plugin.jar Maven Maven
