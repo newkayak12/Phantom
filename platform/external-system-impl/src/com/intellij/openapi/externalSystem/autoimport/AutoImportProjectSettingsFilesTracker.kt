@@ -159,6 +159,19 @@ class AutoImportProjectSettingsFilesTracker(
     }
   }
 
+  // phantom-idea: takes the current settings files as synced, for a model applied without a reload (Gradle sync reuse)
+  fun markSettingsFilesSynced() {
+    submitSettingsFilesCollection(isRefreshVfs = true, isInvalidateCache = false) { settingsPaths ->
+      val operationStamp = Stamp.nextStamp()
+      val settingsFilesCRC = ReadAction.nonBlocking<Map<String, Long>> {
+        calculateSettingsFilesCRC(settingsPaths)
+      }.expireWith(parentDisposable).executeSynchronously()
+      settingsFilesStatus.set(SettingsFilesStatus(settingsFilesCRC))
+      projectStatus.markSynchronized(operationStamp)
+      projectTracker.scheduleChangeProcessing()
+    }
+  }
+
   fun refreshChanges() {
     submitSettingsFilesStatusUpdate("refreshChanges") {
       isRefreshVfs = true

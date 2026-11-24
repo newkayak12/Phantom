@@ -51,6 +51,7 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.queueTracked
 import com.intellij.workspaceModel.ide.impl.WorkspaceModelImpl
+import dev.phantom.ide.externalSystem.PhantomReusedProjects // phantom-idea: Gradle sync reuse
 import kotlinx.serialization.Serializable
 import org.jetbrains.annotations.ApiStatus.Internal
 import org.jetbrains.annotations.TestOnly
@@ -416,6 +417,11 @@ class AutoImportProjectTracker(
   private fun loadState(projectId: ExternalSystemProjectId, projectData: ProjectData) {
     val projectState = projectDataStates.remove(projectId)
     val settingsTrackerState = projectState?.settingsTracker
+    // phantom-idea: a model reused from the base checkout is in sync: record the settings files instead of reloading
+    if (settingsTrackerState == null && PhantomReusedProjects.consume(project, projectId)) {
+      projectData.settingsTracker.markSettingsFilesSynced()
+      return
+    }
     if (settingsTrackerState == null || projectState.isDirty || isWorkspaceModelCacheAbsentOrInvalid()) {
       projectData.status.markDirty(Stamp.nextStamp(), EXTERNAL)
       scheduleChangeProcessing()

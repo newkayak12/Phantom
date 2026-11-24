@@ -25,6 +25,8 @@
 
 - `phantom-bench-report.py`가 JSON 문서 여러 개가 이어 붙은 시작 보고서 파일도 읽는다. 이전에는 "Extra data" 오류로 벤치 요약이 실패했다. 같은 벤치로 `-XX:CICompilerCount=4`를 재 보니 기본값 2보다 첫 smart mode가 1.9-2.7 s에서 3.1-4.3 s로 느려져 기본값을 그대로 둔다.
 
+- git 연결 worktree를 처음 열 때 base 체크아웃의 Gradle 모델을 경로만 worktree로 바꿔 바로 적용한다. 빌드 입력(설정·빌드 스크립트, buildSrc, 버전 카탈로그, wrapper, Gradle JVM)이 base가 마지막으로 sync했을 때와 같으면 Gradle sync를 건너뛰고, 다르면 base 모델을 먼저 적용한 뒤 평소처럼 sync하며 다른 파일을 로그에 남긴다. 입력 비교는 git 인덱스 blob id와 파일 크기·수정 시각만 보고 내용은 마지막 수단으로만 읽는다. 모델에 모르는 타입이 있거나 루트 프로젝트 이름이 다르면 적용하지 않는다. `-Dphantom.gradle.sync.reuse=false`로 끄고, `-Dphantom.gradle.sync.reuse.provisional=false`로 입력이 다를 때의 선적용만 끈다. (#97)
+
 - 릴리스 워크플로가 macOS와 Windows를 동시에 빌드한다. `prepare`가 태그 번호를 먼저 정해 두 빌드가 같은 버전을 쓰고, Windows 파일은 macOS 릴리스가 나온 뒤에 올린다. macOS가 실패하면 아무것도 배포하지 않고, Windows가 실패하면 macOS 릴리스는 그대로 두고 Windows만 다시 돌린다. 걸리는 시간은 macOS 빌드 하나 정도로 줄어든다.
 
 - 릴리스 워크플로가 macOS DMG를 먼저 릴리스하고, 그 릴리스가 성공하면 별도 job이 릴리스 태그에서 Windows 설치 프로그램과 zip을 빌드해 같은 릴리스에 올린다. Windows 빌드가 실패해도 macOS 릴리스는 나가고, 실패한 Windows job만 다시 돌리거나 워크플로를 `windows_tag`에 릴리스 태그를 넣어 실행하면 macOS는 건너뛰고 Windows만 빌드해 올린다. 로컬에서는 `./phantom-release.sh --windows <태그>`로 같은 일을 한다. (PR #92)
