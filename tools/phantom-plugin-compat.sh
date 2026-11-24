@@ -170,6 +170,9 @@ done
 # module's classes visible to every plugin that depends on it, so the zips are verified in a copy that also names the
 # bundled plugin owning each module it depends on (found through product-info.json: the module's jar sits in the
 # plugin's directory). Only <plugin id/> lines are added; no class or file of the zip changes.
+# Phantom build numbers are dated (262.261123) and a plugin may require one with such a since-build, which the verifier
+# rejects (each component must be <= 99999). The static check above already compared it with the IDE build, so the copy
+# carries only its branch (262) as since-build.
 verify_zips="$work/verify-zips"
 python3 -I - "$info" "$zips" "$verify_zips" <<'PY'
 import glob, io, json, os, re, sys, zipfile
@@ -223,11 +226,18 @@ for zpath in sorted(glob.glob(os.path.join(src_dir, "*.zip"))):
         declared = {d.get("id") for d in main[1].findall("dependencies/plugin")}
         declared |= {d.text.strip() for d in main[1].findall("depends") if d.text}
         add = sorted({owner(m) for m in mods} - {None, own} - declared)
+        iv = main[1].find("idea-version")
+        since = iv.get("since-build", "") if iv is not None else ""
+        dated = any(c.isdigit() and int(c) > 99999 for c in since.split("."))
         out = os.path.join(dst_dir, os.path.basename(zpath))
-        if not add:
+        if not add and not dated:
             open(out, "wb").write(open(zpath, "rb").read()); continue
         line = "".join(f'<plugin id="{p}"/>' for p in add)
         def patch(xml):
+            if dated:
+                xml = xml.replace(f'since-build="{since}"', f'since-build="{since.split(".")[0]}"', 1)
+            if not add:
+                return xml
             if "<dependencies>" in xml:
                 return xml.replace("<dependencies>", "<dependencies>" + line, 1)
             return xml.replace("</idea-plugin>", f"<dependencies>{line}</dependencies></idea-plugin>")
@@ -242,7 +252,10 @@ for zpath in sorted(glob.glob(os.path.join(src_dir, "*.zip"))):
             for item in z.infolist():
                 data = newjar.getvalue() if item.filename == main[0] else z.read(item.filename)
                 o.writestr(item.filename, data)
-        print(f"  {os.path.basename(zpath)}: verified with the module owners {', '.join(add)} added as dependencies")
+        if add:
+            print(f"  {os.path.basename(zpath)}: verified with the module owners {', '.join(add)} added as dependencies")
+        if dated:
+            print(f"  {os.path.basename(zpath)}: verified with since-build {since.split('.')[0]} (declares {since})")
 PY
 export work jar ide_root reports runtime_dir
 # shellcheck disable=SC2016  # expanded by the inner shell
