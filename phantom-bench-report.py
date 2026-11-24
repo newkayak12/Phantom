@@ -55,7 +55,11 @@ def startup_top(path, limit=20):
             for value in node:
                 walk(value, section)
 
-    walk(json.loads(path.read_text()), "")
+    # the IDE appends one report per startup phase to the same file, so it can hold several JSON documents
+    text, decoder, pos = path.read_text(), json.JSONDecoder(), 0
+    while (pos := len(text) - len(text[pos:].lstrip()) ) < len(text):
+        document, pos = decoder.raw_decode(text, pos)
+        walk(document, "")
     found.sort(key=lambda item: item["ms"], reverse=True)
     return found[:limit]
 
