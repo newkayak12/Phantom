@@ -304,6 +304,10 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
   }
 
   alias("com.intellij.modules.java-capable")
+  // phantom-idea: lets plugins depend optionally on the PhantomActivityListener topic and still load on stock IntelliJ
+  alias("dev.phantom.modules.activity")
+  // phantom-idea: lets plugins depend optionally on PhantomCheckoutLink (base / worktree record)
+  alias("dev.phantom.modules.checkout")
   alias("com.intellij.modules.python-core-capable")
   alias("com.intellij.modules.python-in-non-pycharm-ide-capable")
 

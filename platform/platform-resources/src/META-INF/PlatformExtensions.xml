@@ -843,6 +843,11 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <postStartupActivity implementation="dev.phantom.ide.memory.PhantomMemorySizer"/>
     <!-- phantom-idea: class data sharing archives of earlier builds deleted from the cache directory -->
     <postStartupActivity implementation="dev.phantom.ide.memory.PhantomCdsArchiveCleaner"/>
+    <!-- phantom-idea: idle / prewarm / active signals for plugins that release heavy state (PhantomActivityListener) -->
+    <postStartupActivity implementation="dev.phantom.ide.activity.PhantomActivitySignalsStarter"/>
+    <postStartupActivity implementation="dev.phantom.ide.activity.PhantomLazyActivationsStarter"/>
+    <!-- phantom-idea: base / worktree / clone record per checkout, read by Gradle model reuse and the local shared index -->
+    <postStartupActivity implementation="dev.phantom.ide.checkout.PhantomCheckoutRegistrar"/>
     <newProjectWizard.generator implementation="dev.phantom.ide.plugins.SpringBootPluginNewProjectWizard"/>
     <notificationGroup id="Phantom Plugins" displayType="STICKY_BALLOON" isLogByDefault="true" bundle="messages.PhantomIdeBundle"
                        key="notification.group.phantom.plugins"/>

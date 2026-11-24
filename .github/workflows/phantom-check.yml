@@ -1,0 +1,58 @@
+name: Phantom check
+
+# Compiles and runs the Phantom tests (dev.phantom.*) on GitHub instead of a developer machine. Runs on pull requests
+# that touch code, and on demand with any module and test filter.
+on:
+  pull_request:
+    paths:
+      - '**/*.kt'
+      - '**/*.java'
+      - '**/*.xml'
+      - '**/*.iml'
+      - '.github/workflows/phantom-check.yml'
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'Test module (tests.cmd --module)'
+        default: 'intellij.platform.tests'
+      test:
+        description: 'Test filter (tests.cmd --test, FQN or wildcard)'
+        default: 'dev.phantom.*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phantom-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-15
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Free disk
+        run: |
+          keep="$(xcode-select -p | sed 's#/Contents/Developer$##')"
+          for x in /Applications/Xcode*.app; do [[ "$x" == "$keep" ]] || sudo rm -rf "$x"; done
+          sudo rm -rf "$HOME/Library/Android" /usr/local/share/dotnet "$HOME/.dotnet" || true
+          df -h /
+
+      # The build graph still references the Android modules
+      - name: Android checkout
+        run: git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
+
+      - name: Bazel limits
+        run: |
+          cat > .bazelrc-user.bazelrc <<'EOF'
+          common --jobs=HOST_CPUS --worker_max_multiplex_instances=JvmCompile=HOST_CPUS
+          common --local_resources=memory=HOST_RAM*.5 --local_resources=cpu=HOST_CPUS
+          EOF
+
+      - name: Tests
+        env:
+          MODULE: ${{ inputs.module || 'intellij.platform.tests' }}
+          TEST: ${{ inputs.test || 'dev.phantom.*' }}
+        run: ./tests.cmd --module "$MODULE" --test "$TEST"
