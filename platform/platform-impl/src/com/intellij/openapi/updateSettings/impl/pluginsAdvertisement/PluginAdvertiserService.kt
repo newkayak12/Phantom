@@ -460,7 +460,8 @@ open class PluginAdvertiserServiceImpl(
 
       Pair(messagePresentation, notificationActions)
     }
-    else if (bundledPlugins.isNotEmpty() && !isIgnoreIdeSuggestion) {
+    // phantom-idea: no "Try IntelliJ IDEA" (Ultimate) offer unless JetBrains services are on; Phantom has no Ultimate edition
+    else if (bundledPlugins.isNotEmpty() && !isIgnoreIdeSuggestion && MarketplaceRequests.jetBrainsServicesEnabled) {
       IdeBundle.message(
         "plugins.advertiser.ultimate.features.detected",
         bundledPlugins.joinToString()
