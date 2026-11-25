@@ -1,0 +1,57 @@
+# Builds the Java plugin (Support for Java, dev.phantom.java) that Phantom no longer bundles and keeps its zip as a
+# workflow artifact (java-plugin). Phantom-plugins packages and lists it: publish the artifact's zip to phantom-libs
+# with tools/phantom-java-lib.sh (needs write access to phantom-libs, which this workflow's token does not have).
+#   Actions → Phantom Java lib → Run workflow
+# Same runner and setup as the release build; PHANTOM_PUBLISH_PLUGINS=1 builds the published plugins (Kotlin, Maven,
+# Java) next to the IDE.
+name: Phantom Java lib
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phantom-java-lib
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Free disk
+        run: |
+          keep="$(xcode-select -p | sed 's#/Contents/Developer$##')"
+          for x in /Applications/Xcode*.app; do [[ "$x" == "$keep" ]] || sudo rm -rf "$x"; done
+          sudo rm -rf "$HOME/Library/Android" /usr/local/share/dotnet "$HOME/.dotnet" || true
+          df -h /
+
+      - name: Android checkout
+        run: git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/android.git android
+
+      - name: Bazel limits
+        run: |
+          cat > .bazelrc-user.bazelrc <<'EOF'
+          common --jobs=HOST_CPUS --worker_max_multiplex_instances=JvmCompile=HOST_CPUS
+          common --local_resources=memory=HOST_RAM*.5 --local_resources=cpu=HOST_CPUS
+          EOF
+
+      - name: Build
+        run: PHANTOM_WINDOWS=0 PHANTOM_PUBLISH_PLUGINS=1 ./phantom-build.sh
+
+      - name: Java plugin zip
+        id: zip
+        run: |
+          zip="$(find out/phantom-idea/artifacts -path '*-plugins/*' -name 'java-*.zip' ! -name '*.blockmap.zip' | head -1)"
+          [[ -n "$zip" ]] || { echo "no Java plugin zip after the build"; exit 1; }
+          echo "zip=$zip" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: java-plugin
+          path: ${{ steps.zip.outputs.zip }}
+          if-no-files-found: error
