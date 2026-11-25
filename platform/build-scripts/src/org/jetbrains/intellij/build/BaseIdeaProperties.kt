@@ -67,20 +67,12 @@ val CE_CLASS_VERSIONS: Map<String, String> = mapOf(
   "lib/util_rt.jar" to "1.8",
   "lib/util-8.jar" to "1.8",
   "lib/external-system-rt.jar" to "1.8",
-  // phantom-idea: coverage runtime at Phantom Code Coverage's path (plugins/coverage) instead of plugins/java-coverage
-  "plugins/coverage/lib/java-coverage-rt.jar" to "1.8", // Phantom Code Coverage, bundled from Phantom-plugins
-  "plugins/junit/lib/junit-rt.jar" to "1.8",
-  "plugins/junit/lib/junit5-rt.jar" to "1.8",
-  "plugins/gradle-plugin/lib/gradle-tooling-extension-api.jar" to "1.8",
-  "plugins/gradle-plugin/lib/gradle-tooling-extension-impl.jar" to "1.8",
+  // phantom-idea: no rules for Java, JUnit, Coverage, Gradle and Groovy: they are not bundled (Support for Java and the
+  // Phantom-plugins plugins), and the check fails on rules matching no file
   "plugins/maven-plugin/lib/maven-server.jar" to "1.8",
   "plugins/maven-plugin/lib/intellij.maven.server3/maven3-server-common.jar" to "1.8",
   "plugins/maven-plugin/lib/intellij.maven.server3/maven3-server.jar" to "1.8",
   "plugins/maven-plugin/lib/artifact-resolver-m31.jar" to "1.8",
-  "plugins/java/lib/sa-jdwp" to "",  // ignored
-  "plugins/java/lib/rt/debugger-agent.jar" to "1.7",
-  "plugins/groovy/lib/groovy-rt.jar" to "1.8", // Phantom Groovy, bundled from Phantom-plugins
-  "plugins/groovy/lib/groovy-constants-rt.jar" to "1.8",
 )
 
 fun configurePropertiesForAllEditionsOfIntelliJIdea(properties: JetBrainsProductProperties) {
