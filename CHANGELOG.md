@@ -130,7 +130,7 @@
 
 ### 번들 구성
 
-- Java 플러그인을 번들에서 뺐다. IDE 본체는 언어 중립이다. Java 플러그인("Support for Java", id `dev.phantom.java`, 별칭 `com.intellij.java`)은 Phantom이 빌드해 `phantom-libs`에 lib으로 올리고(`tools/phantom-java-lib.sh`, workflow "Phantom Java lib"), Phantom-plugins가 묶어 배포한다. Gradle 플러그인도 번들에서 뺐다. Phantom-plugins의 "Support for Gradle"(gradle-core)과 "Support for Gradle (Java)"(gradle-java)를 Gradle 프로젝트에서 설치한다.
+- Java 플러그인을 번들에서 뺐다. IDE 본체는 언어 중립이다. Java 플러그인("Support for Java", id `dev.phantom.java`, 별칭 `com.intellij.java`)은 Phantom이 빌드해 `phantom-libs`에 lib으로 올리고(`tools/phantom-java-lib.sh`, workflow "Phantom Java lib"), Phantom-plugins가 묶어 배포한다. Gradle 플러그인도 번들에서 뺐다. Phantom-plugins의 "Support for Gradle"(gradle-core)과 "Support for Gradle (Java)"(gradle-java)를 Gradle 프로젝트에서 설치한다. Java나 Gradle이 있어야 도는 lombok, decompiler, coverage, testng, java-i18n, junit, groovy, gradle-dsl도 번들에서 빼고 Phantom 플러그인 저장소에서 설치한다.
 - Navbar, Recent Files, Services View 플랫폼 플러그인을 IntelliJ 원본 대신 Phantom-plugins가 만든 판(`dev.phantom.navbar`, `dev.phantom.recentfiles`, `dev.phantom.serviceview`, IntelliJ ID는 별칭, 콘텐츠 모듈 이름은 그대로)으로 번들한다. 셋 다 IDE의 Java·Gradle·Kotlin 모듈이 컴파일할 때 쓰지 않아 IDE 소스에서 떼어낼 수 있는 것들이다. `.removing`으로 원본을 빼고 `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 더했다.
   번들은 `phantom-plugins-917b1dfd8a`(33개)로 바꿨다. (PR #49)
 - 배포 빌드(`//build:i_build_target`)가 저장소의 모든 production·test 모듈 타깃 4,148개(Python, Android, 배포하지 않는 플러그인과 모든 테스트 포함) 대신, 배포에 들어가는 모듈과 Maven·standalone JPS 모듈, 그리고 그 모듈 의존성의 production 타깃 983개만 컴파일한다. 목록은 `tools/phantom-dist-targets.py`가 content report로 `build/phantom_dist_targets.bzl`에 쓴다. `bazel clean` 뒤 빌드한 결과의 content report와 앱 파일 1,431개가 이전과 같다. (PR #49)

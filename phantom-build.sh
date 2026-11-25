@@ -36,7 +36,7 @@ echo "Phantom $yy.$mm.$dd (build $phantom, platform 262.$d)"
 # phantom-libs release named in build/phantom-plugins-bundle.txt and checked against the sha256 there, so the build
 # needs no Phantom-plugins checkout. With PHANTOM_PLUGINS_REPO set they are built from that checkout instead, against
 # the IntelliJ Community build Phantom is forked from (so no installed Phantom is needed).
-bundled_from_plugins=(toml yaml sh lombok decompiler coverage textmate markdown mermaid copyright editorconfig htmltools testng java-i18n grammar terminal github junit properties repository-search json gradle-dsl groovy-scripting groovy groovy-live-templates images grid git theme sync navbar recentfiles serviceview endpoints)
+bundled_from_plugins=(toml yaml sh textmate markdown mermaid copyright editorconfig htmltools grammar terminal github properties repository-search json groovy-scripting groovy-live-templates images grid git theme sync navbar recentfiles serviceview endpoints)
 zips=()
 if [[ -n "${PHANTOM_PLUGINS_REPO:-}" ]]; then
   plugins_repo="$PHANTOM_PLUGINS_REPO"
