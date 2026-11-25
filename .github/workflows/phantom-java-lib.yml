@@ -48,10 +48,16 @@ jobs:
         run: |
           zip="$(find out/phantom-idea/artifacts -path '*-plugins/*' -name 'java-*.zip' ! -name '*.blockmap.zip' | head -1)"
           [[ -n "$zip" ]] || { echo "no Java plugin zip after the build"; exit 1; }
-          echo "zip=$zip" >> "$GITHUB_OUTPUT"
+          # the build's third-party list, for the notices tools/phantom-java-lib.sh adds to the zip
+          # (artifacts/phantom-<build>-third-party-libraries.json and .html; the dist trees are deleted after the build)
+          list="$(find out/phantom-idea/artifacts -maxdepth 1 -name '*-third-party-libraries.json' | head -1)"
+          [[ -n "$list" ]] || { echo "no third-party-libraries.json after the build"; exit 1; }
+          mkdir -p out/java-lib && cp "$zip" out/java-lib/
+          cp "$list" out/java-lib/third-party-libraries.json
+          cp "${list%.json}.html" out/java-lib/third-party-libraries.html
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: java-plugin
-          path: ${{ steps.zip.outputs.zip }}
+          path: out/java-lib/
           if-no-files-found: error

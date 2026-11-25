@@ -28,6 +28,7 @@ internal object InterfaceExtensionImplementationClassResolver : ImplementationCl
         !result.isAnnotationPresent(InternalIgnoreDependencyViolation::class.java)) {
       val idString = pluginDescriptor.pluginId.idString
       if (idString != "com.intellij.java" &&
+          idString != "dev.phantom.java" && // phantom-idea: the Java plugin's id
           idString != "com.intellij.java.ide" &&
           idString != "com.intellij.kotlin.frontend" &&
           idString != "org.jetbrains.android" &&

@@ -3,7 +3,6 @@ package com.intellij.workspaceModel.ide.impl.jps.serialization
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.ExternalStorageConfigurationManager
 import com.intellij.platform.workspace.jps.entities.ModuleSettingsFacetBridgeEntity
 import com.intellij.platform.workspace.jps.serialization.CustomImlComponentNameContributor
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.ApiStatus
 @ApiStatus.Internal
 abstract class BaseIdeSerializationContext : SerializationContext {
   override val isJavaPluginPresent: Boolean
-    get() = PluginManagerCore.getPlugin(PluginId("com.intellij.java")) != null
+    get() = PluginManagerCore.getPlugin(PluginManagerCore.JAVA_PLUGIN_ID) != null // phantom-idea: getPlugin does not follow aliases
   
   override val customModuleComponentSerializers: List<CustomModuleComponentSerializer>
     get() = CUSTOM_MODULE_COMPONENT_SERIALIZER_EP.extensionList

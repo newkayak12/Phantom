@@ -9,7 +9,6 @@
 
   <default-laf light="Phantom Light" dark="Phantom Dark"/>
 
-  <essential-plugin>com.intellij.java</essential-plugin>
-  <essential-plugin>com.intellij.java.ide</essential-plugin>
+  <!-- phantom-idea: Java (Support for Java) and Java IDE Customization are not bundled, so they are not essential -->
   <essential-plugin>com.intellij.modules.json</essential-plugin>
 </component>

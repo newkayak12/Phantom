@@ -29,11 +29,12 @@ private const val MAVEN_PLUGIN_MODULE = "intellij.maven.plugin"
  * resolve to these. Mermaid is Phantom's own implementation (com.phantom.mermaid, no alias). phantom-build.sh unpacks them
  * into out/phantom-plugins/<dir>; the originals are left out of the bundle.
  */
+// phantom-idea: lombok, decompiler, coverage, testng, java-i18n, junit, groovy and gradle-dsl need Java or Gradle, which are not
+// bundled: they are installed from the Phantom plugins repository with them
 val PHANTOM_PLUGINS_BUNDLED: PersistentList<String> = persistentListOf(
-  "toml", "yaml", "sh", "lombok", "decompiler", "coverage", "textmate", "markdown", "mermaid",
-  "copyright", "editorconfig", "htmltools", "testng", "java-i18n", "grammar", "terminal", "github", "junit", "properties",
-  "repository-search", "json", "gradle-dsl", "groovy-scripting", "groovy", "groovy-live-templates", "images", "grid",
-  "git", "theme", "sync", "navbar", "recentfiles", "serviceview", "endpoints",
+  "toml", "yaml", "sh", "textmate", "markdown", "mermaid", "copyright", "editorconfig", "htmltools", "grammar",
+  "terminal", "github", "properties", "repository-search", "json", "groovy-scripting", "groovy-live-templates",
+  "images", "grid", "git", "theme", "sync", "navbar", "recentfiles", "serviceview", "endpoints",
 )
 
 val MAVEN_ARTIFACTS_ADDITIONAL_MODULES: PersistentList<String> = persistentListOf(
@@ -134,15 +135,24 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing("intellij.platform.execution.serviceView.plugin")
       .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
       .removing(MAVEN_PLUGIN_MODULE)
+      .removing(JavaPluginLayout.MAIN_MODULE_NAME)
+      // Java IDE Customization (com.intellij.java.ide) only adjusts the IDE for Java and requires the Java plugin
+      .removing("intellij.java.ide.customization")
+      // Gradle: "Support for Gradle" (gradle-core) and "Support for Gradle (Java)" (gradle-java) in Phantom-plugins,
+      // installed from its marketplace for Gradle projects
+      .removing("intellij.gradle.plugin")
+      .removing("intellij.gradle.java.plugin")
     // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
     // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
     // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
     // Maven likewise (51 MB): suggested when a project has a pom.xml. Its optional modules elsewhere (Gradle's Maven
     // import, Kotlin's Maven support, Repository Search's common part) switch off without it.
+    // Java likewise ("Support for Java", id dev.phantom.java with com.intellij.java as an alias): the IDE itself is
+    // language-neutral, and the plugins repository suggests Java when a project has Java sources or build files.
     // Only //build:i_build_target_published (-Dphantom.publish.plugins=true, phantom-build.sh with PHANTOM_PUBLISH_PLUGINS=1)
     // builds them: they are about 190 of the build's 980 targets, and a build that doesn't release them skips those.
     productLayout.pluginModulesToPublish =
-      if (System.getProperty("phantom.publish.plugins").toBoolean()) persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE, MAVEN_PLUGIN_MODULE)
+      if (System.getProperty("phantom.publish.plugins").toBoolean()) persistentSetOf(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE, MAVEN_PLUGIN_MODULE, JavaPluginLayout.MAIN_MODULE_NAME)
       else persistentSetOf()
 
     // phantom-idea: class data sharing. The JVM archives the loaded classes into $IDE_CACHE_DIR/<base><build>.jsa on the
@@ -303,7 +313,7 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
     alias("com.intellij.modules.idea.community")
   }
 
-  alias("com.intellij.modules.java-capable")
+  // phantom-idea: com.intellij.modules.java-capable is declared by the Java plugin, which is not bundled
   // phantom-idea: lets plugins depend optionally on the PhantomActivityListener topic and still load on stock IntelliJ
   alias("dev.phantom.modules.activity")
   // phantom-idea: lets plugins depend optionally on PhantomCheckoutLink (base / worktree record)
