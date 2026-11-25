@@ -35,7 +35,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileEditor.impl.EditorComposite
 import com.intellij.openapi.fileEditor.impl.EditorsSplitters
@@ -86,7 +85,6 @@ import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.SimpleMessageBusConnection
-import com.intellij.util.ui.accessibility.ScreenReader
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineName
@@ -870,10 +868,8 @@ private suspend fun findAndOpenReadmeIfNeeded(project: Project) {
     }
     val readme = files.firstNotNullOfOrNull(projectDir::findFileByRelativePath) ?: return@runOnceForProject
     if (!readme.isDirectory) {
-      // Screen readers don't support JCEF preview (IJPL-59438)
-      val layout =
-        if (ScreenReader.isActive()) TextEditorWithPreview.Layout.SHOW_EDITOR_AND_PREVIEW else TextEditorWithPreview.Layout.SHOW_PREVIEW
-      readme.putUserData(TextEditorWithPreview.DEFAULT_LAYOUT_FOR_FILE, layout)
+      // phantom-idea: no SHOW_PREVIEW hint; the README opens in the editor's own layout, so the JCEF preview (about 5 browser
+      // processes, 0.5 GB) starts only when the user shows it
       (project.serviceAsync<FileEditorManager>() as FileEditorManagerEx).openFile(readme, FileEditorOpenOptions(requestFocus = true))
 
       readme.putUserData(README_OPENED_ON_START_TS, Instant.now())

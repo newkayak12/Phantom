@@ -17,6 +17,12 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 프로젝트를 처음 열 때 README를 미리보기 전용(SHOW_PREVIEW)으로 열던 힌트를 뺐다. README는 에디터 기본 배치로 열리고, 내장 브라우저(JCEF)는 미리보기를 켤 때만 뜬다. 별도 프로필 측정에서 JCEF 프로세스 5개(529 MB)가 0개가 됐다(Phantom-plugins의 Markdown 쪽 변경과 함께).
+
+- 플러그인이 무거운 상태를 처음 쓸 때 만들도록 확장 지점 `com.intellij.phantom.lazyActivation`(`PhantomLazyActivation`)을 추가했다. 플러그인은 XML에 파일 확장자, 액션 id, 도구 창 id를 트리거로 적고, 프로젝트마다 첫 트리거에서 `activate`가 백그라운드로 한 번 불린다. idle 신호 뒤에는 다시 트리거되면 또 불린다. 선언한 플러그인이 없으면 구독도 하지 않는다.
+
+- 플러그인용 활동 신호 `dev.phantom.ide.activity.PhantomActivityListener`(idle, prewarm, active)와 프로젝트 단위 `PhantomProjectActivityListener`(dormant, awake; 숨긴 workspace 탭처럼 열려 있지만 보이지 않는 프로젝트용, `PhantomActivitySignals.dormant/awake`로 보냄)를 추가했다. 10분 동안 입력이 없으면 idle, 그 뒤 창이 포커스를 받으면 prewarm, 첫 입력에 active를 보낸다(`-Dphantom.activity.idle.minutes`, 0이면 끔). 플러그인은 idle에 다시 만들 수 있는 상태를 놓아 GC가 힙을 돌려받게 한다. 체크아웃 기록 `dev.phantom.ide.checkout.PhantomCheckoutLink`는 프로젝트가 저장소의 main checkout인지, 어느 base의 worktree인지를 `.git`만 읽어 `.idea/workspace.xml`에 남기고, 시스템 디렉터리 `phantom/checkouts.json`에 저장소별 목록을 둔다. Gradle 모델 재사용과 local shared index가 이 기록을 읽는다. 플러그인은 `dev.phantom.modules.activity`, `dev.phantom.modules.checkout`에 선택적으로 의존한다.
+
 - `phantom-bench-report.py`가 JSON 문서 여러 개가 이어 붙은 시작 보고서 파일도 읽는다. 이전에는 "Extra data" 오류로 벤치 요약이 실패했다. 같은 벤치로 `-XX:CICompilerCount=4`를 재 보니 기본값 2보다 첫 smart mode가 1.9-2.7 s에서 3.1-4.3 s로 느려져 기본값을 그대로 둔다.
 
 - 릴리스 워크플로가 macOS와 Windows를 동시에 빌드한다. `prepare`가 태그 번호를 먼저 정해 두 빌드가 같은 버전을 쓰고, Windows 파일은 macOS 릴리스가 나온 뒤에 올린다. macOS가 실패하면 아무것도 배포하지 않고, Windows가 실패하면 macOS 릴리스는 그대로 두고 Windows만 다시 돌린다. 걸리는 시간은 macOS 빌드 하나 정도로 줄어든다.
