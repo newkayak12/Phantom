@@ -136,6 +136,8 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
       .removing(MAVEN_PLUGIN_MODULE)
       .removing(JavaPluginLayout.MAIN_MODULE_NAME)
+      // Java IDE Customization (com.intellij.java.ide) only adjusts the IDE for Java and requires the Java plugin
+      .removing("intellij.java.ide.customization")
       // Gradle: "Support for Gradle" (gradle-core) and "Support for Gradle (Java)" (gradle-java) in Phantom-plugins,
       // installed from its marketplace for Gradle projects
       .removing("intellij.gradle.plugin")
