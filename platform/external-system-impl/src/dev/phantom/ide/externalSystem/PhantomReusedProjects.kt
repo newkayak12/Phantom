@@ -4,6 +4,7 @@ package dev.phantom.ide.externalSystem
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.UserDataHolderEx
 import org.jetbrains.annotations.ApiStatus
 import java.util.concurrent.ConcurrentHashMap
 
@@ -16,7 +17,7 @@ object PhantomReusedProjects {
   private val KEY = Key.create<MutableSet<String>>("phantom.reused.external.projects")
 
   fun mark(project: Project, id: ExternalSystemProjectId) {
-    project.putUserDataIfAbsent(KEY, ConcurrentHashMap.newKeySet()).add(keyOf(id))
+    (project as UserDataHolderEx).putUserDataIfAbsent(KEY, ConcurrentHashMap.newKeySet<String>()).add(keyOf(id))
   }
 
   /** True once for a project marked by [mark]. */
