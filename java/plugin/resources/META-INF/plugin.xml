@@ -1,6 +1,7 @@
 <idea-plugin allow-bundled-update="true">
-  <id>com.intellij.java</id>
-  <name>Java</name>
+  <!-- phantom-idea: published as a separate plugin, not bundled; com.intellij.java stays as an alias for dependents -->
+  <id>dev.phantom.java</id>
+  <name>Support for Java</name>
   <description><![CDATA[
     Adds support for the Java language, including Java projects, language syntax highlighting, inspections, and all other coding assistance features.
   ]]></description>
@@ -16,6 +17,9 @@
   </dependencies>
 
   <module value="com.intellij.modules.java"/>
+  <!-- phantom-idea: the old plugin id and the capability the IDE no longer declares -->
+  <module value="com.intellij.java"/>
+  <module value="com.intellij.modules.java-capable"/>
 
   <content namespace="jetbrains">
     <module name="intellij.java.syntax" loading="embedded"/>

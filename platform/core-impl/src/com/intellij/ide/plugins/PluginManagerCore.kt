@@ -69,7 +69,8 @@ object PluginManagerCore {
   const val EDIT: String = "edit"
 
   @JvmField val CORE_ID: PluginId = PluginId.getId(CORE_PLUGIN_ID)
-  @JvmField val JAVA_PLUGIN_ID: PluginId = PluginId.getId("com.intellij.java")
+  // phantom-idea: the Java plugin is "Support for Java" (dev.phantom.java); com.intellij.java is its alias
+  @JvmField val JAVA_PLUGIN_ID: PluginId = PluginId.getId("dev.phantom.java")
 
   @ApiStatus.Internal
   @JvmField val JAVA_PLUGIN_ALIAS_ID: PluginId = PluginId.getId("com.intellij.modules.java")

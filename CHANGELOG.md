@@ -129,6 +129,8 @@
 - Phantom이 고친 번들 플러그인 네 개(Java `com.intellij.java`, Git `Git4Idea`, Gradle `com.intellij.gradle`, JCEF)의 `<vendor>`를 JetBrains에서 Phantom(https://github.com/newkayak12/Phantom)으로 바꿨다. d2faebf601 이후 변경이 그 플러그인의 모듈에 닿는지로 골랐고, 고치지 않은 나머지 13개(Grid Core, platform-* 등)는 JetBrains 그대로다. vendor가 JetBrains인지에 따라 달라지는 코드를 확인했다: 번들 플러그인끼리 파일 형식이 겹칠 때의 우선순위(`ConflictingFileTypeMappingTracker`)는 지금 번들에 겹치는 확장자가 없어 영향이 없고, 바뀌는 것은 오류 보고 대화상자의 "외부 플러그인" 안내, 설정 내보내기 목록의 항목 이름(리소스 번들 없는 플러그인), 통계(꺼져 있음) 정도다 (4807eaa716, PR #12).
 
 ### 번들 구성
+
+- Java 플러그인을 번들에서 뺐다. IDE 본체는 언어 중립이고, Java 지원은 "Support for Java"(id `dev.phantom.java`, 별칭 `com.intellij.java`)로 릴리스마다 Kotlin·Maven처럼 따로 빌드해 Phantom 플러그인 저장소에 올린다. pom.xml이나 Gradle 빌드 파일이 있는 프로젝트를 열면 설치를 제안한다.
 - Navbar, Recent Files, Services View 플랫폼 플러그인을 IntelliJ 원본 대신 Phantom-plugins가 만든 판(`dev.phantom.navbar`, `dev.phantom.recentfiles`, `dev.phantom.serviceview`, IntelliJ ID는 별칭, 콘텐츠 모듈 이름은 그대로)으로 번들한다. 셋 다 IDE의 Java·Gradle·Kotlin 모듈이 컴파일할 때 쓰지 않아 IDE 소스에서 떼어낼 수 있는 것들이다. `.removing`으로 원본을 빼고 `PHANTOM_PLUGINS_BUNDLED`와 `bundled_from_plugins`에 더했다.
   번들은 `phantom-plugins-917b1dfd8a`(33개)로 바꿨다. (PR #49)
 - 배포 빌드(`//build:i_build_target`)가 저장소의 모든 production·test 모듈 타깃 4,148개(Python, Android, 배포하지 않는 플러그인과 모든 테스트 포함) 대신, 배포에 들어가는 모듈과 Maven·standalone JPS 모듈, 그리고 그 모듈 의존성의 production 타깃 983개만 컴파일한다. 목록은 `tools/phantom-dist-targets.py`가 content report로 `build/phantom_dist_targets.bzl`에 쓴다. `bazel clean` 뒤 빌드한 결과의 content report와 앱 파일 1,431개가 이전과 같다. (PR #49)

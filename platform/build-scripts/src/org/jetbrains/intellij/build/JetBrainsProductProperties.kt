@@ -111,6 +111,7 @@ private fun isIntentionallyIgnored(problem: PluginProblem, pluginId: String?): B
       pluginId == "org.jetbrains.plugins.docker.gateway" ||
       // for intellij.build.minimal
       pluginId == "com.intellij.java" || pluginId == "com.intellij.java.ide" ||
+      pluginId == "dev.phantom.java" || // phantom-idea: the Java plugin's id
       // it's an internal plugin that should be compatible with older IDEA versions as well,
       // so it's ok to have preloading there
       pluginId == "com.intellij.monorepo.devkit"

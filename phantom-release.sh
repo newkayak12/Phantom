@@ -12,9 +12,9 @@
 #                                      the two halves of --windows, as CI runs them: the build alongside the macOS
 #                                      release (before the tag exists), the upload once that release is out
 # PHANTOM_BUILD_DAY=<YYMMDD> and PHANTOM_BUILD_SEQ=<N> fix the release's number (CI passes --next-tag's to both builds).
-# Kotlin and Maven are not bundled: the build (PHANTOM_PUBLISH_PLUGINS=1) zips them for this platform build, and the release publishes each to the
+# Kotlin, Maven and Java are not bundled: the build (PHANTOM_PUBLISH_PLUGINS=1) zips them for this platform build, and the release publishes each to the
 # Phantom plugins repository (the Phantom-plugins checkout next to this one, or PHANTOM_PLUGINS_REPO) as release
-# kotlin-262.<YYMMDD> / maven-262.<YYMMDD>, and points its marketplace.json entry there. PHANTOM_RELEASE_PLUGINS=0 skips
+# kotlin-262.<YYMMDD> / maven-262.<YYMMDD> / java-262.<YYMMDD>, and points its marketplace.json entry there. PHANTOM_RELEASE_PLUGINS=0 skips
 # them (neither built nor published; the marketplace keeps the previous release's), as CI does without PHANTOM_PLUGINS_TOKEN.
 # Tag: v<YY>.<MM>.<DD>.<N> for build PH-<YYMMDD>.<N>. The DMG's app is ad-hoc signed; phantom-install.sh re-signs it
 # with the local "Phantom Local" certificate on the machine that installs it. The Windows files are unsigned, so
@@ -115,6 +115,7 @@ published_zip() {
 if [[ "${PHANTOM_RELEASE_PLUGINS:-1}" != 0 ]]; then
   kotlin="$(published_zip Kotlin Kotlin/lib/kotlin-plugin.jar)"
   maven="$(published_zip maven-plugin maven-plugin/lib/maven-plugin.jar)"
+  java="$(published_zip java java/lib/java-impl.jar)"
   plugins_repo="${PHANTOM_PLUGINS_REPO:-$root/../Phantom-plugins}"
   [[ -f "$plugins_repo/.phantom/marketplace.json" ]] || { echo "no Phantom-plugins checkout at $plugins_repo"; exit 1; }
 fi
@@ -240,12 +241,16 @@ ENTRY='{"id": "org.jetbrains.idea.maven", "name": "Support for Apache Maven", "c
   "description": "Apache Maven projects: import and sync of pom.xml, the Maven tool window, running goals, pom.xml editing and completion, repositories and indexes. IntelliJ'"'"'s Maven plugin (Apache 2.0) built with each Phantom release; not bundled, since Gradle projects never use it. org.jetbrains.idea.maven stays its id, so plugins depending on Maven keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
   "depends": ["com.intellij.modules.java"], "detectFiles": ["pom.xml"]}' \
   publish "$maven" maven-plugin/lib/maven-plugin.jar Maven Maven
+ENTRY='{"id": "dev.phantom.java", "name": "Support for Java", "category": "Languages",
+  "description": "Java language support: Java projects, editing, inspections, refactorings, running and debugging. IntelliJ'"'"'s Java plugin (Apache 2.0) built with each Phantom release; not bundled, since the IDE itself is language-neutral. com.intellij.java stays as an alias, so plugins depending on Java keep working. Built by Phantom from IntelliJ Community sources; not published by JetBrains.",
+  "detectFiles": ["pom.xml", "build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"]}' \
+  publish "$java" java/lib/java-impl.jar Java Java
 
 # --admin merges without waiting for the pull request checks (the ruleset lets admins bypass them in pull requests only)
 if [[ -n "$(git -C "$pwork" log --oneline origin/main..HEAD)" ]]; then
   git -C "$pwork" push -q -f origin "HEAD:refs/heads/$pbranch"
-  pgh pr create -R "$prepo" --base main --head "$pbranch" --title "Kotlin and Maven for Phantom 262.$day" \
-    --body "marketplace.json entries for the Kotlin and Maven releases built with Phantom $version ($build)."
+  pgh pr create -R "$prepo" --base main --head "$pbranch" --title "Kotlin, Maven and Java for Phantom 262.$day" \
+    --body "marketplace.json entries for the Kotlin, Maven and Java releases built with Phantom $version ($build)."
   pgh pr merge "$pbranch" -R "$prepo" --squash --admin --delete-branch
 fi
 git -C "$plugins_repo" worktree remove --force "$pwork"
