@@ -135,6 +135,10 @@ open class IdeaCommunityProperties(private val communityHomeDir: Path) : JetBrai
       .removing(KotlinPluginBuilder.MAIN_KOTLIN_PLUGIN_MODULE)
       .removing(MAVEN_PLUGIN_MODULE)
       .removing(JavaPluginLayout.MAIN_MODULE_NAME)
+      // Gradle: "Support for Gradle" (gradle-core) and "Support for Gradle (Java)" (gradle-java) in Phantom-plugins,
+      // installed from its marketplace for Gradle projects
+      .removing("intellij.gradle.plugin")
+      .removing("intellij.gradle.java.plugin")
     // phantom-idea: Kotlin is not bundled (381 MB, and Java-only projects never use it). The build zips it into
     // artifacts/<product code>-plugins for the Phantom plugins repository, which suggests it when a project uses Kotlin
     // or Gradle Kotlin DSL scripts; phantom-release.sh publishes it with each release.
