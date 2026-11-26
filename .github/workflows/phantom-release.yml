@@ -73,6 +73,7 @@ jobs:
             echo "PHANTOM_RELEASE_PLUGINS=0" >> "$GITHUB_ENV"
             exit 0
           fi
+          echo "PHANTOM_RELEASE_PLUGINS=1" >> "$GITHUB_ENV"
           GH_TOKEN="$PHANTOM_PLUGINS_TOKEN" gh api repos/newkayak12/Phantom-plugins --jq '"Phantom-plugins push: \(.permissions.push)"'
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -97,7 +98,8 @@ jobs:
       # phantom-release.sh publishes Kotlin and marketplace.json through the Phantom-plugins checkout next to this one
       # (the build itself downloads the bundled plugins from phantom-libs); git reaches it with PHANTOM_PLUGINS_TOKEN
       - name: Phantom-plugins checkout
-        if: env.PHANTOM_RELEASE_PLUGINS != '0'
+        # an unset variable is null, which equals '0' in an expression: compare with an explicit 1
+        if: env.PHANTOM_RELEASE_PLUGINS == '1'
         run: |
           # shellcheck disable=SC2016 # the helper expands the token when git runs it
           git config --global credential.https://github.com/newkayak12/Phantom-plugins.git.helper \
