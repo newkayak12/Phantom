@@ -17,6 +17,7 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 릴리스 workflow가 PHANTOM_PLUGINS_TOKEN이 있어도 Phantom-plugins를 checkout하지 않아 Kotlin·Maven과 함께 배포할 때 실패하던 문제를 고쳤다.
 - macOS 앱 안 업데이트가 restarter 없이 돈다. restarter 복사본이 Gatekeeper에 막혀 앱이 바뀌지 않던 문제와, 다시 시도할 때 임시 폴더에 받던 DMG가 사라져 "Failed to prepare an update"로 끝나던 문제를 고쳤다. 이제 스크립트가 IDE 종료를 기다려 앱을 바꾸고 다시 연다. DMG는 시스템 폴더에 받는다.
 - Java가 번들에서 빠진 뒤 남은 것을 정리했다. JavaIdePlugin.xml(웹 링크의 JetBrains UTM 파라미터, IDEA 온보딩 도움말 이름, Java 완성 팁)을 더 넣지 않고, macOS와 Windows의 .java/.gradle/.groovy/.kt/.kts/.pom 파일 연결을 뺐다(번들되지 않은 언어의 파일이 텍스트로 열리던 문제). 플러그인 설치 권유의 `detectFiles`가 `*.java`처럼 확장자도 받아, 빌드 파일 없이 소스만 있는 프로젝트에도 권유가 뜬다.
 
