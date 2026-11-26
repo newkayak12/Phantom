@@ -17,6 +17,8 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 릴리스 workflow에 `windows` 입력을 추가했다(끄면 macOS만 빌드한다). macOS 작업이 빌드 뒤에 실패하면(태그 push 등) DMG를 artifact `macos-dmg`로 남겨, 다시 빌드하지 않고 `./phantom-release.sh --no-build`로 릴리스할 수 있다.
+
 - 프로젝트를 처음 열 때 README를 미리보기 전용(SHOW_PREVIEW)으로 열던 힌트를 뺐다. README는 에디터 기본 배치로 열리고, 내장 브라우저(JCEF)는 미리보기를 켤 때만 뜬다. 별도 프로필 측정에서 JCEF 프로세스 5개(529 MB)가 0개가 됐다(Phantom-plugins의 Markdown 쪽 변경과 함께).
 
 - 플러그인이 무거운 상태를 처음 쓸 때 만들도록 확장 지점 `com.intellij.phantom.lazyActivation`(`PhantomLazyActivation`)을 추가했다. 플러그인은 XML에 파일 확장자, 액션 id, 도구 창 id를 트리거로 적고, 프로젝트마다 첫 트리거에서 `activate`가 백그라운드로 한 번 불린다. idle 신호 뒤에는 다시 트리거되면 또 불린다. 선언한 플러그인이 없으면 구독도 하지 않는다.
