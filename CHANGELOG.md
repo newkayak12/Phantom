@@ -18,6 +18,8 @@
 ## 미배포 (v26.11.13.1 이후)
 
 - macOS 앱 안 업데이트가 restarter 없이 돈다. restarter 복사본이 Gatekeeper에 막혀 앱이 바뀌지 않던 문제와, 다시 시도할 때 임시 폴더에 받던 DMG가 사라져 "Failed to prepare an update"로 끝나던 문제를 고쳤다. 이제 스크립트가 IDE 종료를 기다려 앱을 바꾸고 다시 연다. DMG는 시스템 폴더에 받는다.
+- Java가 번들에서 빠진 뒤 남은 것을 정리했다. JavaIdePlugin.xml(웹 링크의 JetBrains UTM 파라미터, IDEA 온보딩 도움말 이름, Java 완성 팁)을 더 넣지 않고, macOS와 Windows의 .java/.gradle/.groovy/.kt/.kts/.pom 파일 연결을 뺐다(번들되지 않은 언어의 파일이 텍스트로 열리던 문제). 플러그인 설치 권유의 `detectFiles`가 `*.java`처럼 확장자도 받아, 빌드 파일 없이 소스만 있는 프로젝트에도 권유가 뜬다.
+
 - 릴리스 workflow에 `windows` 입력을 추가했다(끄면 macOS만 빌드한다). macOS 작업이 빌드 뒤에 실패하면(태그 push 등) DMG를 artifact `macos-dmg`로 남겨, 다시 빌드하지 않고 `./phantom-release.sh --no-build`로 릴리스할 수 있다.
 
 - 프로젝트를 처음 열 때 README를 미리보기 전용(SHOW_PREVIEW)으로 열던 힌트를 뺐다. README는 에디터 기본 배치로 열리고, 내장 브라우저(JCEF)는 미리보기를 켤 때만 뜬다. 별도 프로필 측정에서 JCEF 프로세스 5개(529 MB)가 0개가 됐다(Phantom-plugins의 Markdown 쪽 변경과 함께).

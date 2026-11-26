@@ -14,7 +14,6 @@ import org.jetbrains.intellij.build.io.copyFileToDir
 import org.jetbrains.intellij.build.kotlin.KotlinBinaries
 import org.jetbrains.intellij.build.kotlin.KotlinPluginBuilder
 import org.jetbrains.intellij.build.productLayout.CommunityModuleSets
-import org.jetbrains.intellij.build.productLayout.CommunityProductFragments
 import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
 import org.jetbrains.intellij.build.productLayout.productModules
 import java.nio.file.Files
@@ -325,7 +324,13 @@ fun intellijCommunityBaseFragment(platformPrefix: String? = null): ProductModule
     alias("com.intellij.platform.ide.provisioner")
   }
 
-  include(CommunityProductFragments.javaIdeBaseFragment())
+  // phantom-idea: javaIdeBaseFragment() without JavaIdePlugin.xml (intellij.java.ide.resources): Java is not bundled, and that
+  // file only adds JetBrains UTM parameters to web links, the IDEA new UI onboarding help name and a Java completion tip
+  deprecatedInclude("intellij.platform.resources", "META-INF/PlatformLangPlugin.xml")
+  alias("com.intellij.modules.all")
+  alias("com.intellij.modules.jsp.base")
+  embeddedModule("intellij.platform.remoteServers.impl")
+  deprecatedInclude("intellij.uiDesigner", "META-INF/DesignerCorePlugin.xml", optional = true)
   // phantom-idea: no tips-intellij-idea-community.xml: Phantom ships no Tips of the Day content (the JetBrains tips-idea-ce library is not a dependency)
 
   module("intellij.platform.coverage")
@@ -351,7 +356,8 @@ inline fun ideaCommunityWindowsCustomizer(
   projectHome: Path,
   configure: WindowsCustomizerBuilder.() -> Unit = {}
 ): WindowsDistributionCustomizer = windowsCustomizer(projectHome) {
-  fileAssociations = listOf("java", "gradle", "groovy", "kt", "kts", "pom")
+  // phantom-idea: no file associations: Java, Gradle, Groovy, Kotlin and Maven are not bundled, so their files would open as text
+  fileAssociations = emptyList()
 
   // phantom-idea: Windows product and install folder name Phantom (rebrand); the JetBrains uninstall feedback page (uninstallFeedbackUrl) is removed
   fullName { "Phantom" }
@@ -367,7 +373,8 @@ inline fun ideaCommunityMacCustomizer(
   // phantom-idea: macOS URL scheme phantom, bundle id dev.phantom.idea and "Phantom.app" instead of IntelliJ IDEA OSS (rebrand)
   urlSchemes = listOf("phantom")
   associateIpr = true
-  fileAssociations = FileAssociation.from("java", "groovy", "kt", "kts")
+  // phantom-idea: no file associations: Java, Groovy and Kotlin are not bundled, so their files would open as text
+  fileAssociations = emptyList()
   bundleIdentifier = "dev.phantom.idea"
 
   rootDirectoryName { _, _ -> "Phantom.app" }
