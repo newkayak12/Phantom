@@ -25,6 +25,10 @@ on:
       notes:
         description: "Release notes (default: commits since the previous release)"
         required: false
+      windows:
+        description: "Also build the Windows installer and zip (off: macOS only)"
+        type: boolean
+        default: true
       windows_tag:
         description: "Only build Windows for this existing release (v<YY>.<MM>.<DD>.<N>); skips the macOS release"
         required: false
@@ -121,6 +125,20 @@ jobs:
           ( while sleep 600; do echo "[$(date +%H:%M)] $(df -h / | tail -1 | awk '{print "disk free",$4}'); $(memory_pressure | tail -1)"; done ) &
           PHANTOM_WINDOWS=0 PHANTOM_BUILD_DAY="$DAY" PHANTOM_BUILD_SEQ="$SEQ" ./phantom-release.sh
 
+      # a failure after the build (the tag push, the upload) keeps the DMG: download this artifact into
+      # out/phantom-idea/artifacts, write its PH- build number to out/phantom-build-number and run
+      # ./phantom-release.sh --no-build, instead of building again
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: macos-dmg
+          path: |
+            out/phantom-idea/artifacts/phantom-*.dmg
+            out/phantom-build-number
+          if-no-files-found: ignore
+          retention-days: 3
+          compression-level: 0
+
       - name: Disk at the end
         if: always()
         run: df -h /
@@ -128,7 +146,7 @@ jobs:
   windows-build:
     needs: prepare
     # with prepare, or alone for an existing release (windows_tag; prepare is skipped then)
-    if: always() && (needs.prepare.result == 'success' || inputs.windows_tag != '')
+    if: always() && ((needs.prepare.result == 'success' && inputs.windows) || inputs.windows_tag != '')
     runs-on: macos-15
     timeout-minutes: 360
     env:
