@@ -36,7 +36,8 @@ import java.io.InputStream
  * An entry may list earlier releases in `versions` (see [compatibleRelease]); an IDE gets the newest release whose since/until
  * range holds its build.
  * `detect` lists library coordinates whose presence in a project makes the IDE suggest the plugin; `detectFiles` lists file
- * names that do the same (for tools that are not libraries, such as Helm charts).
+ * names that do the same (for tools that are not libraries, such as Helm charts), or `*.<extension>` for any file with
+ * that extension (`*.java`: Java sources without a build file).
  */
 @ApiStatus.Internal
 object GitHubPluginRepository {

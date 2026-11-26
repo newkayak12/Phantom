@@ -5,7 +5,6 @@
   <module value="com.intellij.modules.all"/>
   <module value="com.intellij.modules.idea"/>
   <module value="com.intellij.modules.idea.community"/>
-  <module value="com.intellij.modules.java-capable"/>
   <module value="com.intellij.modules.jsp.base"/>
   <module value="com.intellij.modules.python-core-capable"/>
   <module value="com.intellij.modules.python-in-non-pycharm-ide-capable"/>
@@ -15,7 +14,6 @@
   <xi:include href="/META-INF/DesignerCorePlugin.xml">
     <xi:fallback/>
   </xi:include>
-  <xi:include href="/META-INF/JavaIdePlugin.xml"/>
   <!-- phantom-idea: no tips-intellij-idea-community.xml: Phantom ships no Tips of the Day content (the JetBrains tips-idea-ce library is not a dependency) -->
   <xi:include href="/META-INF/community-customization.xml"/>
   <xi:include href="/META-INF/intellij.moduleSets.ide.common.xml"/>

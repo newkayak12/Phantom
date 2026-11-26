@@ -81,7 +81,12 @@ internal class PhantomPluginAdvisorService(private val project: Project, val sco
     }
     val fileNames = candidates.flatMap { it.files }.toSet()
     val present = if (fileNames.isEmpty()) emptySet() else smartReadAction(project) {
-      fileNames.filterTo(HashSet()) { FilenameIndex.getVirtualFilesByName(it, GlobalSearchScope.projectScope(project)).isNotEmpty() }
+      val scope = GlobalSearchScope.projectScope(project)
+      // "*.java": any file with that extension (a project with sources but no build file); otherwise an exact file name
+      fileNames.filterTo(HashSet()) { name ->
+        if (name.startsWith("*.")) FilenameIndex.getAllFilesByExt(project, name.substring(2), scope).isNotEmpty()
+        else FilenameIndex.getVirtualFilesByName(name, scope).isNotEmpty()
+      }
     }
     val matches = candidates.mapNotNull { plugin ->
       plugin.detect.firstOrNull { it in used }?.let {
