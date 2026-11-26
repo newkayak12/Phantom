@@ -14,7 +14,6 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import com.intellij.util.Restarter
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.system.CpuArch
 import com.intellij.util.system.OS
@@ -28,13 +27,15 @@ import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.PosixFilePermissions
 import java.security.MessageDigest
 
 /**
  * phantom-idea: updates the macOS app in place from a Phantom GitHub release. Phantom releases carry no patches for IntelliJ's
- * updater, so this downloads the release's DMG instead, and once the IDE has quit, a script run by the restarter swaps the app
- * bundle for the DMG's copy before the restarter starts it again. Settings, plugins, caches and logs live outside the bundle
+ * updater, so this downloads the release's DMG instead and starts a script that waits for the IDE to quit, swaps the app
+ * bundle for the DMG's copy and opens the app again. The script runs on its own, not through the restarter: the restarter
+ * copy it would need (it runs from the bundle being replaced) is a new binary to Gatekeeper, which blocked it. Settings, plugins, caches and logs live outside the bundle
  * and stay. The DMG is fetched by the IDE, not a browser, so it carries no quarantine flag and Gatekeeper lets the (not
  * notarized) app start. Windows still opens the release page.
  */
@@ -68,7 +69,8 @@ object PhantomSelfUpdate {
       override fun run(indicator: ProgressIndicator) {
         val command = try {
           val dmg = download(repo, tag, indicator)
-          arrayOf("/bin/zsh", writeScript(dmg.parent).toString(), dmg.toString(), app.toString())
+          listOf("/usr/bin/nohup", "/bin/zsh", writeScript(dmg.parent).toString(), dmg.toString(), app.toString(),
+                 ProcessHandle.current().pid().toString())
         }
         catch (e: ProcessCanceledException) {
           throw e
@@ -83,10 +85,14 @@ object PhantomSelfUpdate {
             .notify(project)
           return
         }
-        // the restarter runs from the bundle that the script replaces: run a copy of it
-        Restarter.setCopyRestarterFiles()
         val application = ApplicationManager.getApplication() as ApplicationEx
-        application.invokeLater { application.restart(ApplicationEx.EXIT_CONFIRMED or ApplicationEx.SAVE, command) }
+        application.invokeLater {
+          // the script waits for this process to end and then reopens the app
+          ProcessBuilder(command).redirectErrorStream(true)
+            .redirectOutput(ProcessBuilder.Redirect.appendTo(Path.of(command[3]).resolveSibling("update.log").toFile()))
+            .start()
+          application.exit(ApplicationEx.EXIT_CONFIRMED or ApplicationEx.SAVE)
+        }
       }
     }.queue()
   }
@@ -100,10 +106,13 @@ object PhantomSelfUpdate {
                             ?: throw IOException("release $tag has no macOS DMG")
     val name = asset["name"]!!.jsonPrimitive.content
     val url = asset["browser_download_url"]?.jsonPrimitive?.contentOrNull ?: throw IOException("no download URL for $name")
-    val dir = Files.createDirectories(Path.of(PathManager.getTempPath(), "phantom-update"))
+    // not under the temp directory, which the IDE may clear while a download runs (a retry lost its DMG that way)
+    val dir = Files.createDirectories(Path.of(PathManager.getSystemPath(), "phantom-update"))
     val dmg = dir.resolve(name)
+    val part = dir.resolve("$name.part")
     indicator.text = name
-    HttpRequests.request(url).productNameAsUserAgent().saveToFile(dmg, indicator)
+    HttpRequests.request(url).productNameAsUserAgent().saveToFile(part, indicator)
+    Files.move(part, dmg, StandardCopyOption.REPLACE_EXISTING)
     // GitHub publishes each asset's sha256 as "digest": "sha256:<hex>"
     asset["digest"]?.jsonPrimitive?.contentOrNull?.removePrefix("sha256:")?.let { expected ->
       if (!sha256(dmg).equals(expected, ignoreCase = true)) {
@@ -127,7 +136,7 @@ object PhantomSelfUpdate {
     return digest.digest().joinToString("") { "%02x".format(it) }
   }
 
-  /** The script the restarter runs after the IDE quit: mount the DMG, copy its app next to ours, swap, clean up. */
+  /** The script that waits for the IDE to quit, then mounts the DMG, copies its app next to ours, swaps, cleans up and reopens it. */
   private fun writeScript(dir: Path): Path {
     val script = dir.resolve("phantom-update.sh")
     Files.writeString(script, SCRIPT)
@@ -138,12 +147,14 @@ object PhantomSelfUpdate {
   // $$: the shell variables in the script are not Kotlin string templates
   private val SCRIPT = $$"""
     |#!/bin/zsh
-    |# Phantom self-update (PhantomSelfUpdate): run by the restarter once the IDE has quit. Replaces the app bundle with the
-    |# DMG's copy; on any failure the old app stays. Exits 0 either way, so the restarter starts whichever app is in place.
+    |# Phantom self-update (PhantomSelfUpdate): waits for the IDE (pid $3) to quit, replaces the app bundle with the DMG's
+    |# copy and opens whichever app is then in place; on any failure the old app stays.
     |set -u
-    |dmg="$1"; app="$2"
+    |dmg="$1"; app="$2"; pid="$3"
     |logfile="${dmg:h}/update.log"
     |log() { print -r -- "$(date '+%F %T') $*" >> "$logfile" }
+    |for _ in {1..600}; do kill -0 "$pid" 2>/dev/null || break; sleep 0.5; done
+    |if kill -0 "$pid" 2>/dev/null; then log "the IDE did not quit; not updating"; exit 0; fi
     |mnt="$(mktemp -d)"
     |if ! hdiutil attach -nobrowse -readonly -noverify -mountpoint "$mnt" "$dmg" -quiet; then
     |  log "cannot mount $dmg"; rmdir "$mnt"; exit 0
@@ -168,6 +179,7 @@ object PhantomSelfUpdate {
     |rm -rf "$new"
     |hdiutil detach "$mnt" -quiet; rmdir "$mnt" 2>/dev/null
     |rm -f "$dmg"
+    |open "$app"
     |exit 0
     |""".trimMargin()
 }
