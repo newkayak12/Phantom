@@ -38,7 +38,7 @@ jobs:
             });
             core.setOutput('sha', branch.commit.sha);
       # Never check out the PR head or execute code supplied by a PR.
-      - uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v5.0.0
         with:
           ref: ${{ steps.trusted.outputs.sha }}
           persist-credentials: false
