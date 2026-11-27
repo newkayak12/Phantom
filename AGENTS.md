@@ -54,10 +54,9 @@ Special handling applies to the directories below. If a file you touch lives und
 
 ### After Code Changes
 
-- **Run affected tests:** `./tests.cmd --module <module> --test <FQN or wildcard>` (**FQN required; simple class names do not match; always specify the test module directly**), or `node --test <file>` for `*.test.mjs`.
-  `tests.cmd` performs Bazel compilation internally, so a separate `bazel build` step is not needed when tests will be run.
-  Module-specific rules may override the runner. Skip if plugin has no tests. See [TESTING](./.agents/skills/testing/SKILL.md).
-- **Bazel compilation without tests:** when only verifying compilation (no tests to run), use `bazel build <target>` for affected modules. Skip if only `.js`, `.mjs`, `.md`, `.txt`, or `.json` files are modified.
+- **Verification runs in PR CI, not on this machine.** Do not run `bazel build`, `bazel test` or `./tests.cmd` locally by default: every worktree starts its own Bazel server (`-Xmx10g`, idle for hours) and caches, and parallel agents push the machine into swap. Open the PR and read the CI `test` job; report the result or that it is still running.
+- CI skips the app build for PRs that change only properties, docs or similar files (the `route` job decides). If such a change still needs a build (for example a JBR or dependency pin), say that it was not built and let the release build or a deliberate local `phantom-build.sh` run check it.
+- Run a local build or test only when CI cannot answer the question (for example reproducing a failure) or the user asks. Then use `./tests.cmd --module <module> --test <FQN or wildcard>` (FQN required; specify the test module) or `bazel build <target>`, and run `bazel shutdown` in that worktree when done.
 - After modifying `*.iml`, `BUILD.bazel`, or `.idea/` files: run `./build/jpsModelToBazelCommunityOnly.cmd` (the only generator script in this repository; `./build/jpsModelToBazel.cmd` does not exist here). It has not been confirmed to run in this fork.
 
 ### After Writing Code
