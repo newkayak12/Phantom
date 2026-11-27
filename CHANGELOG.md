@@ -17,6 +17,7 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 문서: PRIVACY에 Version Catalog 플러그인의 "Check for newer versions"가 사용자가 실행할 때만 Maven Central(`search.maven.org`, `repo1.maven.org`)에 접속한다는 항목을 추가했다.
 - 번들 Java 런타임을 JBR 25.0.4.1b508.41에서 25.0.5.1b635.102로 올렸다. macOS에서 EDT가 awtLock을 잡은 채 `MTLRenderQueue.flushNow`에서 멈추는 프리즈 수정(JBR-10599, IJPL-244911)이 들어 있다.
 - `migrate.config` 마커를 쓸 때 내용과 호출 스택을 WARN 로그로 남긴다. 알 수 없는 쓰기 주체가 만든 빈 마커가 설정을 초기화한 사례를 다음에 추적하기 위한 진단이다.
 - 버그 수정: Phantom에 없는 `intellij.rd.client`, `intellij.platform.split`, `intellij.platform.jps.build` 모듈을 환경 구성 모듈로 등록하지 않아, idea.log에 "Environment-configured module is not found" 경고가 반복해서 남지 않는다.
