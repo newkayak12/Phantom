@@ -1,6 +1,7 @@
 // Copyright 2026 Phantom contributors. Use of this source code is governed by the Apache 2.0 license.
 package dev.phantom.ide.ghost
 
+import com.intellij.ui.JBColor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.RegistryManager
 import com.intellij.openapi.util.registry.RegistryValue
@@ -53,7 +54,7 @@ private class PhantomGhostWidget : CustomStatusBarWidget {
     val on = PhantomGhostMode.isEnabled()
     label.icon = if (on) PhantomIcons.GhostOn else PhantomIcons.GhostOff
     label.text = PhantomIdeBundle.message(if (on) "phantom.ghost.widget.on" else "phantom.ghost.widget.off")
-    label.foreground = if (on) JBUI.CurrentTheme.Link.Foreground.ENABLED else UIUtil.getContextHelpForeground()
+    label.foreground = if (on) GHOST_ACCENT else UIUtil.getContextHelpForeground()
     label.toolTipText = PhantomIdeBundle.message(if (on) "phantom.ghost.widget.tooltip.on" else "phantom.ghost.widget.tooltip.off")
   }
 
@@ -63,3 +64,6 @@ private class PhantomGhostWidget : CustomStatusBarWidget {
 
   override fun dispose() {}
 }
+
+// Phantom theme accent (PhantomLight accent-brand / PhantomDark accent-brand-border), as in the ghostOn icons.
+private val GHOST_ACCENT = JBColor(0xB5711F, 0xE0A250)
