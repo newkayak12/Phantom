@@ -2,7 +2,7 @@
 
 [English](PRIVACY.md)
 
-최종 수정일: 2026-11-18
+최종 수정일: 2026-11-28
 
 Phantom과 Phantom 플러그인은 사용자나 IDE 사용에 관한 데이터를 수집하지 않는다. Phantom 서버는 없다. Phantom
 개발자에게 보내는 것은 없고, 사용 통계, 오류 보고, 원격 측정 서비스도 없다. 사용 통계는 켤 수 없다. Phantom에는 사용
@@ -20,6 +20,7 @@ Phantom은 아래 기능에서만 다른 서비스에 접속한다. 각 요청�
 | JDK를 내려받을 때 | `api.foojay.io`와 JDK 배포처 다운로드 사이트 | 고른 JDK, OS, 아키텍처 |
 | Spring Boot 프로젝트를 만들 때(Spring 플러그인) | `start.spring.io` | 고른 프로젝트 옵션 |
 | 데이터베이스 드라이버를 내려받을 때 | Maven Central | 드라이버 아티팩트 |
+| `*.versions.toml` 파일에서 "Check for Newer Versions on Maven Central"을 실행할 때만(Version Catalog 플러그인) | Maven Central(`repo1.maven.org`의 `<그룹 경로>/<아티팩트>/maven-metadata.xml`) | `[libraries]` 항목의 그룹·아티팩트 ID(`[plugins]`는 건너뛴다). 프로젝트 파일은 보내지 않는다 |
 | 사용자가 고를 때만: Marketplace 탭 탐색·설치, 문법 검사용 언어 데이터 다운로드, Choose Boot Java Runtime 열기, Windows에서 Git이 없을 때 Download and Install | JetBrains(`plugins.jetbrains.com`, `download.jetbrains.com`) 또는 플러그인의 다운로드 위치 | 그 다운로드 요청. Phantom은 기기 ID를 붙이지 않는다 |
 
 IDE를 `-Dphantom.jetbrains.services=true`로 실행하면 Phantom이 기본으로 꺼 둔 JetBrains 서비스(피드백 양식, 프레임워크
