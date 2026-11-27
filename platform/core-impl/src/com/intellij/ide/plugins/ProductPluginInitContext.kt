@@ -213,6 +213,8 @@ class ProductPluginInitContext(
                                         && moduleId != rdClient && moduleId != platformSplit
           else -> true
         }
+        // phantom-idea: Phantom ships none of these modules; registering them as available only logs "Environment-configured module is not found"
+        if (isAvailable && (moduleId == rdClient || moduleId == platformSplit || moduleId == backendJps)) continue
         val unavailabilityReason =
           if (isAvailable) null
           else UnsuitableProductModeModuleUnavailabilityReason(moduleId, productModeId)
