@@ -3,7 +3,9 @@ package com.intellij.ide.plugins
 
 import com.intellij.ide.plugins.newui.PluginDtoModelBuilderFactory
 import dev.phantom.ide.plugins.GitHubPluginRepository
+import dev.phantom.ide.plugins.PhantomDependencyAliases
 import dev.phantom.ide.plugins.coordinatesOf
+import dev.phantom.ide.plugins.missingProviders
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -62,6 +64,32 @@ class GitHubPluginRepositoryTest {
     assertEquals("dev.phantom.db", detect.id)
     assertEquals("Phantom DB", detect.name)
     assertEquals(listOf("org.postgresql:postgresql"), detect.detect)
+  }
+
+  @Test
+  fun `aliases resolve dependencies to the Phantom plugin providing them`() {
+    val json = """{"plugins": [
+      {"id": "dev.phantom.java", "name": "Phantom Java", "download": "a/java.zip",
+       "aliases": ["com.intellij.modules.java", "com.intellij.java"]},
+      {"id": "dev.phantom.gradle", "name": "Phantom Gradle", "download": "a/gradle.zip"}]}"""
+    val providers = GitHubPluginRepository.parseProviders(json)
+    assertEquals(listOf("com.intellij.modules.java", "com.intellij.java"), providers[0].aliases)
+    assertEquals(emptyList<String>(), providers[1].aliases)
+    assertEquals("dev.phantom.java", PhantomDependencyAliases.aliasOwner(providers, "com.intellij.java")?.id)
+    assertNull(PhantomDependencyAliases.aliasOwner(providers, "dev.phantom.gradle"))
+
+    GitHubPluginRepository.parseMetadata(json.byteInputStream(), GitHubPluginRepository.parse("a/aliases-test")!!, PluginDtoModelBuilderFactory)
+    assertEquals("dev.phantom.java", PhantomDependencyAliases.resolve("com.intellij.modules.java")?.idString)
+    assertNull(PhantomDependencyAliases.resolve("com.example.unknown"))
+  }
+
+  @Test
+  fun `plugins missing a dependency are matched to its provider`() {
+    val providers = GitHubPluginRepository.parseProviders(
+      """{"plugins": [{"id": "dev.phantom.java", "name": "Phantom Java", "aliases": ["com.intellij.java"]}]}""")
+    val offers = missingProviders(listOf("Lombok" to "com.intellij.java", "Other" to "dev.phantom.java", "X" to "com.example.none"), providers)
+    assertEquals(listOf("dev.phantom.java"), offers.map { it.first.id })
+    assertEquals(listOf("Lombok", "Other"), offers.single().second)
   }
 
   @Test

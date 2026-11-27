@@ -598,6 +598,8 @@ class PluginInstallOperation(
       if (cachedResult != null) {
         return cachedResult.orElse(null)
       }
+      // phantom-idea: a Phantom repository plugin that lists the id among its aliases provides it
+      dev.phantom.ide.plugins.PhantomDependencyAliases.resolve(moduleId)?.let { return it }
       LOG.debug("Resolving module $moduleId in Marketplace")
       val result = MarketplaceRequests.getInstance().getCompatibleUpdateByModule(moduleId)
       ourModuleResolutionCache.put(moduleId, Optional.ofNullable(result))
