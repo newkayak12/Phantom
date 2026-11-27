@@ -34,4 +34,6 @@ Fork PRs run tests without upload credentials. Missing configuration fails trust
 
 The release workflow runs on a GitHub-hosted macOS runner. It releases this repository with the job's `GITHUB_TOKEN` and, optionally, `PHANTOM_PLUGINS_TOKEN` in Phantom, a fine-grained token scoped to **Phantom-plugins → Contents: write and Pull requests: write**, to release Kotlin and Maven there and merge the marketplace.json pull request. Do not copy an interactive personal token into CI as a substitute. The ordinary `GITHUB_TOKEN` is restricted to its own repository.
 
+`PHANTOM_RELEASE_TOKEN`, also optional, is a fine-grained token scoped to **Phantom → Contents: write and Workflows: write**. The release checkout keeps it for git, so the release tag is pushed with it: GitHub rejects a tag pushed with `GITHUB_TOKEN` when the tagged commit changed `.github/workflows`, since that token has no workflows permission. Without it the job's token pushes the tag, and releasing such a commit fails at the tag push. `PHANTOM_PLUGINS_TOKEN` cannot stand in: it reaches Phantom-plugins only.
+
 See [workflow checks](WORKFLOWS.md) for the maintained jobs.

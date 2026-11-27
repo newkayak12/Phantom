@@ -127,7 +127,8 @@ fi
 git fetch -q origin main
 git merge-base --is-ancestor HEAD origin/main || { echo "HEAD is not on origin/main: merge it through a pull request first"; exit 1; }
 # the tag goes up with git: creating it through the API needs the token's workflow scope, since the commit touches
-# .github/workflows
+# .github/workflows. git pushing it needs that too when the commit changed .github/workflows: CI's checkout keeps
+# PHANTOM_RELEASE_TOKEN for this (.github/SERVICES.md)
 git tag -f "$tag" HEAD
 git push -q -f origin "refs/tags/$tag"
 # the update feed: the IDE reads updates.xml of the latest release (BaseJetBrainsExternalProductResourceUrls.updateMetadataUrl)
