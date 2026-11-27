@@ -145,27 +145,32 @@ fun coordinatesOf(libraryName: String?): String? {
   return if (coordinates.size >= 2 && coordinates[0].isNotBlank() && coordinates[1].isNotBlank()) "${coordinates[0]}:${coordinates[1]}" else null
 }
 
-/** The `detect` lists of all GitHub plugin repositories, fetched at most every few hours. */
-private object DetectCache {
-  private val LOG = logger<DetectCache>()
+/** The `.phantom/marketplace.json` of every GitHub plugin repository, fetched at most every few hours. */
+internal object RepositoryMetadataCache {
+  private val LOG = logger<RepositoryMetadataCache>()
   private val ttl = 6.hours
-  @Volatile private var entry: Pair<TimeSource.Monotonic.ValueTimeMark, List<GitHubPluginRepository.Detect>>? = null
+  @Volatile private var entry: Pair<TimeSource.Monotonic.ValueTimeMark, List<String>>? = null
 
-  suspend fun get(): List<GitHubPluginRepository.Detect> {
-    entry?.let { (fetched, plugins) -> if (fetched.elapsedNow() < ttl) return plugins }
-    val plugins = withContext(Dispatchers.IO) {
-      RepositoryHelper.getCustomPluginRepositoryHosts().mapNotNull(GitHubPluginRepository::parse).flatMap { ref ->
+  suspend fun get(): List<String> {
+    entry?.let { (fetched, metadata) -> if (fetched.elapsedNow() < ttl) return metadata }
+    val metadata = withContext(Dispatchers.IO) {
+      RepositoryHelper.getCustomPluginRepositoryHosts().mapNotNull(GitHubPluginRepository::parse).mapNotNull { ref ->
         try {
-          GitHubPluginRepository.parseDetect(GitHubPluginRepository.loadMetadata(ref))
+          GitHubPluginRepository.loadMetadata(ref)
         }
         catch (e: IOException) {
           LOG.info("Cannot read ${ref.host}: ${e.message}")
-          emptyList()
+          null
         }
       }
     }
-    // An empty answer (offline, or nothing to suggest) is asked again next time
-    if (plugins.isNotEmpty()) entry = TimeSource.Monotonic.markNow() to plugins
-    return plugins
+    // An empty answer (offline) is asked again next time
+    if (metadata.isNotEmpty()) entry = TimeSource.Monotonic.markNow() to metadata
+    return metadata
   }
+}
+
+/** The `detect` lists of all GitHub plugin repositories. */
+private object DetectCache {
+  suspend fun get(): List<GitHubPluginRepository.Detect> = RepositoryMetadataCache.get().flatMap(GitHubPluginRepository::parseDetect)
 }

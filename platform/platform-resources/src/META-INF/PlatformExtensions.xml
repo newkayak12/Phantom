@@ -839,6 +839,8 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <postStartupActivity implementation="com.intellij.externalDependencies.impl.CheckProjectRequiredPluginsActivity"/>
     <!-- phantom-idea: suggest plugins from GitHub plugin repositories for the libraries a project uses -->
     <postStartupActivity implementation="dev.phantom.ide.plugins.PhantomPluginAdvisor"/>
+    <!-- phantom-idea: offer the Phantom plugin providing a dependency that kept an installed plugin from loading -->
+    <postStartupActivity implementation="dev.phantom.ide.plugins.PhantomMissingDependencyAdvisor"/>
     <!-- phantom-idea: heap and file page cache sized for the machine, written to the user's .vmoptions -->
     <postStartupActivity implementation="dev.phantom.ide.memory.PhantomMemorySizer"/>
     <!-- phantom-idea: class data sharing archives of earlier builds deleted from the cache directory -->

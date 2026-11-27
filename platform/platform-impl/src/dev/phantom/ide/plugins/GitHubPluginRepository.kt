@@ -30,7 +30,8 @@ import java.io.InputStream
  *                  "description": "...", "vendor": "Phantom", "category": "Database",
  *                  "since": "262", "until": "262.*", "depends": ["com.intellij.modules.platform"],
  *                  "download": "db-0.1.0/phantom-db-0.1.0.zip",
- *                  "detect": ["org.postgresql:postgresql"], "detectFiles": ["Chart.yaml"] } ] }
+ *                  "detect": ["org.postgresql:postgresql"], "detectFiles": ["Chart.yaml"],
+ *                  "aliases": ["com.intellij.database"] } ] }
  * ```
  * `download` is either an https URL or `<release tag>/<asset name>` of the same repository's GitHub Releases.
  * An entry may list earlier releases in `versions` (see [compatibleRelease]); an IDE gets the newest release whose since/until
@@ -38,6 +39,7 @@ import java.io.InputStream
  * `detect` lists library coordinates whose presence in a project makes the IDE suggest the plugin; `detectFiles` lists file
  * names that do the same (for tools that are not libraries, such as Helm charts), or `*.<extension>` for any file with
  * that extension (`*.java`: Java sources without a build file).
+ * `aliases` lists dependency ids the plugin provides besides its own (see [Provider]).
  */
 @ApiStatus.Internal
 object GitHubPluginRepository {
@@ -138,13 +140,15 @@ object GitHubPluginRepository {
     factory: PluginUiModelBuilderFactory,
     resolveAsset: (String) -> String? = { null },
   ): List<PluginUiModel> {
+    val text = input.reader().readText()
     val root = try {
-      Json.parseToJsonElement(input.reader().readText()) as? JsonObject
+      Json.parseToJsonElement(text) as? JsonObject
     }
     catch (e: IllegalArgumentException) {
       throw IOException("${ref.host}: $METADATA_PATH is not valid JSON", e)
     } ?: throw IOException("${ref.host}: $METADATA_PATH must be a JSON object")
     val plugins = root["plugins"] as? JsonArray ?: throw IOException("${ref.host}: $METADATA_PATH has no \"plugins\" array")
+    PhantomDependencyAliases.remember(ref.host, parseProviders(text))
     val build = runCatching { PluginManagerCore.buildNumber }.getOrNull()
     return plugins.mapNotNull { (it as? JsonObject)?.let { plugin -> toModel(compatibleRelease(plugin, build), ref, factory, resolveAsset) } }
   }
@@ -181,6 +185,25 @@ object GitHubPluginRepository {
       val id = plugin.string("id") ?: return@mapNotNull null
       Detect(id, plugin.string("name") ?: id, plugin.strings("detect"), plugin.strings("detectFiles"))
         .takeIf { it.detect.isNotEmpty() || it.files.isNotEmpty() }
+    }
+  }
+
+  /**
+   * A plugin with the other ids it answers to as a dependency (`aliases`): a Phantom plugin that replaces an IntelliJ plugin
+   * lists the replaced plugin's id and module ids there, so a third-party plugin depending on one of them can get it installed.
+   */
+  class Provider(val id: String, val name: String, val aliases: List<String>) {
+    fun provides(dependencyId: String): Boolean = dependencyId == id || dependencyId in aliases
+  }
+
+  @JvmStatic
+  fun parseProviders(metadata: String): List<Provider> {
+    val root = runCatching { Json.parseToJsonElement(metadata) as? JsonObject }.getOrNull() ?: return emptyList()
+    val plugins = root["plugins"] as? JsonArray ?: return emptyList()
+    return plugins.mapNotNull { element ->
+      val plugin = element as? JsonObject ?: return@mapNotNull null
+      val id = plugin.string("id") ?: return@mapNotNull null
+      Provider(id, plugin.string("name") ?: id, plugin.strings("aliases"))
     }
   }
 
