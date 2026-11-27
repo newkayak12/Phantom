@@ -33,6 +33,8 @@ sealed class CustomConfigMigrationOption {
     if (Files.exists(markerFile)) {
       log.error("Marker file $markerFile shouldn't exist")
     }
+    // phantom-idea: record who writes the marker; an unexplained empty marker once reset the config
+    log.warn("Writing config marker $markerFile with content '${getStringPresentation()}'", Throwable("config marker writer"))
     NioFiles.createDirectories(markerFile.parent)
     Files.writeString(markerFile, getStringPresentation(), Charsets.UTF_8)
   }
