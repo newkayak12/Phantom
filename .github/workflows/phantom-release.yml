@@ -17,6 +17,10 @@
 # Phantom-plugins only (Contents and Pull requests: write). With it phantom-release.sh also builds Kotlin and Maven,
 # releases them there and merges the marketplace.json pull request; without it only Phantom is released (the job's own
 # token cannot reach the private Phantom-plugins) and the marketplace keeps the previous Kotlin and Maven.
+# Optional secret PHANTOM_RELEASE_TOKEN (.github/SERVICES.md): a fine-grained token for Phantom (Contents and Workflows:
+# write). The macOS checkout keeps it for git, so phantom-release.sh pushes the release tag with it: GitHub rejects a tag
+# pushed with the job's token when the tagged commit changed .github/workflows, which the job token cannot do. Without it
+# the job's token pushes the tag, and a release of such a commit fails at the tag.
 name: Phantom release
 
 on:
@@ -76,8 +80,19 @@ jobs:
           echo "PHANTOM_RELEASE_PLUGINS=1" >> "$GITHUB_ENV"
           GH_TOKEN="$PHANTOM_PLUGINS_TOKEN" gh api repos/newkayak12/Phantom-plugins --jq '"Phantom-plugins push: \(.permissions.push)"'
 
+      - name: Release token
+        env:
+          PHANTOM_RELEASE_TOKEN: ${{ secrets.PHANTOM_RELEASE_TOKEN }}
+        run: |
+          if [[ -z "$PHANTOM_RELEASE_TOKEN" ]]; then
+            echo "::notice::no PHANTOM_RELEASE_TOKEN: the job's token pushes the tag, which fails when the release commit changed .github/workflows"
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # git pushes the release tag with this token (phantom-release.sh); the job's token cannot push a tag on a commit
+          # that changed .github/workflows
+          token: ${{ secrets.PHANTOM_RELEASE_TOKEN || github.token }}
           # the release notes list the commits since the previous release tag
           fetch-depth: 200
           fetch-tags: true
