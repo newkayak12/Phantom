@@ -58,6 +58,8 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.system.exitProcess
 
 fun main(rawArgs: Array<String>) {
+  // phantom-idea: quit while the self-update script swaps this app bundle; the script opens the new app when done
+  if (dev.phantom.bootstrap.PhantomUpdateLock.isCurrentAppUpdating()) exitProcess(0)
   val startTimeNano = System.nanoTime()
   val startTimeUnixNano = System.currentTimeMillis() * 1000000
   val startupTimings = ArrayList<Any>(12)
