@@ -667,7 +667,9 @@ class UsePropertyAccessSyntaxInspection : LocalInspectionTool(), CleanupLocalIns
         ) KotlinBundle.message("use.of.setter.method.instead.of.property.access.syntax")
         else KotlinBundle.message("use.of.getter.method.instead.of.property.access.syntax")
 
-    val propertiesNotToReplace: MutableSet<FqNameUnsafe> = NotPropertiesService.DEFAULT.map(::FqNameUnsafe).toMutableSet()
+    // phantom-idea: var replaced, never mutated in place, so a concurrent settings save cannot see a half-built collection
+    @Volatile
+    var propertiesNotToReplace: MutableSet<FqNameUnsafe> = NotPropertiesService.DEFAULT.map(::FqNameUnsafe).toMutableSet()
 
     // Serialized setting
     @Suppress("MemberVisibilityCanBePrivate")
@@ -678,13 +680,13 @@ class UsePropertyAccessSyntaxInspection : LocalInspectionTool(), CleanupLocalIns
 
     override fun readSettings(node: Element) {
         super.readSettings(node)
-        propertiesNotToReplace.clear()
-        fqNameStrings.mapTo(propertiesNotToReplace, ::FqNameUnsafe)
+        // phantom-idea: build a new set instead of clear()+mapTo on the shared one
+        propertiesNotToReplace = fqNameStrings.mapTo(LinkedHashSet(), ::FqNameUnsafe)
     }
 
     override fun writeSettings(node: Element) {
-        fqNameStrings.clear()
-        propertiesNotToReplace.mapTo(fqNameStrings) { it.asString() }
+        // phantom-idea: build a new list; another thread may be serializing the current one (ConcurrentModificationException on settings save)
+        fqNameStrings = propertiesNotToReplace.mapTo(ArrayList()) { it.asString() }
         super.writeSettings(node)
     }
 
@@ -700,8 +702,8 @@ class UsePropertyAccessSyntaxInspection : LocalInspectionTool(), CleanupLocalIns
         return super.getOptionController()
             .onValueSet("fqNameStrings") { newList ->
                 assert(newList === fqNameStrings)
-                propertiesNotToReplace.clear()
-                fqNameStrings.mapTo(propertiesNotToReplace, ::FqNameUnsafe)
+                // phantom-idea: build a new set instead of clear()+mapTo on the shared one
+                propertiesNotToReplace = fqNameStrings.mapTo(LinkedHashSet(), ::FqNameUnsafe)
             }
     }
 
