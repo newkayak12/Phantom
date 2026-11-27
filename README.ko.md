@@ -31,11 +31,11 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그
 
 ## 성능
 
-![다른 유명 IDE와 비교: 프로젝트 열기 1.72초 대 5.14초, RSS 298 MB 대 807 MB, 힙 120 MB 대 257 MB, 플러그인 47 대 162](.github/assets/benchmark.ko.svg)
+![타 IDE와 비교: 프로젝트 열기 1.72초 대 5.14초, RSS 298 MB 대 807 MB, 힙 120 MB 대 257 MB, 플러그인 47 대 162](.github/assets/benchmark.ko.svg)
 
-같은 플랫폼 버전의 널리 쓰이는 상용 IDE와 cold 시작을 비교했다. 프로젝트가 열릴 때까지 약 3배 빠르고 상주 메모리는 약 60% 적다. 한 기기에서 한 번씩 잰 값이며, 방법과 한계는 [PERFORMANCE.ko.md](PERFORMANCE.ko.md)에 있다.
+같은 플랫폼 버전의 타 상용 IDE와 cold 시작을 비교했다. 프로젝트가 열릴 때까지 약 3배 빠르고 상주 메모리는 약 60% 적다. 한 기기에서 한 번씩 잰 값이며, 방법과 한계는 [PERFORMANCE.ko.md](PERFORMANCE.ko.md)에 있다.
 
-| | 유명 IDE | Phantom |
+| | 타 IDE | Phantom |
 |---|---|---|
 | 프로젝트가 열릴 때까지 | 5.14초 | 1.72초 |
 | 상주 메모리 (RSS) | 807 MB | 298 MB |
@@ -132,7 +132,7 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 
 - [CHANGELOG.md](CHANGELOG.md): 릴리스별 변경
 - [PRIVACY.ko.md](PRIVACY.ko.md): Phantom이 수집하는 것(없음)과 접속하는 곳
-- [PERFORMANCE.ko.md](PERFORMANCE.ko.md): 다른 유명 IDE 대비 시작 시간과 메모리
+- [PERFORMANCE.ko.md](PERFORMANCE.ko.md): 타 IDE 대비 시작 시간과 메모리
 
 ## 업스트림과 상표
 

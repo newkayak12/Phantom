@@ -1,14 +1,14 @@
 # 성능
 
-![다른 유명 IDE와 비교한 Phantom](.github/assets/benchmark.ko.svg)
+![타 IDE와 비교한 Phantom](.github/assets/benchmark.ko.svg)
 
 2026-11-21에 한 대의 기기(Apple M1 Pro, RAM 32GB, macOS 27.0)에서 측정했다. 대부분 한 번씩 잰 값이라 정확한 수치가 아니라 대략적인 크기로 봐야 한다.
 
-## Phantom과 다른 유명 IDE 비교
+## Phantom과 타 IDE 비교
 
-Phantom PH-261121.4와 같은 플랫폼 버전의 널리 쓰이는 상용 IDE을 비교했다. 둘 다 새 설정·시스템 폴더로 cold 시작했고, 약 9,900개 파일로 만든 Java 프로젝트를 열었다.
+Phantom PH-261121.4와 같은 플랫폼 버전의 타 상용 IDE을 비교했다. 둘 다 새 설정·시스템 폴더로 cold 시작했고, 약 9,900개 파일로 만든 Java 프로젝트를 열었다.
 
-| | 유명 IDE | Phantom |
+| | 타 IDE | Phantom |
 |---|---|---|
 | 실행 → 프로젝트 열림 | 5.14초 | 1.72초 |
 | 상주 메모리(RSS) | 807MB | 298MB |

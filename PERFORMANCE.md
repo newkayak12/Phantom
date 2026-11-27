@@ -1,14 +1,14 @@
 # Performance
 
-![Phantom against a popular IDE](.github/assets/benchmark.svg)
+![Phantom against another IDE](.github/assets/benchmark.svg)
 
 Measured on 2026-11-21 on one machine: Apple M1 Pro, 32 GB RAM, macOS 27.0. Most values come from a single run, so read them as rough sizes, not exact figures.
 
-## Phantom vs a popular IDE
+## Phantom vs another IDE
 
-Phantom PH-261121.4 against a widely used commercial IDE on the same platform version. Both ran cold (fresh config and system folders) on a generated Java project of about 9,900 files.
+Phantom PH-261121.4 against another commercial IDE on the same platform version. Both ran cold (fresh config and system folders) on a generated Java project of about 9,900 files.
 
-| | Popular IDE | Phantom |
+| | Other IDE | Phantom |
 |---|---|---|
 | Launch to project opened | 5.14 s | 1.72 s |
 | Resident memory (RSS) | 807 MB | 298 MB |

@@ -28,11 +28,11 @@ Phantom is an IDE for Kotlin, Spring Boot and JPA backend development. It ships 
 
 ## Performance
 
-![Phantom against a popular IDE: launch 1.72 s vs 5.14 s, RSS 298 MB vs 807 MB, heap 120 MB vs 257 MB, plugins 47 vs 162](.github/assets/benchmark.svg)
+![Phantom against another IDE: launch 1.72 s vs 5.14 s, RSS 298 MB vs 807 MB, heap 120 MB vs 257 MB, plugins 47 vs 162](.github/assets/benchmark.svg)
 
-Cold start on the same platform version as a widely used commercial IDE: about 3x faster to an open project and about 60% less resident memory. Single runs on one machine; method and caveats in [PERFORMANCE.md](PERFORMANCE.md).
+Cold start on the same platform version as another commercial IDE: about 3x faster to an open project and about 60% less resident memory. Single runs on one machine; method and caveats in [PERFORMANCE.md](PERFORMANCE.md).
 
-| | Popular IDE | Phantom |
+| | Other IDE | Phantom |
 |---|---|---|
 | Launch to project opened | 5.14 s | 1.72 s |
 | Resident memory (RSS) | 807 MB | 298 MB |
@@ -129,7 +129,7 @@ To edit or debug the platform, open this checkout's root as the existing project
 
 - [CHANGELOG.md](CHANGELOG.md): changes per release
 - [PRIVACY.md](PRIVACY.md): what Phantom collects (nothing) and what it connects to
-- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against a popular IDE
+- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against another IDE
 
 ## Upstream and trademarks
 
