@@ -17,6 +17,9 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- README를 제품 소개 페이지로 다시 썼다. 실제 스크린샷(환영 화면, 플러그인 제안, Phantom 플러그인 저장소), "왜 Phantom인가" 요약, 영역별 기능 설명을 넣고, 오래된 "기본 업데이트 피드" 설명을 GitHub 릴리스 업데이트 확인으로 고쳤다.
+- README와 PERFORMANCE에 벤치마크 차트와 결과 표를 넣고, 비교 대상을 특정 제품명 대신 "타 IDE"로 적었다.
+- 한·영 README를 현재 상태에 맞췄다. 소개를 언어 중립 코어와 플러그인으로 설치하는 Java·Kotlin·Gradle·Maven으로 고치고, IDE가 업데이트를 확인하지 않는다는 문장을 GitHub 릴리스 업데이트 확인과 macOS 제자리 업데이트 설명으로 바꾸고, 플러그인 표를 번들 목록(`PHANTOM_PLUGINS_BUNDLED` 26개)과 Phantom-plugins 마켓플레이스에 맞췄다.
 - Phantom 플러그인 저장소의 `aliases`를 읽는다. `com.intellij.java`처럼 Phantom 플러그인이 대신하는 id에 의존하는 플러그인을 설치하면 그 Phantom 플러그인(`dev.phantom.java`)을 함께 설치하고, 의존성이 없어 로드되지 않은 플러그인이 있으면 시작 후 그 의존성을 주는 Phantom 플러그인 설치를 권한다.
 - 릴리스 workflow가 선택 시크릿 PHANTOM_RELEASE_TOKEN(Phantom Contents·Workflows 쓰기)으로 릴리스 태그를 push한다. .github/workflows를 바꾼 커밋의 태그가 job 토큰으로 거부되어 임시 seed 태그를 먼저 올리던 우회가 더는 필요 없다.
 - 릴리스 workflow가 PHANTOM_PLUGINS_TOKEN이 있어도 Phantom-plugins를 checkout하지 않아 Kotlin·Maven과 함께 배포할 때 실패하던 문제를 고쳤다.
