@@ -8,7 +8,7 @@
 
 <p align="center">
   English | <a href="README.ko.md">한국어</a><br>
-  <a href="#download-and-install">Download</a> · <a href="#whats-different">What's different</a> · <a href="#plugins">Plugins</a> · <a href="#build-from-source">Build</a> · <a href="#docs">Docs</a>
+  <a href="#download-and-install">Download</a> · <a href="#performance">Performance</a> · <a href="#whats-different">What's different</a> · <a href="#plugins">Plugins</a> · <a href="#build-from-source">Build</a> · <a href="#docs">Docs</a>
 </p>
 
 <p align="center">
@@ -26,18 +26,32 @@ Coverage: repository quality tool only; IDE coverage is not measured.
 
 Phantom is an IDE for Kotlin, Spring Boot and JPA backend development. It ships a smaller plugin bundle, its own themes and defaults, and optional plugins for Spring, JPA, HTTP requests and databases. Platform changes cover startup rescanning, indexing and memory settings; automatic JetBrains service requests are restricted as described [below](#whats-different).
 
+## Performance
+
+![Phantom against a popular IDE: launch 1.72 s vs 5.14 s, RSS 298 MB vs 807 MB, heap 120 MB vs 257 MB, plugins 47 vs 162](.github/assets/benchmark.svg)
+
+Cold start on the same platform version as a widely used commercial IDE: about 3x faster to an open project and about 60% less resident memory. Single runs on one machine; method and caveats in [PERFORMANCE.md](PERFORMANCE.md).
+
+| | Popular IDE | Phantom |
+|---|---|---|
+| Launch to project opened | 5.14 s | 1.72 s |
+| Resident memory (RSS) | 807 MB | 298 MB |
+| Heap after a forced GC | 257 MB | 120 MB |
+| Plugins loaded | 162 | 47 |
+| Indexing | 4.8 s | 5.6 s |
+
 ## What's different
 
 Each line is backed by a commit; file-level detail is in [CHANGELOG.md](CHANGELOG.md).
 
 **Removed**
-- Ultimate promotions: the Java, GitHub and Kotlin promo modules, the TechInsights welcome banner, YAML "Try Ultimate".
+- Paid-edition promotions: the Java, GitHub and Kotlin promo modules, the TechInsights welcome banner, YAML "Try" upsell.
 - Toolbox App integration, the Junie terminal agent, and the JetBrains links in the Help menu.
 - "Report to JetBrains" error submission and the default IDE update feed (`-Didea.updates.url` brings it back).
 
 **Trimmed**
 - Phantom replaces upstream plugins such as TextMate and Images with Phantom-plugins builds. Each release publishes Support for Kotlin and Support for Apache Maven separately to the Phantom plugin store. Upstream sources stay available for merges.
-- Some changes listed on this page live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try Ultimate", the ShellCheck download). Whether those builds carry them was not checked.
+- Some changes listed on this page live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try" upsell, the ShellCheck download). Whether those builds carry them was not checked.
 - The Marketplace listing leaves out plugins JetBrains publishes (Phantom ships its own versions of the ones it keeps); running from sources, internal mode or `-Dphantom.marketplace.showAll=true` shows them.
 - Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
 - Diagnostic files off by default: OpenTelemetry metrics CSV (about 116 MB in 4 days), indexing and storage reports.
@@ -115,7 +129,7 @@ To edit or debug the platform, open this checkout's root as the existing project
 
 - [CHANGELOG.md](CHANGELOG.md): changes per release
 - [PRIVACY.md](PRIVACY.md): what Phantom collects (nothing) and what it connects to
-- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against IntelliJ IDEA Ultimate
+- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against a popular IDE
 
 ## Upstream and trademarks
 

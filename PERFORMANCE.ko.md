@@ -1,12 +1,14 @@
 # 성능
 
+![다른 유명 IDE와 비교한 Phantom](.github/assets/benchmark.ko.svg)
+
 2026-11-21에 한 대의 기기(Apple M1 Pro, RAM 32GB, macOS 27.0)에서 측정했다. 대부분 한 번씩 잰 값이라 정확한 수치가 아니라 대략적인 크기로 봐야 한다.
 
-## Phantom과 IntelliJ IDEA Ultimate 비교
+## Phantom과 다른 유명 IDE 비교
 
-Phantom PH-261121.4와 같은 업스트림 기반의 IntelliJ IDEA Ultimate 262.10968.63을 비교했다. 둘 다 새 설정·시스템 폴더로 cold 시작했고, 약 9,900개 파일로 만든 Java 프로젝트를 열었다.
+Phantom PH-261121.4와 같은 플랫폼 버전의 널리 쓰이는 상용 IDE을 비교했다. 둘 다 새 설정·시스템 폴더로 cold 시작했고, 약 9,900개 파일로 만든 Java 프로젝트를 열었다.
 
-| | Ultimate | Phantom |
+| | 유명 IDE | Phantom |
 |---|---|---|
 | 실행 → 프로젝트 열림 | 5.14초 | 1.72초 |
 | 상주 메모리(RSS) | 807MB | 298MB |
@@ -31,7 +33,7 @@ Phantom PH-261121.4와 같은 업스트림 기반의 IntelliJ IDEA Ultimate 262.
 
 ## 재현 방법
 
-- `PHANTOM_PROPERTIES`(Ultimate는 `IDEA_PROPERTIES`)로 앱에 전용 설정·시스템·플러그인·로그 폴더를 준다.
+- `PHANTOM_PROPERTIES`(다른 IDE는 자기 properties 변수)로 앱에 전용 설정·시스템·플러그인·로그 폴더를 준다.
 - `PHANTOM_VM_OPTIONS`로 시작 리포트 경로와 신뢰·동의 플래그를 넘긴다.
 - 명령줄에서 프로젝트를 연다.
 - 앱은 정상 종료한다(`NSRunningApplication terminate`, `confirmExit` 끔). SIGTERM으로 끝내면 동적 CDS 아카이브가 저장되지 않아 다음 시작이 실제보다 느리게 나온다.

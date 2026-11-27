@@ -1,12 +1,14 @@
 # Performance
 
+![Phantom against a popular IDE](.github/assets/benchmark.svg)
+
 Measured on 2026-11-21 on one machine: Apple M1 Pro, 32 GB RAM, macOS 27.0. Most values come from a single run, so read them as rough sizes, not exact figures.
 
-## Phantom vs IntelliJ IDEA Ultimate
+## Phantom vs a popular IDE
 
-Phantom PH-261121.4 against IntelliJ IDEA Ultimate 262.10968.63, the same upstream base. Both ran cold (fresh config and system folders) on a generated Java project of about 9,900 files.
+Phantom PH-261121.4 against a widely used commercial IDE on the same platform version. Both ran cold (fresh config and system folders) on a generated Java project of about 9,900 files.
 
-| | Ultimate | Phantom |
+| | Popular IDE | Phantom |
 |---|---|---|
 | Launch to project opened | 5.14 s | 1.72 s |
 | Resident memory (RSS) | 807 MB | 298 MB |
@@ -31,7 +33,7 @@ Phantom PH-261121.4 against IntelliJ IDEA Ultimate 262.10968.63, the same upstre
 
 ## How to reproduce
 
-- Give the app its own config, system, plugins and log folders through `PHANTOM_PROPERTIES` (`IDEA_PROPERTIES` for Ultimate).
+- Give the app its own config, system, plugins and log folders through `PHANTOM_PROPERTIES` (the other IDE has its own properties variable).
 - Pass the startup report path and the trust and consent flags through `PHANTOM_VM_OPTIONS`.
 - Open the project from the command line.
 - Quit the app normally (`NSRunningApplication terminate`, with `confirmExit` off). SIGTERM skips writing the dynamic CDS archive, so the next start is slower than it should be.

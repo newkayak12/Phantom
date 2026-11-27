@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="README.md">English</a> | 한국어<br>
-  <a href="#다운로드와-설치">다운로드</a> · <a href="#무엇이-다른가">달라진 점</a> · <a href="#플러그인">플러그인</a> · <a href="#소스에서-빌드">빌드</a> · <a href="#문서">문서</a>
+  <a href="#다운로드와-설치">다운로드</a> · <a href="#성능">성능</a> · <a href="#무엇이-다른가">달라진 점</a> · <a href="#플러그인">플러그인</a> · <a href="#소스에서-빌드">빌드</a> · <a href="#문서">문서</a>
 </p>
 
 <p align="center">
@@ -29,18 +29,32 @@
 
 Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그인 번들을 줄이고 고유 테마와 기본 설정을 제공하며, Spring, JPA, HTTP 요청, 데이터베이스 기능은 선택 플러그인으로 설치한다. 플랫폼에서는 시작 시 재스캔, 인덱싱, 메모리 설정을 수정했고, JetBrains 서비스로 가는 자동 요청은 [아래에 설명한 범위](#무엇이-다른가)에서 제한한다.
 
+## 성능
+
+![다른 유명 IDE와 비교: 프로젝트 열기 1.72초 대 5.14초, RSS 298 MB 대 807 MB, 힙 120 MB 대 257 MB, 플러그인 47 대 162](.github/assets/benchmark.ko.svg)
+
+같은 플랫폼 버전의 널리 쓰이는 상용 IDE와 cold 시작을 비교했다. 프로젝트가 열릴 때까지 약 3배 빠르고 상주 메모리는 약 60% 적다. 한 기기에서 한 번씩 잰 값이며, 방법과 한계는 [PERFORMANCE.ko.md](PERFORMANCE.ko.md)에 있다.
+
+| | 유명 IDE | Phantom |
+|---|---|---|
+| 프로젝트가 열릴 때까지 | 5.14초 | 1.72초 |
+| 상주 메모리 (RSS) | 807 MB | 298 MB |
+| GC 후 힙 | 257 MB | 120 MB |
+| 로드된 플러그인 | 162 | 47 |
+| 인덱싱 | 4.8초 | 5.6초 |
+
 ## 무엇이 다른가
 
 모든 항목은 커밋으로 확인할 수 있다. 파일 단위 내용은 [CHANGELOG.md](CHANGELOG.md)에 있다.
 
 **뺀 것**
-- Ultimate 홍보: Java·GitHub·Kotlin 프로모 모듈, 환영 화면의 TechInsights 배너, YAML의 "Try Ultimate".
+- 유료판 홍보: Java·GitHub·Kotlin 프로모 모듈, 환영 화면의 TechInsights 배너, YAML의 "Try" 유도.
 - Toolbox App 연동, 터미널의 Junie 에이전트, Help 메뉴의 JetBrains 링크.
 - "Report to JetBrains" 오류 전송과 기본 IDE 업데이트 피드(`-Didea.updates.url`을 주면 되살아난다).
 
 **줄인 것**
 - TextMate와 Images 등은 Phantom-plugins 빌드로 교체한다. Support for Kotlin과 Support for Apache Maven은 릴리스마다 Phantom 플러그인 저장소에 별도 ZIP으로 게시한다. 업스트림 병합을 위해 원본 소스는 보존한다.
-- 이 페이지에 적은 변경 일부는 번들이 이제 Phantom-plugins 빌드로 가져오는 플러그인의 이 리포지토리 소스에 있다(GitHub 로그인, Grazie Cloud, 터미널 Junie 에이전트, YAML "Try Ultimate", ShellCheck 다운로드). 그 빌드에 이 변경이 들어 있는지는 확인하지 않았다.
+- 이 페이지에 적은 변경 일부는 번들이 이제 Phantom-plugins 빌드로 가져오는 플러그인의 이 리포지토리 소스에 있다(GitHub 로그인, Grazie Cloud, 터미널 Junie 에이전트, YAML "Try" 유도, ShellCheck 다운로드). 그 빌드에 이 변경이 들어 있는지는 확인하지 않았다.
 - Marketplace 목록은 JetBrains가 게시한 플러그인을 보여 주지 않는다(Phantom이 유지하는 것은 자체 판을 둔다). 소스 실행, internal 모드, `-Dphantom.marketplace.showAll=true`이면 보인다.
 - JetBrains 자동 호출(깨진 플러그인 목록, 플러그인 추천, Grazie Cloud, 완성 로그, 설문, 피드백 양식, 로그 업로드)은 `-Dphantom.jetbrains.services=true`를 주지 않으면 꺼져 있다.
 - 진단 파일은 기본으로 쓰지 않는다: OpenTelemetry 지표 CSV(4일에 약 116 MB), 인덱싱·스토리지 보고서.
@@ -118,7 +132,7 @@ git clone --depth 1 --branch idea/262.10968.63 https://github.com/JetBrains/andr
 
 - [CHANGELOG.md](CHANGELOG.md): 릴리스별 변경
 - [PRIVACY.ko.md](PRIVACY.ko.md): Phantom이 수집하는 것(없음)과 접속하는 곳
-- [PERFORMANCE.ko.md](PERFORMANCE.ko.md): IntelliJ IDEA Ultimate 대비 시작 시간과 메모리
+- [PERFORMANCE.ko.md](PERFORMANCE.ko.md): 다른 유명 IDE 대비 시작 시간과 메모리
 
 ## 업스트림과 상표
 
