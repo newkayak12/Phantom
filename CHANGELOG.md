@@ -17,6 +17,7 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 번들 Java 런타임을 JBR 25.0.4.1b508.41에서 25.0.5.1b635.102로 올렸다. macOS에서 EDT가 awtLock을 잡은 채 `MTLRenderQueue.flushNow`에서 멈추는 프리즈 수정(JBR-10599, IJPL-244911)이 들어 있다.
 - README를 제품 소개 페이지로 다시 썼다. 실제 스크린샷(환영 화면, 플러그인 제안, Phantom 플러그인 저장소), "왜 Phantom인가" 요약, 영역별 기능 설명을 넣고, 오래된 "기본 업데이트 피드" 설명을 GitHub 릴리스 업데이트 확인으로 고쳤다.
 - README와 PERFORMANCE에 벤치마크 차트와 결과 표를 넣고, 비교 대상을 특정 제품명 대신 "타 IDE"로 적었다.
 - 한·영 README를 현재 상태에 맞췄다. 소개를 언어 중립 코어와 플러그인으로 설치하는 Java·Kotlin·Gradle·Maven으로 고치고, IDE가 업데이트를 확인하지 않는다는 문장을 GitHub 릴리스 업데이트 확인과 macOS 제자리 업데이트 설명으로 바꾸고, 플러그인 표를 번들 목록(`PHANTOM_PLUGINS_BUNDLED` 26개)과 Phantom-plugins 마켓플레이스에 맞췄다.

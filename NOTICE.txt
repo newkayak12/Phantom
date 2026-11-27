@@ -32,7 +32,7 @@ The distribution also includes the following components under the GNU General Pu
 Classpath Exception. Their complete corresponding source code is available at:
   JetBrains Runtime (the bundled Java runtime, jbr/): https://github.com/JetBrains/JetBrainsRuntime
     the source of the build in a release is tag jbr-release-<runtimeBuild>, with runtimeBuild from
-    build/dependencies/dependencies.properties (25.0.4.1b508.41: tag jbr-release-25.0.4.1b508.41)
+    build/dependencies/dependencies.properties (25.0.5.1b635.102: tag jbr-release-25.0.5.1b635.102)
   jb-jdi: https://github.com/JetBrains/intellij-deps-jdi
   sa-jdwp: https://github.com/JetBrains/jdk-sa-jdwp
   java-compatibility: https://github.com/JetBrains/intellij-deps-java-compatibility
