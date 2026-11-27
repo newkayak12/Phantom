@@ -162,9 +162,18 @@ object PhantomSelfUpdate {
     |src=("$mnt"/*.app(N))
     |new="${app:r}.new.app"; old="${app:r}.old.app"
     |rm -rf "$new" "$old"
+    |# a launch while the bundle is swapped loads classes from both bundles and crashes: the lock beside the app makes it
+    |# quit at once (dev.phantom.bootstrap.PhantomUpdateLock, ignored after 120 s), and the swap waits for launches already
+    |# past that check to end
+    |lock="${app:h}/.${app:t}.updating"
+    |running() { pgrep -f -- "$app/Contents/" >/dev/null }
     |if (( ${#src} == 1 )) && ditto "${src[1]}" "$new"; then
     |  xattr -dr com.apple.quarantine "$new" 2>/dev/null
-    |  if mv "$app" "$old"; then
+    |  touch "$lock"
+    |  for _ in {1..40}; do running || break; sleep 0.5; done
+    |  if running; then
+    |    log "$app is running again; not updating"
+    |  elif mv "$app" "$old"; then
     |    if mv "$new" "$app"; then
     |      rm -rf "$old"; log "updated $app from ${dmg:t}"
     |    else
@@ -176,6 +185,7 @@ object PhantomSelfUpdate {
     |else
     |  log "cannot copy the app out of ${dmg:t}"
     |fi
+    |rm -f "$lock"
     |rm -rf "$new"
     |hdiutil detach "$mnt" -quiet; rmdir "$mnt" 2>/dev/null
     |rm -f "$dmg"

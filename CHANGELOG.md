@@ -22,6 +22,7 @@
 - 한·영 README를 현재 상태에 맞췄다. 소개를 언어 중립 코어와 플러그인으로 설치하는 Java·Kotlin·Gradle·Maven으로 고치고, IDE가 업데이트를 확인하지 않는다는 문장을 GitHub 릴리스 업데이트 확인과 macOS 제자리 업데이트 설명으로 바꾸고, 플러그인 표를 번들 목록(`PHANTOM_PLUGINS_BUNDLED` 26개)과 Phantom-plugins 마켓플레이스에 맞췄다.
 - Phantom 플러그인 저장소의 `aliases`를 읽는다. `com.intellij.java`처럼 Phantom 플러그인이 대신하는 id에 의존하는 플러그인을 설치하면 그 Phantom 플러그인(`dev.phantom.java`)을 함께 설치하고, 의존성이 없어 로드되지 않은 플러그인이 있으면 시작 후 그 의존성을 주는 Phantom 플러그인 설치를 권한다.
 - 릴리스 workflow가 선택 시크릿 PHANTOM_RELEASE_TOKEN(Phantom Contents·Workflows 쓰기)으로 릴리스 태그를 push한다. .github/workflows를 바꾼 커밋의 태그가 job 토큰으로 거부되어 임시 seed 태그를 먼저 올리던 우회가 더는 필요 없다.
+- macOS 앱 안 업데이트가 앱을 바꾸는 동안 실행된 Phantom이 두 번들의 클래스를 섞어 읽다 ExceptionInInitializerError로 죽던 문제를 고쳤다. 업데이트 스크립트가 앱 옆에 잠금 파일을 두고 이미 실행 중인 프로세스가 끝나길 기다린 뒤 바꾸며, 그동안 시작한 Phantom은 바로 종료한다(스크립트가 새 앱을 연다).
 - 릴리스 workflow가 PHANTOM_PLUGINS_TOKEN이 있어도 Phantom-plugins를 checkout하지 않아 Kotlin·Maven과 함께 배포할 때 실패하던 문제를 고쳤다.
 - macOS 앱 안 업데이트가 restarter 없이 돈다. restarter 복사본이 Gatekeeper에 막혀 앱이 바뀌지 않던 문제와, 다시 시도할 때 임시 폴더에 받던 DMG가 사라져 "Failed to prepare an update"로 끝나던 문제를 고쳤다. 이제 스크립트가 IDE 종료를 기다려 앱을 바꾸고 다시 연다. DMG는 시스템 폴더에 받는다.
 - Java가 번들에서 빠진 뒤 남은 것을 정리했다. JavaIdePlugin.xml(웹 링크의 JetBrains UTM 파라미터, IDEA 온보딩 도움말 이름, Java 완성 팁)을 더 넣지 않고, macOS와 Windows의 .java/.gradle/.groovy/.kt/.kts/.pom 파일 연결을 뺐다(번들되지 않은 언어의 파일이 텍스트로 열리던 문제). 플러그인 설치 권유의 `detectFiles`가 `*.java`처럼 확장자도 받아, 빌드 파일 없이 소스만 있는 프로젝트에도 권유가 뜬다.
