@@ -22,7 +22,7 @@ policy.
 | You download a JDK | `api.foojay.io` and the JDK vendor's download site | The JDK you chose, your OS and architecture |
 | You create a Spring Boot project (Spring plugin) | `start.spring.io` | The project options you chose |
 | You download a database driver | Maven Central | The driver artifact |
-| Only when you run "Check for newer versions" in a Gradle version catalog (Version Catalog plugin) | Maven Central (`search.maven.org`, `repo1.maven.org` `maven-metadata.xml`) | The group and artifact IDs of the catalog's libraries and plugins; no project files |
+| Only when you run "Check for Newer Versions on Maven Central" in a `*.versions.toml` file (Version Catalog plugin) | Maven Central (`repo1.maven.org`: `<group path>/<artifact>/maven-metadata.xml`) | The group and artifact IDs of the `[libraries]` entries (`[plugins]` are skipped); no project files |
 | Only when you ask for it: browsing or installing from the Marketplace tab, downloading language data for grammar checking, opening Choose Boot Java Runtime, Download and Install for a missing Git on Windows | JetBrains (`plugins.jetbrains.com`, `download.jetbrains.com`) or the plugin's download location | The request for that download; Phantom adds no device ID |
 
 Starting the IDE with `-Dphantom.jetbrains.services=true` turns on the JetBrains services that Phantom keeps off by
