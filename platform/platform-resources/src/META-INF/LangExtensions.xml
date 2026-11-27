@@ -1813,6 +1813,9 @@
               topic="com.intellij.openapi.project.ProjectManagerListener"/>
     <listener class="com.intellij.find.ngrams.TrigramIndexRegistryValueListener"
               topic="com.intellij.openapi.util.registry.RegistryValueListener"/>
+    <!-- phantom-idea: applies Ghost Mode changes (essential highlighting, hint passes, editor banner) -->
+    <listener class="dev.phantom.lang.ghost.PhantomGhostModeListener"
+              topic="com.intellij.openapi.util.registry.RegistryValueListener"/>
   </applicationListeners>
   <projectListeners>
     <listener class="com.intellij.openapi.fileEditor.impl.FileEditorVirtualFileAppearanceListener"

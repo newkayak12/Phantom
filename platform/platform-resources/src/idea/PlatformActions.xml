@@ -1977,6 +1977,11 @@
   <!-- phantom-idea: token for private GitHub plugin repositories -->
   <actions resource-bundle="messages.PhantomIdeBundle">
     <action class="dev.phantom.ide.plugins.SetGitHubPluginTokenAction" id="Phantom.SetGitHubPluginToken"/>
+    <!-- phantom-idea: Ghost Mode toggle in the View menu and the main toolbar after the project and VCS widgets -->
+    <action class="dev.phantom.ide.ghost.PhantomGhostModeAction" id="Phantom.ToggleGhostMode" icon="dev.phantom.ide.icons.PhantomIcons.GhostOff">
+      <add-to-group group-id="ViewMenu" anchor="after" relative-to-action="ViewAppearanceGroup"/>
+      <add-to-group group-id="MainToolbarLeft" anchor="last"/>
+    </action>
   </actions>
 
   <applicationListeners>

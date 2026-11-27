@@ -853,6 +853,12 @@ The refresh itself is toggled by (Preferences | Appearance &amp; Behavior | Syst
     <newProjectWizard.generator implementation="dev.phantom.ide.plugins.SpringBootPluginNewProjectWizard"/>
     <notificationGroup id="Phantom Plugins" displayType="STICKY_BALLOON" isLogByDefault="true" bundle="messages.PhantomIdeBundle"
                        key="notification.group.phantom.plugins"/>
+    <!-- phantom-idea: Ghost Mode (phantom.ghost), owned by the core and read by Phantom plugins -->
+    <registryKey key="phantom.ghost" defaultValue="false" restartRequired="false"
+                 description="The editor stays, the heavy analysis fades: coloring, syntax errors, completion and navigation stay; inspections, code vision, inlay hints and background analysis turn off. For working alongside AI agents."/>
+    <statusBarWidgetFactory id="PhantomGhostMode" implementation="dev.phantom.ide.ghost.PhantomGhostWidgetFactory"/>
+    <editorNotificationProvider implementation="dev.phantom.ide.ghost.PhantomGhostEditorNotificationProvider"/>
+    <postStartupActivity implementation="dev.phantom.ide.ghost.PhantomGhostModeIntroducer"/>
     <projectConfigurable groupId="appearance" provider="com.intellij.externalDependencies.impl.ExternalDependenciesConfigurableProvider"
                          id="preferences.externalDependencies"
                          bundle="messages.IdeBundle"

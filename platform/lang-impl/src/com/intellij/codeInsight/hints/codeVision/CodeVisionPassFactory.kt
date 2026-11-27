@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.psi.PsiFile
+import dev.phantom.ide.ghost.PhantomGhostMode
 
 private val isCodeVisionEnabled: Boolean
   get() = Registry.`is`("editor.codeVision.new", true)
@@ -24,7 +25,7 @@ internal class CodeVisionPassFactory : TextEditorHighlightingPassFactory, TextEd
   }
 
   override fun createHighlightingPass(psiFile: PsiFile, editor: Editor): TextEditorHighlightingPass? {
-    if (!isCodeVisionEnabled) {
+    if (!isCodeVisionEnabled || PhantomGhostMode.isEnabled()) { // phantom-idea: no code vision in Ghost Mode
       return null
     }
 
