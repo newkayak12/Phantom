@@ -4,7 +4,7 @@
 
 <h1 align="center">Phantom</h1>
 
-<p align="center">A focused IDE for Kotlin, Spring Boot and JPA backend work.</p>
+<p align="center">A lean IDE for JVM backend work: a language-neutral core, with Java, Kotlin, Gradle and Maven support installed as plugins.</p>
 
 <p align="center">
   English | <a href="README.ko.md">한국어</a><br>
@@ -24,7 +24,7 @@ Coverage: repository quality tool only; IDE coverage is not measured.
 
 ## What is this
 
-Phantom is an IDE for Kotlin, Spring Boot and JPA backend development. It ships a smaller plugin bundle, its own themes and defaults, and optional plugins for Spring, JPA, HTTP requests and databases. Platform changes cover startup rescanning, indexing and memory settings; automatic JetBrains service requests are restricted as described [below](#whats-different).
+Phantom is an IDE for JVM backend development with Java, Kotlin, Spring Boot and JPA. The IDE itself is language-neutral: Support for Java, Support for Kotlin, Support for Gradle and Support for Apache Maven are not bundled but installed from [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins), and the IDE suggests them when a project needs them. It ships a smaller plugin bundle, its own themes and defaults, and optional plugins for Spring, JPA, HTTP requests and databases. Platform changes cover startup rescanning, indexing and memory settings; automatic JetBrains service requests are restricted as described [below](#whats-different).
 
 ## What's different
 
@@ -71,7 +71,7 @@ Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom/releases),
 
 On macOS, `./phantom-install.sh --release [tag]` from a clone downloads the DMG with curl (no quarantine flag), replaces `/Applications/Phantom.app` and restarts it; it needs `gh auth login` or `GH_TOKEN`. The ad-hoc signature changes with every build, so macOS would ask for privacy permissions again after each install; to avoid that, the script re-signs the app with a local self-signed certificate (not an Apple certificate, no Apple account) and creates that certificate in its own keychain the first time (`./phantom-sign.sh --setup` does it by hand, `PHANTOM_SIGN_SETUP=0` skips it).
 
-The IDE does not check for its own updates; install new releases the same way. On first run you can import settings from an installed JetBrains IDE.
+The IDE checks the latest GitHub release for a newer build. On macOS (Apple Silicon, app folder writable) the update dialog offers Update and Restart: the IDE downloads the release DMG, checks its sha256 against the digest GitHub lists, and after the IDE quits a script swaps the app bundle and opens it again; on any failure the old app stays. On Windows the dialog opens the release page; install the new release by hand. On first run you can import settings from an installed JetBrains IDE.
 
 ## Plugins
 
@@ -79,14 +79,16 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 
 | Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
 |---|---|---|
-| Endpoints tool window (core; plugins fill it) | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: beans, injection navigation, autowiring checks |
-| GitHub plugin repository support (core) | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` completion and docs |
-|  | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
-|  | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
-| | `grammar`, `terminal`, `github` | `http-client`: `.http` request files |
-| | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
-| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images`, `theme`, `sync` | |
-| | | `kotlin`: the Kotlin language plugin, built by each release of this repository |
+| GitHub plugin repository support (core) | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate`, `mermaid` | Support for Java: the Java language plugin, built in this repository and published through Phantom-plugins |
+| | `copyright`, `editorconfig`, `htmltools` | Support for Kotlin: the Kotlin language plugin, built by each release of this repository |
+| | `grammar`, `terminal`, `github` | Support for Gradle, Support for Gradle (Java), `gradle-dsl` |
+| | `properties`, `repository-search`, `json` | Support for Apache Maven, built by each release of this repository |
+| | `groovy-scripting`, `groovy-live-templates`, `images` | `lombok`, `decompiler`, `coverage`, `testng`, `java-i18n`, `junit`, `groovy` (need Java or Gradle) |
+| | `grid`, `git`, `theme`, `sync` | `spring`: beans, injection navigation, autowiring checks |
+| | `navbar`, `recentfiles`, `serviceview`, `endpoints` | `spring-boot`: `application.yml`/`.properties` completion and docs |
+| | | `jpa`: JPQL in `@Query`, derived query checks |
+| | | `db`: JDBC data sources, SQL console, schema tree |
+| | | `http-client`: `.http` request files |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
 

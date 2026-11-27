@@ -5,7 +5,7 @@
 
 <h1 align="center">Phantom</h1>
 
-<p align="center">Kotlin, Spring Boot, JPA 백엔드 개발에 집중한 IDE.</p>
+<p align="center">JVM 백엔드 개발을 위한 가벼운 IDE. 언어 중립인 코어에 Java, Kotlin, Gradle, Maven 지원을 플러그인으로 설치한다.</p>
 
 <p align="center">
   <a href="README.md">English</a> | 한국어<br>
@@ -27,7 +27,7 @@
 
 ## 소개
 
-Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그인 번들을 줄이고 고유 테마와 기본 설정을 제공하며, Spring, JPA, HTTP 요청, 데이터베이스 기능은 선택 플러그인으로 설치한다. 플랫폼에서는 시작 시 재스캔, 인덱싱, 메모리 설정을 수정했고, JetBrains 서비스로 가는 자동 요청은 [아래에 설명한 범위](#무엇이-다른가)에서 제한한다.
+Phantom는 Java, Kotlin, Spring Boot, JPA로 하는 JVM 백엔드 개발을 위한 IDE다. IDE 본체는 언어 중립이다. Support for Java, Support for Kotlin, Support for Gradle, Support for Apache Maven은 번들하지 않고 [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins)에서 설치하며, 프로젝트에 필요하면 IDE가 설치를 제안한다. 플러그인 번들을 줄이고 고유 테마와 기본 설정을 제공하며, Spring, JPA, HTTP 요청, 데이터베이스 기능은 선택 플러그인으로 설치한다. 플랫폼에서는 시작 시 재스캔, 인덱싱, 메모리 설정을 수정했고, JetBrains 서비스로 가는 자동 요청은 [아래에 설명한 범위](#무엇이-다른가)에서 제한한다.
 
 ## 무엇이 다른가
 
@@ -74,7 +74,7 @@ Phantom는 Kotlin, Spring Boot, JPA 백엔드 개발을 위한 IDE다. 플러그
 
 macOS에서는 클론한 리포지토리에서 `./phantom-install.sh --release [tag]`를 실행하면 DMG를 curl로 받고(격리 플래그가 붙지 않는다) `/Applications/Phantom.app`을 교체한 뒤 다시 띄운다. `gh auth login` 또는 `GH_TOKEN`이 필요하다. ad-hoc 서명은 빌드마다 바뀌어 설치할 때마다 macOS가 개인정보 권한을 다시 물을 것이므로, 이 스크립트는 앱을 로컬 자체 서명 인증서(Apple 인증서가 아니고 Apple 계정도 필요 없다)로 다시 서명하고, 처음에는 그 인증서를 전용 키체인에 만든다(`./phantom-sign.sh --setup`으로 직접 만들 수 있고, `PHANTOM_SIGN_SETUP=0`이면 건너뛴다).
 
-IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 방법으로 설치한다. 첫 실행 때 설치된 JetBrains IDE의 설정을 가져올 수 있다.
+IDE는 최신 GitHub 릴리스에서 새 빌드를 확인한다. macOS(Apple Silicon, 앱 폴더에 쓰기 가능)에서는 업데이트 창에 Update and Restart가 나온다. IDE가 릴리스 DMG를 받아 GitHub가 적은 sha256과 맞춰 보고, IDE가 종료되면 스크립트가 앱 번들을 바꾼 뒤 다시 연다. 실패하면 기존 앱이 그대로 남는다. Windows에서는 업데이트 창이 릴리스 페이지를 열고, 새 릴리스는 직접 설치한다. 첫 실행 때 설치된 JetBrains IDE의 설정을 가져올 수 있다.
 
 ## 플러그인
 
@@ -82,14 +82,16 @@ IDE는 스스로 업데이트를 확인하지 않으니 새 릴리스도 같은 
 
 | 번들, 이 리포지토리에서 빌드 | 번들, Phantom-plugins에서 빌드 | Phantom-plugins에서 필요할 때 설치 |
 |---|---|---|
-| Endpoints 도구 창(코어, 내용은 플러그인이 채움) | `toml`, `yaml`, `sh`(Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: 빈, 주입 위치 이동, 자동 주입 검사 |
-| GitHub 플러그인 저장소 지원(코어) | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` 완성과 문서 |
-|  | `lombok`(전에 번들하던 커뮤니티 Lombok 플러그인을 대체) | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
-|  | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
-| | `grammar`, `terminal`, `github` | `http-client`: `.http` 요청 파일 |
-| | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
-| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images`, `theme`, `sync` | |
-| | | `kotlin`: Kotlin 언어 플러그인. 이 리포지토리의 릴리스마다 빌드 |
+| GitHub 플러그인 저장소 지원(코어) | `toml`, `yaml`, `sh`(Shell Script), `markdown`, `textmate`, `mermaid` | Support for Java: Java 언어 플러그인. 이 리포지토리에서 빌드하고 Phantom-plugins로 배포 |
+| | `copyright`, `editorconfig`, `htmltools` | Support for Kotlin: Kotlin 언어 플러그인. 이 리포지토리의 릴리스마다 빌드 |
+| | `grammar`, `terminal`, `github` | Support for Gradle, Support for Gradle (Java), `gradle-dsl` |
+| | `properties`, `repository-search`, `json` | Support for Apache Maven. 이 리포지토리의 릴리스마다 빌드 |
+| | `groovy-scripting`, `groovy-live-templates`, `images` | `lombok`, `decompiler`, `coverage`, `testng`, `java-i18n`, `junit`, `groovy`(Java나 Gradle이 필요) |
+| | `grid`, `git`, `theme`, `sync` | `spring`: 빈, 주입 위치 이동, 자동 주입 검사 |
+| | `navbar`, `recentfiles`, `serviceview`, `endpoints` | `spring-boot`: `application.yml`/`.properties` 완성과 문서 |
+| | | `jpa`: `@Query` 안의 JPQL, 파생 쿼리 검사 |
+| | | `db`: JDBC 데이터 소스, SQL 콘솔, 스키마 트리 |
+| | | `http-client`: `.http` 요청 파일 |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit`(번들에서 뺀 업스트림 플러그인을 대체) |
 
