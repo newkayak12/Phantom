@@ -245,7 +245,9 @@ internal class JavaCollectionWithNullableTypeArgumentInspection :
         }
     }
 
-    val nonNullableParameterizedJavaCollections: MutableSet<FqNameUnsafe> =
+    // phantom-idea: var replaced, never mutated in place, so a concurrent settings save cannot see a half-built collection
+    @Volatile
+    var nonNullableParameterizedJavaCollections: MutableSet<FqNameUnsafe> =
         NonNullableParameterizedJavaCollectionsService.DEFAULT.map(::FqNameUnsafe).toMutableSet()
 
     /**
@@ -277,13 +279,13 @@ internal class JavaCollectionWithNullableTypeArgumentInspection :
     }
 
     private fun readSettings() {
-        nonNullableParameterizedJavaCollections.clear()
-        fqNameCollectionsNamesStrings.mapTo(nonNullableParameterizedJavaCollections, ::FqNameUnsafe)
+        // phantom-idea: build a new set instead of clear()+mapTo on the shared one
+        nonNullableParameterizedJavaCollections = fqNameCollectionsNamesStrings.mapTo(LinkedHashSet(), ::FqNameUnsafe)
     }
 
     private fun writeSettings() {
-        fqNameCollectionsNamesStrings.clear()
-        nonNullableParameterizedJavaCollections.mapTo(fqNameCollectionsNamesStrings) { it.asString() }
+        // phantom-idea: build a new list; another thread may be serializing the current one (ConcurrentModificationException on settings save)
+        fqNameCollectionsNamesStrings = nonNullableParameterizedJavaCollections.mapTo(ArrayList()) { it.asString() }
     }
 }
 
