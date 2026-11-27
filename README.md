@@ -4,11 +4,11 @@
 
 <h1 align="center">Phantom</h1>
 
-<p align="center">A focused IDE for Kotlin, Spring Boot and JPA backend work.</p>
+<p align="center">A lean IDE for JVM backend work: a language-neutral core, with Java, Kotlin, Gradle and Maven support installed as plugins.</p>
 
 <p align="center">
   English | <a href="README.ko.md">한국어</a><br>
-  <a href="#download-and-install">Download</a> · <a href="#whats-different">What's different</a> · <a href="#plugins">Plugins</a> · <a href="#build-from-source">Build</a> · <a href="#docs">Docs</a>
+  <a href="#download-and-install">Download</a> · <a href="#why-phantom">Why Phantom</a> · <a href="#screenshots">Screenshots</a> · <a href="#performance">Performance</a> · <a href="#features-in-detail">Features</a> · <a href="#plugins">Plugins</a> · <a href="#build-from-source">Build</a> · <a href="#docs">Docs</a>
 </p>
 
 <p align="center">
@@ -20,42 +20,86 @@
   <a href="#download-and-install"><img alt="Platforms: macOS arm64, Windows x64" src="https://img.shields.io/badge/platforms-macOS%20arm64%20%7C%20Windows%20x64-lightgrey"></a>
 </p>
 
+<p align="center">
+  <img src=".github/assets/screenshots/editor-plugin-suggestion.png" alt="Phantom with the Spring PetClinic sample open in the Phantom Dark theme, suggesting plugins for the project" width="900">
+</p>
+
 Coverage: repository quality tool only; IDE coverage is not measured.
 
-## What is this
+## Why Phantom
 
-Phantom is an IDE for Kotlin, Spring Boot and JPA backend development. It ships a smaller plugin bundle, its own themes and defaults, and optional plugins for Spring, JPA, HTTP requests and databases. Platform changes cover startup rescanning, indexing and memory settings; automatic JetBrains service requests are restricted as described [below](#whats-different).
+Phantom is an IDE for JVM backend development with Java, Kotlin, Spring Boot and JPA. The core is language-neutral; everything a project needs comes as a plugin, suggested when the project asks for it.
 
-## What's different
+- **About 3x faster to an open project.** 1.72 s against 5.14 s for another IDE on the same platform version ([Performance](#performance)).
+- **About 60% less memory.** 298 MB resident against 807 MB, with 47 plugins loaded instead of 162.
+- **Plugins on demand.** Java, Kotlin, Gradle, Maven, Spring, JPA, HTTP requests and databases install from [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) when you need them.
+- **Quiet by default.** No usage statistics, no promotions, and automatic JetBrains service requests stay off unless you turn them on ([PRIVACY.md](PRIVACY.md)).
+- **Updates from GitHub.** The IDE checks Phantom's GitHub releases and on macOS replaces itself in place.
+
+## Screenshots
+
+| Welcome screen | Plugins from the Phantom repository |
+|---|---|
+| ![Welcome to Phantom screen](.github/assets/screenshots/welcome.png) | ![Settings, Plugins, Marketplace tab listing the newkayak12/Phantom-plugins repository](.github/assets/screenshots/settings-plugins.png) |
+
+The editor screenshot above shows the plugin suggestion: on opening a project, Phantom names the plugins its files call for (here Docker for `docker-compose.yml`) and installs them with one click. Screenshots are from a clean profile with the public [spring-petclinic](https://github.com/spring-projects/spring-petclinic) sample.
+
+## Performance
+
+![Phantom against another IDE: launch 1.72 s vs 5.14 s, RSS 298 MB vs 807 MB, heap 120 MB vs 257 MB, plugins 47 vs 162](.github/assets/benchmark.svg)
+
+Cold start on the same platform version as another commercial IDE: about 3x faster to an open project and about 60% less resident memory. Single runs on one machine; method and caveats in [PERFORMANCE.md](PERFORMANCE.md).
+
+| | Other IDE | Phantom |
+|---|---|---|
+| Launch to project opened | 5.14 s | 1.72 s |
+| Resident memory (RSS) | 807 MB | 298 MB |
+| Heap after a forced GC | 257 MB | 120 MB |
+| Plugins loaded | 162 | 47 |
+| Indexing | 4.8 s | 5.6 s |
+
+## Features in detail
 
 Each line is backed by a commit; file-level detail is in [CHANGELOG.md](CHANGELOG.md).
 
-**Removed**
-- Ultimate promotions: the Java, GitHub and Kotlin promo modules, the TechInsights welcome banner, YAML "Try Ultimate".
-- Toolbox App integration, the Junie terminal agent, and the JetBrains links in the Help menu.
-- "Report to JetBrains" error submission and the default IDE update feed (`-Didea.updates.url` brings it back).
+### Lean core and privacy
 
-**Trimmed**
-- Phantom replaces upstream plugins such as TextMate and Images with Phantom-plugins builds. Each release publishes Support for Kotlin and Support for Apache Maven separately to the Phantom plugin store. Upstream sources stay available for merges.
-- Some changes listed on this page live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try Ultimate", the ShellCheck download). Whether those builds carry them was not checked.
-- The Marketplace listing leaves out plugins JetBrains publishes (Phantom ships its own versions of the ones it keeps); running from sources, internal mode or `-Dphantom.marketplace.showAll=true` shows them.
+- Paid-edition promotions are gone: the Java, GitHub and Kotlin promo modules, the TechInsights welcome banner, YAML "Try" upsell.
+- No Toolbox App integration, no Junie terminal agent, no JetBrains links in the Help menu, no "Report to JetBrains" error submission.
 - Automatic JetBrains calls (broken-plugin list, plugin suggestions, Grazie Cloud, completion logs, surveys, feedback forms, log upload) stay off unless `-Dphantom.jetbrains.services=true`.
 - Diagnostic files off by default: OpenTelemetry metrics CSV (about 116 MB in 4 days), indexing and storage reports.
-- Library text files left out of the Find in Files index: trigram index 369 MB → 84 MB, all indexes 1.2 GB → 916 MB on the author's project.
-
-**Fixed**
-- A bare file type change no longer rescans the whole project (the fix commit `46482b0bf1` names Atom Material Icons as the trigger on every start; the benchmark record marks that attribution as inferred).
-- A plugin update no longer re-checks every file on the next open (345k files, about 2.3 s and 20 s of CPU before).
-- The consent settings page no longer crashes for a non-JetBrains vendor; Gradle falls back to a supported registered JDK.
-- A plugin that keeps another plugin's id as an alias now replaces it: with a Phantom-plugins build and the upstream original both installed, only the Phantom build loads, where the id conflict used to leave both out (commit `04dba66c3a`).
-
-**Added**
-- Own identity: `Phantom.app`, bundle id `dev.phantom.idea`, URL scheme `phantom://`, settings folder `PhantomIDEA`, Phantom Dark/Light themes.
-- Plugin repositories from GitHub repos (`owner/repo`), with [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) always registered.
-- Backup and Sync to your own git repository; GitHub login through `gh auth token` instead of account.jetbrains.com.
-- Download JDK lists JDKs from the foojay Disco API; heap and file page cache are sized to the machine's RAM.
+- Some of these changes live in this repository's sources of plugins that the bundle now takes from Phantom-plugins builds (GitHub login, Grazie Cloud, the Junie terminal agent, YAML "Try" upsell, the ShellCheck download). Whether those builds carry them was not checked.
 
 **What still talks to the network.** Browsing the Marketplace tab (plugins.jetbrains.com) works by design, and Phantom's own plugin repository is read from GitHub (`-Dphantom.plugins.official=false` drops it). Grazie language files, the JBR runtime list and the Git installer list still come from JetBrains, but only when you ask for that download (adding a Grazie language, opening Choose Boot Java Runtime, Download and Install for a missing Git on Windows; on macOS nothing fetches the Git installer list). Usage statistics cannot be turned on: Phantom ships no usage-statistics consent, so there is nothing to accept and the uploader never sends. The full list of outbound connections is in [PRIVACY.md](PRIVACY.md). The framework library version list and the Windows Git update check now stay off JetBrains unless the flag is set; that change is in the source but has not been built or tested yet. Feedback forms and Tips of the Day like/dislike no longer count as gaps: the forms send nothing unless the flag is set, and the like/dislike row is hidden by default. That change is in the source (commit `6e71ed80c4`) but has not been built or tested yet.
+
+### Plugins on demand
+
+- Support for Java, Kotlin, Gradle and Apache Maven are not bundled; the IDE suggests them once when a project needs them.
+- Plugin repositories from GitHub repos (`owner/repo`), with [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins) always registered.
+- Phantom replaces upstream plugins such as TextMate and Images with Phantom-plugins builds. Each release publishes Support for Kotlin and Support for Apache Maven separately to the Phantom plugin store. Upstream sources stay available for merges.
+- A plugin that keeps another plugin's id as an alias now replaces it: with a Phantom-plugins build and the upstream original both installed, only the Phantom build loads, where the id conflict used to leave both out (commit `04dba66c3a`).
+- The Marketplace listing leaves out plugins JetBrains publishes (Phantom ships its own versions of the ones it keeps); running from sources, internal mode or `-Dphantom.marketplace.showAll=true` shows them.
+
+### Self-update
+
+- The update check reads `updates.xml` from the latest Phantom GitHub release, without request parameters; the JetBrains update feed is not used (`-Didea.updates.url` points it elsewhere).
+- On macOS (Apple Silicon, app folder writable) the update dialog offers Update and Restart: the IDE downloads the release DMG, checks its sha256 against the digest GitHub lists, and after the IDE quits a script swaps the app bundle and opens it again; on any failure the old app stays. On Windows the dialog opens the release page.
+
+### Themes and UI defaults
+
+- Own identity: `Phantom.app`, bundle id `dev.phantom.idea`, URL scheme `phantom://`, settings folder `PhantomIDEA`.
+- Phantom Dark and Phantom Light themes with matching editor color schemes.
+- Backup and Sync to your own git repository; GitHub login through `gh auth token` instead of account.jetbrains.com.
+- Download JDK lists JDKs from the foojay Disco API.
+
+### Platform tuning: startup, AOT and memory
+
+- Not yet released: the macOS app ships an AOT cache (JDK 25 `-XX:AOTCache`) recorded by a training run at build time, and a CDS archive for compact object headers in the bundled runtime.
+- A bare file type change no longer rescans the whole project (the fix commit `46482b0bf1` names Atom Material Icons as the trigger on every start; the benchmark record marks that attribution as inferred).
+- A plugin update no longer re-checks every file on the next open (345k files, about 2.3 s and 20 s of CPU before).
+- Library text files left out of the Find in Files index: trigram index 369 MB → 84 MB, all indexes 1.2 GB → 916 MB on the author's project.
+- Heap and file page cache are sized to the machine's RAM.
+- The consent settings page no longer crashes for a non-JetBrains vendor; Gradle falls back to a supported registered JDK.
 
 ## Download and install
 
@@ -68,10 +112,9 @@ Builds are on [GitHub Releases](https://github.com/newkayak12/Phantom/releases),
 
 > [!WARNING]
 > Builds are not signed by a recognized authority. The macOS app is ad-hoc signed and not notarized, so Gatekeeper blocks a DMG downloaded in a browser. The Windows files are unsigned, so Windows may warn about an unknown publisher.
-
 On macOS, `./phantom-install.sh --release [tag]` from a clone downloads the DMG with curl (no quarantine flag), replaces `/Applications/Phantom.app` and restarts it; it needs `gh auth login` or `GH_TOKEN`. The ad-hoc signature changes with every build, so macOS would ask for privacy permissions again after each install; to avoid that, the script re-signs the app with a local self-signed certificate (not an Apple certificate, no Apple account) and creates that certificate in its own keychain the first time (`./phantom-sign.sh --setup` does it by hand, `PHANTOM_SIGN_SETUP=0` skips it).
 
-The IDE does not check for its own updates; install new releases the same way. On first run you can import settings from an installed JetBrains IDE.
+The IDE checks the latest GitHub release for a newer build (see [Self-update](#self-update)); on Windows install the new release by hand. On first run you can import settings from an installed JetBrains IDE.
 
 ## Plugins
 
@@ -79,17 +122,18 @@ Backend features live in a separate repository, [newkayak12/Phantom-plugins](htt
 
 | Bundled, built in this repository | Bundled, built in Phantom-plugins | Installed on demand from Phantom-plugins |
 |---|---|---|
-| Endpoints tool window (core; plugins fill it) | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate`, `mermaid` | `spring`: beans, injection navigation, autowiring checks |
-| GitHub plugin repository support (core) | `decompiler`, `coverage`, `testng`, `java-i18n` | `spring-boot`: `application.yml`/`.properties` completion and docs |
-|  | `lombok` (replaces the community Lombok plugin bundled before) | `jpa`: JPQL in `@Query`, derived query checks |
-|  | `copyright`, `editorconfig`, `htmltools` | `db`: JDBC data sources, SQL console, schema tree |
-| | `grammar`, `terminal`, `github` | `http-client`: `.http` request files |
-| | `junit`, `properties`, `repository-search`, `json`, `gradle-dsl` | |
-| | `groovy-scripting`, `groovy`, `groovy-live-templates`, `images`, `theme`, `sync` | |
-| | | `kotlin`: the Kotlin language plugin, built by each release of this repository |
+| GitHub plugin repository support (core) | `toml`, `yaml`, `sh` (Shell Script), `markdown`, `textmate`, `mermaid` | Support for Java: the Java language plugin, built in this repository and published through Phantom-plugins |
+| | `copyright`, `editorconfig`, `htmltools` | Support for Kotlin: the Kotlin language plugin, built by each release of this repository |
+| | `grammar`, `terminal`, `github` | Support for Gradle, Support for Gradle (Java), `gradle-dsl` |
+| | `properties`, `repository-search`, `json` | Support for Apache Maven, built by each release of this repository |
+| | `groovy-scripting`, `groovy-live-templates`, `images` | `lombok`, `decompiler`, `coverage`, `testng`, `java-i18n`, `junit`, `groovy` (need Java or Gradle) |
+| | `grid`, `git`, `theme`, `sync` | `spring`: beans, injection navigation, autowiring checks |
+| | `navbar`, `recentfiles`, `serviceview`, `endpoints` | `spring-boot`: `application.yml`/`.properties` completion and docs |
+| | | `jpa`: JPQL in `@Query`, derived query checks |
+| | | `db`: JDBC data sources, SQL console, schema tree |
+| | | `http-client`: `.http` request files |
 | | | `workspaces`, `tabs`, Phantom Icon Pack |
 | | | `bytecode`, `webp`, `modal-commit` (replace the upstream plugins left out of the bundle) |
-
 Docker, Kubernetes and database migrations have plugin projects and marketplace entries in [Phantom-plugins](https://github.com/newkayak12/Phantom-plugins); consult that repository for current feature coverage.
 
 ## Build from source
@@ -115,7 +159,7 @@ To edit or debug the platform, open this checkout's root as the existing project
 
 - [CHANGELOG.md](CHANGELOG.md): changes per release
 - [PRIVACY.md](PRIVACY.md): what Phantom collects (nothing) and what it connects to
-- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against IntelliJ IDEA Ultimate
+- [PERFORMANCE.md](PERFORMANCE.md): startup time and memory against another IDE
 
 ## Upstream and trademarks
 
@@ -129,4 +173,4 @@ This is a personal fork shaped by one developer's Kotlin and Spring backend work
 
 ## License
 
-Apache License 2.0, same as intellij-community. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).
+Apache License 2.0, same as the upstream project. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).
