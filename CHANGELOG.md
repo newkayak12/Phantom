@@ -17,6 +17,7 @@
 
 ## 미배포 (v26.11.13.1 이후)
 
+- 저장소 규칙(AGENTS.md): 빌드와 테스트 확인은 PR CI에 맡기고 로컬 Bazel 빌드는 필요할 때만 돌린다. worktree마다 뜨는 Bazel 서버(-Xmx10g)가 에이전트 병렬 작업 중 스왑을 일으켰다.
 - 문서: PRIVACY에 Version Catalog 플러그인의 "Check for Newer Versions on Maven Central"을 사용자가 실행할 때만 Maven Central(`repo1.maven.org`)에 접속한다는 항목을 추가했다.
 - 버그 수정: Kotlin 인스펙션 `JavaCollectionWithNullableTypeArgument`와 `UsePropertyAccessSyntax`가 설정을 쓸 때 공유 리스트를 비우고 다시 채우지 않고 새 리스트로 바꾼다. 설정 저장과 프로파일 비교가 동시에 직렬화하다 `ConcurrentModificationException`으로 "Save settings failed"가 나던 문제를 고친다.
 - 번들 Java 런타임을 JBR 25.0.4.1b508.41에서 25.0.5.1b635.102로 올렸다. macOS에서 EDT가 awtLock을 잡은 채 `MTLRenderQueue.flushNow`에서 멈추는 프리즈 수정(JBR-10599, IJPL-244911)이 들어 있다.
