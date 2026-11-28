@@ -11,18 +11,22 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.ViewableMap
 import com.jetbrains.rd.util.reactive.ViewableSet
+import dev.phantom.ide.ghost.PhantomGhostMode
 import org.jetbrains.annotations.ApiStatus
 
 @ApiStatus.Internal
 class CodeVisionSettingsLiveModel(lifetime: Lifetime) {
 
-  val isRegistryEnabled: Property<Boolean> = Property(Registry.`is`("editor.codeVision.new")).also {
-    val registry = Registry.get("editor.codeVision.new")
-    registry.addListener(object : RegistryValueListener {
+  // phantom-idea: Ghost Mode hides code vision like its registry switch, so lenses shown before disappear
+  val isRegistryEnabled: Property<Boolean> = Property(Registry.`is`("editor.codeVision.new") && !PhantomGhostMode.isEnabled()).also {
+    val listener = object : RegistryValueListener {
       override fun afterValueChanged(value: RegistryValue) {
-        it.value = value.asBoolean()
+        it.value = Registry.`is`("editor.codeVision.new") && !PhantomGhostMode.isEnabled()
       }
-    }, lifetime.createNestedDisposable())
+    }
+    val disposable = lifetime.createNestedDisposable()
+    Registry.get("editor.codeVision.new").addListener(listener, disposable)
+    Registry.get(PhantomGhostMode.REGISTRY_KEY).addListener(listener, disposable)
   }
 
 

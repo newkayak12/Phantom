@@ -33,6 +33,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.util.ui.update.DisposableUpdate
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.vcs.CacheableAnnotationProvider
+import dev.phantom.ide.ghost.PhantomGhostMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.system.measureTimeMillis
@@ -113,7 +114,7 @@ internal class AnnotationsPreloader(private val project: Project, private val co
 
     // TODO: check cores number?
     internal fun isEnabled(): Boolean {
-      if (PowerSaveMode.isEnabled()) {
+      if (PowerSaveMode.isEnabled() || PhantomGhostMode.isEnabled()) { // phantom-idea: no annotation preloading in Ghost Mode
         return false
       }
 

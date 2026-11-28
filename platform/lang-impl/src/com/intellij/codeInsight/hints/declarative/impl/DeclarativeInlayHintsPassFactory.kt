@@ -25,6 +25,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import org.jetbrains.annotations.ApiStatus.Internal
+import dev.phantom.ide.ghost.PhantomGhostMode
 
 class DeclarativeInlayHintsPassFactory : TextEditorHighlightingPassFactory, TextEditorHighlightingPassFactoryRegistrar, DumbAware {
   @Suppress("CompanionObjectInExtension") // used in third party
@@ -90,7 +91,8 @@ class DeclarativeInlayHintsPassFactory : TextEditorHighlightingPassFactory, Text
 
     val declarativeInlayHintsSettings = DeclarativeInlayHintsSettings.getInstance()
     val enabledGlobally = InlayHintsSettings.instance().hintsEnabledGlobally()
-    val passProviders = if (enabledGlobally) {
+    // phantom-idea: no providers in Ghost Mode: the pass still runs and removes the hints shown before
+    val passProviders = if (enabledGlobally && !PhantomGhostMode.isEnabled()) {
       getSuitableToFileProviders(psiFile)
         .filter {
           declarativeInlayHintsSettings.isProviderEnabled(it.providerId) ?: it.isEnabledByDefault

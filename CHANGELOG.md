@@ -18,6 +18,7 @@
 ## 미배포 (v26.11.13.1 이후)
 
 - 저장소 규칙(AGENTS.md): 빌드와 테스트 확인은 PR CI에 맡기고 로컬 Bazel 빌드는 필요할 때만 돌린다. worktree마다 뜨는 Bazel 서버(-Xmx10g)가 에이전트 병렬 작업 중 스왑을 일으켰다.
+- 기능: 고스트 모드(레지스트리 `phantom.ghost`, 기본 꺼짐)를 추가했다. 켜면 색칠, 문법 오류, 자동 완성, 이동은 그대로 두고 필수 강조 모드를 켜서 인스펙션과 백그라운드 분석을 멈추며, Code Vision, 인레이 힌트, VCS 주석 미리 불러오기를 끈다. 끄면 필수 강조 모드를 이전 값으로 되돌린다. View 메뉴와 메인 툴바(프로젝트·VCS 위젯 옆)의 고스트 아이콘 버튼, 상태 표시줄 위젯, 편집기 배너("Turn off"), 한 번만 뜨는 소개 알림으로 켜고 끈다. AI 에이전트가 편집하는 동안 쓰기 위한 것이며, Phantom 플러그인도 같은 키를 읽는다.
 - 문서: PRIVACY에 Version Catalog 플러그인의 "Check for Newer Versions on Maven Central"을 사용자가 실행할 때만 Maven Central(`repo1.maven.org`)에 접속한다는 항목을 추가했다.
 - 버그 수정: Kotlin 인스펙션 `JavaCollectionWithNullableTypeArgument`와 `UsePropertyAccessSyntax`가 설정을 쓸 때 공유 리스트를 비우고 다시 채우지 않고 새 리스트로 바꾼다. 설정 저장과 프로파일 비교가 동시에 직렬화하다 `ConcurrentModificationException`으로 "Save settings failed"가 나던 문제를 고친다.
 - 번들 Java 런타임을 JBR 25.0.4.1b508.41에서 25.0.5.1b635.102로 올렸다. macOS에서 EDT가 awtLock을 잡은 채 `MTLRenderQueue.flushNow`에서 멈추는 프리즈 수정(JBR-10599, IJPL-244911)이 들어 있다.

@@ -29,6 +29,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.annotations.ApiStatus
+import dev.phantom.ide.ghost.PhantomGhostMode
 
 
 private val PSI_MODIFICATION_STAMP: Key<Long> = Key.create("inlay.psi.modification.stamp")
@@ -49,7 +50,8 @@ class InlayHintsPassFactoryInternal : TextEditorHighlightingPassFactory, TextEdi
 
     val language = psiFile.language
     val hintSink = InlayHintsSinkImpl(editor)
-    val collectors = getProviders(psiFile, editor).mapNotNull { it.getCollectorWrapperFor(psiFile, editor, language, hintSink) }
+    // phantom-idea: no collectors in Ghost Mode: the pass still runs and removes the hints shown before
+    val collectors = if (PhantomGhostMode.isEnabled()) emptyList() else getProviders(psiFile, editor).mapNotNull { it.getCollectorWrapperFor(psiFile, editor, language, hintSink) }
     val priorityRange = DaemonCodeAnalyzerEx.getInstanceEx(psiFile.project).getHighlightSessionFromCurrentIndicator(psiFile).visibleRange
 
     return InlayHintsPass(psiFile, collectors, editor, priorityRange, hintSink)
